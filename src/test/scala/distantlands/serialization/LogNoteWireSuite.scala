@@ -145,3 +145,55 @@ class LogNoteWireSuite extends munit.FunSuite:
     refused(NoteArg.Placements(Vector(2 -> SiteId("s1"))),
       arg => arg("placements")(0)("count") = -1,
       "$.payload.note.args[0].placements[0].count")
+    refused(NoteArg.SuitShares(Vector(2 -> Suit.Hearth)),
+      arg => arg("entries")(0)("points") = -1,
+      "$.payload.note.args[0].entries[0].points")
+
+  test("lineage points by suit round trip, and an unknown suit is refused"):
+    val event = noteEvent(PowerSourceRef.Site(SiteId("s1")),
+      NoteArg.SuitShares(Vector(3 -> Suit.Beast, 1 -> Suit.Nomad)))
+    val encoded = ujson.read(accepted(
+      GameEventWire.encodeEvent("notes", 0, event)))
+    assertEquals(encoded("payload")("note")("args")(0), ujson.Obj(
+      "kind" -> "suit-shares", "entries" -> ujson.Arr(
+        ujson.Obj("points" -> 3, "suit" -> "beast"),
+        ujson.Obj("points" -> 1, "suit" -> "nomad"))))
+    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
+    encoded("payload")("note")("args")(0)("entries")(1)("suit") = "weather"
+    assert(GameEventWire.decode(encoded).left.toOption.exists {
+      case WireError.InvalidValue(path, _) =>
+        path == "$.payload.note.args[0].entries[1].suit"
+      case _ => false }, GameEventWire.decode(encoded))
+
+  test("a log note's promise argument round trips its text"):
+    val event = noteEvent(PowerSourceRef.Card(DenizenId("denizen")),
+      NoteArg.Promise("I will not attack you, “ever”."))
+    val encoded = accepted(GameEventWire.encodeEvent("notes", 0, event))
+    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(event))
+
+  test("a note's readers round trip, sorted, and an unread note writes " +
+      "no readers field"):
+    val read = LogNoted(PowerId("procedure.negotiation"),
+      LogNote(None, "promised", Vector(NoteArg.Promise("Peace.")))
+        .readBy(Vector(PlayerId("p3"), PlayerId("p1"))), covers = false)
+    val encoded = accepted(GameEventWire.encodeEvent("notes", 0, read))
+    assertEquals(GameEventWire.decode(encoded).map(_.event), Right(read))
+    assertEquals(ujson.read(encoded)("payload")("note")("readers"),
+      ujson.Arr("p1", "p3"))
+    val unread = read.copy(note = read.note.copy(readers = None))
+    val plain = accepted(GameEventWire.encodeEvent("notes", 0, unread))
+    assert(!ujson.read(plain)("payload")("note").obj.contains("readers"),
+      plain)
+
+  test("an empty or repeated readers list is refused"):
+    val read = LogNoted(PowerId("procedure.negotiation"),
+      LogNote(None, "promised", Vector.empty).readBy(Vector(PlayerId("p1"))),
+      covers = false)
+    Vector(ujson.Arr(), ujson.Arr("p1", "p1")).foreach { readers =>
+      val encoded = ujson.read(accepted(
+        GameEventWire.encodeEvent("notes", 0, read)))
+      encoded("payload")("note")("readers") = readers
+      assertEquals(GameEventWire.decode(encoded).map(_.event),
+        Left(WireError.InvalidValue("$.payload.note.readers",
+          "readers must name each player once")))
+    }

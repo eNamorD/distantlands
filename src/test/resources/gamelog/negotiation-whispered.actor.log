@@ -1,0 +1,7 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+7.0 action 1 use-power:relic.whispering-stone@4 | [card:R34|Whispering Stone]: Negotiate in private.
+22.0 action 1 negotiation@9 | Negotiated with [player:p3|p3], in private.
+24.0 delta 1 negotiation@9 | [player:p1|p1] gave 1 favor to [player:p3|p3]
+25.0 action 1 negotiation@9 | [player:p1|p1] promised [player:p3|p3]: “I will not attack you this round.”

@@ -1,6 +1,7 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.chronicle.legacies.IronHandCard
 import distantlands.gameplay.powers.action.{BookOfRecordsCard, BrassHorseCard,
   FaeMerchantCard}
 import distantlands.gameplay.powers.setup.HallOfDebateCard
@@ -27,6 +28,18 @@ class ChronicleExtractionSuite extends munit.FunSuite:
     assertEquals(layout, Right(ChronicleExtraction.SiteLayout(
       inPlay.filter(Set(ancientCity, brokenPeaks)),
       inPlay.filterNot(Set(ancientCity, brokenPeaks)))))
+
+  test("an Exile holding Iron Hand active has their sites stored in the " +
+      "Empire's place, and the rest, the Empire's included, are rivals " +
+      "(ruling 21)"):
+    // p1 won and rules Ancient City; p2, an Exile, rules Broken Peaks.
+    val ready = ChronicleWalk.chronicleWonByP1
+      .warbandsAt(AncientCitySite, p1, 1).warbandsAt(BrokenPeaksSite, p2, 1)
+      .legacy(p2, IronHandCard).ready
+    val inPlay = ready.game.current.map.hinterward
+    assertEquals(ChronicleExtraction.layout(ready),
+      Right(ChronicleExtraction.SiteLayout(inPlay.filter(_ == brokenPeaks),
+        inPlay.filterNot(_ == brokenPeaks))))
 
   test("a game with no result has no layout"):
     assert(ChronicleExtraction.layout(Table.start.ready).isLeft)

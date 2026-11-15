@@ -9,7 +9,7 @@ package distantlands.model
   * file as the state side of the pool vocabulary, matching
   * `CurrentGameState.rollPools` (the pool *keys* live with the model pending
   * pointer in `PendingTree.scala`, referenced by the dice-pool leaves in
-  * `gameplay/operations/CoreOperations.scala`).
+  * `model/DiceOperation.scala`).
   */
 final case class DicePoolState(count: Int)
 

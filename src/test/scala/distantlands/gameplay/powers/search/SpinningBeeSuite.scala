@@ -5,7 +5,9 @@ import distantlands.gameplay.actions.search.SearchProcedure
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powerresolver.ModifierPicks
 import distantlands.gameplay.powers.{SearchFixture, WalkerPowerCatalog}
-import distantlands.gameplay.powers.action.HomesteadersCard
+import distantlands.gameplay.powers.action.{FaeMerchantCard,
+  HomesteadersCard, SecondChanceCard}
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.powers.campaign.WrestlersCard
 import distantlands.gameplay.powers.economy.DefameCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -13,7 +15,7 @@ import distantlands.gameplay.walker.WalkerCompleted
 import distantlands.model._
 import distantlands.model.OathState.Ready
 import distantlands.testkit.{Look, ParkedNode, Table}
-import distantlands.testkit.Table.p1
+import distantlands.testkit.Table.{p1, p2}
 import distantlands.testkit.Unwrap.accepted
 
 /** Spinning Bee (card 232): declare a suit, then draw from the actor's own
@@ -116,6 +118,23 @@ class SpinningBeeSuite extends munit.FunSuite:
       Vector(defame, wrestlers, homesteaders))
     assert(searched.events.exists(_.isInstanceOf[WalkerCompleted]),
       searched.events)
+
+  test("a no-match draw discards only the actor's hand, not another " +
+      "player's, pawnless, Ties hand (R33)"):
+    val handed = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
+      SecondChanceCard.id)
+    val ready = holdingBee().hand(p2, ThreateningRoarCard, FaeMerchantCard,
+      SecondChanceCard).ready.updateCurrent(current => current.copy(players =
+        current.players.map(player =>
+          if player.player == p2 then player.copy(pawnSite = None)
+          else player)))
+    val searched = searchDeclaringSuit(Table.from(ready), Suit.Nomad)
+    val after = SearchFixture.after(searched)
+    assertEquals(after.game.current.temporaryHands.getOrElse(p1,
+      Vector.empty), Vector.empty)
+    assertEquals(Look(after).discardPile(Region.Provinces).takeRight(3),
+      Vector(defame, wrestlers, homesteaders))
+    assertEquals(after.game.current.temporaryHands.get(p2), Some(handed))
 
   test("picked, it makes every other Search modifier unavailable"):
     val ready = holdingBee().adviser(p1, augury).ready

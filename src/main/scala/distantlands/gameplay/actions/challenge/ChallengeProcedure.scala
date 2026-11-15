@@ -47,14 +47,12 @@ object ChallengeProcedure:
       NotePart.Text(" "), NotePart.Plural(1, "secret", "secrets")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
-  /** The start checks only the banner faces: whether a banner is in reach
+  /** The start checks nothing of the board: whether a banner is in reach
     * depends on the modifiers the walk picks first, so the banner question
     * refuses the walk instead (`bannerQuestion`). */
   def build(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
-      args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] = for
-    _ <- noStartArgs(args)
-    _ <- supportedFaces(state)
-  yield tree(actor)
+      args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
+    noStartArgs(args).map(_ => tree(actor))
 
   def rebuild(catalog: ExecutableCatalog, state: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
@@ -97,15 +95,6 @@ object ChallengeProcedure:
     OathViolation.InvalidEventOrder(
       s"walker procedure ${ActionRef.Challenge.key} takes no start selection, " +
         s"got ${args.map(_.kind).mkString(", ")}"))
-
-  /** The ribbon rules below are the printed ones for People's Favor `Mob` and
-    * Darkest Secret `WanderingFlame` only.
-    */
-  private def supportedFaces(state: ReadyGame): Either[OathViolation, Unit] =
-    val banners = state.game.current.banners
-    Either.cond(banners.peoplesFavor.active == PeoplesFavorFace.Mob &&
-      banners.darkestSecret.active == DarkestSecretFace.WanderingFlame, (),
-      OathViolation.UnsupportedBannerState("unsupported active banner face"))
 
   private def challenge(actor: PlayerId): Operation = Sequence(Vector[Operation](
     Sequence(Vector[Operation](SpendSupply(actor, 1)),
@@ -179,20 +168,22 @@ object ChallengeProcedure:
       val bonus = ChallengeReach.bonus(picks(pending), banner)
       Vector[Operation](
         Sequence(ChallengeRibbon.steps(actor, banner),
-          Some(PowerWindow.ChallengeRibbon)),
+          Some(PowerWindow.ChallengeRibbon))) ++
+      ChallengeRibbon.markerRemoval(banner) ++ Vector[Operation](
         Sequence(gained(actor, bonus) ++ Vector[Operation](
           payment(actor, banner, amount + bonus),
           // Directly after the payment, so `previous` is the payment and the
           // note reads what actually left the play area rather than the
-          // amount answered. The holder is read here, before the take moves
-          // the banner, which is the holder the deleted rule read off the
-          // recorded `Take`. No power contributes at `ChallengePlacement`; a
-          // first one that inserted a leaf between the payment and the note
-          // would leave the note reading its step instead, so it must append
-          // or the note must read the state as Travel's does.
+          // amount answered, and the holder from the state the payment ran
+          // on, before the take moves the banner: read at walk time, as the
+          // custody reads it (Legacy in-play powers R20). No power
+          // contributes at `ChallengePlacement`; a first one that inserted a
+          // leaf between the payment and the note would leave the note
+          // reading its step instead, so it must append or the note must
+          // read the state as Travel's does.
           Note(ProcedureNotes.id(ActionRef.Challenge), tookNote(actor,
-            banner, BannerRules.holder(ready.game.current, banner))),
-          custody(ready, actor, banner)),
+            banner)),
+          custody(actor, banner)),
           Some(PowerWindow.ChallengePlacement))))
       .getOrElse(Vector[Operation](BuildOps((_, _) => Left(
         OathViolation.InvalidEventOrder(
@@ -200,16 +191,18 @@ object ChallengeProcedure:
 
   /** What the challenger put on the banner, in the step before the note,
     * and who held it. Nothing paid writes nothing. */
-  private def tookNote(actor: PlayerId, banner: Banner,
-      holder: Option[PlayerId])(states: NoteStates): Option[LogNote] =
-    states.previous.map(step => banner match
+  private def tookNote(actor: PlayerId, banner: Banner)(states: NoteStates)
+      : Option[LogNote] = states.previous.flatMap { step =>
+    val paid = banner match
       case Banner.PeoplesFavor => -NoteSupport.favor(step, actor)
-      case Banner.DarkestSecret => -NoteSupport.secrets(step, actor))
-      .filter(_ > 0).map(paid => holder match
+      case Banner.DarkestSecret => -NoteSupport.secrets(step, actor)
+    val holder = BannerRules.holder(step._1.game.current, banner)
+    Option.when(paid > 0)(holder match
         case Some(rival) => fromPlayer(banner).sourceless(
           NoteArg.Banner(banner), NoteArg.Player(rival), NoteArg.Number(paid))
         case None => fromBank(banner).sourceless(
           NoteArg.Banner(banner), NoteArg.Number(paid)))
+  }
 
   private def fromPlayer(banner: Banner): NoteKey = banner match
     case Banner.PeoplesFavor => tookFromPlayerWithFavor
@@ -237,14 +230,16 @@ object ChallengeProcedure:
   /** The banner moves to the challenger by a required `Take`: the payment
     * buys it, so a refused custody fails the path and the search hides that
     * banner. The walker checks the `Take` whole and records its `Move`, which
-    * the Game Log reads.
+    * the Game Log reads. The holder is read when the take runs, never when
+    * the tree is built: a walk that parks after the take (The Needle) is
+    * rebuilt on the state the take left, where the challenger already holds
+    * it (Legacy in-play powers R20).
     */
-  private def custody(ready: ReadyGame, actor: PlayerId,
-      banner: Banner): Operation =
-    Take(Piece.Banner(banner), actor,
-      BannerRules.holder(ready.game.current, banner)
+  private def custody(actor: PlayerId, banner: Banner): Operation =
+    BuildOps((live, _) => Right(Vector(Take(Piece.Banner(banner), actor,
+      BannerRules.holder(live.game.current, banner)
         .fold[Location](Location.SharedBank)(Location.PlayArea(_)),
-      Location.PlayArea(actor), required = true)
+      Location.PlayArea(actor), required = true))), required = true)
 
   private def bannerOf(pending: PendingTree): Option[Banner] =
     pending.answered.collectFirst:

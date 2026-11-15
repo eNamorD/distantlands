@@ -172,14 +172,17 @@ class PhaseMenuSuite extends munit.FunSuite:
   test("the Act menu lists the actions, the minor actions, then End Act " +
       "and Rest"):
     // Any Act power's source is listed between them; this table's buttons
-    // are the menu's own.
+    // are the menu's own. Its Foundation I is Imperial Maps, so Explore is
+    // left out with the options its player's role can never use.
     assertEquals(options(acting().phaseMenuParked.state).map(_.ref)
       .filter(_.isInstanceOf[DecisionOptionRef.Button]),
       ActOffers.all.map(_.ref).filterNot(Set(act(ActionRef.TransferWarbands),
-        act(ActionRef.SelfExile))) :+ PhaseMenu.Menu.Act.endingOption)
+        act(ActionRef.SelfExile), act(ActionRef.Explore))) :+
+        PhaseMenu.Menu.Act.endingOption)
     assertEquals(ActOffers.all.map(_.ref.wireId), Vector("search", "travel",
       "campaign", "muster", "trade.favor", "trade.secret", "forge",
-      "recover", "challenge", "place-banner-resource", "negotiation",
+      "recover", "challenge", "explore", "place-banner-resource",
+      "negotiation",
       "play-facedown-adviser", "peek-site-relics", "reveal-owned-relic",
       "move-warbands", "transfer-warbands", "self-exile"))
 

@@ -40,7 +40,7 @@ Left behind by earlier phases:
   between them.
 
 Left behind by the
-[consent work](superpowers/specs/2026-10-08-consent-system-design.md):
+[consent work](superpowers/specs/2026-10/2026-10-08-consent-system-design.md):
 
 - [ ] **Arranged-start event for game save and load.** A journal must begin
   with `GameStarted`, and no codec exists for a full `ReadyGame`. A journaled
@@ -51,7 +51,7 @@ Left behind by the
   decision on who may start one. The test-only replay origin from the service
   and log start-state project (2026-09-28) is the seam it would grow from.
   Recorded in the
-  [service log start states design](superpowers/specs/2026-09-28-service-log-start-states-design.md).
+  [service log start states design](superpowers/specs/2026-09/2026-09-28-service-log-start-states-design.md).
   The consent play-test below needs it.
 - [ ] **Keep consent preferences across a one-turn handover.** The reset
   (consent ruling 17) clears a granter's standing preferences whenever
@@ -61,7 +61,7 @@ Left behind by the
   every Always and Never on them, and the turn player loses theirs when
   the turn ends. Comparing `ConsentDesk.stale` against the ruler outside
   any turn would keep them. Accepted for now in
-  [catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-2-card-level-ruler)
+  [catalog batch 11](superpowers/specs/2026-11/2026-11-07-catalog-batch-11-design.md#slice-2-card-level-ruler)
   and pinned by `GrandMaskConsentPreferenceSuite`; a change needs the
   owner's ruling and updates that suite.
 - [ ] **Play-test consent in a browser.** The amber destination, campaign
@@ -70,11 +70,68 @@ Left behind by the
   with Undo are covered by tests only. Seeding a game with a player-ruled
   Narrow Pass, Secret Police, Hall of Ministers or toll card needs the journaled
   arranged start.
+- [ ] **Let an enemy ask to Muster or Trade where every card is guarded.**
+  At a site where City Wall or the festival marker guards every card, the
+  Act menu shows only "No card to muster from" or "No card to trade with",
+  and the enemy cannot enter the walk where the source would be askable of
+  the ruler or the holder: `QueuedStart.waiting` keys a grant only on the
+  menu pick, and the refused `PayCost` comes after the source decision. A
+  fix would price a start refused with `NoPlayableOption` again with the
+  waivable restrictions lifted, as `PhaseMenu`'s `unrefused` does for
+  powers, and show the option askable. Found in the
+  [Foundations](superpowers/specs/2026-11/2026-11-11-foundations-design.md) slice 6
+  review.
+
+Left behind by the
+[Foundations work](superpowers/specs/2026-11/2026-11-11-foundations-design.md):
+
+- [ ] **Show the Atlas's first site.** The rulebook makes the front Recent
+  site public, so players can always view it, with its edifice, its
+  denizens and its relic count; its relics stay facedown. Then the Imperial
+  Maps choice and an Explore can be weighed. The Imperial Maps question
+  already names that site ("Recent Sites (Buried Giant first)"); nothing
+  else shows it. Asked by the owner in the review of the Foundations
+  rulings, 2026-11-12.
+- [ ] **Move the foundation cards to an overlay of their own.** The six
+  foundation setup cards sit as a strip in the Shared Bank, the table's
+  game info column, for now. Players need them rarely, so they belong in
+  an overlay opened on demand, as the Chronicle page lists the same six.
+  Asked by the owner in the second review of the Foundations rulings,
+  2026-11-12.
+
+Left behind by the
+[Legacies work](superpowers/specs/2026-11/2026-11-13-legacies-design.md):
+
+- [ ] **Play-test Legacies' Chronicle Phase in a browser.** The running
+  app was checked only at the Setup keep decision. The Chronicle Phase
+  reveal (Legacies implementation ruling R18), a Public Ambitions row, the
+  Chancellor's tie-break with its subject card, the cap's choose-many and
+  the scoring lines are covered by tests only: no route reaches those
+  states short of playing a whole game. The journaled arranged start would
+  seed them.
+
+Left behind by the
+[real proportions work](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md):
+
+- [ ] **Check the new boxes in a played game.** A Vision in the inspection
+  overlay, a banner on a player board, and a site holding five or six pawns
+  with the festival marker were checked only on copies built in the page:
+  setup refuses a Vision as a starting adviser and a Chancellor without a
+  site, and no early position gathers that many pawns. The journaled
+  arranged start would seed them.
+- [ ] **Keep the travel-cost badge off the site's name.** A selected site's
+  cost badge sits at the foot of the site face, over the end of a long name.
+- [ ] **Settle crowded pawn rows on the phone.** At the phone's Fit, three
+  or more pawns on one site shrink their dots (5.8px for three, 2.5px for
+  six with the festival marker;
+  [implementation ruling R10](superpowers/specs/2026-11/2026-11-13-real-proportions-design-implementation-rulings.md),
+  low confidence). The alternative is that the site's name gives way to the
+  pawns. Needs the owner's word.
 
 ### Phase - Campaign battle summary
 
 Left out of the Game Log action sections
-([spec](superpowers/specs/2026-10-05-log-action-sections-design.md)), which
+([spec](superpowers/specs/2026-10/2026-10-05-log-action-sections-design.md)), which
 answered the 2026-10-01 playtest's "make it clear what a Campaign's battle
 did":
 
@@ -97,7 +154,7 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
   command until its owner answers; a `Simultaneous` park waits on every
   player who still owes an answer. There are no timeouts, forfeits or host
   resolution. Recorded in the
-  [walker ownership and phases design](superpowers/specs/2026-09-12-walker-ownership-and-phases-design.md).
+  [walker ownership and phases design](superpowers/specs/2026-09/2026-09-12-walker-ownership-and-phases-design.md).
 - [ ] **Reconnection UX.** After a client loses its connection it should
   retry with exponential backoff and show a **Try Again** button. Recorded
   in the Phase 5 follow-ups.
@@ -124,36 +181,37 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
   ideally something a release run can execute or that takes minutes by hand.
   Then decide what happens to the record.
 
-### Phase - Negotiation terms and promises
-
-A Negotiation deal holds favor and relic transfers and disclosures only. Add
-promises about future actions, transfers of secrets, advisers, sites and
-banners, remote and private Negotiation, a registry of term kinds, and
-eligibility powers. Record ignored Negotiation rules per participant rather
-than for the actor only.
-
-- [ ] **Negotiation cards.** The Gathering and Whispering Stone need a nested
-  Negotiation with its own participants. Council Arbiter, Deed Writer and
-  Traveling Negotiator widen who may negotiate and what a deal may hold.
-  Catalog batch 8 left them for this phase.
-
 ### Phase - Chronicle steps
 
 After the all-Exile alpha, implement the Chronicle and persistent campaign:
-Foundation mutation, Legacy activation and scoring, and era scoring.
+legacy powers and era scoring. The legacy lifecycle (dealing, Resolve
+Legacies, the scoring bonus and the display) landed with the
+[Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md),
+the legacies' CHRONICLE powers with the
+[Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md),
+and their SETUP powers with the
+[Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md).
 
-- [ ] **Foundations.** Fills the Beacon's empty Shape Foundation window.
-  Game start also sets every foundation to its normal face and ignores the
-  Chronicle's stored faces.
-  Game start also refuses a later game with no Chancellor and no Citizen
-  seated, which needs Foundation I's altered face, Wide Horizons, and its
-  Explore action.
-- [ ] **The Grand Council and Festival banner faces.** Legacies that set
-  Foundation V or VI turn the banners to these faces. Their ids are in
-  `RuleSourceIndex`, and the faces have no behaviour.
-- [ ] **Legacies.** Fills the Sun's empty steps 2-5 and the legacy bonus in
-  Score Lineage Points. Game start refuses a seated lineage's legacies and
-  starting relics until then.
+- [x] **Legacy powers: in play.** The powers used during a game: actions,
+  Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
+  play and The Ear's ACTION half, peeking at a site's relics, among them
+  (The Ear's card counts as implemented for its Chronicle half), and Iron
+  Hand's discard when its holder becomes an Imperial during a game, and
+  Matchmaker choosing for players who draw legacies during a game (Amber
+  Doors, Lost Doors, Ancient Writ). High
+  Priest's When Negotiating power lets its holder
+  give secrets in a deal: a `DealRules` term kind, as Council Arbiter opens
+  advisers. Landed with the
+  [Legacy in-play powers design](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md);
+  Matchmaker on draws during a game waits with the cards that act on
+  legacies.
+- [ ] **Cards that act on legacies.** The non-legacy cards whose powers
+  name legacies, still in holding: Ancient Writ (bury it to draw 3 and
+  keep 1), Amber Doors and Lost Doors (E05, draw legacies when explored or
+  at setup), Ruined Temple (E10, double the legacy points), and Stone Baths
+  and Ruined Baths (E04, change Resolve Legacies). A draw during a game
+  needs a random draw from the derived legacy deck, recorded as a hidden
+  outcome: Legacies ruling 3 assumed every draw happens in setup.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the
@@ -164,8 +222,8 @@ Foundation mutation, Legacy activation and scoring, and era scoring.
 Settings players can change during a game.
 
 - [ ] **Ignore Citizenship powers.** Toggle the first-game option that
-  ignores "become a Citizen" powers. Game start sets it, and nothing changes
-  it during a game ([Empire phase design](superpowers/specs/2026-10-29-empire-phase-design.md),
+  ignores "become a Citizen" powers. Game start turns it on for a first game
+  and off for every later game, and nothing changes it during a game ([Empire phase design](superpowers/specs/2026-10/2026-10-29-empire-phase-design.md),
   slice 3).
 - [ ] **Hover warnings.** Show warnings on hover, turn them off, or disable
   the options that carry a warning.
@@ -189,9 +247,7 @@ one.
 
 - [ ] **Simultaneous setup effects.** The Chancellor or first player should
   resolve simultaneous setup effects; site order is used until then. Still to
-  add: player choices earlier in setup once foundations and legacies exist,
-  such as the Chancellor choosing Recent or Forgotten sites; and WHEN
-  EXPLORED triggers once an explore procedure exists.
+  add: player choices earlier in setup, which the setup legacy powers bring.
 - [ ] **Keyboard focus on the Chronicle pages.** A redraw of the Chronicle
   page drops the focused control, and the table's save dialog does not trap
   focus. Do it with the next accessibility pass over the start pages.
@@ -204,6 +260,11 @@ one.
   action's own line, so the action reads as part of Rest. Hold a headline
   raised inside an action until after that action's lines. The
   `scepter-citizen` and `self-exiled` golden logs show it.
+- [ ] **Name a boxed lineage's legacy when it alters a foundation.** A
+  legacy held by a lineage in the box that alters a foundation in the Sun
+  logs as "a Legacy set Foundation II to ...": box legacies are not among
+  the cards in play, so the log cannot name them. Only an imported
+  Chronicle reaches it. Left by Legacies slice 3.
 - [ ] **First-player marker with a Chancellor.** `GameProjection` sends
   `setup.firstPlayer` as the first player, but with a Chancellor seated
   rounds start from `tracks.roundStarter`. Send the round's starter so the
@@ -213,11 +274,11 @@ one.
   The Game Log posts a line only once its facts are complete, so an action
   that is still parked says nothing about its choices so far. The table's
   "Waiting on player" message is the place to show that progress. Recorded in
-  the [Game Log design](superpowers/specs/2026-09-25-game-log-design.md).
+  the [Game Log design](superpowers/specs/2026-09/2026-09-25-game-log-design.md).
 - [ ] **Game Log features the design left out.** Click-to-highlight,
   filters and search, timestamps, a server-side read marker, failed victory
   checks and negotiation proposals. Replay navigation is **L4**. Recorded in
-  the [Game Log design](superpowers/specs/2026-09-25-game-log-design.md).
+  the [Game Log design](superpowers/specs/2026-09/2026-09-25-game-log-design.md).
 - [ ] **Warn before a choice that has no effect.** The rules let a
   player pay for a power or pick an option that then does nothing: a
   modifier selected for an action it will not change (Cup of Plenty,
@@ -236,7 +297,7 @@ one.
   own notes design of 2026-10-16. False Prophet shows it most: a claimed
   Vision's owner's reveal line reads after the claimant's play and the
   kill, and a nested claim's lines read before the outer claimant's reveal
-  ([catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-8-nested-follow-ups),
+  ([catalog batch 11](superpowers/specs/2026-11/2026-11-07-catalog-batch-11-design.md#slice-8-nested-follow-ups),
   slices 7 and 8).
 - [ ] **Name whose Vision a claimant discards.** When False Prophet's
   claimant reveals the claimed Vision off turn, their own discarded Vision
@@ -253,7 +314,7 @@ one.
 - [ ] **Reasons on the remaining options.** Add hover reasons to the option
   builders that still lack them, as playtests find options people wonder
   about. Left by the
-  [board decisions design](superpowers/specs/2026-10-03-board-decisions-design.md).
+  [board decisions design](superpowers/specs/2026-10/2026-10-03-board-decisions-design.md).
 - [ ] **Mercenaries' player-chosen sign.** Mercenaries adds attack dice
   when its user attacks and removes defense dice from the attacker when it
   defends. The card lets the player choose the sign, and the plan fixes it by side.
@@ -286,15 +347,25 @@ one.
   second holder's spend in the same batch, which asks only the first. A
   draw is also not tied to its spend, so a non-required spend a
   restriction skips leaves the drawn favor on the board. Left by
-  [catalog batch 11](superpowers/specs/2026-11-07-catalog-batch-11-design.md#slice-5-favor-redirection),
+  [catalog batch 11](superpowers/specs/2026-11/2026-11-07-catalog-batch-11-design.md#slice-5-favor-redirection),
   slice 5.
 - [ ] **Show a False Prophet claim on the claimant's board.** The claimed
   Vision's owner's board shows the claimant's warband on it, but the
   claimant's own board shows nothing, so they cannot see which Visions
   they claim. Left by catalog batch 11, slice 7.
 
+- [ ] **Legacy goal icons.** A legacy shows its goal in words, a tag on
+  its face and a sentence in its inspection and its strip chip's hover
+  note ([Legacies implementation rulings](superpowers/specs/2026-11/2026-11-13-legacies-implementation-rulings.md),
+  R34). Draw six glyphs in the token sprite's style, one per goal, keyed by
+  the goal's `key` the projection already carries.
+
 ### Engine deferred items
 
+- [ ] **Refuse a game with fewer than two seats.** The engine and the
+  server start a one-seat game; only the start pages ask for two players.
+  Found while testing Legacies' scoring, where a lone winner is asked no
+  gift question.
 - [ ] **Campaign notes read the attack rules.** The attack line counts skull
   faces as the chosen plans score them (Lancers doubles them), so
   `CampaignNotes` imports `powers.campaign.AttackScore`, whose `changes` name
@@ -306,7 +377,7 @@ one.
 - [ ] **Move Campaign's pinned facts onto start facts.**
   `CampaignSetup.pinned` stores the Campaign's kind and defender as sentinel
   `ModifyDicePool` operations; start facts
-  ([travel destination design](superpowers/specs/2026-10-07-travel-destination-walker-design.md),
+  ([travel destination design](superpowers/specs/2026-10/2026-10-07-travel-destination-walker-design.md),
   ruling 6) are the durable place for them.
 - [ ] **One seam for "who may veto an operation".** `OperationPolicy`
   (an exact-shape allowlist, used by `StateBasedOperationPolicy` for
@@ -315,7 +386,7 @@ one.
   policy onto `OperationRestriction` would leave one seam, but it reorders
   precedence on the state-based path (allowlist reasons come before shape
   reasons today) and needs its own preservation argument. Recorded during the
-  [operation family consolidation](superpowers/specs/2026-09-24-operation-family-consolidation-design.md)
+  [operation family consolidation](superpowers/specs/2026-09/2026-09-24-operation-family-consolidation-design.md)
   of 2026-09-24.
 - [ ] **Key `CardKnowledge` by card id.** Knowledge is stored per
   place: `siteRelics` by viewer and site, `heldRelics` and `advisers` by
@@ -324,11 +395,11 @@ one.
   lose a card's name when it moves) by copying knowledge as cards move. A
   single map from card id to the players who know it would make "knowledge
   follows the card" structural instead of maintained per move. Recorded in
-  the [Game Log design](superpowers/specs/2026-09-25-game-log-design.md).
+  the [Game Log design](superpowers/specs/2026-09/2026-09-25-game-log-design.md).
 - [ ] **Frontend and protocol clean-up.** The projection has no protocol
   version field. (The decision ids and option ids both sides spell are
   settled by the
-  [decision-id vocabulary decision](superpowers/specs/2026-10-18-decision-id-vocabulary-decision.md)
+  [decision-id vocabulary decision](superpowers/specs/2026-10/2026-10-18-decision-id-vocabulary-decision.md)
   and are not work.) `WalkerDecisionProjectorSuite` fabricates parks instead of
   reaching them through a Situation. `OathViolation.InvalidSearchPlacement`
   also reports card-play refusals outside Search (a facedown adviser play, a
@@ -345,7 +416,7 @@ one.
   state-keyed memo in the shape of `SearchMemo`. Gather once per window, make
   the map a lazy val, and give the two memos one shape. Profile first; the
   `ActMenuBudget` benchmark is the measure. Recorded as the first follow-up of
-  the [test speed design](superpowers/specs/2026-10-07-test-speed-design.md).
+  the [test speed design](superpowers/specs/2026-10/2026-10-07-test-speed-design.md).
 - [ ] **Settle the engine's parked roll.** The parked-roll command path is
   gone, but the engine still parks on a `Roll` whose mode is `Parked`, which
   is the model default. `OathRulesWalker.rollWalkerPrepared` has test callers
@@ -354,7 +425,7 @@ one.
   default to `Automatic` and retire the engine half with the nine suites that
   build a parked roll, or keep it and make `checkAnswerable` refuse the park.
   See the
-  [parked-roll retirement decision](superpowers/specs/2026-10-23-parked-roll-retirement-decision.md).
+  [parked-roll retirement decision](superpowers/specs/2026-10/2026-10-23-parked-roll-retirement-decision.md).
 
 ### Architecture candidates
 
@@ -407,13 +478,13 @@ as current.
   renamed or computed. Deriving now needs the note's `scala.quoted`
   defaults macro plus per-field overrides, or a wire change in place.
   Decide when a wire-heavy phase begins. Design note:
-  [derive the wire codecs](superpowers/specs/2026-11-02-derive-wire-codecs-design.md),
+  [derive the wire codecs](superpowers/specs/2026-11/2026-11-02-derive-wire-codecs-design.md),
   "Probe result".
 - [ ] **One frontend client (optional).** The development shell still talks
   to `/api/dev/first-games/{gameId}?playerId=` through its own
   `HttpGameClient`; mounting the dev API at `/games/{gameId}/api` with the
   query-parameter resolution would retire the second client. Slice 5 of the
-  [one HTTP gateway](superpowers/specs/2026-11-02-one-http-gateway-design.md)
+  [one HTTP gateway](superpowers/specs/2026-11/2026-11-02-one-http-gateway-design.md)
   note, left for a frontend session. Both transports already share
   `GameApiRoutes`; what would remain is the dev-only raw-events route and
   the `development: HttpGameClient` arm of `TableSession`, and the move
@@ -431,14 +502,23 @@ as current.
     final production deployment gate. The alpha phase may add a narrower safe
     invitation flow first; until then, keep development routes loopback-only.
 - [ ] **L3 — Licensed game assets with permanent visual fallbacks**, including
-  suit and restriction icons on card faces.
+  suit and restriction icons on card faces. The layout is ready for it: every
+  drawn asset has its real proportions and the map is laid out on the mat's
+  coordinates ([real proportions design](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md),
+  [asset proportions](catalog/asset-proportions.md)).
+  Open question: whether the zoomed-out map keeps its glance layer (the
+  short forms of names, defense and forces) over the art, or lets the art
+  alone carry what is printed
+  ([implementation ruling R9](superpowers/specs/2026-11/2026-11-13-real-proportions-design-implementation-rulings.md)).
+  Three rectangles on the mat have no printed counterpart and were placed
+  by eye (the track note, the Visions label and the favor banks' boxes);
+  check that none covers printed art once the licensed mat is drawn.
 - [ ] **L4 — Saved-game browser and replay navigation.** Saved campaigns
   are browsable; saved games and replays are not.
 - [ ] **L5 — Asynchronous accounts, invitations, and notifications**
 - [ ] **L6 — Incremental implementation of remaining phases and rules** (tracked
   in the phased sequence above; the remaining cards come with
-  **Phase - Negotiation terms and promises** and **Phase - Chronicle
-  steps**)
+  **Phase - Chronicle steps**)
 - [ ] **L7 — Incremental synchronization transport**
   - Replace complete-snapshot polling with conditional responses, projection
     deltas, long polling, SSE, or another push transport when scale or latency
@@ -449,13 +529,14 @@ as current.
     [Phase 5 follow-ups](operations/phase-5-follow-ups.md#snapshot-polling-sends-a-full-projection-on-every-tick).
 - [ ] **Table UI rework.** Rework the layout of player areas and sites, and
   port the map to haunt-roll-fail's canvas approach. Recorded in the
-  [card shape and inspection design](superpowers/specs/2026-09-22-card-shape-and-inspection-design.md).
+  [card shape and inspection design](superpowers/specs/2026-09/2026-09-22-card-shape-and-inspection-design.md).
   The playtest of 2026-10-01 asks whether the whole table, not only the map,
   should move to an HTML5 canvas.
 - [ ] **Clicking a banner shows its details.** Darkest Secret and The
   People's Favor are clickable like other cards, opening their details.
-- [ ] **Match the map's aspect ratio to the physical board.** The rendered
-  map's proportions differ from the actual game map's.
+- [ ] **The mat's travel-cost band.** The mat prints each region's travel
+  costs in a band under its name; the drawn mat shows the name only
+  ([real proportions design](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md)).
 - [ ] **In-game chat.**
 - [ ] **Public Chronicle pages.** The winner of a game may write their summary
   of it, and players can browse all the summaries.

@@ -7,7 +7,8 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
 import distantlands.gameplay.phases.PhaseMenu
 import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
 import distantlands.gameplay.powers.campaign.{RainBootsCard, WrestlersCard}
-import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
+import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupAdviserSteps,
+  SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerCompleted,
   WalkerPowers}
@@ -147,7 +148,7 @@ class HungerSuite extends munit.FunSuite:
           optionRefs(park.decide.query).contains(hungerRef) =>
         DecisionAnswer.PartitionAnswer(optionRefs(park.decide.query).map(ref =>
           DecisionPlacement(ref, if ref == hungerRef then
-            SetupProcedure.adviserKeepKey else SetupProcedure.adviserDiscardKey)))
+            SetupAdviserSteps.keepKey else SetupAdviserSteps.discardKey)))
       case park if park.decisionId ==
           SetupProcedure.revealDecisionId(park.awaiting) &&
           Look(park.ready).player(park.awaiting)

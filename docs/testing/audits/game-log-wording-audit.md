@@ -2,13 +2,13 @@
 
 > Status: implemented, 2026-11-03, with the owner's answers: the
 > recommended default for every question below, and every recommended
-> slice landed; the [ledger](../../superpowers/specs/2026-10-16-game-log-wording-ledger.md)
+> slice landed; the [ledger](../../superpowers/specs/2026-10/2026-10-16-game-log-wording-ledger.md)
 > names each commit.
 >
 > Written as a read-only audit, 2026-11-02, of the ROADMAP item "Improve the
 > Game Log lines the wording ledger collects" under Game Log deferred items.
 > It reads every entry of the
-> [wording ledger](../../superpowers/specs/2026-10-16-game-log-wording-ledger.md)
+> [wording ledger](../../superpowers/specs/2026-10/2026-10-16-game-log-wording-ledger.md)
 > against the code that builds the line and the golden logs under
 > `src/test/resources/gamelog/`, classifies each, and proposes replacement
 > wording. Nothing here changes code or wording. Line numbers are those of

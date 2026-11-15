@@ -10,4 +10,5 @@ object TravelModifiers:
   val all: Vector[ContributingPower] =
     Vector(Tents, RoyalStables, ForestPaths,
       DragonskinDrum, TollRoads, GraspingVines, AFastSteed, SpecialEnvoy,
-      WayStation, Hospitality, Tyrant)
+      WayStation, Hospitality, Tyrant, AncestralLands,
+      Pathfinder)

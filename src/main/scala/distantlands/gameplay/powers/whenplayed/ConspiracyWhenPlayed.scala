@@ -1,6 +1,5 @@
 package distantlands.gameplay.powers.whenplayed
 
-import distantlands.gameplay.NoteSupport
 import distantlands.gameplay.actions.{BannerRules, VisionRules}
 import distantlands.gameplay.powerresolver._
 import distantlands.model._
@@ -26,11 +25,14 @@ import distantlands.model._
   * A legal target cannot be declined. The decision id sits under the
   * `cardplay.` prefix, shared with both Search and the facedown-adviser play.
   *
-  * The transform must fold to the same vector while the decision is parked: it
-  * reads only state that nothing between the fold and the answer changes.
+  * The transform must fold to the same vector while the decision is parked,
+  * and after the take too: a walk that parks right after it (The Needle) is
+  * rebuilt on the state the take left (Legacy in-play powers R20). So the
+  * take records itself (`Defer`), and a banner it recorded stays among the
+  * offered targets though the actor now holds it.
   *
   * After the take it writes "{Red} seized {relic or banner} from {Blue}.",
-  * read from the take's step, and nothing when nothing was taken.
+  * read from the take's record, and nothing when nothing was taken.
   */
 case object ConspiracyWhenPlayed extends ContributingPower:
   val id: PowerId = PowerId("vision.conspiracy")
@@ -56,25 +58,41 @@ case object ConspiracyWhenPlayed extends ContributingPower:
         (_, _) => targetDecision(ctx.state, ctx.actor) :+
           BuildOps((ready, pending) =>
             taken(ready, ctx.actor, pending)) :+
-          Note(id, seizedNote(ctx.actor))) :+
+          Note(id, seizedNote(ctx.actor)) :+
+          BuildOps((ready, _) => Right(
+            Option.when(Deferred.held(ready, takeKey(ctx.actor)).nonEmpty)(
+              TakeDeferred(takeKey(ctx.actor)): CoreOperation).toVector))) :+
         BuildOps((ready, _) =>
           Right(Vector(removal(ready, ctx.actor)))))))
 
-  /** What the take moved to the actor, and from whom. */
+  /** Where the take records itself, per actor. */
+  private def takeKey(actor: PlayerId): DeferralKey =
+    DeferralKey(s"conspiracy.take.${actor.value}")
+
+  /** What the recorded take moved to the actor, and from whom, when the
+    * actor holds it now: nothing when the take was refused. */
   private def seizedNote(actor: PlayerId)(states: NoteStates)
-      : Option[LogNote] = for
-    step <- states.previous
-    (what, owner) <- NoteSupport.answer(states, decisionId) match
-      case Some(DecisionOptionRef.RelicSlot(owner, _)) =>
-        NoteSupport.relicsGained(step, actor).headOption
-          .map(relic => (NoteArg.Card(relic), owner))
-      case Some(DecisionOptionRef.Banner(banner))
-          if BannerRules.holder(step._2.game.current, banner).contains(actor) =>
-        BannerRules.holder(step._1.game.current, banner)
-          .map(owner => (NoteArg.Banner(banner), owner))
-      case _ => None
-  yield seized(PowerSourceRef.Card(VisionRules.Conspiracy),
-    NoteArg.Player(actor), what, NoteArg.Player(owner))
+      : Option[LogNote] =
+    val now = states.now
+    Deferred.held(now, takeKey(actor)).collectFirst {
+      case Give(Piece.Card(relic: RelicId), owner, _, _, _)
+          if now.game.current.player(actor)
+            .exists(_.relics.exists(_.id == relic)) =>
+        (NoteArg.Card(relic), owner)
+      case Take(Piece.Banner(banner), _, Location.PlayArea(owner), _, _, _,
+          _, _)
+          if BannerRules.holder(now.game.current, banner).contains(actor) =>
+        (NoteArg.Banner(banner), owner)
+    }.map((what, owner) => seized(PowerSourceRef.Card(VisionRules.Conspiracy),
+      NoteArg.Player(actor), what, NoteArg.Player(owner)))
+
+  /** The banner the take recorded, if it ran. */
+  private def recordedBanner(ready: ReadyGame, actor: PlayerId)
+      : Option[DecisionOptionRef] =
+    Deferred.held(ready, takeKey(actor)).collectFirst {
+      case Take(Piece.Banner(banner), _, _, _, _, _, _, _) =>
+        DecisionOptionRef.Banner(banner)
+    }
 
   /** Every relic slot and banner held by another player whose pawn is at the
     * actor's site, in seat order, relic slots before banners.
@@ -91,9 +109,16 @@ case object ConspiracyWhenPlayed extends ContributingPower:
           .contains(other.player)).map(banner => DecisionOptionRef.Banner(banner))
     }
 
+  /** The legal targets, and a banner the take recorded, which the actor
+    * holds now: the question it answered keeps its options. */
+  private def offered(ready: ReadyGame, actor: PlayerId)
+      : Vector[DecisionOptionRef] =
+    val legal = legalTargets(ready, actor)
+    legal ++ recordedBanner(ready, actor).filterNot(legal.contains)
+
   private def targetDecision(ready: ReadyGame, actor: PlayerId)
       : Vector[Operation] =
-    val options = legalTargets(ready, actor).flatMap(DecisionOption.forRef)
+    val options = offered(ready, actor).flatMap(DecisionOption.forRef)
     if options.isEmpty then Vector.empty
     else Vector(Decide(decisionId, actor, DecisionQuery.ChooseOne(options,
       heading = Some("Conspiracy: choose an enemy asset to take")),
@@ -105,7 +130,9 @@ case object ConspiracyWhenPlayed extends ContributingPower:
     val chosen = pending.answered.collectFirst:
       case Answered(`decisionId`, DecisionAnswer.ChooseOneAnswer(ref), _) => ref
     chosen match
-      case Some(ref) if legal.contains(ref) => Right(take(ready, actor, ref))
+      case Some(ref) if legal.contains(ref) => Right(
+        take(ready, actor, ref).flatMap(op =>
+          Vector(Defer(takeKey(actor), Vector(op)), op)))
       case Some(_) => Left(OathViolation.ConspiracyUnavailable(
         "the chosen target is no longer legal"))
       // No decision was asked: no target was legal, or a power at the
@@ -128,16 +155,9 @@ case object ConspiracyWhenPlayed extends ContributingPower:
       case DecisionOptionRef.Banner(held) =>
         BannerRules.holder(current, held).toVector.flatMap { owner =>
           val leaving: Vector[CoreOperation] = held match
-            case Banner.PeoplesFavor => BannerRules.raidFavorReturn(
-              ready.banks.favor, BannerRules.resources(current, held))
-              .map(suit => Move(Piece.Favor(1),
-                PositionedLocation(Location.OnBanner(held)),
-                PositionedLocation(Location.FavorBank(suit))))
+            case Banner.PeoplesFavor => BannerRules.peoplesFavorRibbon(ready)
             case Banner.DarkestSecret =>
-              val secrets = BannerRules.resources(current, held)
-              Option.when(secrets > 0)(Burn.secrets(secrets,
-                PositionedLocation(Location.OnBanner(held)), Some(actor)))
-                .toVector
+              BannerRules.darkestSecretRibbon(ready, actor)
           Vector(banner(held, owner, leaving))
         }
       case _ => Vector.empty

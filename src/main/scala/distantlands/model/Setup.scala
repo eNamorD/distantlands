@@ -6,11 +6,9 @@ final case class FirstGameParticipant(
     color: PlayerColor
 )
 
-final case class PawnPlacement(playerId: PlayerId, siteId: SiteId)
-
 /** The concrete per-game deal derived from a Chronicle: who is seated and in
-  * what order, and the dealt orders of the two decks a Chronicle's own
-  * order is not meaningful for (2026-09-21 Chronicle design, slice 2,
+  * what order, and the dealt orders of the decks a Chronicle's own order
+  * is not meaningful for (2026-09-21 Chronicle design, slice 2,
   * "Setup from a Chronicle"). Recorded on `GameStarted` alongside the
   * Chronicle itself, so replay never re-derives either from live state.
   *
@@ -18,26 +16,27 @@ final case class PawnPlacement(playerId: PlayerId, siteId: SiteId)
   * is shown to players, so its deck order must not be the deal.
   * `denizenOrder` is the world deck shuffled, which deals hands and the
   * regional discards; `worldDeckOrder` is the rest of it with the Visions
-  * spliced in; `relicOrder` is the relic deck shuffled.
+  * spliced in; `relicOrder` is the relic deck shuffled. `legacyOrder` is
+  * the derived legacy deck shuffled, which Foundation III deals
+  * (`LegacyDeal`).
   */
 final case class SetupOrders(
     participants: Vector[FirstGameParticipant],
     firstPlayer: PlayerId,
     denizenOrder: Vector[DenizenId],
     worldDeckOrder: Vector[WorldCardId],
-    relicOrder: Vector[RelicId]
+    relicOrder: Vector[RelicId],
+    legacyOrder: Vector[LegacyId] = Vector.empty
 )
 
-enum FirstGameFoundationProfile { case FixedUnaltered }
-
 /** `ignoreCitizenshipPowers` is the first-game option that ignores
-  * "become a Citizen" powers (CR p. 34, ambiguity F8). It is on by default,
-  * and game start never turns it off; the Settings Feature phase will let
-  * players change it. */
+  * "become a Citizen" powers (CR p. 34, ambiguity F8). The rulebook
+  * recommends it for the very first game only, so game start turns it on
+  * for a first game and off for every later game; the Settings Feature
+  * phase will let players change it. */
 final case class FirstGameSupportState(
-    foundationProfile: FirstGameFoundationProfile,
     firstPlayer: PlayerId,
-    ignoreCitizenshipPowers: Boolean = true
+    ignoreCitizenshipPowers: Boolean
 )
 
 /** The validated shape `FirstGameSetupMaterializer` builds a table from.
@@ -45,29 +44,43 @@ final case class FirstGameSupportState(
   * longer a command payload, so it carries no `catalog` field -- Chronicle
   * validation now checks ids directly against the live catalog.
   *
-  * `denizenOrder` deals hands and the six seeded regional discards (CR pp.
-  * 6-7); it never contains a Vision. `worldDeckOrder` is `denizenOrder`
-  * with the five fixed Vision identities spliced into the 10+2/15+3
-  * packets, and becomes the draw deck once dealing is done.
+  * `denizenOrder` is the starting denizen stack Foundation IV deals from
+  * (`SetupDeal`; CR pp. 6-7 and 11); it never contains a Vision.
+  * `worldDeckOrder` is what that deal leaves of it, with the five fixed
+  * Vision identities spliced into the 10+2/15+3 packets or mixed through a
+  * short deck, and becomes the draw deck once dealing is done.
   */
 final case class FirstGameSetupPlan(
     participants: Vector[FirstGameParticipant],
     firstPlayer: PlayerId,
+    /** The sites game start places, in slot order going Hinterward: eight
+      * on a full map, fewer when slots stay empty. */
     orderedSites: Vector[SiteId],
     denizenOrder: Vector[DenizenId],
     worldDeckOrder: Vector[WorldCardId],
     relicOrder: Vector[RelicId],
     homelandEdifices: Vector[(SiteId, EdificeId)],
     oathkeeperGoal: OathkeeperGoal,
-    /** The Empire a later game starts with; a first game has none. */
+    /** The Empire a later game starts with; a first game has none, nor has
+      * a game set up with no Empire. */
     empire: Option[EmpireSetup] = None,
-    /** The atlas sites that fill the slots the Empire leaves, with their
-      * stored cards, Recent end first. Empty for a first game, whose sites
-      * are all in `orderedSites`. */
+    /** The sites game start places as bandit sites with their stored
+      * cards, their edifices ruined: with no Empire, the former Empire's
+      * sites. Empty for a first game, whose sites are all in
+      * `orderedSites`, and with an Empire, whose slots Imperial Maps fills
+      * in Setup's walk and Wide Horizons leaves empty. */
     atlasSites: Vector[StoredSite] = Vector.empty,
     /** Each seated player's stored starting advisers (CR p. 11). */
-    startingAdvisers: Map[PlayerId, Vector[AdviserState]] = Map.empty
-)
+    startingAdvisers: Map[PlayerId, Vector[AdviserState]] = Map.empty,
+    /** The foundation faces the game starts with. A number the map does
+      * not list lies normal. */
+    foundations: Map[FoundationNumber, FoundationState] = Map.empty,
+    /** What the legacies' SETUP powers change (`StartingLegacies`). */
+    legacies: StartLegacies = StartLegacies.none
+):
+  /** Whether foundation `number` starts on its altered face. */
+  def altered(number: FoundationNumber): Boolean =
+    foundations.get(number).exists(_.face == FoundationFace.Altered)
 
 /** The Empire a later game starts with (CR pp. 8-9): its Chancellor, every
   * seated Imperial player, and the Empire's stored sites Cradlemost first.
@@ -76,6 +89,24 @@ final case class FirstGameSetupPlan(
 final case class EmpireSetup(chancellor: PlayerId,
     imperial: Set[PlayerId], sites: Vector[StoredSite],
     absentChancellor: Option[LineageId])
+
+/** What the legacies' SETUP powers change at game start (Legacy Setup
+  * powers design, slice 1), worked out from the Chronicle and the seats by
+  * `StartingLegacies`. `boardWarbands` holds only the boards that start
+  * with other than 3; `ironHand` and `rival` are the holders' lineages
+  * whose warbands game start places at sites (`ironHand` is none in an
+  * exile-only game, which restored no Empire);
+  * `rivalSites` are the Atlas sites Rival places, Cradlemost first. */
+final case class StartLegacies(
+    boardWarbands: Map[PlayerId, Int],
+    ironHand: Option[LineageId],
+    rival: Option[LineageId],
+    rivalSites: Vector[StoredSite],
+    scepterBearer: Option[PlayerId])
+
+object StartLegacies:
+  val none: StartLegacies =
+    StartLegacies(Map.empty, None, None, Vector.empty, None)
 
 /** Pure CR pp. 6-7 table setup, shared by `GameStartRules`. */
 final case class FirstGameSetupMaterial(

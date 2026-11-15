@@ -58,14 +58,19 @@ final class SameOriginJsonTransport(timeoutMillis: Int = 10000)
     promise.future
 
 final case class NegotiationTransferInput(recipientPlayerId: String,
-    favor: Int, relicIds: Vector[String])
+    favor: Int, relicIds: Vector[String],
+    advisers: Vector[distantlands.protocol.WorldCard] = Vector.empty,
+    siteIds: Vector[String] = Vector.empty,
+    secrets: Int = 0)
 final case class NegotiationDisclosureInput(recipientPlayerId: String,
     kind: String, ownerPlayerId: Option[String] = None,
     siteId: Option[String] = None, cardKind: Option[String] = None,
     cardId: String)
 final case class NegotiationTermsInput(transfers: Vector[NegotiationTransferInput],
     disclosures: Vector[NegotiationDisclosureInput],
-    citizenshipPlayerIds: Vector[String] = Vector.empty)
+    citizenshipPlayerIds: Vector[String] = Vector.empty,
+    promises: Vector[String] = Vector.empty,
+    bindingPromises: Vector[String] = Vector.empty)
 sealed trait GameClientFailure:
   def message: String
 object GameClientFailure:

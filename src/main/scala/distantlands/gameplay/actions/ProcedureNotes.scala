@@ -3,11 +3,12 @@ package distantlands.gameplay.actions
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.chronicle.{ChronicleSunProcedure,
   ChronicleThroneProcedure, ChronicleWorldProcedure,
-  ChronicleBeaconProcedure, ChronicleStarsProcedure}
+  ChronicleBeaconProcedure, ChronicleStarsProcedure, ChronicleWinnerProcedure}
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
 import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.explore.ExploreProcedure
 import distantlands.gameplay.actions.forge.ForgeProcedure
 import distantlands.gameplay.actions.minor.{MinorActionProcedures,
   SelfExile, WarbandTransfers}
@@ -16,7 +17,8 @@ import distantlands.gameplay.actions.recover.RecoverProcedure
 import distantlands.gameplay.actions.search.SearchProcedure
 import distantlands.gameplay.actions.travel.TravelProcedure
 import distantlands.gameplay.oathkeeper.OathkeeperProcedure
-import distantlands.gameplay.phases.rest.FinishRestProcedure
+import distantlands.gameplay.phases.rest.{ArbiterStep, FinishRestProcedure}
+import distantlands.gameplay.phases.wake.QuestFirstWakeProcedure
 import distantlands.gameplay.setup.SetupProcedure
 import distantlands.gameplay.phases.wake.TakeWealthProcedure
 import distantlands.model.{ActionRef, NoteKey, PhaseTransitionRef, PowerId,
@@ -79,6 +81,7 @@ object ProcedureNotes:
       case ActionRef.Muster => MusterProcedure.noteKeys
       case ActionRef.Trade => TradeProcedure.noteKeys
       case ActionRef.Recover => RecoverProcedure.noteKeys
+      case ActionRef.Explore => ExploreProcedure.noteKeys
       case ActionRef.PlayFacedownAdviser => CardPlayProcedure.noteKeys
       case ActionRef.Search => SearchProcedure.noteKeys
       case ActionRef.Travel => TravelProcedure.noteKeys
@@ -96,6 +99,11 @@ object ProcedureNotes:
       case PhaseTransitionRef.FinishRest => FinishRestProcedure.noteKeys
       case TriggeredProcedureRef.Oathkeeper => OathkeeperProcedure.noteKeys
       case TriggeredProcedureRef.Setup => SetupProcedure.noteKeys
+      case TriggeredProcedureRef.QuestFirstWake =>
+        QuestFirstWakeProcedure.noteKeys
+      case TriggeredProcedureRef.Arbiter => ArbiterStep.noteKeys
+      case TriggeredProcedureRef.ChronicleWinner =>
+        ChronicleWinnerProcedure.noteKeys
       case TriggeredProcedureRef.ChronicleSun => ChronicleSunProcedure.noteKeys
       case TriggeredProcedureRef.ChronicleThrone =>
         ChronicleThroneProcedure.noteKeys

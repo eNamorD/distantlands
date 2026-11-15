@@ -16,7 +16,7 @@ class ProcedureRefSuite extends munit.FunSuite:
     // journal and sent by clients, so a renamed key breaks saved games.
     assertEquals(ActionRef.all.map(_.key),
       Vector("search", "play-facedown-adviser", "recover", "forge",
-        "travel", "take-wealth", "muster", "trade", "challenge",
+        "travel", "take-wealth", "muster", "trade", "challenge", "explore",
         "place-banner-resource", "negotiation", "campaign",
         "peek-site-relics", "reveal-owned-relic", "move-warbands",
         "transfer-warbands", "self-exile"))
@@ -29,13 +29,15 @@ class ProcedureRefSuite extends munit.FunSuite:
         TriggeredProcedureRef.ForcedWake,
         TriggeredProcedureRef.FollowUpOffer, TriggeredProcedureRef.WakeMenu,
         TriggeredProcedureRef.RestMenu, TriggeredProcedureRef.ActMenu,
+        TriggeredProcedureRef.ChronicleWinner,
         TriggeredProcedureRef.ChronicleBegin,
         TriggeredProcedureRef.ChronicleSun,
         TriggeredProcedureRef.ChronicleThrone,
         TriggeredProcedureRef.ChronicleWorld,
         TriggeredProcedureRef.ChronicleBeacon,
         TriggeredProcedureRef.ChronicleStars,
-        TriggeredProcedureRef.ChronicleFinish))
+        TriggeredProcedureRef.ChronicleFinish,
+        TriggeredProcedureRef.QuestFirstWake, TriggeredProcedureRef.Arbiter))
     assertEquals(TriggeredProcedureRef.ActMenu.key, "act-menu")
 
   test("a key resolves only under its own family"):

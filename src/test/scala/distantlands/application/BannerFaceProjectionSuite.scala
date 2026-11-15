@@ -73,10 +73,13 @@ class BannerFaceProjectionSuite extends munit.FunSuite:
       .secrets(p1, faceUp = 0, faceDown = 2).ready
     assertEquals(availability(neither), Vector(false, false))
 
-  test("the Festival face is offered no power"):
+  test("the Festival face is offered no power, and its holder may still " +
+      "place a secret on the banner"):
     val festival = Table.start
       .darkestSecret(Some(p1), 1, face = DarkestSecretFace.Festival)
-      .siteTokens(BrokenPeaksSite, secrets = 1).ready
+      .siteTokens(BrokenPeaksSite, secrets = 1).secrets(p1, faceUp = 1).ready
     assertEquals(powerButtons(festival), Vector.empty)
     assert(!MenuPlay.options(Table.from(festival).phaseMenuParked.state,
       catalog).exists(_.ref == banner))
+    assert(MenuPlay.availableInMenu(catalog, festival,
+      ActionRef.PlaceBannerResource))

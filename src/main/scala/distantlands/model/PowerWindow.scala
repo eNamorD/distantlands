@@ -9,9 +9,13 @@ enum MajorActionType(val key: String):
   case Forge extends MajorActionType("forge")
   case Recover extends MajorActionType("recover")
   case Challenge extends MajorActionType("challenge")
+  /** The action Wide Horizons, altered Foundation I, adds (Foundations
+    * design, slice 3). No card prints a modifier for it. */
+  case Explore extends MajorActionType("explore")
 object MajorActionType:
   val all: Vector[MajorActionType] = Vector(
-    Search, Travel, Campaign, Muster, Trade, Forge, Recover, Challenge)
+    Search, Travel, Campaign, Muster, Trade, Forge, Recover, Challenge,
+    Explore)
 
 /** A procedure point, not a persistence or relevance category. The stable key
   * is presentation/serialization data; semantic validation uses the typed
@@ -29,6 +33,7 @@ object PowerWindow:
   sealed trait ForgeWindow extends PowerWindow { final val associatedMajorAction: Option[MajorActionType] = Some(MajorActionType.Forge) }
   sealed trait RecoverWindow extends PowerWindow { final val associatedMajorAction: Option[MajorActionType] = Some(MajorActionType.Recover) }
   sealed trait ChallengeWindow extends PowerWindow { final val associatedMajorAction: Option[MajorActionType] = Some(MajorActionType.Challenge) }
+  sealed trait ExploreWindow extends PowerWindow { final val associatedMajorAction: Option[MajorActionType] = Some(MajorActionType.Explore) }
   sealed trait OtherWindow extends PowerWindow { final val associatedMajorAction: Option[MajorActionType] = None }
 
   case object SearchActionEligibility extends SearchWindow { val key = "search.action-eligibility" }
@@ -171,8 +176,26 @@ object PowerWindow:
     * rerolls after it. */
   case object RecoverRoll extends RecoverWindow:
     val key = "recover.roll"
+  /** Explore's modifier decision. No card prints an Explore modifier, so
+    * nothing is offered there yet (Foundations design, slice 3). */
+  case object ExploreModifierSelection extends ExploreWindow:
+    val key = "explore.modifier-selection"
+  /** The Supply each Explore roll costs. */
+  case object ExploreCost extends ExploreWindow { val key = "explore.cost" }
+  /** Each Explore roll, before its reroll choice. Explore borrows only
+    * Recover's dice: a power that names Recover hooks `RecoverRoll`, never
+    * this (Foundations ruling 2). */
+  case object ExploreRoll extends ExploreWindow { val key = "explore.roll" }
   case object RestStart extends OtherWindow { val key = "rest.start" }
   case object RestReturnFavor extends OtherWindow { val key = "rest.return-favor" }
+  /** Right after Imperial Maps, or where it would run, before any pawn:
+    * when the favor banks are set up (Legacy Setup powers design, ruling
+    * 12). Populist hooks here. Empty with no power. */
+  case object SetupBanks extends OtherWindow { val key = "setup.banks" }
+  /** After the banks, before any pawn: where the world deck game start
+    * built is changed (Legacy Setup powers design, rulings 14 and 15).
+    * Secret Society and then Seer hook here. Empty with no power. */
+  case object SetupWorldDeck extends OtherWindow { val key = "setup.world-deck" }
   /** Where the placing player's site is fixed for this player's Setup turn
     * (2026-09-21 Chronicle design, "Setup powers"): Great Forge and Broken
     * Forge hook here. */
@@ -184,8 +207,22 @@ object PowerWindow:
   // One window per Chronicle task step, in step order (Chronicle steps
   // design, "Windows, not hardcoded actors"): legacy powers can change a
   // step's actor, add to it or skip it.
+  /** After the game's result is set and before Start Chronicle: Royal
+    * Line's step (Legacy Chronicle powers design, ruling 22, moved here by
+    * Legacy in-play powers R36). Empty with no power. */
+  case object ChronicleFinalWinner extends OtherWindow:
+    val key = "chronicle.final-winner"
+  /** The Sun's first window, before Reveal Relics. Royal Line's step was
+    * here (Legacy Chronicle powers R40) until Legacy in-play powers R36
+    * moved it before Start Chronicle; empty with no power. */
+  case object ChronicleStartOfSun extends OtherWindow:
+    val key = "chronicle.sun.start-of-sun"
   case object ChronicleRevealRelics extends OtherWindow:
     val key = "chronicle.sun.reveal-relics"
+  /** Before players resolve legacies, after Reveal Relics: Gatekeeper's
+    * step (Legacy Chronicle powers design, ruling 6). Empty with no power. */
+  case object ChronicleBeforeResolveLegacies extends OtherWindow:
+    val key = "chronicle.sun.before-resolve-legacies"
   case object ChronicleFlipLegacies extends OtherWindow:
     val key = "chronicle.sun.flip-legacies"
   case object ChronicleExileDormancy extends OtherWindow:
@@ -194,17 +231,33 @@ object PowerWindow:
     val key = "chronicle.sun.legacy-cap"
   case object ChronicleShuffleLegacies extends OtherWindow:
     val key = "chronicle.sun.shuffle-legacies"
+  /** After Resolve Legacies, before Crown Chancellor: Chronicler's step
+    * (ruling 7). Empty with no power. */
+  case object ChronicleAfterResolveLegacies extends OtherWindow:
+    val key = "chronicle.sun.after-resolve-legacies"
   case object ChronicleCrown extends OtherWindow { val key = "chronicle.sun.crown" }
   case object ChronicleAssignTasks extends OtherWindow:
     val key = "chronicle.sun.assign-tasks"
+  /** The start of the Throne, before Offer Citizenship: Reformer's step
+    * (Legacy Chronicle powers design, ruling 12). Empty with no power. */
+  case object ChronicleStartOfThrone extends OtherWindow:
+    val key = "chronicle.throne.start-of-throne"
   case object ChronicleOfferCitizenship extends OtherWindow:
     val key = "chronicle.throne.offer-citizenship"
   case object ChronicleShapeEmpire extends OtherWindow:
     val key = "chronicle.throne.shape-empire"
   case object ChronicleBuildEdifice extends OtherWindow:
     val key = "chronicle.throne.build-edifice"
+  /** After Build Edifice: Revolutionary's step (Legacy Chronicle powers
+    * design, ruling 11). Empty with no power. */
+  case object ChronicleAfterBuildEdifice extends OtherWindow:
+    val key = "chronicle.throne.after-build-edifice"
   case object ChronicleStockReliquary extends OtherWindow:
     val key = "chronicle.throne.stock-reliquary"
+  /** Before Scatter Relics, after Stock Reliquary: Heirloom's step (Legacy
+    * Chronicle powers design, ruling 13; R17, R26). Empty with no power. */
+  case object ChronicleBeforeScatterRelics extends OtherWindow:
+    val key = "chronicle.throne.before-scatter-relics"
   case object ChronicleScatterRelics extends OtherWindow:
     val key = "chronicle.throne.scatter-relics"
   case object ChronicleScoreLineage extends OtherWindow:
@@ -231,11 +284,10 @@ object PowerWindow:
     val key = "chronicle.stars.clean-up"
   case object ChronicleStore extends OtherWindow:
     val key = "chronicle.stars.store"
-  /** Where an explored site's effects resolve, once an explore procedure
-    * exists to fire it (2026-09-21 Chronicle design, "Setup powers" --
-    * out of scope until then). Slice 3's E02/E06/E22 powers already name
-    * this window alongside their SETUP window so the same contribution
-    * serves both without branching; nothing folds it yet.
+  /** Where a WHEN EXPLORED power resolves: Explore folds it on its
+    * `ExploredSite` node, right after it places a site (Foundations design,
+    * slice 3). A SETUP power with a WHEN EXPLORED half names this window
+    * beside its Setup window, so one contribution serves both.
     */
   case object WhenExplored extends OtherWindow { val key = "explore.when-explored" }
   case object NegotiationOffer extends OtherWindow { val key = "negotiation.offer" }

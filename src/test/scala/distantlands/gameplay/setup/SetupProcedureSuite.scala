@@ -119,6 +119,6 @@ class SetupProcedureSuite extends munit.FunSuite:
           relics = Vector(RelicState(relic, Orientation.FaceDown, Tokens.empty))))))
     // Only slot 1 (Wrestlers) is offered among the advisers: slot 0 is
     // site-only and slot 2 is already faceup. Sticky Fire is relic slot 0.
-    assertEquals(SetupProcedure.revealable(catalog, staged, p1).map(_.ref),
+    assertEquals(SetupAdviserSteps.revealable(catalog, staged, p1).map(_.ref),
       Vector(DecisionOptionRef.AdviserSlot(p1, 1),
         DecisionOptionRef.RelicSlot(p1, 0)))

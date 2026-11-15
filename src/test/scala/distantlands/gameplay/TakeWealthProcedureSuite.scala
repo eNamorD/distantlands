@@ -125,9 +125,21 @@ class TakeWealthProcedureSuite extends munit.FunSuite:
     assertEquals(take(wake(favor = 1, secrets = 1, sharedEnemy = true))
       .left.toOption, Some(EnemyPawnBlocksTakeWealth(home, Vector(p2, p3))))
 
+  test("the enemy pawn gate is a walker restriction, not the build's " +
+      "(Legacy in-play powers ruling 17)"):
+    val bare = new OathRules(catalog, walkerPowerCatalog = WalkerPowers.empty)
+    assert(TakeWealthFixture.take(bare,
+      wake(favor = 1, secrets = 1, sharedEnemy = true)).isRight)
+
   test("the requested resource must be present at the site"):
     val ready = wake(favor = 0, secrets = 1)
     assertEquals(rejected(take(ready)),
+      ResourceUnavailable(home, WakeResource.Favor): OathViolation)
+
+  test("with an enemy pawn there and the resource missing, the missing " +
+      "resource is the reason (Legacy in-play powers R16)"):
+    assertEquals(rejected(take(wake(favor = 0, secrets = 1,
+      sharedEnemy = true))),
       ResourceUnavailable(home, WakeResource.Favor): OathViolation)
 
   test("the start selection must name exactly one known resource"):
@@ -195,7 +207,7 @@ class TakeWealthProcedureSuite extends munit.FunSuite:
     }.collect {
       case WalkerStepRecorded(_, DeltaPayload(ops), _) => ops
     }.flatten
-    assertEquals(recorded, Vector(
+    assertEquals(recorded, Vector[CoreOperation](
       Move(Piece.Favor(1), PositionedLocation(Location.Site(home)),
         PositionedLocation(Location.PlayArea(actor)), by = Some(actor)),
       RecordPowerUse(TakeWealthLimit.useRef(home))))

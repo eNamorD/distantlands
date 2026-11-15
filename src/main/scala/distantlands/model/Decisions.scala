@@ -14,6 +14,10 @@ package distantlands.model
 // answered is worth more than the symmetry of separating them. Do not
 // "restore" the split.
 //
+// The reference vocabulary, `DecisionOptionRef`, is in
+// `DecisionOptionRef.scala` beside this file, split out at the 800-line
+// limit; it is the same contract.
+//
 // The cost, stated plainly: a button's label, a section's label and the two
 // strings a panel titles itself with are prompt copy, and they live here.
 // Game-object names do not. A relic's name and a denizen's title are
@@ -23,213 +27,6 @@ package distantlands.model
 // The generic validator is the one piece that is NOT here: it returns typed
 // `OathViolation`s, which the model may not name, so it lives in
 // `gameplay/walker/DecisionQueries.scala`.
-
-/** Stable identity of one selectable thing in a decision.
-  *
-  * This is the half that persists: an answer records references, never
-  * options, so a relabelled prompt leaves every recorded answer valid. A
-  * reference carries identity and nothing else — a card reference names the
-  * card globally and deliberately omits the site or player it is currently
-  * at, because location is a legality fact used while BUILDING a query, not
-  * part of a card's identity.
-  */
-sealed trait DecisionOptionRef extends Product with Serializable:
-  /** Which of the seventeen variants this is, as a stable wire string. */
-  def kind: String
-
-  /** The variant's identity as a stable wire string, paired with [[kind]].
-    *
-    * A reference travels off-process three ways — in a submitted answer, in
-    * a journalled answer, and (from Task 4) in a projected option — and all
-    * three spell it as this pair. The spelling lives here, next to the cases
-    * it names, so those three code paths cannot drift into three
-    * independently written tables of the same eight strings; that drift is
-    * the failure mode this whole vocabulary exists to remove.
-    */
-  def wireId: String
-object DecisionOptionRef:
-  /** A choice with no game object behind it, keyed by a stable string
-    * (e.g. `"continue"`, `"stop"`).
-    */
-  final case class Button(key: String) extends DecisionOptionRef:
-    val kind: String = "button"
-    def wireId: String = key
-  final case class Player(id: PlayerId) extends DecisionOptionRef:
-    val kind: String = "player"
-    def wireId: String = id.value
-  final case class Site(id: SiteId) extends DecisionOptionRef:
-    val kind: String = "site"
-    def wireId: String = id.value
-  final case class Denizen(id: DenizenId) extends DecisionOptionRef:
-    val kind: String = "denizen"
-    def wireId: String = id.value
-  final case class Relic(id: RelicId) extends DecisionOptionRef:
-    val kind: String = "relic"
-    def wireId: String = id.value
-  final case class Vision(id: VisionId) extends DecisionOptionRef:
-    val kind: String = "vision"
-    def wireId: String = id.value
-  final case class Edifice(id: EdificeId) extends DecisionOptionRef:
-    val kind: String = "edifice"
-    def wireId: String = id.value
-  /** One relic of another player, named by its position in their relic
-    * vector rather than by the card, so a facedown relic's identity is never
-    * disclosed by an option. The owner may contain a colon; the slot is
-    * always the text after the last one.
-    */
-  final case class RelicSlot(owner: PlayerId, slot: Int)
-      extends DecisionOptionRef:
-    require(slot >= 0, "a relic slot must be non-negative")
-    val kind: String = "relic-slot"
-    def wireId: String = s"${owner.value}:$slot"
-  /** One adviser slot of a player, named by its position in their advisers
-    * rather than by the card, so a facedown adviser's identity is never
-    * disclosed by an option. A slot below the printed capacity of three may
-    * be empty; the powers that name a held adviser name an occupied one. The
-    * owner may contain a colon; the slot is always the text after the last
-    * one.
-    */
-  final case class AdviserSlot(owner: PlayerId, slot: Int)
-      extends DecisionOptionRef:
-    require(slot >= 0, "an adviser slot must be non-negative")
-    val kind: String = "adviser-slot"
-    def wireId: String = s"${owner.value}:$slot"
-  /** A banner. It names no holder: who holds it is read from live state, so
-    * an answer cannot name a holder that has since changed.
-    */
-  final case class Banner(banner: distantlands.model.Banner)
-      extends DecisionOptionRef:
-    val kind: String = "banner"
-    def wireId: String = banner.key
-  final case class Deck(id: CardDeck) extends DecisionOptionRef:
-    val kind: String = "deck"
-    def wireId: String = id.key
-  /** A suit's favor bank: the one shared place favor of that suit returns
-    * to. A suit is a closed six-case enum, so this can never be absent.
-    */
-  final case class FavorBank(suit: Suit) extends DecisionOptionRef:
-    val kind: String = "favor-bank"
-    def wireId: String = suit.key
-
-  /** Slot `index` of `site`'s card row, below the site's capacity: the empty
-    * slot a card is played to, or the card a play there replaces. The site
-    * may contain a colon; the index is always the text after the last one.
-    */
-  final case class SiteSlot(site: SiteId, index: Int) extends DecisionOptionRef:
-    require(index >= 0, "a site slot must be non-negative")
-    val kind: String = "site-slot"
-    def wireId: String = s"${site.value}:$index"
-  /** Relic `index` of `site`'s relics, in their order there: a relic named
-    * by its place rather than by the card, so a facedown relic's identity
-    * is never disclosed by an option. The site may contain a colon; the
-    * index is always the text after the last one.
-    */
-  final case class SiteRelicSlot(site: SiteId, index: Int)
-      extends DecisionOptionRef:
-    require(index >= 0, "a site relic slot must be non-negative")
-    val kind: String = "site-relic-slot"
-    def wireId: String = s"${site.value}:$index"
-  /** Playing the card to `owner`'s adviser slot `index`, faceup or facedown.
-    * A choose-one answer is one ref, so the ref carries the facing, and an
-    * adviser slot is offered as two options. The owner may contain a colon;
-    * the facing follows the last one and the index the one before it.
-    */
-  final case class AdviserPlay(owner: PlayerId, index: Int, faceup: Boolean)
-      extends DecisionOptionRef:
-    require(index >= 0, "an adviser slot must be non-negative")
-    val kind: String = "adviser-play"
-    def wireId: String =
-      s"${owner.value}:$index:${if faceup then "faceup" else "facedown"}"
-  /** Playing a Vision faceup as `owner`'s revealed Vision. A faceup
-    * Conspiracy takes no slot, so it never names this. */
-  final case class RevealedVision(owner: PlayerId) extends DecisionOptionRef:
-    val kind: String = "revealed-vision"
-    def wireId: String = owner.value
-  /** Discarding the played card to `region`'s discard pile. */
-  final case class DiscardPile(region: Region) extends DecisionOptionRef:
-    val kind: String = "discard-pile"
-    def wireId: String = region.key
-
-  /** The option that names `card` by itself: a denizen, relic or edifice.
-    * A vision or legacy has none, so a consent keyed by a card cannot name
-    * one. */
-  def ofCard(card: CardId): Option[DecisionOptionRef] = card match
-    case id: DenizenId => Some(Denizen(id))
-    case id: RelicId => Some(Relic(id))
-    case id: EdificeId => Some(Edifice(id))
-    case _ => None
-
-  /** The card `ref` names by itself: the inverse of `ofCard`. */
-  def cardOf(ref: DecisionOptionRef): Option[CardId] = ref match
-    case Denizen(id) => Some(id)
-    case Relic(id) => Some(id)
-    case Edifice(id) => Some(id)
-    case _ => None
-
-  /** The denizen or edifice `ref` names: the card an economy action can
-    * draw on, which a relic never is. */
-  def denizenOrEdificeOf(ref: DecisionOptionRef): Option[CardId] = ref match
-    case Denizen(id) => Some(id)
-    case Edifice(id) => Some(id)
-    case _ => None
-
-  /** Safe parse of the [[DecisionOptionRef.kind]]/[[DecisionOptionRef.wireId]]
-    * pair from untrusted input: `None` for an unknown kind or an id that
-    * variant cannot carry, never a thrown `require`.
-    *
-    * Total over the seventeen variants, and the exact inverse of the two
-    * accessors above — a new variant that forgets this method fails to
-    * compile, because the match below is exhaustive over nothing and the
-    * accessors are abstract.
-    */
-  def fromWire(kind: String, wireId: String): Option[DecisionOptionRef] =
-    if wireId.trim.isEmpty then None
-    else kind match
-      case "button" => Some(Button(wireId))
-      case "player" => Some(Player(PlayerId(wireId)))
-      case "site" => Some(Site(SiteId(wireId)))
-      case "denizen" => Some(Denizen(DenizenId(wireId)))
-      case "relic" => Some(Relic(RelicId(wireId)))
-      case "vision" => Some(Vision(VisionId(wireId)))
-      case "edifice" => Some(Edifice(EdificeId(wireId)))
-      case "relic-slot" => slotOf(wireId).map((owner, slot) =>
-        RelicSlot(owner, slot))
-      case "adviser-slot" => slotOf(wireId).map((owner, slot) =>
-        AdviserSlot(owner, slot))
-      case "banner" => distantlands.model.Banner.fromKey(wireId).map(Banner(_))
-      case "deck" => CardDeck.fromKey(wireId).map(Deck(_))
-      case "favor-bank" => Suit.fromKey(wireId).map(FavorBank(_))
-      case "site-slot" => indexOf(wireId).map((site, index) =>
-        SiteSlot(SiteId(site), index))
-      case "site-relic-slot" => indexOf(wireId).map((site, index) =>
-        SiteRelicSlot(SiteId(site), index))
-      case "adviser-play" => facingOf(wireId).flatMap((slot, faceup) =>
-        slotOf(slot).map((owner, index) => AdviserPlay(owner, index, faceup)))
-      case "revealed-vision" => Some(RevealedVision(PlayerId(wireId)))
-      case "discard-pile" => Region.all.find(_.key == wireId).map(DiscardPile(_))
-      case _ => None
-
-  /** The owner and non-negative slot of a slot reference's wire id. */
-  private def slotOf(wireId: String): Option[(PlayerId, Int)] =
-    indexOf(wireId).map((owner, slot) => PlayerId(owner) -> slot)
-
-  /** The text before the last colon, which may hold colons itself, and the
-    * non-negative index after it. */
-  private def indexOf(wireId: String): Option[(String, Int)] =
-    val at = wireId.lastIndexOf(':')
-    Option.when(at > 0)(wireId.take(at)).filter(_.trim.nonEmpty)
-      .flatMap(owner => wireId.drop(at + 1).toIntOption
-        .filter(_ >= 0).map(owner -> _))
-
-  /** An adviser play's slot part and facing: the facing follows the last
-    * colon. */
-  private def facingOf(wireId: String): Option[(String, Boolean)] =
-    val at = wireId.lastIndexOf(':')
-    Option.when(at > 0)(wireId.take(at)).flatMap(slot =>
-      wireId.drop(at + 1) match
-        case "faceup" => Some(slot -> true)
-        case "facedown" => Some(slot -> false)
-        case _ => None)
 
 /** The band a decision's options are read in, for a question whose options
   * fall into kinds the player thinks of separately: the phase menu's major
@@ -280,6 +77,7 @@ object DecisionOption:
   final case class Relic(ref: DecisionOptionRef.Relic) extends DecisionOption
   final case class Vision(ref: DecisionOptionRef.Vision) extends DecisionOption
   final case class Edifice(ref: DecisionOptionRef.Edifice) extends DecisionOption
+  final case class Legacy(ref: DecisionOptionRef.Legacy) extends DecisionOption
   final case class RelicSlot(ref: DecisionOptionRef.RelicSlot)
       extends DecisionOption
   final case class AdviserSlot(ref: DecisionOptionRef.AdviserSlot)
@@ -399,6 +197,7 @@ object DecisionOption:
     case value: DecisionOptionRef.Relic => Some(Relic(value))
     case value: DecisionOptionRef.Vision => Some(Vision(value))
     case value: DecisionOptionRef.Edifice => Some(Edifice(value))
+    case value: DecisionOptionRef.Legacy => Some(Legacy(value))
     case value: DecisionOptionRef.RelicSlot => Some(RelicSlot(value))
     case value: DecisionOptionRef.AdviserSlot => Some(AdviserSlot(value))
     case value: DecisionOptionRef.Banner => Some(Banner(value))
@@ -607,6 +406,17 @@ object DecisionQuery:
         heading: Option[String], confirmLabel: String): Distribute =
       Distribute(slots, total, total, heading, confirmLabel)
 
+  /** One amount per slot, each within its own bounds, and with `distinct`
+    * no two equal (Legacy Setup powers design, ruling 15): Seer places each
+    * Vision at a position of the world deck. Answered by a
+    * [[DecisionAnswer.DistributeAnswer]], one amount per slot (R18). Both
+    * labels are required. Either every slot suggests an amount or none
+    * does, and the suggestions must be an accepted answer.
+    */
+  final case class ChooseAmounts(slots: Vector[DistributeSlot],
+      distinct: Boolean, heading: Option[String], confirmLabel: String)
+      extends DecisionQuery
+
   /** A negotiation deal, as a snapshot the action rebuilds from live state and
     * the recorded answers on every command: who is in it, everyone's current
     * terms, who has accepted, what each author may still offer, and who may
@@ -617,6 +427,32 @@ object DecisionQuery:
   final case class Negotiate(participants: Vector[PlayerId],
       terms: Map[PlayerId, NegotiationTerms], accepted: Set[PlayerId],
       bounds: Map[PlayerId, NegotiationBounds], acceptors: Set[PlayerId],
+      heading: Option[String] = None,
+      /** The participants the terms would leave over their adviser limit.
+        * While it is not empty nobody may accept (ruling 17). */
+      overAdviserLimit: Vector[PlayerId] = Vector.empty,
+      /** The recipients the terms would leave with too few warbands to rule
+        * every site they receive. While it is not empty nobody may accept
+        * (ruling 29). */
+      shortOfWarbands: Vector[PlayerId] = Vector.empty,
+      /** The deal is private (Whispering Stone, ruling 23): a viewer
+        * outside it is shown who negotiates, never the terms. */
+      privateDeal: Boolean = false,
+      /** Players outside the deal who may still answer it, only to pass or
+        * take back a pass: The Gathering's players at its site (catalog
+        * batch 12, ruling 4). Empty in every other deal. */
+      bystanders: Vector[PlayerId] = Vector.empty,
+      /** The bystanders who have passed. */
+      passed: Vector[PlayerId] = Vector.empty) extends DecisionQuery
+
+  /** The Gathering's open question (catalog batch 12, slice 6b): each
+    * player at its site may open a deal with players their reach lets them
+    * name, pass, or take back a pass (rulings 3 to 5 and 32). `present` is
+    * who is at the site, in the Gathering's order; `reach` gives each of
+    * them the players they may name; `passed` is who has passed. As in a
+    * deal, legality depends on who answers. */
+  final case class Gathering(present: Vector[PlayerId],
+      reach: Map[PlayerId, Vector[PlayerId]], passed: Vector[PlayerId],
       heading: Option[String] = None) extends DecisionQuery
 
   /** Look at `cards`, in order, then press Done (catalog batch 2, N5). There
@@ -698,3 +534,15 @@ object DecisionAnswer:
 
   /** Answer to a [[DecisionQuery.Negotiate]]: declines, which ends it. */
   case object DeclineDeal extends DecisionAnswer
+
+  /** Answer to a [[DecisionQuery.Gathering]]: opens a deal with `players`,
+    * named in the order the opener chose them (catalog batch 12, slice
+    * 6b). */
+  final case class OpenDeal(players: Vector[PlayerId]) extends DecisionAnswer
+
+  /** Answer to a [[DecisionQuery.Gathering]], or a bystander's to a
+    * Gathering deal: passes (ruling 4). */
+  case object PassGathering extends DecisionAnswer
+
+  /** As [[PassGathering]]: takes back a pass. */
+  case object UnpassGathering extends DecisionAnswer

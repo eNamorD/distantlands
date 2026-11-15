@@ -7,7 +7,7 @@ import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.WalkerPowers
 import distantlands.model._
 import distantlands.testkit.Outcomes
-import distantlands.testkit.Table.p2
+import distantlands.testkit.Table.{p1, p2}
 import distantlands.testkit.Unwrap.accepted
 
 /** Every Chronicle task step runs inside its own power window, so a later
@@ -28,32 +28,42 @@ class ChronicleWindowsSuite extends munit.FunSuite:
     Outcomes.ready(state).game.current.player(player)
       .get.lineage
 
-  test("a power folded into every Chronicle window runs once per window"):
-    val state = ChronicleWalk.chronicleWonByP1.state
+  test("a power folded into every Chronicle window runs once per window, " +
+      "the final winner's before Start Chronicle included"):
+    // From the game's end, so the final winner step runs before the
+    // Chronicle (Legacy in-play powers R36).
+    val state = ChronicleWalk.chronicleWonByP1.turn(p1, Phase.RoundEnd).state
     val lineage = lineageOf(state, p2)
-    val windows = ChronicleWindows.sun ++ ChronicleWindows.throne ++
-      ChronicleWindows.world ++ ChronicleWindows.beacon ++
-      ChronicleWindows.stars
+    val windows = PowerWindow.ChronicleFinalWinner +: (ChronicleWindows.sun ++
+      ChronicleWindows.throne ++ ChronicleWindows.world ++
+      ChronicleWindows.beacon ++ ChronicleWindows.stars)
     val rules = new OathRules(catalog,
       walkerPowerCatalog =
         WalkerPowers(Vector(PointPerWindow(lineage, windows))),
       walkerDice = WalkerDiceFixture.reversingShuffle)
     val done = ChronicleWalk.answeringEverything(rules, accepted(rules.next(
-      OathTransition(state, Vector.empty),
-      TriggeredProcedureRef.ChronicleBegin)))
+      OathTransition(state, Vector.empty), PhaseTransitionRef.FinishRest)))
     assertEquals(Outcomes.ready(done.state).game.campaign.era
       .score(lineage), windows.size)
 
   test("Chronicle window keys stay as power data spells them"):
+    assertEquals(PowerWindow.ChronicleFinalWinner.key,
+      "chronicle.final-winner")
     assertEquals(
       (ChronicleWindows.sun.map(_.key), ChronicleWindows.throne.map(_.key)), (
-      Vector("chronicle.sun.reveal-relics", "chronicle.sun.flip-legacies",
+      Vector("chronicle.sun.start-of-sun", "chronicle.sun.reveal-relics",
+        "chronicle.sun.before-resolve-legacies", "chronicle.sun.flip-legacies",
         "chronicle.sun.exile-dormancy", "chronicle.sun.legacy-cap",
-        "chronicle.sun.shuffle-legacies", "chronicle.sun.crown",
+        "chronicle.sun.shuffle-legacies",
+        "chronicle.sun.after-resolve-legacies", "chronicle.sun.crown",
         "chronicle.sun.assign-tasks"),
-      Vector("chronicle.throne.offer-citizenship",
+      Vector("chronicle.throne.start-of-throne",
+        "chronicle.throne.offer-citizenship",
         "chronicle.throne.shape-empire", "chronicle.throne.build-edifice",
-        "chronicle.throne.stock-reliquary", "chronicle.throne.scatter-relics",
+        "chronicle.throne.after-build-edifice",
+        "chronicle.throne.stock-reliquary",
+        "chronicle.throne.before-scatter-relics",
+        "chronicle.throne.scatter-relics",
         "chronicle.throne.score-lineage", "chronicle.throne.swear-oath")))
 
   test("World and Beacon window keys stay as power data spells them"):

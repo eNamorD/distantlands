@@ -16,9 +16,10 @@ import distantlands.testkit.Unwrap.{accepted, present}
   * told the truth.
   */
 object SetupWalkDriver extends WalkerRecordedOpsReducer with munit.Assertions:
-  /** The game a walk finished in, and every event it journaled, in walk
-    * order. */
-  final case class SetupWalked(ready: ReadyGame, events: Vector[OathEvent])
+  /** The game a walk finished in, every event it journaled, in walk order,
+    * and every decision it parked on, in the order asked. */
+  final case class SetupWalked(ready: ReadyGame, events: Vector[OathEvent],
+      asked: Vector[Decide] = Vector.empty)
 
   def driveToCompletion(ready: ReadyGame, tree: Operation,
       procedure: ProcedureRef, powers: WalkerPowers)(
@@ -33,10 +34,10 @@ object SetupWalkDriver extends WalkerRecordedOpsReducer with munit.Assertions:
       using munit.Location): SetupWalked =
     @annotation.tailrec
     def walk(state: ReadyGame, outcome: WalkerOutcome,
-        journaled: Vector[OathEvent]): SetupWalked =
+        journaled: Vector[OathEvent], asked: Vector[Decide]): SetupWalked =
       outcome match
         case WalkerOutcome.Finished(finished, events) =>
-          SetupWalked(finished, journaled ++ events)
+          SetupWalked(finished, journaled ++ events, asked)
         case WalkerOutcome.Parked(pending, events) =>
           val next = foldRecordedOps(state, events, "setup walk failed")
           val decide = present(
@@ -49,6 +50,6 @@ object SetupWalkDriver extends WalkerRecordedOpsReducer with munit.Assertions:
             decide.owner)
           val resolved = accepted(
             ProcedureWalker.resolve(next, tree, pending, answer, powers, dice))
-          walk(next, resolved, journaled ++ events)
+          walk(next, resolved, journaled ++ events, asked :+ decide)
     walk(ready, accepted(ProcedureWalker.advance(ready, tree, None, powers, dice)),
-      Vector.empty)
+      Vector.empty, Vector.empty)

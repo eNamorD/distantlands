@@ -141,6 +141,23 @@ class DomainValidationSuite extends munit.FunSuite:
     assert(DomainValidation.validate(unseated).contains(
       DomainProblem.UnknownRoundStarter(PlayerId("nobody"))))
 
+  test("a region may hold fewer sites than its slots, never more"):
+    // Patched with copy, not a Table step: no step lays out regions.
+    def regionProblems(map: MapState): Vector[DomainProblem] =
+      DomainValidation.validate(game.copy(current = game.current.copy(
+        map = map))).collect {
+        case problem: DomainProblem.WrongRegionSize => problem }
+    val short = map.copy(provinces = map.provinces.take(1),
+      hinterland = Vector.empty,
+      sites = map.sites -- map.provinces.drop(1) -- map.hinterland)
+    assertEquals(DomainValidation.validate(game.copy(current =
+      game.current.copy(map = short))), Vector.empty)
+    val extra = SiteId("S10")
+    val crowded = map.copy(cradle = map.cradle :+ extra,
+      sites = map.sites.updated(extra, map.sites(sites.head)))
+    assertEquals(regionProblems(crowded),
+      Vector(DomainProblem.WrongRegionSize(Region.Cradle, 2, 3)))
+
   private def imperialUsurpers(game: OathGame): Vector[DomainProblem] =
     DomainValidation.validate(game)
       .collect { case problem: DomainProblem.ImperialUsurper => problem }

@@ -15,12 +15,16 @@ object ChronicleExtraction:
     * order: Cradlemost first. */
   final case class SiteLayout(empire: Vector[SiteId], rivals: Vector[SiteId])
 
+  /** The winner's sites are stored as the Empire's, or Iron Hand's Exile
+    * holder's in their place, the Empire's then archived as rivals (Legacy
+    * Chronicle powers design, ruling 21; R35). */
   def layout(ready: ReadyGame): Either[OathViolation, SiteLayout] =
     ready.game.current.result.map(_.winner).toRight(OathViolation
       .InvalidEventOrder("the Chronicle stores a game with no winner")).map(
       winner =>
+        val kept = ChronicleLegacyRules.ironHand(ready).getOrElse(winner)
         val (empire, rivals) = ready.game.current.map.hinterward
-          .partition(ChronicleTasks.rules(ready, winner, _))
+          .partition(ChronicleTasks.rules(ready, kept, _))
         SiteLayout(empire, rivals))
 
   def storedSite(site: SiteId, items: Vector[CardId])
@@ -81,6 +85,8 @@ object ChronicleExtraction:
           true
         case CardContainer.Player(_, PlayerCardArea.Relics) =>
           card.id == TheGrandScepterCard.id
+        // The public row is empty once the Sun has resolved legacies (slice
+        // 3); a legacy still there cannot be stored.
         case _ => false
 
   private def all[A](results: Vector[Either[OathViolation, A]])

@@ -57,13 +57,12 @@ object ReadyGame:
       colors: Map[PlayerId, PlayerColor],
       firstPlayer: PlayerId,
       favorBanks: Map[Suit, Int],
-      profile: FirstGameFoundationProfile =
-        FirstGameFoundationProfile.FixedUnaltered
+      ignoreCitizenshipPowers: Boolean
   ): ReadyGame =
     ReadyGame(
       game,
       colors,
-      FirstGameSupportState(profile, firstPlayer),
+      FirstGameSupportState(firstPlayer, ignoreCitizenshipPowers),
       MaterialBankState(
         favorBanks,
         MaterialBankState.printedWarbandSupply(

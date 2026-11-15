@@ -11,6 +11,9 @@ production `ExecutableCatalog` are in
 authoritative for inventory, printed identities, text, restrictions, and
 handler keys.
 
+`asset-proportions.md` records the real size and ratio of each game asset the
+table draws, and where the mat prints each piece.
+
 `reference/new-foundations-component-catalog.json` is the last JSON catalog the
 game loaded. It is reference data only: the game does not read it, and it is
 not kept in sync with the Scala. The catalog holds only:

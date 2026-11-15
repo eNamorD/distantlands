@@ -1,13 +1,23 @@
 0.0 round 0 | Setup
 5.0 action 1 | [player:p1|p1] took a relic from the Reliquary
-10.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
-15.0 decision 1 | [player:p1|p1] kept [card:207|Glamor]
-23.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
-28.0 decision 1 | [player:p2|p2] kept a Denizen
-36.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
-41.0 decision 1 | [player:p3|p3] kept a Denizen
-42.0 round 0 | Round 1
-42.1 turn 0 | [player:p1|p1]'s turn
-42.2 phase 0 | Wake
-44.0 action 1 | Nothing happened in Wake
-44.1 phase 0 | Act
+9.0 action 1 | [player:p1|p1] filled the map from Recent Sites
+11.0 action 1 | [player:p1|p1] placed [site:site:buried-giant|Buried Giant] on the map
+13.0 action 1 | [player:p1|p1] placed [site:site:deep-woods|Deep Woods] on the map
+15.0 action 1 | [player:p1|p1] placed [site:site:desolate-shore|Desolate Shore] on the map
+17.0 action 1 | [player:p1|p1] placed [site:site:dunes|Dunes] on the map
+19.0 action 1 | [player:p1|p1] placed [site:site:fair-isle|Fair Isle] on the map
+21.0 action 1 | [player:p1|p1] placed [site:site:golden-valley|Golden Valley] on the map
+26.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
+31.0 decision 1 | [player:p1|p1] kept a legacy
+36.0 decision 1 | [player:p1|p1] kept [card:207|Glamor]
+44.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+49.0 decision 1 | [player:p2|p2] kept a legacy
+54.0 decision 1 | [player:p2|p2] kept a Denizen
+62.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
+67.0 decision 1 | [player:p3|p3] kept a legacy
+72.0 decision 1 | [player:p3|p3] kept a Denizen
+73.0 round 0 | Round 1
+73.1 turn 0 | [player:p1|p1]'s turn
+73.2 phase 0 | Wake
+75.0 action 1 | Nothing happened in Wake
+75.1 phase 0 | Act

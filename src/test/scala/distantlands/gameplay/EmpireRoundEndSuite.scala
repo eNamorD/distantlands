@@ -73,6 +73,52 @@ class EmpireRoundEndSuite extends munit.FunSuite:
     assert(replayed(ready, Vector(EndDieRolled(5, 7, None))).isLeft)
     assert(replayed(ready, Vector(EndDieRolled(6, 6, None))).isLeft)
 
+  /** `roundEnd(round)` with `modifier` waiting for the roll. */
+  private def modified(round: Int, modifier: Int): ReadyGame =
+    roundEnd(round).updateCurrent(_.copy(endDieModifier = modifier))
+
+  test("a modified round-five 4 is a 6, and the Chancellor wins " +
+      "(Legacy in-play powers ruling 21)"):
+    val won = GameResult(p1, VictoryKind.StableRegime)
+    val events = ended(modified(5, 2), RoundEndChoices.endDie(4))
+    assertEquals(events, Vector(EndDieRolled(5, 4, Some(won), 2)))
+    val after = Outcomes.ready(accepted(replayed(modified(5, 2), events)))
+    assertEquals(after.game.current.result, Some(won))
+    assertEquals(after.game.current.endDieModifier, 0)
+
+  test("a modified round-seven 3 is a 2, and the round goes on with the " +
+      "modifier cleared"):
+    val events = ended(modified(7, -1), RoundEndChoices.endDie(3))
+    assertEquals(events, Vector(EndDieRolled(7, 3, None, -1),
+      RoundEnded(7, Some(8))))
+    val after = Outcomes.ready(accepted(replayed(modified(7, -1), events)))
+    assertEquals(after.game.current.endDieModifier, 0)
+
+  test("replay refuses a modifier other than the one waiting"):
+    assert(replayed(modified(5, 2), Vector(EndDieRolled(5, 4,
+      Some(GameResult(p1, VictoryKind.StableRegime)), 1))).isLeft)
+    assert(replayed(roundEnd(5), Vector(EndDieRolled(5, 4,
+      Some(GameResult(p1, VictoryKind.StableRegime)), 2))).isLeft)
+
+  test("a round that ends with no roll clears a waiting modifier, so no " +
+      "stale modifier reaches the next round's end die (R11)"):
+    // Round 4 rolls no end die: the +2 left waiting is cleared as the
+    // round ends, and round 5's unmodified 4 does not win.
+    val round4 = modified(4, 2)
+    val events = ended(round4, RoundEndChoices.firstCandidate)
+    assertEquals(events, Vector(RoundEnded(4, Some(5))))
+    val after = Outcomes.ready(accepted(replayed(round4, events)))
+    assertEquals(after.game.current.endDieModifier, 0)
+    val round5 = Table.from(after).turn(p1, Phase.RoundEnd).ready
+    assertEquals(ended(round5, RoundEndChoices.endDie(4)),
+      Vector(EndDieRolled(5, 4, None), RoundEnded(5, Some(6))))
+
+  test("round 8's War Exhaustion clears a waiting modifier"):
+    val round8 = modified(8, 3)
+    val after = Outcomes.ready(accepted(replayed(round8,
+      ended(round8, RoundEndChoices.firstCandidate))))
+    assertEquals(after.game.current.endDieModifier, 0)
+
   test("replay refuses an end die where none is rolled"):
     assert(replayed(roundEnd(4), Vector(EndDieRolled(4, 6, None))).isLeft)
     assert(replayed(roundEnd(5, holder = Some(p3)),
@@ -103,3 +149,39 @@ class EmpireRoundEndSuite extends munit.FunSuite:
     assertEquals(rejected(replayed(ready, Vector(RoundEnded(8, None),
       WarExhaustionResolved(p3, VictoryKind.Oathkeeper, Vector.empty,
         Vector.empty)))).getClass, classOf[OathViolation.InvalidEventOrder])
+
+  /** The game `ready`'s round end ends, through the engine, with the
+    * Empire win `empireWin` reads back. */
+  private def empireWinAfter(ready: ReadyGame, random: RoundEndRandomPort)
+      : (Option[GameResult], VictoryKind) =
+    val after = Outcomes.ready(accepted(replayed(ready, ended(ready, random))))
+    (after.game.current.result, EmpireEndings.empireWin(after))
+
+  test("the Empire win read back after each end-die ending (R37)"):
+    Vector(5 -> 6, 6 -> 5, 7 -> 3).foreach((round, face) =>
+      assertEquals(empireWinAfter(roundEnd(round), RoundEndChoices.endDie(face)),
+        (Some(GameResult(p1, VictoryKind.StableRegime)),
+          VictoryKind.StableRegime), clue(round)))
+
+  test("the Empire win read back after each round-eight ending (R37)"):
+    // An Imperial Oathkeeper gives Stable Regime; an Exile's gives
+    // Chancellor Exhaustion.
+    assertEquals(empireWinAfter(roundEnd(8), RoundEndChoices.endDie(1)),
+      (Some(GameResult(p1, VictoryKind.StableRegime)),
+        VictoryKind.StableRegime))
+    assertEquals(empireWinAfter(roundEnd(8, holder = Some(p3)),
+      RoundEndChoices.endDie(1)),
+      (Some(GameResult(p1, VictoryKind.ChancellorExhaustion)),
+        VictoryKind.ChancellorExhaustion))
+
+  test("a Successor's result still reads back the Chancellor's Empire win " +
+      "(R37)"):
+    val atEight = Table.from(roundEnd(8, holder = None))
+      .darkestSecret(Some(p2), secrets = 1).ready
+    assertEquals(empireWinAfter(atEight, RoundEndChoices.endDie(1)),
+      (Some(GameResult(p2, VictoryKind.Successor)),
+        VictoryKind.ChancellorExhaustion))
+    val onTheDie = Table.from(roundEnd(7)).darkestSecret(Some(p2),
+      secrets = 1).ready
+    assertEquals(empireWinAfter(onTheDie, RoundEndChoices.endDie(3)),
+      (Some(GameResult(p2, VictoryKind.Successor)), VictoryKind.StableRegime))

@@ -6,10 +6,13 @@ import distantlands.protocol.projection._
 /** Projects a [[DecisionQuery.Negotiate]] for one viewer.
   *
   * Everyone sees what a non-author participant sees: who is in the deal, who
-  * has accepted, favor amounts, relic counts and the details of faceup relics,
-  * and the kind and recipient of each disclosure. Only an author sees the
+  * has accepted, favor amounts, relic and adviser counts and the details of
+  * faceup relics and advisers, the sites on offer, and the kind and
+  * recipient of each disclosure. Only an author sees the
   * identity of a facedown relic they offer or of information they promise.
   * Only a participant gets the editing inputs, and never another player's.
+  * Everyone reads every promise. In a private deal, a viewer outside it
+  * gets the participants and the accepted marks only.
   */
 private[application] final class NegotiationDealProjector(
     presentation: GamePresentationProjector):
@@ -17,20 +20,37 @@ private[application] final class NegotiationDealProjector(
   def project(ready: ReadyGame, viewer: Option[PlayerId],
       query: DecisionQuery.Negotiate): NegotiationDealProjection =
     val current = ready.game.current
-    val transfers = query.participants.flatMap { author =>
+    // Outside a private deal a viewer sees who negotiates and who has
+    // accepted, never the terms (catalog batch 12, ruling 23).
+    val authors =
+      if query.privateDeal && !viewer.exists(query.participants.contains)
+      then Vector.empty[PlayerId]
+      else query.participants
+    val transfers = authors.flatMap { author =>
       val owner = current.player(author).get
       query.terms(author).transfers.map { transfer =>
+        val relicDetails = transfer.relics.flatMap(id =>
+          owner.relics.find(_.id == id)).collect {
+          case relic if viewer.contains(author) ||
+              relic.orientation == Orientation.FaceUp =>
+            presentation.cardDetails(relic.id, Some(relic.orientation),
+              hidden = false)
+        }
+        val advisers = transfer.advisers.flatMap(id =>
+          owner.advisers.find(_.id == id)).collect {
+          case adviser if viewer.contains(author) ||
+              presentation.adviserOrientation(adviser) == Orientation.FaceUp =>
+            presentation.cardDetails(adviser.id,
+              Some(presentation.adviserOrientation(adviser)), hidden = false)
+        }
         NegotiationTransferProjection(author.value, transfer.recipient.value,
-          transfer.favor, transfer.relics.size,
-          transfer.relics.flatMap(id => owner.relics.find(_.id == id)).collect {
-            case relic if viewer.contains(author) ||
-                relic.orientation == Orientation.FaceUp =>
-              presentation.cardDetails(relic.id, Some(relic.orientation),
-                hidden = false)
-          })
+          transfer.favor, transfer.relics.size, relicDetails,
+          transfer.advisers.size, advisers,
+          transfer.sites.map(site => NegotiationSiteProjection(site.value,
+            presentation.siteLabel(site))), secrets = transfer.secrets)
       }
     }
-    val disclosures = query.participants.flatMap { author =>
+    val disclosures = authors.flatMap { author =>
       query.terms(author).disclosures.map { disclosure =>
         val visible = viewer.contains(author)
         def detail(id: CardId) = Option.when(visible)(presentation.cardDetails(
@@ -43,13 +63,21 @@ private[application] final class NegotiationDealProjector(
           disclosure.recipient.value, kind, card)
       }
     }
+    val promises = authors.flatMap { author =>
+      val terms = query.terms(author)
+      terms.promises.map(NegotiationPromiseProjection(author.value, _,
+        binding = false)) ++ terms.bindingPromises.map(
+        NegotiationPromiseProjection(author.value, _, binding = true))
+    }
     NegotiationDealProjection(query.participants.map(_.value),
       query.participants.filter(query.accepted).map(_.value), transfers,
       disclosures, viewer.filter(query.participants.contains)
         .map(editing(ready, query, _)),
-      query.participants.flatMap(author => query.terms(author).citizenship
+      authors.flatMap(author => query.terms(author).citizenship
         .map(recipient => NegotiationCitizenshipProjection(author.value,
-          recipient.value))))
+          recipient.value))), promises, privateDeal = query.privateDeal,
+      bystanderPlayerIds = query.bystanders.map(_.value),
+      passedPlayerIds = query.passed.map(_.value))
 
   private def editing(ready: ReadyGame, query: DecisionQuery.Negotiate,
       viewer: PlayerId): NegotiationEditingProjection =
@@ -74,4 +102,16 @@ private[application] final class NegotiationDealProjector(
               hidden = false)))
       },
       query.acceptors.contains(viewer), own.citizenship.map(_.value),
-      own.citizenshipRefused)
+      own.citizenshipRefused, bindingPromisesOpen = own.bindingPromises,
+      giftableAdvisers = own.advisers.flatMap(id =>
+        player.advisers.find(_.id == id)).map(adviser =>
+        presentation.cardDetails(adviser.id,
+          Some(presentation.adviserOrientation(adviser)), hidden = false)),
+      adviserRecipients = own.adviserRecipients.map(_.value),
+      overAdviserLimit = query.overAdviserLimit.map(_.value),
+      giftableSites = own.sites.map(site => NegotiationSiteProjection(
+        site.value, presentation.siteLabel(site))),
+      siteRecipients = own.siteRecipients.map(_.value),
+      shortOfWarbands = query.shortOfWarbands.map(_.value),
+      editableSecrets = own.maxSecrets,
+      secretRecipients = own.secretRecipients.map(_.value))

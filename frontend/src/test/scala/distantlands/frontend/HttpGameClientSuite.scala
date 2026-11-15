@@ -223,13 +223,14 @@ class HttpGameClientSuite extends FunSuite:
        |{"playerId":"yellow-exile","displayName":"Yellow Exile","role":"exile","colorToken":"yellow"}
        |],
        |"world":[
-       |{"regionId":"cradle","sites":[${siteJson(siteId, "Printed Site", populated = true)},${siteJson("site:002", "Second")}]},
-       |{"regionId":"provinces","sites":[${siteJson("site:003", "Third")},${siteJson("site:004", "Fourth")},${siteJson("site:005", "Fifth")}]},
-       |{"regionId":"hinterland","sites":[${siteJson("site:006", "Sixth")},${siteJson("site:007", "Seventh")},${siteJson("site:008", "Eighth")}]}
+       |{"regionId":"cradle","sites":[${siteJson(siteId, "Printed Site", populated = true)},${siteJson("site:002", "Second")}],"emptySlots":0},
+       |{"regionId":"provinces","sites":[${siteJson("site:003", "Third")},${siteJson("site:004", "Fourth")},${siteJson("site:005", "Fifth")}],"emptySlots":0},
+       |{"regionId":"hinterland","sites":[${siteJson("site:006", "Sixth")},${siteJson("site:007", "Seventh")},${siteJson("site:008", "Eighth")}],"emptySlots":0}
        |],
        |"pawnLocations":[],
        |"ready":$ready,
-       |"completed":$completed
+       |"completed":$completed,
+       |"foundations":[]
        |}""".stripMargin
 
   private def siteJson(
@@ -238,9 +239,9 @@ class HttpGameClientSuite extends FunSuite:
       populated: Boolean = false
   ): String =
     if populated then
-      s"""{"siteId":"$siteId","label":"$label","looseFavor":2,"looseSecrets":1,"denizenCapacity":3,"relicCapacity":2,"denizens":[{"denizenId":"denizen:z","label":"Zed"},{"denizenId":"denizen:a","label":"Able"}],"relics":{"relics":[{"cardId":"hidden","cardKind":"relic","name":"Facedown relic","orientation":"face-down","hidden":true},{"cardId":"hidden","cardKind":"relic","name":"Facedown relic","orientation":"face-down","hidden":true}]},"forces":{"forceKind":"exile","count":2,"rulerKind":"player","rulerPlayerId":"red-exile","label":"Red Warbands","colorToken":"red"}}"""
+      s"""{"siteId":"$siteId","label":"$label","looseFavor":2,"looseSecrets":1,"denizenCapacity":3,"relicCapacity":2,"denizens":[{"denizenId":"denizen:z","label":"Zed"},{"denizenId":"denizen:a","label":"Able"}],"relics":{"relics":[{"cardId":"hidden","cardKind":"relic","name":"Facedown relic","orientation":"face-down","hidden":true},{"cardId":"hidden","cardKind":"relic","name":"Facedown relic","orientation":"face-down","hidden":true}]},"forces":{"forceKind":"exile","count":2,"rulerKind":"player","rulerPlayerId":"red-exile","label":"Red Warbands","colorToken":"red"},"festival":true}"""
     else
-      s"""{"siteId":"$siteId","label":"$label","looseFavor":0,"looseSecrets":0,"denizenCapacity":0,"relicCapacity":0,"denizens":[],"relics":{"relics":[]},"forces":null}"""
+      s"""{"siteId":"$siteId","label":"$label","looseFavor":0,"looseSecrets":0,"denizenCapacity":0,"relicCapacity":0,"denizens":[],"relics":{"relics":[]},"forces":null,"festival":false}"""
 
   private def projection(
       gameId: String = "game-1",

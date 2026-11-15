@@ -26,8 +26,12 @@ final case class CardDetailsProjection(
       * Cage). */
     warbands: Vector[SiteForcesProjection] = Vector.empty,
     /** The pawn the Tracker's holder chose last turn (Tracker). */
-    tracking: Option[TrackedPawnProjection] = None
+    tracking: Option[TrackedPawnProjection] = None,
+    /** A legacy's goal (Legacies implementation ruling R35). */
+    legacyGoal: Option[LegacyGoalProjection] = None
 )
+/** A legacy's goal: its stable key and its printed words. */
+final case class LegacyGoalProjection(key: String, text: String)
 /** A Tracker's record, as its card shows it: the player whose pawn was
   * chosen, their colour, and the card's words ("Tracking Red"). */
 final case class TrackedPawnProjection(playerId: String,
@@ -90,7 +94,10 @@ final case class SetupSiteProjection(
     recoverDifficulty: Option[Int] = None,
     forgeCost: Option[ForgeCostProjection] = None,
     powers: Vector[SitePowerProjection] = Vector.empty,
-    forces: Option[SiteForcesProjection] = None
+    forces: Option[SiteForcesProjection] = None,
+    /** Whether the festival marker lies over this site's cards (Foundations
+      * design, slice 6). Public, as the marker is on the table. */
+    festival: Boolean = false
 )
 final case class SetupRegionProjection(
     regionId: String,
@@ -100,7 +107,10 @@ final case class SetupRegionProjection(
     /** The pile top first. A card the viewer may not identify is the
       * projector's `hiddenCard`, so the pile's size is always public and
       * its faces are not. */
-    discardCards: Vector[CardDetailsProjection] = Vector.empty
+    discardCards: Vector[CardDetailsProjection] = Vector.empty,
+    /** The region's site slots that hold no site, which follow `sites`:
+      * slots fill going Hinterward. */
+    emptySlots: Int = 0
 )
 /** A site's power: its printed kind, label and text, and `id`, the power's
   * id, which a client keys the power's consent preferences on. */
@@ -121,5 +131,11 @@ final case class CurrentSiteResourcesProjection(
     secrets: Int
 )
 final case class FavorBankProjection(suit: String, count: Int)
+/** One foundation setup card as the table shows it (Foundations design,
+  * slice 1): its number, 1 to 6; the face in use, `normal` or `altered`;
+  * that face's printed name; and its rules text in the catalog's markup,
+  * a blank line between paragraphs. */
+final case class FoundationProjection(number: Int, face: String, name: String,
+    rulesText: String)
 final case class GameTracksProjection(round: Int, visionsDrawn: Int,
     usurperLimited: Boolean, limiterRound: Int, firstPlayerId: String)

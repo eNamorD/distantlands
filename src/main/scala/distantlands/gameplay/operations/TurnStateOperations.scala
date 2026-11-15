@@ -101,6 +101,39 @@ private[operations] object TurnStateOperations:
       pool, base.copy(skulls = skulls.getOrElse(base.skulls),
         score = score.getOrElse(base.score)))))
 
+  /** Records `holder`'s Conspirator prediction: a seated holder and winner,
+    * a round from 1 to 8, and one prediction a holder. */
+  def writePrediction(ready: ReadyGame, holder: PlayerId, round: Int,
+      winner: PlayerId): Either[OperationError, ReadyGame] =
+    val current = ready.game.current
+    val seated = current.players.map(_.player).toSet
+    if !seated(holder) || !seated(winner) then Left(InvalidDescription(
+      s"${holder.value} and ${winner.value} must both be seated to predict"))
+    else if round < 1 || round > 8 then Left(InvalidDescription(
+      s"a prediction names a round from 1 to 8, not $round"))
+    else if current.predictions.contains(holder) then Left(InvalidDescription(
+      s"${holder.value} has already written down a prediction"))
+    else Right(ready.updateCurrent(_.copy(predictions =
+      current.predictions.updated(holder, Prediction(round, winner)))))
+
+  /** Clears `holder`'s prediction; a fulfilled one, in a game with a
+    * result, makes the holder the winner by Conspirator. */
+  def resolvePrediction(ready: ReadyGame, holder: PlayerId,
+      fulfilled: Boolean): Either[OperationError, ReadyGame] =
+    val current = ready.game.current
+    if !current.predictions.contains(holder) then Left(InvalidDescription(
+      s"${holder.value} has no prediction to resolve"))
+    else if fulfilled && current.result.isEmpty then Left(InvalidDescription(
+      "a prediction is fulfilled only in a game with a result"))
+    else Right(ready.updateCurrent(_.copy(
+      predictions = current.predictions - holder,
+      result = if fulfilled then
+        Some(GameResult(holder, VictoryKind.Conspirator))
+        else current.result)))
+
+  def setEndDieModifier(ready: ReadyGame, amount: Int): ReadyGame =
+    ready.updateCurrent(_.copy(endDieModifier = amount))
+
   /** A set add, so recording a use the turn already holds changes nothing.
     * The turn's used-power set is cleared wholesale when the turn advances,
     * which is why nothing here has to expire anything.

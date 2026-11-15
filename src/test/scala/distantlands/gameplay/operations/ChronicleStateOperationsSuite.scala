@@ -1,6 +1,10 @@
 package distantlands.gameplay.operations
 
+import distantlands.gameplay.powers.travel.PathfinderCard
+import distantlands.gameplay.setup.legacies.WealthyCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.economy.CupOfPlentyCard
 import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.gameplay.setup.FirstGameSetupFixture
 import distantlands.model._
@@ -129,6 +133,43 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     rejected(run(ready, EdificeBuilt(GreatMarketCard.id,
       BrokenPeaksSite.id)))
 
+  test("a restored foundation turns to its normal face and loses its " +
+      "alteration sources"):
+    val sourced = FoundationState(FoundationFace.Altered,
+      Set(LegacyId("L05")))
+    val ready = Table.start.update(_.updateCampaign(campaign => campaign.copy(
+      foundations = campaign.foundations.updated(FoundationNumber.I,
+        sourced)))).ready
+    val after = accepted(run(ready, FoundationRestored(FoundationNumber.I)))
+    assertEquals(after.game.campaign.foundations,
+      ready.game.campaign.foundations.updated(FoundationNumber.I,
+        FoundationState(FoundationFace.Normal, Set.empty)))
+
+  test("a foundation on its normal face cannot be restored"):
+    rejected(run(Table.start.ready, FoundationRestored(FoundationNumber.II)))
+
+  test("an altering legacy turns its foundation altered and joins its " +
+      "sources"):
+    val after = accepted(run(Table.start.ready,
+      FoundationAltered(FoundationNumber.II, WealthyCard.id)))
+    assertEquals(after.game.campaign.foundations(FoundationNumber.II),
+      FoundationState(FoundationFace.Altered, Set(WealthyCard.id)))
+
+  test("a foundation already altered keeps its sources and adds the new " +
+      "one"):
+    val eroded = Table.start
+      .foundation(FoundationNumber.I, FoundationFace.Altered).ready
+    val after = accepted(run(eroded,
+      FoundationAltered(FoundationNumber.I, PathfinderCard.id)))
+    assertEquals(after.game.campaign.foundations(FoundationNumber.I),
+      FoundationState(FoundationFace.Altered, Set(PathfinderCard.id)))
+
+  test("a legacy that already alters a foundation cannot alter it again"):
+    val once = accepted(run(Table.start.ready,
+      FoundationAltered(FoundationNumber.II, WealthyCard.id)))
+    rejected(run(once, FoundationAltered(FoundationNumber.II,
+      WealthyCard.id)))
+
   /** Denizens of `suit` the quiet table does not have in play. */
   private def boxedOf(ready: ReadyGame, suit: Suit): Vector[DenizenId] =
     val inPlay = ready.game.cardIndex.toOption.get.ids
@@ -165,3 +206,81 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     val ready = Table.start.ready
     val card = boxedOf(ready, Suit.Beast).head
     rejected(run(ready, SuitedReserveFromBox(Suit.Beast, Vector(card, card))))
+
+  test("scored legacies are recorded for the rest of the game (ruling 8)"):
+    val after = accepted(run(Table.start.ready,
+      LegaciesScored(Vector(WealthyCard.id, SeerCard.id))))
+    assertEquals(after.game.current.scoredLegacies,
+      Set(WealthyCard.id, SeerCard.id))
+
+  test("a legacy scores once per game"):
+    val once = accepted(run(Table.start.ready,
+      LegaciesScored(Vector(WealthyCard.id))))
+    rejected(run(once, LegaciesScored(Vector(SeerCard.id, WealthyCard.id))))
+    rejected(run(Table.start.ready,
+      LegaciesScored(Vector(SeerCard.id, SeerCard.id))))
+
+  test("a role change after this game's first points updates the open " +
+      "scorepad row (Chronicle ruling 19, R3)"):
+    val ready = Table.start.ready
+    val lineage = lineageOf(ready, p1)
+    val after = accepted(run(ready, LineagePointsScored(lineage, 2),
+      RoleChanged(lineage, Role.Chancellor)))
+    assertEquals(after.game.campaign.era.games.last.entries
+      .find(_.lineage == lineage).map(_.endingRole), Some(Role.Chancellor))
+
+  test("a role change before any points leaves the scorepad alone"):
+    val ready = Table.start.ready
+    val after = accepted(run(ready,
+      RoleChanged(lineageOf(ready, p1), Role.Chancellor)))
+    assertEquals(after.game.campaign.era, ready.game.campaign.era)
+
+  test("a kept relic leaves its holder for the lineage's starting relics"):
+    val ready = Table.start.relic(p1, CupOfPlentyCard).ready
+    val after = accepted(run(ready, StartingRelicKept(p1, CupOfPlentyCard.id)))
+    assert(!after.game.current.player(p1).get.relics
+      .exists(_.id == CupOfPlentyCard.id))
+    assertEquals(after.game.campaign.lineages(lineageOf(ready, p1))
+      .startingRelics, Vector(CupOfPlentyCard.id))
+    assert(after.game.cardIndex.toOption.get.get(CupOfPlentyCard.id).isEmpty)
+
+  test("the Grand Scepter, a relic not held and a relic with tokens are " +
+      "not kept"):
+    val ready = Table.start.relic(p1, CupOfPlentyCard).ready
+    rejected(run(ready, StartingRelicKept(p2, CupOfPlentyCard.id)))
+    rejected(run(Table.start.relic(p1, TheGrandScepterCard).ready,
+      StartingRelicKept(p1, TheGrandScepterCard.id)))
+    rejected(run(Table.start.relic(p1, CupOfPlentyCard)
+      .tokens(CupOfPlentyCard, secrets = 1).ready,
+      StartingRelicKept(p1, CupOfPlentyCard.id)))
+
+  test("a named winner replaces the game's result"):
+    val ended = Table.start.imperial(p1, p2).update(_.updateCurrent(_.copy(
+      result = Some(GameResult(p1, VictoryKind.StableRegime))))).ready
+    val after = accepted(run(ended, WinnerNamed(p2, VictoryKind.Successor)))
+    assertEquals(after.game.current.result,
+      Some(GameResult(p2, VictoryKind.Successor)))
+
+  test("a winner is named only for a game with a result, a seated player " +
+      "and an Empire kind"):
+    val ended = Table.start.imperial(p1, p2).update(_.updateCurrent(_.copy(
+      result = Some(GameResult(p1, VictoryKind.StableRegime))))).ready
+    rejected(run(Table.start.ready, WinnerNamed(p2, VictoryKind.Successor)))
+    rejected(run(ended, WinnerNamed(PlayerId("p9"), VictoryKind.Successor)))
+    rejected(run(ended, WinnerNamed(p2, VictoryKind.Usurper)))
+
+  test("hidden relics turn facedown, and nobody's record of them remains " +
+      "(R28)"):
+    val table = Table.start.relic(p1, CupOfPlentyCard)
+    val known = table.ready.copy(knowledge = CardKnowledge(heldRelics =
+      Map(p2 -> Vector(CupOfPlentyCard.id))))
+    val after = accepted(run(known, RelicsHidden(Vector(CupOfPlentyCard.id))))
+    assertEquals(after.game.current.player(p1).get.relics.map(_.orientation),
+      Vector(Orientation.FaceDown))
+    assertEquals(after.knowledge.heldRelics.getOrElse(p2, Vector.empty),
+      Vector.empty)
+
+  test("the Grand Scepter and a relic no player holds are not hidden"):
+    rejected(run(Table.start.relic(p1, TheGrandScepterCard).ready,
+      RelicsHidden(Vector(TheGrandScepterCard.id))))
+    rejected(run(Table.start.ready, RelicsHidden(Vector(CupOfPlentyCard.id))))

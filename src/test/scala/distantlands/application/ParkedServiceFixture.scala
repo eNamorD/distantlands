@@ -17,6 +17,7 @@ import distantlands.gameplay.powers.rest.{LeagueTreatyCard,
   LeagueTreatyContribution, SilverTongue, SilverTongueCard}
 import distantlands.gameplay.powers.whenplayed.BanditChiefCard
 import distantlands.gameplay.setup.FirstGameSetupFixture._
+import distantlands.gameplay.setup.LegacyDeal
 import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerParked}
 import distantlands.model._
 import distantlands.testkit.{Dice, Look, MenuPlay, Outcomes, PlacementPicks,
@@ -171,7 +172,8 @@ object ParkedServiceFixture:
       baseOrders.firstPlayer)
     ChronicleWithDeckTop(newChronicle,
       ChronicleFirstGamePlan.dealOrder(config,
-      newChronicle.worldDeck, newChronicle.relicDeck))
+      newChronicle.worldDeck, newChronicle.relicDeck,
+      LegacyDeal.deck(catalog, newChronicle)))
 
   /** A park: the service and journal it was driven through, the position it
     * stopped at, and the journaled situation parked there, to play on from.

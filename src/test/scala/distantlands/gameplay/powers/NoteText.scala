@@ -55,8 +55,11 @@ object NoteText:
     case NoteArg.Pile(pile) => SearchSource.name(pile)
     case NoteArg.RegionName(region) => region.toString
     case NoteArg.SuitName(suit) => suit.toString
+    case NoteArg.SuitShares(entries) => entries.map((points, suit) =>
+      s"$points from $suit").mkString(", ")
     case NoteArg.Goal(goal) => OathkeeperGoalChoice.named(goal)
     case NoteArg.Players(ids) => ids.map(_.value).mkString(", ")
+    case NoteArg.Promise(text) => s"“$text”"
     case NoteArg.Clauses(parts) => parts.map(clause).mkString(", ")
     case NoteArg.Placements(entries) => entries.map((count, site) =>
       s"$count on ${site.value}").mkString(", ")

@@ -5,9 +5,10 @@ import distantlands.gameplay.setup.ChronicleAccounting
 import distantlands.model._
 
 /** The Chronicle the Chronicle Phase journals (Chronicle steps design,
-  * "Exit and extraction"). Roles, era scores, the Oathkeeper goal and
-  * starting advisers come from the live campaign; sites, decks, the
-  * Dispossessed and the Reliquary from the table (`ChronicleExtraction`). */
+  * "Exit and extraction"). Roles, era scores, the Oathkeeper goal, the
+  * foundation faces, legacies and starting advisers come from the live
+  * campaign; sites, decks, the Dispossessed and the Reliquary from the
+  * table (`ChronicleExtraction`). */
 object ChronicleRecord:
   /** The evolved Chronicle, when it passes game start's card accounting
     * and keeps every baseline site and relic. */
@@ -26,16 +27,19 @@ object ChronicleRecord:
     val seatedBy = ready.game.current.players
       .map(player => player.lineage -> player.player).toMap
     // A seated lineage the baseline lists is its live state: game start
-    // seated it from its record (`GameStartRules`).
+    // seated it from its record (`GameStartRules`). A lineage that sat this
+    // game out was in no previous game of the next one, so it is recorded
+    // with no previous player (Legacy Setup powers R39).
     val kept = campaign.baseline.lineages.map(lineage =>
       campaign.lineages.get(lineage.id)
         .map(_.copy(previousPlayer = seatedBy.get(lineage.id)))
-        .getOrElse(lineage.copy(role =
+        .getOrElse(lineage.copy(previousPlayer = None, role =
           campaign.boxRoles.getOrElse(lineage.id, lineage.role))))
     val known = kept.map(_.id).toSet
     val added = campaign.lineages.values.toVector
       .filterNot(lineage => known(lineage.id)).sortBy(_.id.value)
       .map(live => LineageState(live.id, seatedBy.get(live.id), live.role,
-        Vector.empty, live.startingAdvisers, live.startingRelics))
+        live.legacies, live.startingAdvisers, live.startingRelics))
     campaign.baseline.copy(era = campaign.era,
-      oathkeeperGoal = campaign.oathkeeperGoal, lineages = kept ++ added)
+      oathkeeperGoal = campaign.oathkeeperGoal,
+      foundations = campaign.foundations, lineages = kept ++ added)

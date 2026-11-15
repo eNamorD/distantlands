@@ -22,6 +22,8 @@ object CardContainer:
   case object Dispossessed extends CardContainer
   case object CardGathering extends CardContainer
   case object NewlyDispossessed extends CardContainer
+  /** The Public Ambitions row of faceup legacies (Foundation III). */
+  case object PublicLegacies extends CardContainer
   final case class SuitedReserve(suit: Suit) extends CardContainer
   final case class AtlasSite(
       atlasPosition: Int,
@@ -133,7 +135,9 @@ object CardIndex:
     addIds(common.worldDeck, CardContainer.Deck(CardDeck.World))
     addIds(common.relicDeck, CardContainer.Deck(CardDeck.Relic))
     addIds(common.edificeDeck, CardContainer.Deck(CardDeck.Edifice))
-    addIds(common.legacyDeck, CardContainer.Deck(CardDeck.Legacy))
+    // The legacy deck is derived (Legacies design, ruling 3): no card is
+    // indexed there.
+    addIds(common.publicLegacies, CardContainer.PublicLegacies)
 
     Region.all.foreach { region =>
       addIds(
@@ -231,6 +235,11 @@ object CardIndex:
             SiteCardArea.Relics
           )
         )
+        // The site's stored edifice lies with its denizens, after them: it
+        // has no side until the site is placed.
+        stored.edifice.foreach(edifice => addId(edifice,
+          CardContainer.AtlasSite(atlasPosition, stored.id,
+            SiteCardArea.Denizens), stored.denizens.size))
       case (AtlasEntry.EmpireDivider, _) => ()
 
     val allLocated = located.result()

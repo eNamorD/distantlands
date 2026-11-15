@@ -70,3 +70,17 @@ class BoardHomesSuite extends munit.FunSuite:
       "red:1:faceup", "")))
     assert(!BoardHomes.has(lowered, DecisionOptionState("adviser-play",
       "red:2:faceup", "")))
+
+  test("a legacy has a home in its player's strip or the public row, " +
+      "unless the viewer sees only its back"):
+    val withLegacies = table.copy(
+      playerBoards = Vector(board.copy(legacies = Vector(
+        CardDetails("L22", "legacy", "Seer"),
+        CardDetails("hidden", "legacy", "Legacy", hidden = true)))),
+      publicLegacies = Vector(CardDetails("L17", "legacy", "Rival")))
+    def homed(id: String) =
+      BoardHomes.has(withLegacies, DecisionOptionState("legacy", id, id))
+    assert(homed("L22"))
+    assert(homed("L17"))
+    assert(!homed("hidden"))
+    assert(!homed("L01"))

@@ -92,6 +92,7 @@ object DecisionQueries:
         (negotiate.participants, negotiate.terms, negotiate.accepted,
           negotiate.bounds, negotiate.acceptors)
       val members = participants.toSet
+      val bystanders = negotiate.bystanders
       for
         _ <- require(participants.size >= 2 &&
           participants.distinct.size == participants.size, decisionId,
@@ -102,6 +103,30 @@ object DecisionQueries:
           "declares terms for players outside the deal")
         _ <- require(accepted.subsetOf(members) && acceptors.subsetOf(members),
           decisionId, "declares an acceptance from outside the deal")
+        _ <- require(bystanders.distinct.size == bystanders.size &&
+          !bystanders.exists(members), decisionId,
+          "declares a bystander inside the deal")
+        _ <- require(negotiate.passed.forall(bystanders.contains), decisionId,
+          "declares a pass from outside its bystanders")
+      yield ()
+
+    case gathering: DecisionQuery.Gathering =>
+      val (present, reach, passed) =
+        (gathering.present, gathering.reach, gathering.passed)
+      for
+        _ <- require(present.size >= 2 &&
+          present.distinct.size == present.size, decisionId,
+          "declares fewer than two distinct players present")
+        _ <- require(reach.keySet == present.toSet, decisionId,
+          "declares reach for other players than those present")
+        _ <- require(reach.forall((player, named) => named.nonEmpty &&
+          !named.contains(player) && named.distinct.size == named.size),
+          decisionId,
+          "declares a reach naming its own player, nobody, or a player twice")
+        _ <- require(passed.forall(present.contains), decisionId,
+          "declares a pass from a player not present")
+        _ <- require(!present.forall(passed.contains), decisionId,
+          "declares every player passed, leaving nothing to decide")
       yield ()
 
     case many: DecisionQuery.ChooseMany =>
@@ -229,6 +254,9 @@ object DecisionQueries:
               "suggests a distribution it would not accept"), Right(_))
       yield ()
 
+    case amounts: DecisionQuery.ChooseAmounts =>
+      wellFormedAmounts(decisionId, amounts)
+
   /** Check on a submitted answer: the failure here is a bad or stale
     * submission, not a bug in the tree.
     *
@@ -295,6 +323,12 @@ object DecisionQueries:
       case _ =>
         reject(decisionId, "expects a distribution answer")
 
+    case amounts: DecisionQuery.ChooseAmounts => answer match
+      case DecisionAnswer.DistributeAnswer(placed) =>
+        acceptsAmounts(decisionId, amounts.slots, amounts.distinct, placed)
+      case _ =>
+        reject(decisionId, "expects one amount per slot")
+
     case negotiate: DecisionQuery.Negotiate =>
       val (participants, bounds, acceptors) =
         (negotiate.participants, negotiate.bounds, negotiate.acceptors)
@@ -307,8 +341,38 @@ object DecisionQueries:
         case DecisionAnswer.DeclineDeal =>
           require(participants.contains(by), decisionId,
             "is not open to this player")
+        case DecisionAnswer.PassGathering =>
+          require(negotiate.bystanders.contains(by) &&
+            !negotiate.passed.contains(by), decisionId,
+            "does not let this player pass now")
+        case DecisionAnswer.UnpassGathering =>
+          require(negotiate.passed.contains(by), decisionId,
+            "does not let this player take back a pass")
         case _ =>
           reject(decisionId, "expects a negotiation answer")
+
+    case gathering: DecisionQuery.Gathering => answer match
+      case DecisionAnswer.OpenDeal(players) =>
+        val reach = gathering.reach.getOrElse(by, Vector.empty)
+        for
+          _ <- require(gathering.present.contains(by), decisionId,
+            "is not open to this player")
+          _ <- require(players.nonEmpty, decisionId,
+            "names nobody to negotiate with")
+          _ <- require(players.distinct.size == players.size, decisionId,
+            "names a player twice")
+          _ <- require(players.forall(reach.contains), decisionId,
+            "names a player out of this player's reach")
+        yield ()
+      case DecisionAnswer.PassGathering =>
+        require(gathering.present.contains(by) &&
+          !gathering.passed.contains(by), decisionId,
+          "does not let this player pass now")
+      case DecisionAnswer.UnpassGathering =>
+        require(gathering.passed.contains(by), decisionId,
+          "does not let this player take back a pass")
+      case _ =>
+        reject(decisionId, "expects a Gathering answer")
 
   private def acceptsDistribution(decisionId: String,
       slots: Vector[DistributeSlot], minTotal: Int, maxTotal: Int,
@@ -335,6 +399,69 @@ object DecisionQueries:
         else s"distributes an amount outside $minTotal..$maxTotal")
     yield ()
 
+  /** `wellFormed` for a [[DecisionQuery.ChooseAmounts]], apart so that
+    * `wellFormed` stays small enough for coverage instrumentation. */
+  private def wellFormedAmounts(decisionId: String,
+      query: DecisionQuery.ChooseAmounts): Either[OathViolation, Unit] =
+    val DecisionQuery.ChooseAmounts(slots, distinct, heading, confirmLabel) =
+      query
+    val refs = slots.map(_.ref)
+    val suggested = slots.flatMap(_.suggested)
+    val lowest = slots.map(_.minimum).minOption.getOrElse(0).toLong
+    val highest = slots.map(_.maximum).maxOption.getOrElse(0).toLong
+    for
+      _ <- require(heading.exists(_.trim.nonEmpty), decisionId,
+        "declares no heading")
+      _ <- require(confirmLabel.trim.nonEmpty, decisionId,
+        "declares a blank confirm label")
+      _ <- require(slots.nonEmpty, decisionId, "declares no slot")
+      _ <- require(refs.distinct.size == refs.size, decisionId,
+        "declares duplicate options")
+      _ <- refs.find(DecisionOption.forRef(_).isEmpty) match
+        case Some(ref) => reject(decisionId,
+          s"declares slot ${label(ref)}, which has no presentable option")
+        case None => Right(())
+      _ <- slots.find(s => s.minimum < 0 || s.minimum > s.maximum) match
+        case Some(s) => reject(decisionId, s"declares slot ${label(s.ref)} " +
+          s"with bounds ${s.minimum}..${s.maximum}")
+        case None => Right(())
+      _ <- require(!distinct || slots.size.toLong <= highest - lowest + 1,
+        decisionId, "declares more distinct slots than its bounds hold")
+      _ <- require(slots.exists(s => s.minimum < s.maximum), decisionId,
+        "declares no variable slot, leaving nothing to decide")
+      _ <- require(suggested.isEmpty || suggested.size == slots.size,
+        decisionId, "suggests amounts for some slots but not all")
+      _ <- if suggested.isEmpty then Right(())
+        else acceptsAmounts(decisionId, slots, distinct,
+            slots.zip(suggested).map((s, n) => DistributeAmount(s.ref, n)))
+          .fold(_ => reject(decisionId,
+            "suggests amounts it would not accept"), Right(_))
+    yield ()
+
+  /** One amount per declared slot, each within its bounds, and with
+    * `distinct` no two equal. */
+  private def acceptsAmounts(decisionId: String,
+      slots: Vector[DistributeSlot], distinct: Boolean,
+      amounts: Vector[DistributeAmount]): Either[OathViolation, Unit] =
+    val declared = slots.map(_.ref)
+    val named = amounts.map(_.ref)
+    for
+      _ <- require(named.forall(declared.contains), decisionId,
+        "names an option it does not offer")
+      _ <- require(named.distinct.size == named.size, decisionId,
+        "names an option more than once")
+      _ <- require(declared.forall(named.contains), decisionId,
+        "leaves an option without an amount")
+      _ <- slots.find(s => amounts.find(_.ref == s.ref)
+          .exists(a => a.amount < s.minimum || a.amount > s.maximum)) match
+        case Some(s) => reject(decisionId, s"gives ${label(s.ref)} an amount " +
+          s"outside ${s.minimum}..${s.maximum}")
+        case None => Right(())
+      _ <- require(!distinct ||
+          amounts.map(_.amount).distinct.size == amounts.size, decisionId,
+        "gives two options the same amount")
+    yield ()
+
   private def acceptsTerms(decisionId: String, participants: Vector[PlayerId],
       bounds: Map[PlayerId, NegotiationBounds], by: PlayerId,
       terms: NegotiationTerms): Either[OathViolation, Unit] =
@@ -344,15 +471,32 @@ object DecisionQueries:
         val recipients = terms.transfers.map(_.recipient) ++
           terms.disclosures.map(_.recipient) ++ terms.citizenship
         val relics = terms.transfers.flatMap(_.relics)
+        val advisers = terms.transfers.flatMap(_.advisers)
+        val sites = terms.transfers.flatMap(_.sites)
         for
           _ <- require(recipients.forall(own.recipients.contains), decisionId,
             "offers terms to a player outside the deal")
           _ <- require(terms.transfers.map(_.favor.toLong).sum <=
             own.maxFavor.toLong, decisionId,
             s"offers more than ${own.maxFavor} favor")
+          _ <- require(terms.transfers.map(_.secrets.toLong).sum <=
+            own.maxSecrets.toLong && terms.transfers.forall(transfer =>
+              transfer.secrets == 0 ||
+                own.secretRecipients.contains(transfer.recipient)),
+            decisionId, "offers secrets it cannot")
           _ <- require(relics.distinct.size == relics.size &&
             relics.forall(own.relics.contains), decisionId,
             "offers a relic its author does not hold")
+          _ <- require(advisers.distinct.size == advisers.size &&
+            advisers.forall(own.advisers.contains) &&
+            terms.transfers.forall(transfer => transfer.advisers.isEmpty ||
+              own.adviserRecipients.contains(transfer.recipient)),
+            decisionId, "offers an adviser it cannot")
+          _ <- require(sites.distinct.size == sites.size &&
+            sites.forall(own.sites.contains) &&
+            terms.transfers.forall(transfer => transfer.sites.isEmpty ||
+              own.siteRecipients.contains(transfer.recipient)),
+            decisionId, "offers a site it cannot")
           _ <- require(terms.disclosures.map(_.information)
             .forall(own.disclosures.contains), decisionId,
             "promises a disclosure its author cannot make")
@@ -360,6 +504,8 @@ object DecisionQueries:
             (own.citizenshipRefused.isEmpty &&
               terms.citizenship.forall(own.citizenship.contains)),
             decisionId, "offers Citizenship it cannot")
+          _ <- require(terms.bindingPromises.isEmpty || own.bindingPromises,
+            decisionId, "offers a binding promise it cannot")
         yield ()
 
   private def acceptsPartition(decisionId: String,

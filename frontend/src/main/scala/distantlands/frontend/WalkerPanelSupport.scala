@@ -48,17 +48,21 @@ private[frontend] object WalkerPanelSupport:
     */
   private[frontend] def rollOutcomeSummary(outcome: WalkerRollOutcomeState): String =
     val total =
-      if outcome.pool == "recover" then s"${outcome.score} shields so far"
+      if poolLabel(outcome.pool) == ShieldsLabel then
+        s"${outcome.score} shields so far"
       else s"${poolLabel(outcome.pool)} ${outcome.score}"
     s"Rolled ${outcome.faces.map(_.word).mkString(", ")} -- $total" +
       outcome.target.fold("")(target => s" (need $target)") +
       outcome.detail.map(", " + _).mkString + "."
 
+  private val ShieldsLabel = "Shields"
+
   /** What a roll is called in a total line. A pool key is a wire string, so an
     * unknown one is printed as it arrives rather than guessed at.
     */
   private[frontend] def poolLabel(pool: String): String = pool match
-    case "recover" => "Shields"
+    // Explore rolls as a Recover does, against its own difficulty.
+    case "recover" | "explore" => ShieldsLabel
     case "campaign.attack" => "Attack"
     case "campaign.defense" => "Defense"
     case other => other

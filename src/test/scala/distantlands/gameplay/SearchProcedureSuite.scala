@@ -10,7 +10,8 @@ import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import distantlands.gameplay.actions.search.SearchProcedure
 import distantlands.gameplay.actions.VisionRules
 import distantlands.gameplay.powerresolver.Transform
-import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.phases.PhaseMenu
+import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
 import distantlands.model._
@@ -64,6 +65,27 @@ class SearchProcedureSuite extends munit.FunSuite:
     assertEquals(offered, Vector[DecisionOptionRef](
       DecisionOptionRef.Deck(CardDeck.World),
       DecisionOptionRef.DiscardPile(region)))
+
+  /** Whether p1's Act menu offers Search on `ready`. */
+  private def searchOffered(ready: ReadyGame): Boolean =
+    PhaseMenu.offers(PhaseMenu.Menu.Act, catalog, ready, actor,
+      PhasePowerCatalog.default, WalkerPowers.selected(
+        WalkerPowerCatalog.default(catalog), Vector.empty))
+      .find(offer => PhaseMenu.optionFor(ActionRef.Search, Vector.empty)
+        .contains(offer.option.ref)).exists(_.option.available)
+
+  test("the actor's own temporary hand refuses their Search and leaves it " +
+      "off the menu; another player's hand does not"):
+    val base = atAncientCity.worldDeckTop(topCards*)
+    val own = base.hand(actor, RainBootsCard).ready
+    assertEquals(rejected(rules.startWalker(OathState.Ready(own),
+      ActionRef.Search, actor)), OathViolation.SearchDrawMismatch(
+      "a temporary card hand already exists"))
+    assert(!searchOffered(own))
+    val others = base.hand(Table.p2, RainBootsCard).ready
+    assert(searchOffered(others))
+    accepted(rules.startWalker(OathState.Ready(others), ActionRef.Search,
+      actor))
 
   test("a start that names a selection is refused"):
     assertEquals(rejected(SearchProcedure.build(catalog, atAncientCity.ready,

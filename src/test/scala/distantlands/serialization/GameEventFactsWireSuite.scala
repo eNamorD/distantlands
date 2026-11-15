@@ -1,6 +1,7 @@
 package distantlands.serialization
 
 import distantlands.gameplay.setup.FirstGameSetupFixture.{chronicle, orders}
+import distantlands.gameplay.setup.LaterGameFixture
 import distantlands.model._
 import distantlands.model.OathEvent.{RoundEnded, WarExhaustionResolved}
 import distantlands.serialization.WalkerWireEvents.{assertStreamRoundTrips,
@@ -37,6 +38,22 @@ class GameEventFactsWireSuite extends munit.FunSuite:
       OathEvent.EndDieRolled(7, 3,
         Some(GameResult(PlayerId("p2"), VictoryKind.Successor))))
     assertStreamRoundTrips("end-die", events)
+
+  test("an end die without a modifier, as saved before Arbiter, decodes " +
+      "with modifier 0, and a modified one round-trips"):
+    val unmodified = accepted(GameEventWire.encodeEvent("end-die", 0,
+      OathEvent.EndDieRolled(6, 5, None)))
+    assert(!unmodified("payload").obj.contains("modifier"))
+    // An event saved before Arbiter is exactly an unmodified one.
+    assertEquals(accepted(GameEventWire.decode(unmodified)).event,
+      OathEvent.EndDieRolled(6, 5, None, 0))
+    val modified = OathEvent.EndDieRolled(5, 4,
+      Some(GameResult(PlayerId("p1"), VictoryKind.StableRegime)), 2)
+    val encoded = accepted(GameEventWire.encodeEvent("end-die", 1, modified))
+    assertEquals(encoded("payload")("modifier"), ujson.Num(2))
+    assertEquals(accepted(GameEventWire.decode(encoded)).event, modified)
+    assertStreamRoundTrips("end-die-modified", Vector(modified,
+      OathEvent.EndDieRolled(7, 3, None, -1)))
 
   test("an end die with half a win or an unknown kind is refused"):
     def encodedWin = accepted(GameEventWire.encodeEvent("end-die", 0,
@@ -78,6 +95,23 @@ class GameEventFactsWireSuite extends munit.FunSuite:
     val encoded = accepted(GameEventWire.encodeEvent("goal", 0L, event))
     assertEquals(encoded("payload")("chronicle")("worldDeck").arr.size,
       chronicle.worldDeck.size)
+    assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
+
+  test("GameStarted round trips the legacy order it dealt"):
+    val dealt = orders.copy(legacyOrder =
+      Vector(LegacyId("L22"), LegacyId("L17")))
+    val event = OathEvent.GameStarted(chronicle, dealt)
+    val encoded = accepted(GameEventWire.encodeEvent("goal", 0L, event))
+    assertEquals(encoded("payload")("orders")("legacyOrder"),
+      ujson.Arr("L22", "L17"))
+    assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
+
+  test("GameStarted round trips a Teeming World Chronicle and its deal"):
+    val teemingWorld = chronicle.copy(foundations = Map(FoundationNumber.IV ->
+      FoundationState(FoundationFace.Altered, Set.empty)))
+    val event = OathEvent.GameStarted(teemingWorld,
+      LaterGameFixture.orders(teemingWorld, orders.firstPlayer))
+    val encoded = accepted(GameEventWire.encodeEvent("teeming", 0L, event))
     assertEquals(accepted(GameEventWire.decode(encoded)).event, event)
 
   test("a GameStarted Chronicle round trips its era scores and Oathkeeper goal"):

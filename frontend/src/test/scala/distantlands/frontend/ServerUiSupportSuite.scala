@@ -98,5 +98,5 @@ class ServerUiSupportSuite extends FunSuite:
     assertEquals(ServerUiSupport.pileSymbol(1, Some("relic")), "R")
     assertEquals(ServerUiSupport.pileSymbol(3, None), "")
     assertEquals(ServerUiSupport.pileSymbol(0, Some("denizen")), "")
-    assertEquals(ServerUiSupport.pileCardClasses(2), "pile-card pile-back")
-    assertEquals(ServerUiSupport.pileCardClasses(0), "pile-card pile-empty")
+    assertEquals(ServerUiSupport.pileCardClasses(2), "pile-back")
+    assertEquals(ServerUiSupport.pileCardClasses(0), "pile-empty")

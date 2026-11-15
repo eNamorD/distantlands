@@ -13,7 +13,8 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseOneAnswer, PartitionAnswer}
 import distantlands.serialization.GameEventWire
 import distantlands.gameplay.chronicle.ChronicleBeginProcedure
-import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.{LegacyDeal, SetupAdviserSteps,
+  SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.testkit.{Commands, Look, Outcomes, PlacementPicks,
   RoundEndChoices, Table}
@@ -48,7 +49,8 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     val poweredWorldDeck = place(chronicle.worldDeck, p2Index, whenPlayedPower)
     val poweredChronicle = chronicle.copy(worldDeck = poweredWorldDeck)
     val poweredOrders = ChronicleFirstGamePlan.dealOrder(FirstGameBootstrapConfig(orders.participants, orders.firstPlayer),
-      poweredChronicle.worldDeck, poweredChronicle.relicDeck)
+      poweredChronicle.worldDeck, poweredChronicle.relicDeck,
+      LegacyDeal.deck(catalog, poweredChronicle))
     var service = new GameApplicationService(catalog, repository,
       roundEndRandomPort = RoundEndChoices.firstCandidate)
     var position = setupViaService(service, "powered-playability", sites,
@@ -147,20 +149,21 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     // `WalkerStepRecorded`/`WalkerCompleted` fact per player decision and
     // delta, not one event per legacy setup command. The first Wake has
     // nothing to decide, so its End Wake step and completion follow, then
-    // the Act menu parks: 1 GameStarted, 10 parks (3 decisions per seat and
-    // the Act menu), 17 steps and 2 completions (Setup's and the first
-    // Wake's) make 30. Each of the 9 answers opens its command batch with a
-    // `CommandAccepted`, so 39. Setup journals its own Game Log lines, two
-    // per seat -- the pawn and the kept adviser, nobody having a card to
-    // reveal -- so 45.
-    assertEquals(reloaded.nextSequence, 45L)
+    // the Act menu parks: 1 GameStarted, 13 parks (4 decisions per seat --
+    // pawn, kept legacy, adviser, reveal -- and the Act menu), 23 steps and
+    // 2 completions (Setup's and the first Wake's) make 39. Each of the 12
+    // answers opens its command batch with a `CommandAccepted`, so 51.
+    // Setup journals its own Game Log lines, three per seat -- the pawn, the
+    // kept legacy and the kept adviser, nobody having a card to reveal --
+    // so 60.
+    assertEquals(reloaded.nextSequence, 60L)
     val records = loaded(repository.load("game-v2")).records
-    assertEquals(records.size, 45)
+    assertEquals(records.size, 60)
     val eventType = (record: String) => ujson.read(record)("eventType").str
     assertEquals(records.groupMapReduce(eventType)(_ => 1)(_ + _),
-      Map("setup.game-started" -> 1, "walker.parked" -> 10,
-        "walker.step-recorded" -> 17, "walker.completed" -> 2,
-        "walker.power-noted" -> 6, "undo.command-accepted" -> 9))
+      Map("setup.game-started" -> 1, "walker.parked" -> 13,
+        "walker.step-recorded" -> 23, "walker.completed" -> 2,
+        "walker.power-noted" -> 9, "undo.command-accepted" -> 12))
     assert(records.forall(record =>
       ujson.read(record)("formatVersion").num.toInt ==
         GameEventWire.FormatVersion))
@@ -238,13 +241,13 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
           PartitionAnswer(Vector(
             DecisionPlacement(DecisionOptionRef.Denizen(
               WizardsConclaveCard.id),
-              SetupProcedure.adviserKeepKey),
+              SetupAdviserSteps.keepKey),
             DecisionPlacement(DecisionOptionRef.Denizen(
               ErrandBoyCard.id),
-              SetupProcedure.adviserDiscardKey),
+              SetupAdviserSteps.discardKey),
             DecisionPlacement(DecisionOptionRef.Denizen(
               NatureWorshipCard.id),
-              SetupProcedure.adviserDiscardKey)))))
+              SetupAdviserSteps.discardKey)))))
       ),
       Left(GameApplicationError.StaleClientPosition(1L, 2L)))
     assertEquals(

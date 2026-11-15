@@ -6,9 +6,17 @@ package distantlands.model
   * starts with, and is absent for a procedure's own line, which starts with
   * its sentence. `key` picks the writer's template. `args` are typed
   * references, never text, so a card still passes the log's knowledge rule.
+  * `readers`, when set, are the only players whose Game Log shows it
+  * (catalog batch 12, ruling 23: a private deal's promises); `None` shows it
+  * to every viewer, spectators too.
   */
 final case class LogNote(source: Option[PowerSourceRef], key: String,
-    args: Vector[NoteArg])
+    args: Vector[NoteArg], readers: Option[Set[PlayerId]] = None):
+  require(readers.forall(_.nonEmpty), "a note's readers name a player")
+
+  /** This note, shown only to `players`. */
+  def readBy(players: Iterable[PlayerId]): LogNote =
+    copy(readers = Some(players.toSet))
 
 sealed trait NoteArg extends Product with Serializable
 object NoteArg:
@@ -38,12 +46,21 @@ object NoteArg:
   final case class Goal(goal: OathkeeperGoal) extends NoteArg
   /** Several players as one phrase, "Blue and Red". */
   final case class Players(ids: Vector[PlayerId]) extends NoteArg
+  /** What a Negotiation author wrote they will do, as they wrote it
+    * (catalog batch 12, ruling 12). The one argument that is text rather
+    * than a reference: it names no card, so the log's knowledge rule has
+    * nothing to judge. The Game Log quotes it as plain text. */
+  final case class Promise(text: String) extends NoteArg
   /** Several clauses as one phrase, "lost 2 warbands, burned 1 favor and
     * was sent to the Mine". The joining is the Game Log's. */
   final case class Clauses(parts: Vector[NoteClause]) extends NoteArg
   /** Warbands placed by site, "2 warbands on the Mine and 1 warband on the
     * Standing Stones". */
   final case class Placements(entries: Vector[(Int, SiteId)]) extends NoteArg
+  /** Lineage points by suit, "3 from Beast, 1 from Nomad": the winner's
+    * legacy bonus (Legacies implementation ruling R30). The entries are
+    * joined with commas, since the template continues the list. */
+  final case class SuitShares(entries: Vector[(Int, Suit)]) extends NoteArg
   /** Several references of different kinds as one joined phrase, "Broken
     * Peaks, Blue's pawn, Wine of Welcome and the People's Favor": a
     * Campaign's targets, and a won Raid's spoils. The joining is the Game

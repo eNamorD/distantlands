@@ -1,0 +1,31 @@
+0.0 round 0 | Round 5
+0.1 turn 0 | [player:p3|p3]'s turn
+0.2 phase 0 | Act
+5.0 phase 0 | Rest
+6.0 trigger 1 use-power:relic.the-grand-scepter.action@4 | [player:p3|p3] discarded [card:L01|Iron Hand] on becoming a Citizen
+9.0 action 1 use-power:relic.the-grand-scepter.action@4 | [card:grand-scepter|The Grand Scepter]: Became a Citizen.
+18.0 decision 1 | [player:p2|p2] modified the end die by +2 with [card:L23|Arbiter]
+20.0 roll 1 | The end die rolled 4, modified by +2 to 6. Stable Regime needed 6.
+20.1 victory 0 | [player:p1|p1] won by Stable Regime
+25.0 phase 0 | Chronicle
+28.0 delta 1 | [player:p1|p1] became Chancellor
+30.0 decision 1 | [player:p1|p1] took the Throne task
+32.0 decision 1 | [player:p1|p1] took the World task
+37.0 decision 1 | [player:p1|p1] took the Beacon task
+45.0 decision 1 | [player:p2|p2] took the World task
+47.0 delta 1 | Moved 1 Imperial warband to [site:site:ancient-city|Ancient City]
+50.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
+59.0 decision 1 | The Oathkeeper goal became Supremacy
+68.0 decision 1 | [player:p2|p2] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+73.0 decision 1 | [player:p2|p2] kept a Denizen as a starting adviser
+74.0 delta 1 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
+86.0 decision 1 | [player:p1|p1] chose Discord, Arcane and Order
+96.0 decision 1 | [player:p1|p1] welcomed [card:21|Naysayers] as a starting adviser
+98.0 delta 1 | [site:site:broken-peaks|Broken Peaks] was archived
+99.0 delta 1 | [site:site:buried-giant|Buried Giant] was archived
+100.0 delta 1 | [site:site:deep-woods|Deep Woods] was archived
+101.0 delta 1 | [site:site:desolate-shore|Desolate Shore] was archived
+102.0 delta 1 | [site:site:dunes|Dunes] was archived
+103.0 delta 1 | [site:site:fair-isle|Fair Isle] was archived
+104.0 delta 1 | [site:site:golden-valley|Golden Valley] was archived
+105.0 delta 1 | [site:site:ancient-city|Ancient City] stays in the Empire

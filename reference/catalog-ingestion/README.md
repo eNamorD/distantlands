@@ -22,6 +22,10 @@ were retired in the card classes phase: card data is now Scala, see
   values, defenses, and rules from the supplied relic print sheets.
 - `legacy-transcriptions.json` contains visually reviewed printed IDs and
   rules from the supplied legacy print sheets.
+  Each legacy's `goal` and `suit` were read from the ribbon icon and wax
+  seal of the card images in the `bgs-cards` repository
+  (`content/card-images/oath/en-US/<Name> (NF).png`), with the goal legend
+  from the Sun task card; `alters` is the foundation it sets.
 - `edifice-rule-overrides.json` corrects symbol-bearing or otherwise
   incomplete edifice OCR against the supplied print sheets and individual TTS
   card images.

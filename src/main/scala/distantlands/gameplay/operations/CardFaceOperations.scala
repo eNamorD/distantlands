@@ -17,7 +17,7 @@ private[operations] object CardFaceOperations:
     case Left(error) => Vector(error)
     case Right(located) => located.state match
       case Some(_: DenizenState) | Some(_: VisionState) |
-          Some(_: RelicState) => Vector.empty
+          Some(_: RelicState) | Some(_: LegacyState) => Vector.empty
       // Looking at a discarded card: it has no orientation state (a discard is
       // always facedown), so revealing it only tells every player the card.
       case None if isDiscardLook(at, orientation) =>
@@ -45,11 +45,15 @@ private[operations] object CardFaceOperations:
       orientation: Orientation): Either[OperationError, ReadyGame] = for
     located <- card(ready, id, at)
     updated <- located.state match
-      case Some(_: DenizenState) | Some(_: VisionState) | Some(_: RelicState) =>
+      case Some(_: DenizenState) | Some(_: VisionState) | Some(_: RelicState) |
+          Some(_: LegacyState) =>
         updateCardState(ready, id):
           case value: DenizenState => value.copy(orientation = orientation)
           case value: VisionState => value.copy(orientation = orientation)
           case value: RelicState => value.copy(orientation = orientation)
+          // Faceup is active, facedown dormant (CR section 12).
+          case value: LegacyState =>
+            value.copy(active = orientation == Orientation.FaceUp)
           case value => value
       case None if isDiscardLook(at, orientation) => Right(seenByAll(ready, id, at))
       case _ => Left(UnsupportedOrientation(id, at))

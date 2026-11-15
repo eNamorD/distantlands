@@ -61,6 +61,18 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
     * "Redo"). */
   def format(steps: Vector[ReplayStep[OathState, OathEvent]],
       viewer: Option[PlayerId]): Vector[LogEntry] =
+    format(steps, viewer, everyLine = false)
+
+  /** Every line, read-restricted ones too, each worded for `viewer`: what
+    * `format` gives before it drops the lines `viewer` may not read. The
+    * Game Log properties compare viewers on it. */
+  private[gamelog] def formatEveryLine(
+      steps: Vector[ReplayStep[OathState, OathEvent]],
+      viewer: Option[PlayerId]): Vector[LogEntry] =
+    format(steps, viewer, everyLine = true)
+
+  private def format(steps: Vector[ReplayStep[OathState, OathEvent]],
+      viewer: Option[PlayerId], everyLine: Boolean): Vector[LogEntry] =
     val markers = steps.indices.toVector
       .filter(at => isVoidMarker(steps(at).event.event))
     // The taken-back markers still standing before `end`, with their
@@ -85,10 +97,10 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
     val applied = LogJournal.sharedOpSteps()
     val stood = standing(steps.size)
     val voided = stood.flatMap((at, marker) =>
-      formatLive(live(at), viewer, applied).filter(entry =>
+      formatLive(live(at), viewer, applied, everyLine).filter(entry =>
         entry.sequence >= marker.from && entry.sequence < marker.until))
     withdrawn(steps, takenBack.mark(stood.map(_._2),
-      (formatLive(live(steps.size), viewer, applied) ++ voided)
+      (formatLive(live(steps.size), viewer, applied, everyLine) ++ voided)
         .sortBy(entry => (entry.sequence, entry.ordinal))))
 
   /** A withdrawn request's line, struck through under no header (consent
@@ -115,8 +127,8 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
 
   private def formatLive(steps: Vector[ReplayStep[OathState, OathEvent]],
       viewer: Option[PlayerId],
-      applied: ReplayStep[OathState, OathEvent] => Vector[OpStep])
-      : Vector[LogEntry] =
+      applied: ReplayStep[OathState, OathEvent] => Vector[OpStep],
+      everyLine: Boolean): Vector[LogEntry] =
     val journal = new LogJournal(steps, applied)
     (0 until journal.size).foldLeft(
         (Option.empty[Run], Vector.empty[LogEntry])) {
@@ -131,9 +143,13 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
             section = entries.reverseIterator.flatMap(_.section).nextOption()))
           case _ => opened
         val posted = quietWake(entries.lastOption, filed)
-        (next, entries ++ posted.zipWithIndex.map { case (entry, ordinal) =>
-          LogEntry(journal.sequence(at), ordinal, entry.kind,
-            entry.spans, entry.section) })
+        // Numbered first, then dropped for a viewer outside the line's
+        // readers, so every other line keeps its (sequence, ordinal).
+        (next, entries ++ posted.zipWithIndex.collect {
+          case (entry, ordinal) if everyLine ||
+              entry.readers.forall(readers => viewer.exists(readers)) =>
+            LogEntry(journal.sequence(at), ordinal, entry.kind,
+              entry.spans, entry.section) })
     }._2
 
   /** A journal that does not begin with `GameStarted` began at a position
@@ -185,8 +201,8 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
           wonBy(VictoryKind.Visionary, visions))), run)
       case OathEvent.WarExhaustionResolved(winner, kind, visions, _) =>
         (Vector(victory(winner, wonBy(kind, visions))), run)
-      case OathEvent.EndDieRolled(round, face, result) =>
-        (Posted(LogKind.Roll, Vector(Text(endDie(round, face)))) +:
+      case OathEvent.EndDieRolled(round, face, result, modifier) =>
+        (Posted(LogKind.Roll, Vector(Text(endDie(round, face, modifier)))) +:
           result.map(won => victory(won.winner,
             wonBy(won.kind, won.visions))).toVector, run)
       case _: ConsentEvent => (consent.lines(journal, at, viewer), run)
@@ -308,10 +324,16 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
 
   /** "The end die rolled 4. Stable Regime needed 5 or more." The die is
     * rolled only at rounds 5 to 7, which all have a threshold. */
-  private def endDie(round: Int, face: Int): String =
+  /** The roll, and with Arbiter's modifier the total (Legacy in-play
+    * powers R12), then what Stable Regime needed. */
+  private def endDie(round: Int, face: Int, modifier: Int): String =
     val needed = EmpireEndings.threshold(round).fold("")(least =>
       s" Stable Regime needed $least${if least == 6 then "" else " or more"}.")
-    s"The end die rolled $face.$needed"
+    val modified =
+      if modifier == 0 then ""
+      else s", modified by ${if modifier > 0 then "+" else "-"}" +
+        s"${modifier.abs} to ${face + modifier}"
+    s"The end die rolled $face$modified.$needed"
 
   /** The rest of a victory line after the winner's name, for every way a
     * game ends. */
@@ -329,3 +351,6 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
       Vector(Text(" won as the Chancellor"))
     case VictoryKind.Successor =>
       Vector(Text(" won as Successor to the Chancellor"))
+    // No event posts a Conspirator win: the reveal step writes its own
+    // victory line. The case keeps this match exhaustive (R33).
+    case VictoryKind.Conspirator => Vector(Text(" won with Conspirator"))

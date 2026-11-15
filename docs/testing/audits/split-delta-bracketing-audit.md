@@ -18,13 +18,13 @@
 > Written as a read-only audit, 2026-11-02, of the ROADMAP item "Check that a
 > split delta's steps bracket their operation" under Game Log deferred
 > items, which the
-> [log operation strictness decision](../../superpowers/specs/2026-10-19-log-operation-strictness-decision.md)
+> [log operation strictness decision](../../superpowers/specs/2026-10/2026-10-19-log-operation-strictness-decision.md)
 > raised as a separate candidate. Nothing here changes code. Line numbers
 > are those of the tree at commit `0d1ae92`.
 
 Vocabulary: [CONTEXT.md](../../../CONTEXT.md) defines **note**, **note
 boundary** and **command batch**. The
-[Game Log design](../../superpowers/specs/2026-09-25-game-log-design.md),
+[Game Log design](../../superpowers/specs/2026-09/2026-09-25-game-log-design.md),
 "Input" and "Visibility", states the rule this audit checks: every line and
 every visibility judgement is made against the state immediately before and
 after the operation it describes.
@@ -38,7 +38,7 @@ after the operation it describes.
   rule set.
 - The invariant is held by the coincidence of three lists that nothing
   checks against each other: the composites `DetailLines.parts` keeps whole,
-  the children each composite declares in `model/CoreOperations.scala`, and
+  the children each composite declares in its operation family (`model/*Operation.scala`), and
   the patterns `DetailLines.delta` matches. A new rule that matched a child
   of `PayCost`, `Discard.Relic`, `Take` or `Swap` and read `before`/`after`
   would read the whole step's states and nobody would be told.
@@ -98,7 +98,7 @@ leaves, reading `before.turn.phase`), `NoteLines.scala:220`
 A recorded delta is a `Vector[CoreOperation]`
 (`gameplay/walker` `DeltaPayload`), so only the sealed `CoreOperation`
 family reaches `parts`. Walker control nodes are not `CoreOperation`s and
-are never recorded. The composites, from `model/CoreOperations.scala`:
+are never recorded. The composites, from the operation families (`model/*Operation.scala`):
 
 ### Kept whole by `parts` — OK by construction
 

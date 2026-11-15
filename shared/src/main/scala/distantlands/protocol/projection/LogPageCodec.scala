@@ -19,7 +19,7 @@ import ProjectionCodecSupport._
   * stale cached bundle, which the client reports and offers to reload.
   * Tolerating the kind instead would cost an `Unknown` case that every
   * downstream match carries forever
-  * (`docs/superpowers/specs/2026-10-15-typed-log-span-wire-design.md`).
+  * (`docs/superpowers/specs/2026-10/2026-10-15-typed-log-span-wire-design.md`).
   */
 object LogPageCodec:
   private val PageFields = Set("gameId", "after", "nextSequence", "entries")

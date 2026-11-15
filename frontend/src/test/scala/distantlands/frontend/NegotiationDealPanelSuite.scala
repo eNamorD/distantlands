@@ -300,3 +300,240 @@ class NegotiationDealPanelSuite extends munit.FunSuite:
     assert(box.checked)
     box.click()
     assert(box.checked)
+
+  /** Red's deal with one promise from each player: red's plain one and
+    * blue's binding one. */
+  private def dealWithPromises(bindingOpen: Boolean) =
+    val base = dealWhereBlueHasAccepted()
+    base.copy(promises = Vector(
+        NegotiationPromiseState("red", "I will not attack you.", binding = false),
+        NegotiationPromiseState("blue", "I will give you 1 favor.", binding = true)),
+      editing = base.editing.map(_.copy(bindingPromisesOpen = bindingOpen)))
+
+  test("every viewer reads each promise as written"):
+    val panel = render(spectator(dealWithPromises(bindingOpen = false)),
+      new RecordingControls())
+    assertEquals(Dom.all(panel, ".negotiation-promise").map(_.textContent),
+      Vector("red promises: “I will not attack you.”",
+        "blue makes a binding promise: “I will give you 1 favor.”"))
+
+  test("the owner edits their promises, and Save sends them trimmed"):
+    val ui = new RecordingControls()
+    val panel = render(owner(dealWithPromises(bindingOpen = false)), ui)
+    // Red's own promise is restored into its field; blue's is not.
+    val restored = input(panel, ".negotiation-promise-item input[type=text]")
+    assertEquals(restored.value, "I will not attack you.")
+    assertEquals(restored.maxLength, 160)
+    button(panel, ".negotiation-add-promise").click()
+    val fields = Dom.all(panel, ".negotiation-promise-item input[type=text]")
+    assertEquals(fields.length, 2)
+    as[dom.html.Input](fields(1)).value = "  Also this.  "
+    // No binding section while the bounds close it.
+    assertEquals(Dom.all(panel, ".negotiation-binding-promises").length, 0)
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(terms)) =>
+        terms }
+    assertEquals(sent.map(_.promises),
+      Vector(Vector("I will not attack you.", "Also this.")))
+    assertEquals(sent.map(_.bindingPromises), Vector(Vector.empty[String]))
+
+  test("a removed or blank promise is not sent, and Add stops at five"):
+    val ui = new RecordingControls()
+    val panel = render(owner(dealWithPromises(bindingOpen = false)), ui)
+    button(panel, ".negotiation-remove-promise").click()
+    val add = button(panel, ".negotiation-add-promise")
+    (1 to 5).foreach(_ => add.click())
+    assert(add.disabled)
+    assertEquals(Dom.all(panel,
+      ".negotiation-promise-item input[type=text]").length, 5)
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(terms)) =>
+        terms.promises }
+    assertEquals(sent, Vector(Vector.empty[String]))
+
+  test("binding promises get their own section when the bounds open it"):
+    val ui = new RecordingControls()
+    val panel = render(owner(dealWithPromises(bindingOpen = true)), ui)
+    val binding = Dom.one(panel, ".negotiation-binding-promises")
+    as[dom.html.Button](Dom.one(binding, ".negotiation-add-promise")).click()
+    as[dom.html.Input](Dom.one(binding, "input[type=text]")).value =
+      "I will not attack you next round."
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(terms)) =>
+        terms.bindingPromises }
+    assertEquals(sent, Vector(Vector("I will not attack you next round.")))
+
+  test("each Remove names its promise, removes its own row, and a repeat is sent once"):
+    val ui = new RecordingControls()
+    val panel = render(owner(dealWithPromises(bindingOpen = false)), ui)
+    val add = button(panel, ".negotiation-add-promise")
+    add.click(); add.click()
+    val fields = Dom.all(panel, ".negotiation-promise-item input[type=text]")
+      .map(as[dom.html.Input](_))
+    fields(1).value = "Second."
+    fields(2).value = " I will not attack you. "
+    assertEquals(Dom.all(panel, ".negotiation-remove-promise")
+      .map(_.getAttribute("aria-label")),
+      Vector("Remove Promise 1", "Remove Promise 2", "Remove Promise 3"))
+    as[dom.html.Button](Dom.all(panel, ".negotiation-remove-promise")(1)).click()
+    assertEquals(Dom.all(panel, ".negotiation-remove-promise")
+      .map(_.getAttribute("aria-label")),
+      Vector("Remove Promise 1", "Remove Promise 2"))
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(terms)) =>
+        terms.promises }
+    assertEquals(sent, Vector(Vector("I will not attack you.")))
+
+  private val giftable = CardDetails("d7", "denizen", "Tinker",
+    orientation = Some("face-up"))
+
+  test("an adviser is offered only to the recipients the rules allow, and " +
+      "Save sends it as a world card"):
+    val deal = threeWay(NegotiationEditingState(3, Vector.empty, Vector.empty,
+      Vector.empty, canAccept = false, giftableAdvisers = Vector(giftable),
+      adviserRecipients = Vector("blue")))
+    val ui = new RecordingControls()
+    val panel = render(owner(deal), ui)
+    assert(Dom.all(panel, "[aria-label='Give Tinker to yellow']").isEmpty)
+    box(panel, "Give Tinker to blue").checked = true
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(
+          terms)) => terms }
+    assertEquals(sent.flatMap(_.transfers).flatMap(_.advisers),
+      Vector(distantlands.protocol.WorldCard("denizen", "d7")))
+
+  test("secrets are offered only to the recipients the rules allow, and " +
+      "Save sends the amount"):
+    val deal = threeWay(NegotiationEditingState(3, Vector.empty,
+      Vector.empty, Vector.empty, canAccept = false, editableSecrets = 2,
+      secretRecipients = Vector("blue")))
+    val ui = new RecordingControls()
+    val panel = render(owner(deal), ui)
+    assert(Dom.all(panel, "[aria-label='Secrets offered to yellow']")
+      .isEmpty)
+    val secrets = box(panel, "Secrets offered to blue")
+    assertEquals(secrets.max, "2")
+    secrets.value = "2"
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(
+          terms)) => terms }
+    assertEquals(sent.flatMap(_.transfers).map(t =>
+      t.recipientPlayerId -> t.secrets).toMap, Map("blue" -> 2,
+      "yellow" -> 0))
+
+  test("a transfer names the secrets it gives"):
+    val base = dealWhereBlueHasAccepted()
+    val panel = render(spectator(base.copy(transfers = Vector(
+      NegotiationTransferState(authorPlayerId = "blue",
+        recipientPlayerId = "red", favor = 1, relicCount = 0,
+        relics = Vector.empty, secrets = 2)))), new RecordingControls())
+    assertEquals(Dom.one(panel, ".negotiation-transfer").textContent,
+      "blue gives red: 1 favor, 2 secrets")
+
+  test("a transfer names the advisers the viewer can see and counts the rest"):
+    val base = dealWhereBlueHasAccepted()
+    val panel = render(spectator(base.copy(transfers = Vector(
+      NegotiationTransferState(authorPlayerId = "blue",
+        recipientPlayerId = "red", favor = 0, relicCount = 0,
+        relics = Vector.empty, adviserCount = 2,
+        advisers = Vector(giftable))))), new RecordingControls())
+    assertEquals(Dom.one(panel, ".negotiation-transfer").textContent,
+      "blue gives red: Tinker, 1 facedown adviser")
+
+  test("terms over an adviser limit withhold Accept with the reason"):
+    val base = dealWhereBlueHasAccepted(canAccept = false)
+    val panel = render(owner(base.copy(editing = base.editing.map(_.copy(
+      overAdviserLimit = Vector("blue"))))), new RecordingControls())
+    val accept = button(panel, ".negotiation-accept")
+    assertEquals(accept.getAttribute("aria-disabled"), "true")
+    assertEquals(accept.getAttribute("data-tip"),
+      "These terms would leave blue over their adviser limit.")
+
+  private val dunes = distantlands.protocol.projection
+    .NegotiationSiteProjection("site:dunes", "Dunes")
+
+  test("a site is offered only to the recipients the rules allow, and " +
+      "Save sends its id"):
+    val deal = threeWay(NegotiationEditingState(3, Vector.empty, Vector.empty,
+      Vector.empty, canAccept = false, giftableSites = Vector(dunes),
+      siteRecipients = Vector("blue")))
+    val ui = new RecordingControls()
+    val panel = render(owner(deal), ui)
+    assert(Dom.all(panel, "[aria-label='Give Dunes to yellow']").isEmpty)
+    box(panel, "Give Dunes to blue").checked = true
+    button(panel, ".negotiation-save").click()
+    val sent = ui.submitted.collect {
+      case Intent.ResolveWalker(_, DecisionAnswerWire.ProposeTermsWire(
+          terms)) => terms }
+    assertEquals(sent.flatMap(_.transfers).flatMap(_.siteIds),
+      Vector("site:dunes"))
+
+  test("a transfer names the sites it gives"):
+    val base = dealWhereBlueHasAccepted()
+    val panel = render(spectator(base.copy(transfers = Vector(
+      NegotiationTransferState(authorPlayerId = "blue",
+        recipientPlayerId = "red", favor = 0, relicCount = 0,
+        relics = Vector.empty, sites = Vector(dunes))))),
+      new RecordingControls())
+    assertEquals(Dom.one(panel, ".negotiation-transfer").textContent,
+      "blue gives red: Dunes")
+
+  test("terms that leave a recipient short of warbands withhold Accept " +
+      "with the reason"):
+    val base = dealWhereBlueHasAccepted(canAccept = false)
+    val panel = render(owner(base.copy(editing = base.editing.map(_.copy(
+      shortOfWarbands = Vector("blue"))))), new RecordingControls())
+    val accept = button(panel, ".negotiation-accept")
+    assertEquals(accept.getAttribute("aria-disabled"), "true")
+    assertEquals(accept.getAttribute("data-tip"),
+      "These terms would leave blue too few warbands to rule every site " +
+        "they receive.")
+
+  test("a player outside a private deal reads who negotiates, not the " +
+      "terms"):
+    val hidden = NegotiationDealState(
+      participantPlayerIds = Vector("red", "blue"),
+      acceptedPlayerIds = Vector("blue"), transfers = Vector.empty,
+      disclosures = Vector.empty, privateDeal = true)
+    val panel = render(spectator(hidden), new RecordingControls(),
+      canControl = false, playerId = "white")
+    assertEquals(Dom.one(panel, ".negotiation-private").textContent,
+      "red and blue are negotiating in private.")
+    assertEquals(Dom.one(panel, ".negotiation-status").textContent,
+      "red: reviewing · blue: accepted")
+    assertEquals(Dom.all(panel, ".negotiation-transfer").length, 0)
+
+  test("a participant in a private deal is not told it is outside"):
+    val panel = render(owner(dealWhereBlueHasAccepted().copy(
+      privateDeal = true)), new RecordingControls())
+    assertEquals(Dom.all(panel, ".negotiation-private").length, 0)
+
+  /** A Gathering deal between blue and green that red watches. */
+  private def watchedByRed(passed: Vector[String] = Vector.empty) =
+    NegotiationDealState(participantPlayerIds = Vector("blue", "green"),
+      acceptedPlayerIds = Vector.empty, transfers = Vector.empty,
+      disclosures = Vector.empty, bystanderPlayerIds = Vector("red"),
+      passedPlayerIds = passed)
+
+  test("a bystander passes, or takes back a pass, from the deal panel"):
+    val ui = new RecordingControls()
+    val passing = render(Surface.Negotiate(watchedByRed(), None,
+      Some("gathering.1.deal")), ui)
+    button(passing, "button.negotiation-pass").click()
+    val passed = render(Surface.Negotiate(watchedByRed(Vector("red")), None,
+      Some("gathering.1.deal")), ui)
+    button(passed, "button.negotiation-unpass").click()
+    assertEquals(ui.submitted, Vector(
+      Intent.ResolveWalker("gathering.1.deal",
+        DecisionAnswerWire.PassGatheringWire),
+      Intent.ResolveWalker("gathering.1.deal",
+        DecisionAnswerWire.UnpassGatheringWire)))
+    // A spectator of the same deal gets no button.
+    assertEquals(render(spectator(watchedByRed()), new RecordingControls())
+      .querySelectorAll("button.negotiation-pass").length, 0)

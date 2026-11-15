@@ -4,8 +4,14 @@ import distantlands.catalog.{AdviserOnly, ExecutableCatalog, Locked, ModifierMar
   PrintsPowers, SiteOnly}
 import distantlands.gameplay.PlayerSecretSummary
 import distantlands.gameplay.phases.rest.FinishRestProcedure
-import distantlands.gameplay.powers.{AdviserLimit, PlayerFacts, PowerImplementationStatus}
+import distantlands.gameplay.powers.{AdviserLimit, PlayerFacts, PowerImplementationStatus,
+  WalkerPowerCatalog}
+import distantlands.gameplay.powers.legacies.GoldenKey
 import distantlands.gameplay.powers.wake.TrackerWake
+import distantlands.gameplay.setup.{LegacyKeep, SetupProcedure}
+import distantlands.gameplay.setup.legacies.{SecretSociety, Seer,
+  SetupLegacyRules}
+import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
 import distantlands.model._
 import distantlands.protocol.projection._
 
@@ -67,14 +73,10 @@ private[application] final class GamePresentationProjector(
       case _ => "exile"
 
   def readyWorld(ready: ReadyGame, viewer: Option[PlayerId]) =
-    val current = ready.game.current
-    Vector(
-      region("cradle", Region.Cradle, current.map.cradle, ready, viewer),
-      region("provinces", Region.Provinces, current.map.provinces, ready, viewer),
-      region("hinterland", Region.Hinterland, current.map.hinterland, ready, viewer))
+    Region.all.map(region(_, ready, viewer))
 
-  private def region(id: String, where: Region, sites: Vector[SiteId],
-      ready: ReadyGame, viewer: Option[PlayerId]): SetupRegionProjection =
+  private def region(where: Region, ready: ReadyGame,
+      viewer: Option[PlayerId]): SetupRegionProjection =
     val current = ready.game.current
     // The pile is stored top last; the client reads it top first. A card is
     // a face only to a viewer whose knowledge records it: one who knew it
@@ -85,9 +87,10 @@ private[application] final class GamePresentationProjector(
       then cardDetails(card, None, hidden = false)
       else hiddenCard(cardKind(card))
     }
-    SetupRegionProjection(id, sites.map(site =>
+    SetupRegionProjection(where.key, current.map.sitesIn(where).map(site =>
       siteProjection(site, current.map.sites.get(site), ready, viewer)),
-      cards.size, cards.headOption.map(_.cardKind), cards)
+      cards.size, cards.headOption.map(_.cardKind), cards,
+      current.map.emptySlots(where))
 
   private def siteProjection(siteId: SiteId, state: Option[SiteState],
       ready: ReadyGame, viewer: Option[PlayerId]): SetupSiteProjection =
@@ -124,7 +127,8 @@ private[application] final class GamePresentationProjector(
       state.flatMap(_.forces match {
         case value: SiteForces.Occupied => Some(forceProjection(value, ready))
         case SiteForces.Empty => None
-      }))
+      }),
+      ready.game.current.banners.darkestSecret.festival.contains(siteId))
 
   private def forceProjection(forces: SiteForces.Occupied,
       ready: ReadyGame): SiteForcesProjection =
@@ -188,8 +192,39 @@ private[application] final class GamePresentationProjector(
           Some(card.orientation), hidden = false), ready, card.id)),
         banners(ready).filter(_.holderPlayerId.contains(player.player.value)),
         banked, printed, atSites, restBase, bands,
-        AdviserLimit.drawn(catalog, ready, player.player))
+        AdviserLimit.drawn(catalog, ready, player.player),
+        legacies(ready, viewer, player.lineage))
     }
+
+  /** `lineage`'s legacies as `viewer` may see them (Legacies design, ruling
+    * 1; implementation ruling R18): a face where `identifiesCard` names the
+    * legacy, a legacy back elsewhere. */
+  private def legacies(ready: ReadyGame, viewer: Option[PlayerId],
+      lineage: LineageId): Vector[CardDetailsProjection] =
+    ready.game.campaign.lineages.get(lineage).toVector.flatMap(_.legacies)
+      .map { legacy =>
+        val face = GamePresentationProjector.orientationOf(Some(legacy))
+        if identifiesCard(ready, viewer, legacy.id, face,
+            CardContainer.Lineage(lineage, LineageCardArea.Legacies)) then
+          cardDetails(legacy.id, face, hidden = false)
+        else hiddenCard("legacy")
+      }
+
+  /** The Public Ambitions row, faceup to every viewer. */
+  def publicLegacies(ready: ReadyGame): Vector[CardDetailsProjection] =
+    ready.game.current.commonCards.publicLegacies.map(id =>
+      cardDetails(id, Some(Orientation.FaceUp), hidden = false))
+
+  /** The Reliquary in play as `viewer` may see it (Legacy in-play powers
+    * rulings 9 and 10): facedown, a face where `identifiesCard` names the
+    * relic, a relic back elsewhere; empty while it is set aside (R5). */
+  def reliquary(ready: ReadyGame, viewer: Option[PlayerId])
+      : Vector[CardDetailsProjection] =
+    ready.game.campaign.reliquaryInPlay.map(id =>
+      if identifiesCard(ready, viewer, id, Some(Orientation.FaceDown),
+          CardContainer.Reliquary) then
+        cardDetails(id, Some(Orientation.FaceDown), hidden = false)
+      else hiddenCard("relic"))
 
   /** The warbands standing on `card` (Obsidian Cage, False Prophet), one entry per
     * force: an Exile's by the colour of the player of that lineage. */
@@ -289,8 +324,16 @@ private[application] final class GamePresentationProjector(
     *    so no viewer sees its pile.
     *  - A lineage's starting advisers are named only to the player seated
     *    with that lineage.
-    *  - The Reliquary is named only to the Chancellor, and only in Setup,
-    *    where they pick one of its relics (Empire ruling R29).
+    *  - A lineage's active legacy is named to every viewer, a dormant one
+    *    only to the player seated with that lineage, except in the
+    *    Chronicle Phase, where every legacy is named to everyone; the
+    *    public row to every viewer. A draw Matchmaker's holder keeps for
+    *    another player is named to the holder alone while that keep is the
+    *    parked decision, and to nobody before (R16).
+    *  - The Reliquary is named to the Chancellor in Setup, where they pick
+    *    one of its relics (Empire ruling R29), and to Golden Key's Imperial
+    *    holder whenever they look (Legacy in-play powers ruling 10;
+    *    implementation ruling R1).
     *  - Everything else -- other decks, set-aside relics, the
     *    dispossessed pile, suited reserves, atlas sites -- is never
     *    identified. A card in a deck has no orientation at all, so it must be
@@ -327,7 +370,9 @@ private[application] final class GamePresentationProjector(
       // was discarded.
       case CardContainer.Deck(CardDeck.World) | CardContainer.RegionalDiscard(_) =>
         viewer.exists(player => ready.knowledge.advisers
-          .getOrElse(player, Vector.empty).exists(_ == id))
+          .getOrElse(player, Vector.empty).exists(_ == id) ||
+          (container == CardContainer.Deck(CardDeck.World) &&
+            id.isInstanceOf[VisionId] && deckQuestionPending(ready, player)))
       // The World task deals two stacks faceup and one facedown (CR p. 38).
       // The facedown stack is the last three gathered cards, also after
       // the protected stack leaves; every card before it is on the table
@@ -340,12 +385,81 @@ private[application] final class GamePresentationProjector(
       case CardContainer.Lineage(lineage, LineageCardArea.StartingAdvisers) =>
         viewer.exists(player => ready.game.current.players
           .exists(seat => seat.player == player && seat.lineage == lineage))
+      // An active legacy is faceup for all; a dormant one is facedown in its
+      // owner's play area, and only they know it (Legacies design, ruling 1).
+      // In the Chronicle Phase the game is over and goals are checked
+      // openly, so every legacy is named to everyone (implementation ruling
+      // R18); after Resolve Legacies the only dormant ones were active.
+      // Matchmaker's holder chooses another player's kept legacy: the
+      // draw is named to the holder alone, and only while that keep is the
+      // parked decision; the owner sees backs until one is kept (Legacy
+      // Setup powers ruling 13; R16).
+      case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
+        val matchmade = id match
+          case legacy: LegacyId if !faceup =>
+            LegacyKeep.matchmade(ready, lineage, legacy)
+          case _ => None
+        matchmade.fold(
+          faceup || ready.game.current.turn.phase == Phase.Chronicle ||
+            viewer.exists(player => ready.game.current.players
+              .exists(seat => seat.player == player &&
+                seat.lineage == lineage)))((owner, keeper) =>
+          viewer.contains(keeper) && keepPending(ready, owner))
+      // The Public Ambitions row is faceup.
+      case CardContainer.PublicLegacies => true
+      // A set-aside relic a player peeked: The Ear's holder examines the
+      // scattered relics (Legacy Chronicle powers design, ruling 14; R22).
+      case CardContainer.SetAsideRelics =>
+        viewer.exists(player => ready.knowledge.heldRelics
+          .getOrElse(player, Vector.empty).contains(id))
+      // A Dispossessed card a player peeked: The Bright Beacon's holder
+      // examines them (Legacy Chronicle powers design, ruling 17; R22).
+      case CardContainer.Dispossessed | CardContainer.NewlyDispossessed =>
+        viewer.exists(player => ready.knowledge.advisers
+          .getOrElse(player, Vector.empty).contains(id))
       // The Chancellor chooses a Reliquary relic in Setup (CR p. 8, Empire
-      // ruling R29); nobody else, and nobody later, sees the pile.
+      // ruling R29); Golden Key's Imperial holder may always peek at it
+      // (Legacy in-play powers rulings 2 and 10). Nobody else sees it.
       case CardContainer.Reliquary =>
-        ready.game.current.turn.phase == Phase.Setup &&
-          viewer.exists(Imperials.chancellor(ready).contains)
+        viewer.exists(player =>
+          (ready.game.current.turn.phase == Phase.Setup &&
+            Imperials.chancellor(ready).contains(player)) ||
+            GoldenKey.peeker(ready).contains(player))
       case _ => false
+
+  /** The full walker catalog, for reading Setup's open decisions. */
+  private lazy val setupPowers: WalkerPowers =
+    WalkerPowers.selected(WalkerPowerCatalog.default(catalog), Vector.empty)
+
+  /** Whether Setup's walk is parked on `owner`'s keep (R16). */
+  private def keepPending(ready: ReadyGame, owner: PlayerId): Boolean =
+    setupOpen(ready).contains(LegacyKeep.decisionId(owner))
+
+  /** Whether Setup's walk is parked on `viewer`'s Secret Society or Seer
+    * question, whose options name the world deck's Visions (R20, R22,
+    * R23). Checked only for a Vision in the world deck during Setup, held
+    * by a seated holder, so a plain projection never rebuilds Setup's
+    * tree. */
+  private def deckQuestionPending(ready: ReadyGame, viewer: PlayerId)
+      : Boolean =
+    ready.game.current.turn.phase == Phase.Setup &&
+      (SetupLegacyRules.secretSociety(ready).contains(viewer) ||
+        SetupLegacyRules.seer(ready).contains(viewer)) &&
+      setupOpen(ready).exists(id => id == SecretSociety.decisionId(viewer) ||
+        id == Seer.decisionId(viewer))
+
+  /** The ids of Setup's open decisions: the tree is rebuilt from the state
+    * and read as the decision projection reads it. Empty when Setup is not
+    * parked. */
+  private def setupOpen(ready: ReadyGame): Vector[String] =
+    val current = ready.game.current
+    (for
+      pending <- current.walkerPending
+      if current.walkerProcedure.contains(TriggeredProcedureRef.Setup)
+      tree <- SetupProcedure.build(catalog, ready, current.walkActor,
+        current.walkerStartArgs).toOption
+    yield ProcedureWalker.openDecisions(ready, tree, pending, setupPowers,
+      probing = false).map(_.decisionId)).getOrElse(Vector.empty)
 
   /** [[identifiesCard]] for the card wherever it lies in `ready`: its own
     * orientation and container, looked up rather than passed. False for a
@@ -388,6 +502,7 @@ private[application] final class GamePresentationProjector(
     case Orientation.FaceDown => "face-down"
   def cardKind(card: CardId): String = card match
     case _: VisionId => "vision"
+    case _: LegacyId => "legacy"
     case _ => "denizen"
 
   def cardDetails(id: CardId, orientation: Option[Orientation],
@@ -414,6 +529,17 @@ private[application] final class GamePresentationProjector(
         orientation = orientation.map(orientationName), relicValue = Some(r.value),
         defense = Some(r.defense), hidden = hidden, implemented = cardImplemented(r),
         powers = powerFaces(r))
+    }
+    // A legacy's name, seal and text (implementation ruling R11); its goal
+    // waits for the legacy strip (Legacies design, slice 5).
+    case value: LegacyId => catalog.legacy(value).fold(
+      CardDetailsProjection(value.value, "legacy", safeLabel(value.value),
+        orientation = orientation.map(orientationName), hidden = hidden)) { l =>
+      CardDetailsProjection(value.value, "legacy", l.name, Some(l.suit.key),
+        rulesText = Some(l.rulesText),
+        orientation = orientation.map(orientationName), hidden = hidden,
+        implemented = cardImplemented(l), powers = powerFaces(l),
+        legacyGoal = Some(LegacyGoalProjection(l.goal.key, l.goal.printed)))
     }
     case other => CardDetailsProjection(other.value, other.getClass.getSimpleName,
       safeLabel(other.value), orientation = orientation.map(orientationName), hidden = hidden)
@@ -456,4 +582,6 @@ private[application] object GamePresentationProjector:
       case Some(DenizenState(_, orientation, _)) => Some(orientation)
       case Some(VisionState(_, orientation)) => Some(orientation)
       case Some(RelicState(_, orientation, _)) => Some(orientation)
+      case Some(LegacyState(_, active)) =>
+        Some(if active then Orientation.FaceUp else Orientation.FaceDown)
       case _ => None

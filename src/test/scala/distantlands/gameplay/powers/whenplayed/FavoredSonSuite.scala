@@ -1,5 +1,6 @@
 package distantlands.gameplay.powers.whenplayed
 
+import distantlands.gameplay.VowOfKinshipCard
 import distantlands.gameplay.actions.BannerRules
 import distantlands.gameplay.powers.NoteText
 import distantlands.gameplay.powers.banner.SecretTestamentCard
@@ -37,6 +38,54 @@ class FavoredSonSuite extends munit.FunSuite:
     assertEquals(said(power, done.events), Vector(took))
     assertJournalRebuilds(ready, done.events, done.treeless)
     assertWireRoundTrips(done.events)
+
+  test("takes the Grand Council from its holder, who gets back half its " +
+      "favor, rounded down, by its left ribbon"):
+    val ready = Table.start.adviser(p1, son).peoplesFavor(Some(p2),
+      favor = 3, face = PeoplesFavorFace.GrandCouncil).ready
+    val done = Outcomes.finished(play(ready, power, son))
+    assertEquals(Look(done.treeless).peoplesFavorHolder, Some(p1))
+    assertEquals(Look(done.treeless).favorOnPeoplesFavor, 0)
+    assertEquals(Look(done.treeless).favor(p2), Look(ready).favor(p2) + 1)
+    assertEquals(done.treeless.banks.favor, banksAfterRibbon(ready, 2))
+    assertJournalRebuilds(ready, done.events, done.treeless)
+
+  test("a Grand Council holder with Vow of Kinship faceup gets their half " +
+      "in the Nomad bank, and the rest returns to the banks that are least " +
+      "after it"):
+    // Nomad's bank is empty and every other holds 2: the holder's half, 2,
+    // lands in Nomad first, so every bank holds 2 when the rest returns, to
+    // Discord and then Arcane, leftmost first.
+    val ready = Table.start.adviser(p1, son).adviser(p2, VowOfKinshipCard)
+      .peoplesFavor(Some(p2), favor = 4, face = PeoplesFavorFace.GrandCouncil)
+      .banksHoldingOnly(Suit.Discord -> 2, Suit.Arcane -> 2, Suit.Order -> 2,
+        Suit.Hearth -> 2, Suit.Beast -> 2).ready
+    val done = Outcomes.finished(play(ready, power, son))
+    assertEquals(Look(done.treeless).favor(p2), Look(ready).favor(p2))
+    assertEquals(done.treeless.banks.favor, Map(Suit.Discord -> 3,
+      Suit.Arcane -> 3, Suit.Order -> 2, Suit.Hearth -> 2, Suit.Beast -> 2,
+      Suit.Nomad -> 2))
+    assertJournalRebuilds(ready, done.events, done.treeless)
+
+  test("takes the Grand Council with no favor on it: nothing moves but " +
+      "the banner"):
+    val ready = Table.start.adviser(p1, son).peoplesFavor(Some(p2),
+      favor = 0, face = PeoplesFavorFace.GrandCouncil).ready
+    val done = Outcomes.finished(play(ready, power, son))
+    assertEquals(Look(done.treeless).peoplesFavorHolder, Some(p1))
+    assertEquals(Look(done.treeless).favor(p2), Look(ready).favor(p2))
+    assertEquals(done.treeless.banks.favor, ready.banks.favor)
+    assertJournalRebuilds(ready, done.events, done.treeless)
+
+  test("takes the Grand Council with 1 favor on it: half of 1 is none, so " +
+      "it returns to the least bank"):
+    val ready = Table.start.adviser(p1, son).peoplesFavor(Some(p2),
+      favor = 1, face = PeoplesFavorFace.GrandCouncil).ready
+    val done = Outcomes.finished(play(ready, power, son))
+    assertEquals(Look(done.treeless).favorOnPeoplesFavor, 0)
+    assertEquals(Look(done.treeless).favor(p2), Look(ready).favor(p2))
+    assertEquals(done.treeless.banks.favor, banksAfterRibbon(ready, 1))
+    assertJournalRebuilds(ready, done.events, done.treeless)
 
   test("takes an unheld People's Favor from the shared bank"):
     val ready = Table.start.adviser(p1, son).peoplesFavor(None, favor = 2)

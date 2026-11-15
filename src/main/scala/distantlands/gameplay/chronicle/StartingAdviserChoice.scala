@@ -1,5 +1,6 @@
 package distantlands.gameplay.chronicle
 
+import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
 import distantlands.model._
 
 /** Keeping one card of a temporary hand as a facedown starting adviser,
@@ -18,21 +19,29 @@ object StartingAdviserChoice:
         DecisionSection(deckKey, "World deck", 0)),
       hand.map(card => DecisionOption.Denizen(DecisionOptionRef.Denizen(card))),
       heading = Some(heading), confirmLabel = Some("Confirm Adviser"))),
-    BuildOps((_, pending) => placements(pending, decisionId).map(_.map {
-      case (card, section) if section == keepKey => Move(Piece.Card(card),
-        PositionedLocation(Location.Hand(holder)),
-        PositionedLocation(Location.StartingAdvisers(lineage)),
-        resultingOrientation = Some(Orientation.FaceDown))
-      case (card, _) => Move(Piece.Card(card),
-        PositionedLocation(Location.Hand(holder)),
-        PositionedLocation(Location.Deck(CardDeck.World), StackPosition.Bottom))
-    }), required = true),
+    // An Oaths of Loyalty holder's kept card is buried at the world deck
+    // bottom instead (Legacy Chronicle powers design, ruling 16; R24).
+    BuildOps((live, pending) =>
+      val burying = ChronicleLegacyRules.buriesStartingAdvisers(live, holder)
+      placements(pending, decisionId).map(_.map {
+        case (card, section) if section == keepKey && !burying =>
+          Move(Piece.Card(card), PositionedLocation(Location.Hand(holder)),
+            PositionedLocation(Location.StartingAdvisers(lineage)),
+            resultingOrientation = Some(Orientation.FaceDown))
+        case (card, _) => Move(Piece.Card(card),
+          PositionedLocation(Location.Hand(holder)),
+          PositionedLocation(Location.Deck(CardDeck.World),
+            StackPosition.Bottom))
+      }), required = true),
     Note(noteId, states => states.answered.collectFirst {
       case Answered(`decisionId`, DecisionAnswer.PartitionAnswer(placed), _) =>
         placed.collectFirst {
           case DecisionPlacement(DecisionOptionRef.Denizen(card), `keepKey`) =>
-            kept.sourceless(NoteArg.Player(holder), NoteArg.Card(card))
-        }
+            if ChronicleLegacyRules.buriesStartingAdvisers(states.now, holder)
+            then OathsOfLoyalty.buriedLine(noteId, holder, card)
+            else Some(kept.sourceless(NoteArg.Player(holder),
+              NoteArg.Card(card)))
+        }.flatten
     }.flatten))
 
   private def placements(pending: PendingTree, decisionId: String)

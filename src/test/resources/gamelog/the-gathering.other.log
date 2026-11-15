@@ -1,0 +1,13 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p1|p1]'s turn
+0.2 phase 0 | Act
+8.0 section 1 search@4 | Search[cost:2 Supply]
+10.0 action 1 search@4 | Drew 3 Denizens from the World Deck
+14.0 action 1 search@4 | Kept a Denizen
+15.0 delta 1 search@4 | Discarded 2 Denizens to the Provinces discard
+19.0 delta 1 search@4 | Gained 1 favor from the Nomad bank
+20.0 action 1 search@4 | Played [card:27|The Gathering] to [site:site:ancient-city|Ancient City]
+28.0 trigger 1 search@4 | Gathered at [site:site:ancient-city|Ancient City]: [player:p1|p1] and [player:p2|p2].
+44.0 action 1 search@4 | [player:p2|p2] negotiated with [player:p1|p1]
+46.0 action 1 search@4 | [player:p2|p2] gave 1 secret to [player:p1|p1]
+47.0 delta 1 search@4 | [player:p1|p1] gave 1 favor to [player:p2|p2]

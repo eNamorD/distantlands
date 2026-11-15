@@ -1,6 +1,7 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.legacies.IronHand
 import distantlands.gameplay.powers.{PlayerFacts, PowerAnswers}
 import distantlands.model._
 
@@ -17,9 +18,13 @@ import distantlands.model._
   * them the Empire's sites (ruling 20), which turn Imperial like any
   * Exile's.
   *
+  * An Exile who accepts also turns their newly dormant legacies active,
+  * and, once every answer is in, discards any excess over three active
+  * legacies (Legacies implementation rulings R19 and R20).
+  *
   * Lines, as the Throne's other steps name their players: "p1 offered
-  * Citizenship to p2, p3", "p2 accepted Citizenship" and "p3 declined
-  * Citizenship".
+  * Citizenship to p2, p3", "p2 accepted Citizenship", "p2 reactivated
+  * Iron Hand" and "p3 declined Citizenship".
   */
 object OfferCitizenship:
   val offerDecisionId: String = "chronicle.throne.offer"
@@ -36,11 +41,29 @@ object OfferCitizenship:
     NotePart.Text(" accepted Citizenship")))
   val declined: NoteKey = notes.key("declined", Vector(NotePart.Arg(0),
     NotePart.Text(" declined Citizenship")))
+  /** "p2 reactivated Iron Hand": a newly dormant legacy active again as its
+    * Exile becomes a Citizen (Legacies implementation ruling R20). */
+  val reactivated: NoteKey = notes.key("reactivated-legacy", Vector(
+    NotePart.Arg(0), NotePart.Text(" reactivated "), NotePart.Arg(1)))
+  /** "p2 discarded Seer": a discard over the cap after a reactivation
+    * (R19). */
+  val capped: NoteKey = notes.key("capped-legacy", Vector(
+    NotePart.Arg(0), NotePart.Text(" discarded "), NotePart.Arg(1)))
+  def capDecisionId(player: PlayerId): String =
+    s"chronicle.throne.legacy-cap.${player.value}"
   def noteKeys: Vector[NoteKey] = notes.declared
 
-  val steps: Vector[Operation] = Vector(Branch((state, _) =>
+  /** The offer, read when reached. Once the offer is answered the shape
+    * holds whatever roles have changed since: the candidates are then the
+    * Exiles left and every player offered, so a walk resumed after the last
+    * Exile accepted still finds the offer it answered. */
+  val steps: Vector[Operation] = Vector(Branch((state, pending) =>
     ChronicleTasks.forHolder(state, ChronicleTask.Throne)(holder =>
-      exiles(state) match
+      val answered = pending.answered.exists(_.decisionId == offerDecisionId)
+      val offeredTo = if answered then chosen(pending) else Vector.empty
+      ChronicleTasks.seated(state).filter(player =>
+          exiles(state).contains(player) || offeredTo.contains(player))
+      match
         case Vector() => Vector.empty
         case candidates => Vector(
           Decide(offerDecisionId, holder, DecisionQuery.ChooseMany(0,
@@ -68,7 +91,17 @@ object OfferCitizenship:
     if ordered.isEmpty then Vector.empty
     else Vector(Note(noteId, _ => Some(offered.sourceless(
         NoteArg.Player(holder), NoteArg.Players(ordered)))),
-      Simultaneous(ordered.map(exile => new Sequence(answer(exile)))))
+      Simultaneous(ordered.map(exile => new Sequence(answer(exile)))),
+      // Iron Hand's third checkpoint: a new Citizen discards it before the
+      // cap (Legacy Chronicle powers design, ruling 18; R30).
+      IronHand.discard(TriggeredProcedureRef.ChronicleThrone),
+      // Once every answer is in, each new Citizen left above three active
+      // legacies discards the excess (R19), in seat order: a simultaneous
+      // answer cannot ask a second question.
+      Branch((_, pending) => ordered.filter(exile =>
+          PowerAnswers.one(pending, answerDecisionId(exile)).contains(accept))
+        .map(exile => ResolveLegacies.cap(exile, capDecisionId(exile), noteId,
+          capped))))
 
   private def answer(exile: PlayerId): Vector[Operation] = Vector(
     Decide(answerDecisionId(exile), exile, DecisionQuery.ChooseOne(Vector(
@@ -78,7 +111,8 @@ object OfferCitizenship:
     Branch((_, pending) =>
       if PowerAnswers.one(pending, answerDecisionId(exile)).contains(accept)
       then Vector(BuildOps((live, _) => joins(live, exile), required = true),
-        Note(noteId, _ => Some(accepted.sourceless(NoteArg.Player(exile)))))
+        Note(noteId, _ => Some(accepted.sourceless(NoteArg.Player(exile)))),
+        ResolveLegacies.reactivation(exile, noteId, reactivated))
       else Vector(Note(noteId, _ => Some(declined.sourceless(
         NoteArg.Player(exile)))))))
 
@@ -95,7 +129,7 @@ object OfferCitizenship:
       val ruled = current.map.inPlay.flatMap(site =>
         current.map.sites.get(site).map(_.forces).collect {
           case SiteForces.Occupied(`own`, n) => site -> n })
-      val board = Option.when(state.board.warbands > 0)(Move(
+      val board = Option.when[CoreOperation](state.board.warbands > 0)(Move(
         Piece.Warbands(own, state.board.warbands),
         PositionedLocation(Location.PlayArea(exile)),
         PositionedLocation(Location.WarbandBank(own)))).toVector

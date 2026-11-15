@@ -45,8 +45,8 @@ object MusterSource:
     if card.tokens.isEmpty then option
     else DecisionOption.Unavailable(option, Occupied)
 
-  /** The source a reference names, wherever it stands: at a site in play, or
-    * among the actor's advisers. It requires neither that the card stand at
+  /** The source a reference names, wherever it stands: at a site in play,
+    * among the actor's advisers, or among another player's faceup advisers. It requires neither that the card stand at
     * the pawn site nor that it be token-free. The pawn site only names the
     * site in the refusal of a card found nowhere. The source decision offers
     * only what a rule allows, and the walker accepts only an available
@@ -90,7 +90,9 @@ object MusterSource:
       origin: RuleSourceRef)
 
   /** `id` at the first site in play that holds it, in map order, or else
-    * among the actor's advisers. */
+    * among the actor's advisers, or else among another player's faceup
+    * advisers, which only Beloved adds to the decision (Legacy in-play
+    * powers ruling 18). */
   private def locate(state: ReadyGame, actor: PlayerId, id: CardId)
       : Option[Located] =
     val current = state.game.current
@@ -103,7 +105,12 @@ object MusterSource:
         case card: DenizenState if card.id == id =>
           Located(card, RuleSourceRef.Adviser(actor, card.id))
       }
-    (atSites ++ held).nextOption()
+    val others = current.players.iterator.filter(_.player != actor)
+      .flatMap(owner => owner.advisers.collect {
+        case card @ DenizenState(`id`, Orientation.FaceUp, _) =>
+          Located(card, RuleSourceRef.Adviser(owner.player, card.id))
+      })
+    (atSites ++ held ++ others).nextOption()
 
   private def originAt(siteId: SiteId, card: SiteDenizenState)
       : RuleSourceRef = card match

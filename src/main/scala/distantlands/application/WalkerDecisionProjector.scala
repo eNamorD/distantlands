@@ -1,6 +1,7 @@
 package distantlands.application
 
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.chronicle.ResolveLegacies
 import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import distantlands.gameplay.powerresolver.PhasePowers
 import distantlands.gameplay.walker.{OptionWarnings, ProcedureWalker,
@@ -308,6 +309,11 @@ private[application] final class WalkerDecisionProjector(
       case negotiate: DecisionQuery.Negotiate =>
         Some(DecisionQueryProjection.Negotiate(
           deals.project(ready, viewer, negotiate), negotiate.heading))
+      case gathering: DecisionQuery.Gathering =>
+        Some(DecisionQueryProjection.Gathering(
+          gathering.present.map(_.value), gathering.passed.map(_.value),
+          viewer.flatMap(gathering.reach.get).getOrElse(Vector.empty)
+            .map(_.value), gathering.heading))
       case DecisionQuery.Inspect(cards, heading, doneLabel) =>
         Some(DecisionQueryProjection.Inspect(
           cards.map(rows.shown(ready, viewer, index, _)),
@@ -332,6 +338,15 @@ private[application] final class WalkerDecisionProjector(
                 DecisionSlotProjection(option, slot.minimum, slot.maximum,
                   slot.suggested) },
               minTotal, maxTotal, confirmLabel, heading))
+      case DecisionQuery.ChooseAmounts(slots, distinct, heading,
+          confirmLabel) =>
+        described(slots.flatMap(slot => DecisionOption.forRef(slot.ref)))
+          .filter(_.size == slots.size).map(options =>
+            DecisionQueryProjection.ChooseAmounts(
+              slots.zip(options).map { case (slot, option) =>
+                DecisionSlotProjection(option, slot.minimum, slot.maximum,
+                  slot.suggested) },
+              distinct, confirmLabel, heading))
 
   /** The cards a decision is about, read from its own id.
     *
@@ -363,12 +378,19 @@ private[application] final class WalkerDecisionProjector(
     val index = ready.game.cardIndex.toOption
     val prefixes = Vector("cardplay.place.", "cardplay.discard.",
       "cardplay.replaced.", "cardplay.bury.")
-    prefixes.find(decisionId.startsWith).toVector.flatMap { prefix =>
-      decisionId.stripPrefix(prefix).split("\\.", 2).toVector match
-        case Vector("denizen", value) => Vector(DenizenId(value): CardId)
-        case Vector("vision", value) => Vector(VisionId(value): CardId)
-        case _ => Vector.empty[CardId]
-    }.map(rows.shown(ready, viewer, index, _))
+    // The Chancellor's tie-break for a public legacy names that legacy,
+    // faceup in the row (Legacies design, slice 5).
+    val publicLegacy = ResolveLegacies.publicDecisionPrefix
+    val cards =
+      if decisionId.startsWith(publicLegacy) then
+        Vector(LegacyId(decisionId.stripPrefix(publicLegacy)): CardId)
+      else prefixes.find(decisionId.startsWith).toVector.flatMap { prefix =>
+        decisionId.stripPrefix(prefix).split("\\.", 2).toVector match
+          case Vector("denizen", value) => Vector(DenizenId(value): CardId)
+          case Vector("vision", value) => Vector(VisionId(value): CardId)
+          case _ => Vector.empty[CardId]
+      }
+    cards.map(rows.shown(ready, viewer, index, _))
 
   /** A card play's heading names its card or its site, and its Replace
     * options name the card they discard and the card played

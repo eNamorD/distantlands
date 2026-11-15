@@ -1,18 +1,22 @@
 package distantlands.gameplay
 
-import distantlands.catalog.holding.CouncilArbiterCard
-import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite, DunesSite,
+  FairIsleSite}
 import distantlands.gameplay.powers.action.BrassHorseCard
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.gameplay.powers.search.{ErrandBoyCard, TruthfulHarpCard}
 import distantlands.testkit.MenuPlay
-import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.actions.negotiation.{NegotiationDeal,
+  NegotiationStartFacts, TheTribunalCard, TravelingNegotiatorCard}
+import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.poweruse.CityWallCard
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.gameplay.walker.{ParkedDecisionAssertions, WalkerPowers}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, DeclineDeal, ProposeTerms}
 import distantlands.model.OathState.Ready
-import distantlands.testkit.{Journal, Look, Outcomes, Table}
+import distantlands.testkit.{Journal, Look, Outcomes, ParkedNode, PowerRules,
+  Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.{accepted, present}
 import distantlands.testkit.StartPreview
@@ -79,7 +83,8 @@ class NegotiationProcedureSuite extends munit.FunSuite:
         ActionRef.Negotiation, WalkerPowers.empty))
 
   test("no first-game gate: an Imperial player or an altered Foundation still negotiates"):
-    // No Table step reaches lineage roles or foundations.
+    // No Table step reaches lineage roles, and none turns all six
+    // foundations at once.
     val ready = gathered.ready
     val lineage = ready.game.campaign.lineages(Look(ready).player(p2).lineage)
     val campaign = ready.game.campaign
@@ -121,7 +126,8 @@ class NegotiationProcedureSuite extends munit.FunSuite:
     val three = accepted(say(two.state, p3, gift(p1, 2)))
     val open = present(Outcomes.ready(three.state).game.current.walkerPending,
       "the open deal")
-    val folded = NegotiationDeal.fold(Vector(p1, p2, p3), open.answered)
+    val folded = NegotiationDeal.fold(NegotiationDeal.NegotiationPrefix,
+      Vector(p1, p2, p3), open.answered)
     assertEquals(folded.accepted, Set.empty[PlayerId])
     val closed = Vector(p3, p2, p1).foldLeft(three.state):
       (state, by) => say(state, by, AcceptDeal).getOrElse(fail(s"$by accepts"))
@@ -202,13 +208,6 @@ class NegotiationProcedureSuite extends munit.FunSuite:
       "an agreed deal must run the action boundary and its bandit refill")
     assertEquals(MenuPlay.pendingBeyondMenu(Outcomes.ready(agreed.state)), None)
 
-  test("an unsupported Negotiation rule does not block the Negotiation"):
-    val powered = gathered.adviser(p1, CouncilArbiterCard).ready
-    val started = start(powered).getOrElse(
-      fail("an unsupported rule must not block"))
-    parked.assertParked(accepted(choose(started.state, p1, p2)).state,
-      ActionRef.Negotiation, dealId, p1)
-
   test("a completed Negotiation replays exactly from its journal"):
     val SetupResult(setupState, setupEvents) = setupThroughWake()
     // p2, the first player, travels to p1's site and negotiates with p1.
@@ -241,3 +240,87 @@ class NegotiationProcedureSuite extends munit.FunSuite:
       a.events ++ done.events
     val replayed = Journal.replayed(rules, events)
     assertEquals(replayed, done.state)
+
+  /** The bounds of the deal `state` is parked on, by author. */
+  private def parkedBounds(state: OathState): Map[PlayerId, NegotiationBounds] =
+    ParkedNode.of(state, catalog) match
+      case Right(Some(ParkedNode.Decision(_, decide, _))) => decide.query match
+        case negotiate: DecisionQuery.Negotiate => negotiate.bounds
+        case other => fail(s"not a deal: $other")
+      case other => fail(s"not parked on a decision: $other")
+
+  test("Traveling Negotiator's holder chooses among players at other sites"):
+    val remote = Table.start.pawn(p1, at = site).pawn(p2, at = DunesSite)
+      .pawn(p3, at = DunesSite).favor(p1, 5).favor(p2, 5)
+      .adviser(p1, TravelingNegotiatorCard.id).ready
+    val started = start(remote).getOrElse(fail("Negotiation must start"))
+    parked.assertParked(started.state, ActionRef.Negotiation, negotiators, p1)
+    val dealt = choose(started.state, p1, p2).getOrElse(
+      fail("the negotiators must be accepted"))
+    parked.assertParked(dealt.state, ActionRef.Negotiation, dealId, p1)
+    assert(say(dealt.state, p1, gift(p2, 1)).isRight)
+
+  test("a lone remote candidate skips the choice, and the start stores " +
+      "the reach"):
+    val remote = Table.start.pawn(p1, at = site).pawn(p2, at = DunesSite)
+      .pawn(p3, at = FairIsleSite).adviser(p2, TravelingNegotiatorCard.id)
+      .ready
+    val started = start(remote).getOrElse(fail("Negotiation must start"))
+    parked.assertParked(started.state, ActionRef.Negotiation, dealId, p1)
+    assertEquals(Outcomes.ready(started.state).game.current.walkerStartFacts,
+      NegotiationStartFacts(Vector(p2), Vector.empty).refs)
+
+  test("a resume keeps the reach the start stored, though the state changed"):
+    val remote = Table.start.pawn(p1, at = site).pawn(p2, at = DunesSite)
+      .pawn(p3, at = FairIsleSite).adviser(p2, TravelingNegotiatorCard.id)
+      .ready
+    val started = start(remote).getOrElse(fail("Negotiation must start"))
+    // p2's Traveling Negotiator turns facedown mid-deal: rebuilt from live
+    // state, the reach would hold nobody.
+    val ready = Outcomes.ready(started.state)
+    val hidden = ready.updateCurrent(current => current.copy(players =
+      current.players.map(player => player.copy(advisers =
+        player.advisers.map {
+          case denizen: DenizenState
+              if denizen.id == TravelingNegotiatorCard.id =>
+            denizen.copy(orientation = Orientation.FaceDown)
+          case other => other }))))
+    assertEquals(NegotiationDeal.eligible(catalog, hidden, p1),
+      Vector.empty[PlayerId])
+    val gave = say(Ready(hidden), p1, gift(p2, 1))
+      .getOrElse(fail("the deal must still stand"))
+    parked.assertParked(gave.state, ActionRef.Negotiation, dealId, p1)
+    assertEquals(parkedBounds(gave.state)(p1).recipients, Vector(p2))
+
+  test("City Wall's ruler's enemy at its site cannot use Traveling " +
+      "Negotiator to start one"):
+    val walled = Table.start.pawn(p1, at = AncientCitySite)
+      .pawn(p2, at = DunesSite).pawn(p3, at = DunesSite)
+      .adviser(p1, TravelingNegotiatorCard.id)
+      .denizen(CityWallCard.id, at = AncientCitySite)
+      .warbandsAt(AncientCitySite, p2, 1).ready
+    // With no walker powers nothing blocks it.
+    assert(start(walled).isRight)
+    assert(StartPreview.opens(catalog, walled, p1, ActionRef.Negotiation,
+      WalkerPowers.empty))
+    val blocked = PowerRules.withWalkerPowers.startWalker(Ready(walled),
+      ActionRef.Negotiation, p1)
+    assert(blocked.left.toOption.exists(
+      _.isInstanceOf[OathViolation.NegotiationUnavailable]), blocked)
+    assert(!StartPreview.opens(catalog, walled, p1, ActionRef.Negotiation,
+      WalkerPowerCatalog.default(catalog)))
+
+  test("with The Tribunal in reach, binding promises are open to every " +
+      "author, and closed without it"):
+    val tribunal = gathered.pawn(p3, at = DunesSite)
+      .edifice(TheTribunalCard, EdificeSide.Intact, at = site).ready
+    // p1 may use The Tribunal, so it reaches p3 too: the choice is asked.
+    val open = atDeal(tribunal, p2)
+    assert(parkedBounds(open.state).values.forall(_.bindingPromises),
+      parkedBounds(open.state))
+    assert(say(open.state, p2, ProposeTerms(NegotiationTerms(
+      bindingPromises = Vector("I will not attack you this round."))))
+      .isRight)
+    val closed = atDeal(gathered.ready, p2)
+    assert(parkedBounds(closed.state).values.forall(!_.bindingPromises),
+      parkedBounds(closed.state))

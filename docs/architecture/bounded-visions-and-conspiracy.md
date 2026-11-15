@@ -1,6 +1,6 @@
 # Bounded Visions and Conspiracy
 
-Design: [visions and conspiracy walker design](../superpowers/specs/2026-09-19-visions-conspiracy-walker-design.md)
+Design: [visions and conspiracy walker design](../superpowers/specs/2026-09/2026-09-19-visions-conspiracy-walker-design.md)
 
 This slice implements the fixed, unaltered, all-Exile rules from Combined
 Rulebook pp. 16-17, 20, 27, and 30, the New Foundations booklet p. 16, and the
@@ -55,9 +55,11 @@ target is checked again against the live legal targets
 (`ConspiracyUnavailable`). The answer is a recorded walker step and the take
 is recorded core operations, so replay applies them without recalculating.
 
-Altered Foundations, Empire-only Vision rules, and the alternate banner faces
-(Grand Council, Festival) have no behaviour. `RuleSourceIndex` lists the
-handler ids of those faces and of an altered Foundation. An applicable handler
+Foundation III's faces and Empire-only Vision rules have no behaviour. A
+Conspiracy that takes a banner adjusts it by its face's right ribbon
+(`BannerRules.peoplesFavorRibbon`, `BannerRules.darkestSecretRibbon`). `RuleSourceIndex` lists the
+handler ids of those faces and of each Foundation's face in use
+(`catalog.FoundationCards`). An applicable handler
 the engine does not support is ignored, not blocking, and nothing records
 it.
 

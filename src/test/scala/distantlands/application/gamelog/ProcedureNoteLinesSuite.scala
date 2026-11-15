@@ -21,7 +21,8 @@ import distantlands.gameplay.powers.search.{MushroomsCard, WineOfWelcomeCard}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.SetupProcedure
-import distantlands.gameplay.chronicle.OfferCitizenship
+import distantlands.gameplay.setup.legacies.SecretSociety
+import distantlands.gameplay.chronicle.{LineageScoring, OfferCitizenship}
 import distantlands.model._
 import distantlands.protocol.projection.{LogKind, LogSpan}
 import LogSpan.Text
@@ -184,6 +185,31 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
         TriggeredProcedureRef.ChronicleThrone, key), LogKind.Decision,
         key.name))
 
+  test("the winner's legacy bonus reads by suit, as a Delta (R28, R30)"):
+    val shares = NoteArg.SuitShares(Vector(3 -> Suit.Beast, 1 -> Suit.Nomad))
+    def points(n: Int) = NoteArg.Amount(n, NoteUnit.LineagePoint)
+    assertEquals(said(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.scoredWithBonus, NoteArg.Player(rival), points(7),
+      NoteArg.Number(3), shares),
+      s"${rival.value} scored 7 lineage points (3 base, 3 from Beast, 1 " +
+        "from Nomad)")
+    assertEquals(kindOf(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.scoredWithBonus), LogKind.Delta)
+
+  test("a gift and the points kept read in points (R28)"):
+    val blue = PlayerId("p3")
+    assertEquals(said(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.gaveUp, NoteArg.Player(rival), NoteArg.Number(4),
+      NoteArg.Player(blue), NoteArg.Number(2)),
+      s"${rival.value} gave up 4 points to give ${blue.value} 2 points.")
+    assertEquals(said(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.keeps, NoteArg.Player(rival), NoteArg.Number(3)),
+      s"${rival.value} keeps 3 points")
+    assertEquals(kindOf(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.gaveUp), LogKind.Decision)
+    assertEquals(kindOf(TriggeredProcedureRef.ChronicleThrone,
+      LineageScoring.keeps), LogKind.Delta)
+
   test("a Negotiation's opening lines post at Action"):
     assertEquals(kindOf(ActionRef.Negotiation,
       NegotiationProcedure.negotiated), LogKind.Action)
@@ -204,6 +230,13 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
       SetupProcedure.keptAdviser), LogKind.Decision)
     assertEquals(kindOf(TriggeredProcedureRef.Setup,
       SetupProcedure.revealedCard), LogKind.Decision)
+
+  test("Secret Society's excess discard posts at Decision in Setup, as at " +
+      "the first Wake"):
+    assertEquals(kindOf(TriggeredProcedureRef.Setup, SecretSociety.discarded),
+      LogKind.Decision)
+    assertEquals(kindOf(TriggeredProcedureRef.QuestFirstWake,
+      SecretSociety.wakeDiscarded), LogKind.Decision)
 
   test("a Negotiation with two partners joins them"):
     val third = PlayerId("p3")

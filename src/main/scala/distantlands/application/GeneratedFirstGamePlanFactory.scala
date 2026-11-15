@@ -2,7 +2,7 @@ package distantlands.application
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.powers.PowerImplementationStatus
-import distantlands.gameplay.setup.SetupDeal
+import distantlands.gameplay.setup.{EmpireSetupRules, LegacyDeal, SetupDeal}
 import distantlands.model._
 
 /**
@@ -13,11 +13,13 @@ import distantlands.model._
  * and its deterministic `DevelopmentFirstGamePlanFactory` are retired.
  *
  * A saved Chronicle is used as it is. Either way the seating order is
- * shuffled and the requested `firstPlayer` is ignored. With an Empire, the
- * seated Chancellor goes first, or a random seated Citizen when the
- * Chancellor's lineage sits out (Empire ruling R6); otherwise the first
- * seat does. Both decks are shuffled into the deal by
- * `policy`, since a Chronicle's own order is shown to players. The
+ * shuffled and the requested `firstPlayer` is ignored. The seated
+ * Chancellor goes first, or a random seated Citizen when no Chancellor is
+ * seated (Empire ruling R6); otherwise, in a first game and in a later game
+ * with no Empire, the first seat does, which the shuffle makes a random
+ * player. Both decks are shuffled into the deal by
+ * `policy`, and the derived legacy deck by `random`, since a Chronicle's
+ * own order is shown to players. The
  * shuffled orders are recorded in the plan, so replay stays RNG-free.
  */
 final class GeneratedFirstGamePlanFactory(
@@ -40,13 +42,17 @@ final class GeneratedFirstGamePlanFactory(
       case ChronicleChoice.Saved(saved) => Right(saved)
     chronicle.map { chronicle =>
       val seated = seating(config, chronicle)
+      // The deal is the starting Chronicle's: a first game played
+      // exile-only has its stored legacies back in the deck (R40).
+      val starting = EmpireSetupRules.startingChronicle(catalog, chronicle)
       FirstGamePlan(chronicle, seated, ChronicleFirstGamePlan.dealOrder(
-        seated, SetupDeal.drawers(chronicle, seated.participants),
+        seated, SetupDeal.of(starting, seated.participants),
         policy.order(chronicle.worldDeck,
           ImplementedCardCatalog.denizens(catalog, implemented), random),
         policy.order(chronicle.relicDeck,
           ImplementedCardCatalog.ordinaryRelics(catalog, implemented),
           random),
+        random.shuffle(LegacyDeal.deck(catalog, starting)),
         random.shuffle))
     }
 
@@ -58,7 +64,7 @@ final class GeneratedFirstGamePlanFactory(
     val chancellor = seats.find(p => lineages(Role.Chancellor)(p.lineageId))
     val citizens = seats.filter(p => lineages(Role.Citizen)(p.lineageId))
     // A random seated Citizen stands in for an absent Chancellor (R6).
-    val first = if lineages(Role.Chancellor).isEmpty then seats.headOption
-      else chancellor.orElse(random.shuffle(citizens).headOption)
-        .orElse(seats.headOption)
+    val first = chancellor.orElse(
+      if citizens.isEmpty then seats.headOption
+      else random.shuffle(citizens).headOption)
     first.fold(config)(p => FirstGameBootstrapConfig(seats, p.playerId))

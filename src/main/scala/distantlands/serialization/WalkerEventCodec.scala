@@ -121,6 +121,8 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
       "args" -> ujson.Arr.from(note.args.map(encodeNoteArg)))
     note.source.foreach(source =>
       fields("source") = encodePowerSource(source))
+    note.readers.foreach(readers => fields("readers") =
+      ujson.Arr.from(readers.toVector.map(_.value).sorted.map(ujson.Str(_))))
     fields
 
   private def encodeNoteArg(arg: NoteArg): ujson.Value = arg match
@@ -146,11 +148,15 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
       "faces" -> ujson.Arr.from(faces.map(encodeDieFace)))
     case NoteArg.Players(ids) => ujson.Obj("kind" -> "players",
       "playerIds" -> ujson.Arr.from(ids.map(_.value)))
+    case NoteArg.Promise(text) => ujson.Obj("kind" -> "promise", "text" -> text)
     case NoteArg.Clauses(parts) => ujson.Obj("kind" -> "clauses",
       "clauses" -> ujson.Arr.from(parts.map(encodeNoteClause)))
     case NoteArg.Placements(entries) => ujson.Obj("kind" -> "placements",
       "placements" -> ujson.Arr.from(entries.map((count, site) =>
         ujson.Obj("count" -> count, "siteId" -> site.value))))
+    case NoteArg.SuitShares(entries) => ujson.Obj("kind" -> "suit-shares",
+      "entries" -> ujson.Arr.from(entries.map((points, suit) =>
+        ujson.Obj("points" -> points, "suit" -> suit.key))))
     case NoteArg.Things(items) => ujson.Obj("kind" -> "things",
       "things" -> ujson.Arr.from(items.map(encodeNoteThing)))
     case NoteArg.ToNomadBank => ujson.Obj("kind" -> "to-nomad-bank")
@@ -188,7 +194,19 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
         decodePowerSource(field, s"$path.source").map(Some.apply)
     args <- traverse(value("args").arr.zipWithIndex.toVector):
       case (arg, index) => decodeNoteArg(arg, s"$path.args[$index]")
-  yield LogNote(source, value("key").str, args)
+    readers <- value.obj.get("readers") match
+      case None => Right(None)
+      case Some(field) =>
+        decodeReaders(field, s"$path.readers").map(Some.apply)
+  yield LogNote(source, value("key").str, args, readers)
+
+  /** A note's readers: each player once, and at least one. */
+  private def decodeReaders(value: ujson.Value,
+      path: String): Either[WireError, Set[PlayerId]] =
+    val ids = value.arr.toVector.map(_.str)
+    Either.cond(ids.nonEmpty && ids.distinct == ids,
+      ids.map(PlayerId(_)).toSet,
+      InvalidValue(path, "readers must name each player once"))
 
   private def decodeNoteArg(value: ujson.Value,
       path: String): Either[WireError, NoteArg] = value("kind").str match
@@ -224,6 +242,7 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
       .map(NoteArg.Goal.apply)
     case "players" => Right(NoteArg.Players(
       value("playerIds").arr.toVector.map(id => PlayerId(id.str))))
+    case "promise" => Right(NoteArg.Promise(value("text").str))
     case "clauses" => traverse(value("clauses").arr.zipWithIndex.toVector)({
       case (clause, index) =>
         decodeNoteClause(clause, s"$path.clauses[$index]") })
@@ -234,6 +253,14 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
           decodeCount(entry("count"), s"$path.placements[$index].count")
             .map(_ -> SiteId(entry("siteId").str)) })
         .map(NoteArg.Placements.apply)
+    case "suit-shares" =>
+      traverse(value("entries").arr.zipWithIndex.toVector)({
+        case (entry, index) => for
+          points <- decodeCount(entry("points"),
+            s"$path.entries[$index].points")
+          suit <- decodeSuit(entry("suit").str, s"$path.entries[$index].suit")
+        yield points -> suit })
+        .map(NoteArg.SuitShares.apply)
     case "things" => traverse(value("things").arr.zipWithIndex.toVector)({
       case (thing, index) =>
         decodeNoteThing(thing, s"$path.things[$index]") })

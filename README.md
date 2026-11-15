@@ -18,6 +18,13 @@ server, and creating and distributing seat links to players. Seat links grant
 full control of a seat and are intended for trusted groups who know each
 other — there are no accounts, passwords, or remote administration.
 
+## LLM Disclaimer
+
+The code in this repository was written with LLM agents (primarily Claude, but
+some Codex and Deepseek as well). That code includes the interface icons, which
+are drawn as SVG in the frontend source. Beyond those, this project will never
+use LLM-generated assets, such as illustrations or music.
+
 ## For Developers
 
 ### Build and verification
@@ -54,9 +61,9 @@ python3 scripts/check-markdown-links.py
 git diff --check
 ```
 
-Two commits rewrote the whole code base to Scala 3 indentation and control
-syntax. They are listed in `.git-blame-ignore-revs`; run this once so
-`git blame` looks through them:
+Some commits touched the whole code base mechanically, leading to messy `git blame`
+output. They are listed in `.git-blame-ignore-revs`; you can run this once so `git blame`
+ignores them:
 
 ```sh
 git config blame.ignoreRevsFile .git-blame-ignore-revs

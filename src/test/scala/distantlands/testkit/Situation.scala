@@ -94,6 +94,15 @@ final case class Situation(state: OathState, events: Vector[OathEvent],
       : Situation =
     driver.run(this, steps.map(Step.of), settle = false)
 
+  /** Issues each step and answers every park it causes until the walk
+    * parks at `decisionId`, which is left for the test: a co-owned
+    * decision the test answers as another owner, say. A walk that never
+    * parks there settles as `after` would. */
+  def parkedAt(decisionId: String)(steps: (GameCommand | Step)*)(
+      using munit.Location): Situation =
+    driver.run(this, steps.map(Step.of), settle = true,
+      stopAt = Some(decisionId))
+
   /** Continue under `overrides` layered over [[Situation.defaultAnswer]],
     * replacing any overrides given earlier. */
   def withAnswers(overrides: Answers): Situation =
@@ -105,7 +114,8 @@ object Situation:
     * demands one, every other option in another section -- the "keep one,
     * discard the rest" shape of Setup's adviser choice. `ChooseMany`: the
     * first `min` available options. `ChooseAmount`: `min`. `Distribute`:
-    * each slot its minimum, when those sum within the bounds. Anything else
+    * each slot its minimum, when those sum within the bounds.
+    * `ChooseAmounts`: the suggested amounts. Anything else
     * is not answered by default and fails the walk naming the decision.
     */
   val defaultAnswer: Answers =
@@ -128,6 +138,10 @@ object Situation:
     case Park(Decide(_, _, amount: DecisionQuery.ChooseAmount, _, _, _, _),
         _, _, _) =>
       DecisionAnswer.ChooseAmountAnswer(amount.min)
+    case Park(Decide(_, _, amounts: DecisionQuery.ChooseAmounts, _, _, _, _),
+        _, _, _) if amounts.slots.forall(_.suggested.nonEmpty) =>
+      DecisionAnswer.DistributeAnswer(amounts.slots.map(slot =>
+        DistributeAmount(slot.ref, slot.suggested.get)))
     case Park(Decide(_, _, spread: DecisionQuery.Distribute, _, _, _, _),
         _, _, _) if spread.slots.map(_.minimum).sum >= spread.minTotal &&
           spread.slots.map(_.minimum).sum <= spread.maxTotal =>

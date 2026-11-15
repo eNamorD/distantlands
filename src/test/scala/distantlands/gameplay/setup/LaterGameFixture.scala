@@ -34,11 +34,15 @@ object LaterGameFixture:
         PlayerId(s"p${index + 1}"), LineageId(s"l${index + 1}"), color))
 
   /** `participants` with `firstPlayer` first to act, dealt from the
-    * Chronicle's decks in their own order. */
+    * Chronicle's decks in their own order, from the Chronicle the game
+    * starts from, as the production plan factory deals (R40). */
   def orders(chronicle: Chronicle, firstPlayer: PlayerId,
       participants: Vector[FirstGameParticipant] =
         FirstGameSetupFixture.participants): SetupOrders =
+    val starting = EmpireSetupRules.startingChronicle(
+      FirstGameSetupFixture.catalog, chronicle)
     ChronicleFirstGamePlan.dealOrder(
       FirstGameBootstrapConfig(participants, firstPlayer),
-      SetupDeal.drawers(chronicle, participants), chronicle.worldDeck,
-      chronicle.relicDeck, identity)
+      SetupDeal.of(starting, participants), chronicle.worldDeck,
+      chronicle.relicDeck,
+      LegacyDeal.deck(FirstGameSetupFixture.catalog, starting), identity)

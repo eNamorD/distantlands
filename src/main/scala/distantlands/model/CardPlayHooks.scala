@@ -1,7 +1,7 @@
 package distantlands.model
 
 // The card-play hooks are power windows, not Oath operations: they extend
-// the unsealed [[Operation]], so they live outside `CoreOperations.scala`
+// the unsealed [[Operation]], so they live outside the operation families
 // (catalog batch 11, slice 0).
 
 /** Semantic window for a card played faceup, to a site or as a faceup

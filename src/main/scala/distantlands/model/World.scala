@@ -102,6 +102,27 @@ final case class SiteState(
     tokens: Tokens
 )
 
+object SiteState:
+  /** A site placed from the Atlas as a bandit site, populated as Foundation
+    * I and Setup With No Empire both print: `denizens` as given, `relics`
+    * facedown, `bandits` warbands, none for a site of capacity 0, and its
+    * printed `resources`. */
+  def banditSite(bandits: Int, resources: Tokens,
+      denizens: Vector[SiteDenizenState], relics: Vector[RelicId]): SiteState =
+    SiteState(
+      if bandits == 0 then SiteForces.Empty
+      else SiteForces.Occupied(ForceKind.Bandit, bandits),
+      denizens, relics.map(RelicState(_, Orientation.FaceDown, Tokens.empty)),
+      resources)
+
+  /** The relic slots of a site with `slots` that `stored` relics leave
+    * open, never fewer than 0. */
+  def openRelicSlots(slots: Int, stored: Int): Int = math.max(0, slots - stored)
+
+/** The sites on the map, by region. A region may hold fewer sites than its
+  * slots: under Wide Horizons and after Setup With No Empire the slots past
+  * the last site placed are empty (Foundations design, slice 3). Slots fill
+  * going Hinterward, so the empty ones follow every site. */
 final case class MapState(
     cradle: Vector[SiteId],
     provinces: Vector[SiteId],
@@ -109,6 +130,32 @@ final case class MapState(
     sites: Map[SiteId, SiteState]
 ):
   def inPlay: Vector[SiteId] = cradle ++ provinces ++ hinterland
+
+  /** The sites in `region`, top slot first. */
+  def sitesIn(region: Region): Vector[SiteId] = region match
+    case Region.Cradle => cradle
+    case Region.Provinces => provinces
+    case Region.Hinterland => hinterland
+
+  /** The slots of `region` that hold no site. */
+  def emptySlots(region: Region): Int =
+    math.max(0, region.slots - sitesIn(region).size)
+
+  /** The region of the next empty slot going Hinterward: the first region
+    * not yet full. None on a full map. */
+  def nextSlot: Option[Region] = Region.all.find(emptySlots(_) > 0)
+
+  /** The Hintermost site: the last site in Hinterward order. None on a map
+    * with no site. */
+  def hintermost: Option[SiteId] = hinterward.lastOption
+
+  /** The map with `site` in the next slot of `region`, after its sites. */
+  def withSite(region: Region, site: SiteId, state: SiteState): MapState =
+    val placed = copy(sites = sites.updated(site, state))
+    region match
+      case Region.Cradle => placed.copy(cradle = cradle :+ site)
+      case Region.Provinces => placed.copy(provinces = provinces :+ site)
+      case Region.Hinterland => placed.copy(hinterland = hinterland :+ site)
 
   def regionOf(site: SiteId): Option[Region] =
     if cradle.contains(site) then Some(Region.Cradle)
@@ -120,6 +167,19 @@ final case class MapState(
     * Stars task archives rival sites in and keeps the Empire's sites in. */
   def hinterward: Vector[SiteId] = inPlay
 
+object MapState:
+  /** The site slots on the map. */
+  val slots: Int = Region.all.map(_.slots).sum
+
+  /** The map with `placed` in its slots going Hinterward: top to bottom in
+    * the Cradle, then the Provinces, then the Hinterland. Slots past the
+    * last site stay empty. More sites than the map has slots overfill the
+    * Hinterland, which `DomainValidation` reports. */
+  def inSlots(placed: Vector[(SiteId, SiteState)]): MapState =
+    val (cradle, outer) = placed.map(_._1).splitAt(Region.Cradle.slots)
+    val (provinces, hinterland) = outer.splitAt(Region.Provinces.slots)
+    MapState(cradle, provinces, hinterland, placed.toMap)
+
 sealed trait AtlasEntry extends Product with Serializable
 object AtlasEntry:
   final case class StoredSite(
@@ -127,15 +187,46 @@ object AtlasEntry:
       denizens: Vector[SiteDenizenState],
       relics: Vector[RelicState],
       edifice: Option[EdificeId] = None
-  ) extends AtlasEntry
+  ) extends AtlasEntry:
+    /** The cards in the site's denizen slots once it is placed as a bandit
+      * site: its edifice ruined, then its denizens faceup. */
+    def placedDenizens: Vector[SiteDenizenState] =
+      edifice.toVector.map(EdificeState(_, EdificeSide.Ruined, Tokens.empty)) ++
+        denizens.map:
+          case denizen: DenizenState =>
+            denizen.copy(orientation = Orientation.FaceUp)
+          case stored: EdificeState => stored.copy(side = EdificeSide.Ruined)
 
   case object EmpireDivider extends AtlasEntry
+
+/** An end of the Atlas box: the Recent Sites side, its front, or the
+  * Forgotten Sites side, its back. */
+enum AtlasEnd(val key: String):
+  case Recent extends AtlasEnd("recent")
+  case Forgotten extends AtlasEnd("forgotten")
+object AtlasEnd:
+  val all: Vector[AtlasEnd] = Vector(Recent, Forgotten)
+  def fromKey(key: String): Option[AtlasEnd] = all.find(_.key == key)
 
 /**
  * One ordered Atlas sequence. `entries.head` is the Recent end and
  * `entries.last` is the Forgotten end.
  */
-final case class AtlasState(entries: Vector[AtlasEntry])
+final case class AtlasState(entries: Vector[AtlasEntry]):
+  /** The stored sites, Recent end first. */
+  def sites: Vector[AtlasEntry.StoredSite] =
+    entries.collect { case site: AtlasEntry.StoredSite => site }
+
+  /** The site a player takes from `end`: the first stored site for Recent,
+    * the last for Forgotten. None once the Atlas holds no site. */
+  def site(end: AtlasEnd): Option[AtlasEntry.StoredSite] = end match
+    case AtlasEnd.Recent => sites.headOption
+    case AtlasEnd.Forgotten => sites.lastOption
+
+  /** The Atlas with the stored site `id` taken out. */
+  def without(id: SiteId): AtlasState = AtlasState(entries.filter:
+    case site: AtlasEntry.StoredSite => site.id != id
+    case AtlasEntry.EmpireDivider => true)
 
 enum PeoplesFavorFace { case Mob, GrandCouncil }
 
@@ -148,10 +239,16 @@ final case class PeoplesFavorState(
 ):
   require(favor >= 0, "People's Favor resources must be non-negative")
 
+/** The Darkest Secret: its face, its holder, the secrets on it, and
+  * `festival`, the site the festival marker lies over while the Festival
+  * face is up (Foundations design, slice 6). The marker starts beside the
+  * map, `None`, and only the Festival face's holder places it, at their
+  * Rest. */
 final case class DarkestSecretState(
     active: DarkestSecretFace,
     holder: Option[PlayerId],
-    secrets: Int
+    secrets: Int,
+    festival: Option[SiteId]
 ):
   require(secrets >= 0, "Darkest Secret resources must be non-negative")
 

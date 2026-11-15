@@ -94,6 +94,12 @@ private[operations] object OperationStateWrites:
               updateSite(ready, site)(state => state.copy(relics =
                 state.relics.map(value => if value.id == id then
                   f(value).asInstanceOf[RelicState] else value)))
+            case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
+              Right(ready.updateCampaign(campaign => campaign.copy(lineages =
+                campaign.lineages.updatedWith(lineage)(_.map(state =>
+                  state.copy(legacies = state.legacies.map(value =>
+                    if value.id == id then f(value).asInstanceOf[LegacyState]
+                    else value)))))))
             case atlas: CardContainer.AtlasSite =>
               updateAtlasCardState(ready, atlas, id, f)
             case _ => Left(IncompatibleLocation(Piece.Card(id), Location.OnCard(id)))
@@ -112,6 +118,8 @@ private[operations] object OperationStateWrites:
       case stored: AtlasEntry.StoredSite => stored
     }.toRight(AmbiguousLocation(Location.Atlas,
       "stored Atlas site is unavailable")).flatMap { stored =>
+      // A stored site's edifice has no state to update: it is found among
+      // neither the denizens nor the relics, and no operation changes it.
       val updated = container.area match
         case SiteCardArea.Denizens =>
           stored.denizens.find(_.id == id).toRight(UnknownCard(id)).flatMap:
@@ -151,5 +159,8 @@ private[operations] object OperationStateWrites:
     case CardContainer.SuitedReserve(suit) => Location.SuitedReserve(suit)
     case CardContainer.Lineage(lineage, LineageCardArea.StartingAdvisers) =>
       Location.StartingAdvisers(lineage)
+    case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
+      Location.Legacies(lineage)
+    case CardContainer.PublicLegacies => Location.PublicLegacies
     case _: CardContainer.AtlasSite => Location.Atlas
     case _ => Location.Atlas

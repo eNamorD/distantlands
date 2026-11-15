@@ -68,7 +68,8 @@ class DeclaredNoteKeysSuite extends munit.FunSuite:
     assertEquals(twice.keys.toVector.map(_.value).sorted, Vector(
       "denizen.assassin", "denizen.insomnia", "denizen.pied-piper",
       "denizen.silver-tongue", "denizen.vow-of-obedience",
-      "denizen.vow-of-poverty", "edifice.e10.intact", "edifice.e25.intact"))
+      "denizen.vow-of-poverty", "edifice.e10.intact", "edifice.e25.intact",
+      "legacy.the-ear"))
     twice.foreach: (id, entries) =>
       val each = entries.map(_._2.map(key =>
         s"${key.name} = ${wording(key.template)}").sorted).distinct

@@ -1,0 +1,31 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p3|p3]'s turn
+0.2 phase 0 | Act
+5.0 phase 0 | Rest
+9.0 round 0 | Round 2
+9.1 turn 0 | [player:p1|p1]'s turn
+9.2 phase 0 | Wake
+10.0 victory 0 | [player:p1|p1] won as the Usurper
+15.0 phase 0 | Chronicle
+18.0 delta 1 | The Empire broke
+19.0 delta 1 | [player:p1|p1] became Chancellor
+21.0 decision 1 | [player:p1|p1] took the Throne task
+26.0 decision 1 | [player:p1|p1] took the World task
+31.0 decision 1 | [player:p1|p1] took the Beacon task
+39.0 decision 1 | [player:p2|p2] took the World task
+52.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
+58.0 delta 1 | [player:p3|p3] scored [amount:1 lineage point] with [card:L01|Iron Hand] (1 from Beast)
+63.0 decision 1 | The Oathkeeper goal became Protection
+72.0 decision 1 | [player:p2|p2] protected the stack of [card:180|Fae Merchant], [card:181|Second Chance] and [card:182|Pied Piper]
+77.0 decision 1 | [player:p2|p2] kept [card:180|Fae Merchant] as a starting adviser
+78.0 delta 1 | [cards:183 100 101 back denizen back denizen back denizen|6 cards] were dispossessed
+90.0 decision 1 | [player:p1|p1] chose Discord, Arcane and Order
+100.0 decision 1 | [player:p1|p1] welcomed a Denizen as a starting adviser
+102.0 delta 1 | [site:site:ancient-city|Ancient City] was archived
+103.0 delta 1 | [site:site:broken-peaks|Broken Peaks] was archived
+104.0 delta 1 | [site:site:desolate-shore|Desolate Shore] was archived
+105.0 delta 1 | [site:site:dunes|Dunes] was archived
+106.0 delta 1 | [site:site:fair-isle|Fair Isle] was archived
+107.0 delta 1 | [site:site:golden-valley|Golden Valley] was archived
+108.0 delta 1 | [site:site:buried-giant|Buried Giant] stays on the map with [card:L01|Iron Hand]
+109.0 delta 1 | [site:site:deep-woods|Deep Woods] stays on the map with [card:L01|Iron Hand]

@@ -65,7 +65,11 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       rollOutcome = Some(WalkerRollOutcomeProjection("campaign.attack",
         Vector(DieFace.TwoSwordsSkull), 2, None, Vector("1 skull loss"))))),
     walkerWaiting = Some(WalkerWaitingProjection(Vector("blue"), Some("Choose the Oathkeeper"))),
-    supplyMaximum = 7)
+    supplyMaximum = 7,
+    foundations = Vector(
+      FoundationProjection(1, "normal", "Imperial Maps", "First.\n\nSecond."),
+      FoundationProjection(3, "altered", "Public Ambitions",
+        "Deal 4 legacy cards.")))
 
 
   test("the projection round trips its Chronicle, with and without the " +
@@ -182,6 +186,42 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     assertRoundTrips(projection.copy(playerBoards = projection.playerBoards
       .map(_.copy(advisers = Vector(tracker)))))
 
+  test("a legacy's goal round-trips, and a card without one writes none"):
+    val seer = known.copy(cardId = "L22", cardKind = "legacy",
+      legacyGoal = Some(LegacyGoalProjection("darkest-secret",
+        "Hold the Darkest Secret.")))
+    val held = projection.copy(playerBoards = projection.playerBoards
+      .map(_.copy(advisers = Vector(seer))))
+    assertRoundTrips(held)
+    val raw = ujson.read(GameProjectionCodec.encode(projection))
+    assert(!raw("playerBoards")(0)("advisers").arr.exists(
+      _.obj.contains("legacyGoal")), raw)
+
+  test("a board's legacies and the public row round-trip, and a payload " +
+      "without them decodes to none"):
+    val seer = known.copy(cardId = "L22", cardKind = "legacy")
+    val held = projection.copy(playerBoards = projection.playerBoards
+      .map(_.copy(legacies = Vector(seer, hidden.copy(cardKind = "legacy")))),
+      publicLegacies = Vector(seer.copy(cardId = "L17")))
+    assertRoundTrips(held)
+    val raw = ujson.read(GameProjectionCodec.encode(held))
+    raw.obj.remove("publicLegacies")
+    raw("playerBoards").arr.foreach(_.obj.remove("legacies"))
+    assertEquals(GameProjectionCodec.decode(ujson.write(raw)).map(value =>
+      (value.publicLegacies, value.playerBoards.map(_.legacies))),
+      Right((Vector.empty, projection.playerBoards.map(_ => Vector.empty))))
+
+  test("the Reliquary round-trips, and a payload without it decodes to " +
+      "none"):
+    val relic = known.copy(cardId = "R19", cardKind = "relic")
+    val held = projection.copy(reliquary =
+      Vector(relic, hidden.copy(cardKind = "relic")))
+    assertRoundTrips(held)
+    val raw = ujson.read(GameProjectionCodec.encode(held))
+    raw.obj.remove("reliquary")
+    assertEquals(GameProjectionCodec.decode(ujson.write(raw))
+      .map(_.reliquary), Right(Vector.empty))
+
   test("a board's bag figures and the Supply bands round-trip"):
     val withBag = projection.copy(
       playerBoards = projection.playerBoards.map(_.copy(bankedWarbands = 5,
@@ -215,6 +255,27 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     assertRoundTrips(projection.copy(playerBoards = projection.playerBoards
       .map(_.copy(revealedVisions = Vector(faith, conquest)))))
 
+  test("a payload without its foundations is refused, and so is a " +
+      "foundation with a field it does not declare"):
+    val missing = ujson.read(GameProjectionCodec.encode(projection))
+    missing.obj.remove("foundations")
+    assertEquals(
+      Unwrap.rejected(GameProjectionCodec.decode(ujson.write(missing))).path,
+      "$.foundations")
+    val extra = ujson.read(GameProjectionCodec.encode(projection))
+    extra("foundations")(1)("sources") = ujson.Arr()
+    assertEquals(
+      Unwrap.rejected(GameProjectionCodec.decode(ujson.write(extra))).path,
+      "$.foundations[1].sources")
+
+  test("a foundation whose face is neither normal nor altered is refused"):
+    // The wire spells a face in lower case.
+    val miscased = ujson.read(GameProjectionCodec.encode(projection))
+    miscased("foundations")(1)("face") = "Altered"
+    assertEquals(
+      Unwrap.rejected(GameProjectionCodec.decode(ujson.write(miscased))).path,
+      "$.foundations[1].face")
+
   test("a board payload without its revealed Visions is refused"):
     val raw = ujson.read(GameProjectionCodec.encode(projection))
     raw("playerBoards").arr.foreach(board => board.obj.remove("revealedVisions"))
@@ -231,6 +292,25 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     val decoded = GameProjectionCodec.decode(ujson.write(raw))
     assertEquals(decoded.map(_.world.map(_.discardCards)),
       Right(projection.world.map(_ => Vector.empty)))
+
+  test("a region's empty site slots round-trip, and a region payload " +
+      "without them is refused"):
+    val short = projection.copy(world = projection.world.map(
+      _.copy(emptySlots = 2)))
+    assertRoundTrips(short)
+    val raw = ujson.read(GameProjectionCodec.encode(short))
+    raw("world").arr.foreach(region => region.obj.remove("emptySlots"))
+    assert(GameProjectionCodec.decode(ujson.write(raw)).isLeft)
+
+  test("a site's festival marker round-trips, and a site payload without " +
+      "it is refused"):
+    val marked = projection.copy(world = projection.world.map(region =>
+      region.copy(sites = region.sites.map(_.copy(festival = true)))))
+    assertRoundTrips(marked)
+    val raw = ujson.read(GameProjectionCodec.encode(marked))
+    raw("world").arr.foreach(region =>
+      region("sites").arr.foreach(site => site.obj.remove("festival")))
+    assert(GameProjectionCodec.decode(ujson.write(raw)).isLeft)
 
   /** Task 5b: a decision's panel copy is two OPTIONAL strings, so the
     * absent case has to round-trip as faithfully as the present one. The
@@ -286,14 +366,27 @@ class ProjectionProtocolSuite extends munit.FunSuite:
   test("a negotiate query and a waiting deal round trip with and without editing"):
     val card = CardDetailsProjection("r1", "relic", "Relic One",
       orientation = Some("face-down"))
+    val adviser = CardDetailsProjection("d1", "denizen", "Denizen One",
+      orientation = Some("face-up"))
+    val dunes = NegotiationSiteProjection("site:dunes", "Dunes")
     val editing = NegotiationEditingProjection(5, Vector(card), Vector.empty,
       Vector(NegotiationSiteRelicProjection("s1", card)), canAccept = true,
       editableCitizenship = Vector("blue"),
-      citizenshipRefused = Some("Citizenship is ignored due to setup option"))
+      citizenshipRefused = Some("Citizenship is ignored due to setup option"),
+      bindingPromisesOpen = true, giftableAdvisers = Vector(adviser),
+      adviserRecipients = Vector("blue"), overAdviserLimit = Vector("blue"),
+      giftableSites = Vector(dunes), siteRecipients = Vector("blue"),
+      shortOfWarbands = Vector("blue"), editableSecrets = 2,
+      secretRecipients = Vector("p2"))
     val deal = NegotiationDealProjection(Vector("red", "blue"), Vector("blue"),
-      Vector(NegotiationTransferProjection("red", "blue", 3, 1, Vector(card))),
+      Vector(NegotiationTransferProjection("red", "blue", 3, 1, Vector(card),
+        adviserCount = 1, advisers = Vector(adviser), sites = Vector(dunes),
+        secrets = 1)),
       Vector(NegotiationDisclosureProjection("red", "blue", "held-relic", None)),
-      Some(editing), Vector(NegotiationCitizenshipProjection("red", "blue")))
+      Some(editing), Vector(NegotiationCitizenshipProjection("red", "blue")),
+      Vector(NegotiationPromiseProjection("red", "I will not attack you.",
+        binding = false), NegotiationPromiseProjection("blue",
+        "I will give you 1 favor.", binding = true)), privateDeal = true)
     val query = DecisionQueryProjection.Negotiate(deal,
       heading = Some("Negotiation"))
     val waiting = WalkerWaitingProjection(Vector("red", "blue"),
@@ -402,6 +495,34 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       heading = Some("Place force"))
     val carrying = projection.copy(walkerDecision =
       projection.walkerDecision.map(_.copy(query = Some(distribute))))
+    assertRoundTrips(carrying)
+
+  test("a choose-amounts query round-trips its slots and distinct flag"):
+    def vision(id: String) = DecisionOptionProjection("vision", id, id)
+    val amounts = DecisionQueryProjection.ChooseAmounts(
+      Vector(DecisionSlotProjection(vision("vision:a"), 1, 7, Some(3)),
+        DecisionSlotProjection(vision("vision:b"), 1, 7, Some(5))),
+      distinct = true, confirmLabel = "Place the Visions",
+      heading = Some("Seer"))
+    val carrying = projection.copy(walkerDecision =
+      projection.walkerDecision.map(_.copy(query = Some(amounts))))
+    assertRoundTrips(carrying)
+
+  test("a Gathering's open question round-trips who is there, who passed " +
+      "and whom the viewer may name"):
+    val gathering = DecisionQueryProjection.Gathering(Vector("p1", "p2", "p3"),
+      Vector("p3"), Vector("p2", "p3"),
+      heading = Some("The Gathering at Ancient City"))
+    val carrying = projection.copy(walkerDecision =
+      projection.walkerDecision.map(_.copy(query = Some(gathering))))
+    assertRoundTrips(carrying)
+
+  test("a deal round-trips its bystanders and their passes"):
+    val watched = DecisionQueryProjection.Negotiate(NegotiationDealProjection(
+      Vector("p1", "p2"), Vector.empty, Vector.empty, Vector.empty,
+      bystanderPlayerIds = Vector("p3"), passedPlayerIds = Vector("p3")))
+    val carrying = projection.copy(walkerDecision =
+      projection.walkerDecision.map(_.copy(query = Some(watched))))
     assertRoundTrips(carrying)
 
   test("an inspect query round-trips its cards, its done button and its heading"):

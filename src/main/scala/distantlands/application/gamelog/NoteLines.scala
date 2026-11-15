@@ -45,7 +45,7 @@ private[gamelog] final class NoteLines(words: LogWords,
       for
         after <- journal.readyAfter(at)
         spans <- spoken(power, note, states(journal, run, at) :+ after, viewer)
-      yield Posted(kind(run, power, note), spans)
+      yield Posted(kind(run, power, note), spans, readers = note.readers)
     case _ => None
 
   /** "{source}: {sentence}" for `note`, its cards judged at `seen`, or the
@@ -147,12 +147,15 @@ private[gamelog] final class NoteLines(words: LogWords,
     case NoteArg.Goal(goal) => Vector(Text(OathkeeperGoalChoice.named(goal)))
     case NoteArg.Players(ids) =>
       LogWords.join(ids.map(id => Vector(words.player(id))))
+    case NoteArg.Promise(text) => Vector(Text(s"“$text”"))
     case NoteArg.Clauses(parts) =>
       LogWords.join(parts.map(clause(_, seen, viewer)))
     case NoteArg.Placements(entries) => LogWords.join(entries.map(
       (count, site) => Vector(Text(s"$count " +
         s"${LogWords.plural(count, "warband", "warbands")} on "),
         words.site(site))))
+    case NoteArg.SuitShares(entries) => Vector(Text(entries.map(
+      (points, suit) => s"$points from $suit").mkString(", ")))
     case NoteArg.Things(items) => LogWords.join(items.map(thing(_, seen,
       viewer)))
     case NoteArg.ToNomadBank => Vector.empty
@@ -239,6 +242,8 @@ private[gamelog] final class NoteLines(words: LogWords,
     case DecisionOptionRef.Vision(id) =>
       Some(words.one(words.card(id, ready, ready, viewer)))
     case DecisionOptionRef.Edifice(id) =>
+      Some(words.one(words.card(id, ready, ready, viewer)))
+    case DecisionOptionRef.Legacy(id) =>
       Some(words.one(words.card(id, ready, ready, viewer)))
     case DecisionOptionRef.Banner(banner) => Some(Vector(words.banner(banner)))
     case _ => None

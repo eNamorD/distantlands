@@ -1,40 +1,106 @@
 package distantlands.gameplay.chronicle
 
+import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.legacies.IronHand
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
 
 /** Score Lineage Points, the Throne's sixth step (CR p. 37, Chronicle ruling
-  * 13). The winner scores 3 lineage points. Any number of times, they may
-  * spend 2 of the points they are scoring to let another seated player score
-  * 1. Legacy points (1 per matching card at sites the winner rules) arrive
-  * with the Legacies slice through this step's window. */
+  * 13). The winner scores 3 lineage points plus their legacy bonus
+  * (`bonus`). Any number of times, they may spend 2 of the points they are
+  * scoring to let another seated player score 1. */
 object LineageScoring:
   val giftsDecisionId: String = "chronicle.score-lineage.gifts"
-  val winnerPoints: Int = 3
+  val basePoints: Int = 3
 
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone)
   private val notes = NoteSet(noteId)
   val scored: NoteKey = notes.key("scored", Vector(NotePart.Arg(0),
     NotePart.Text(" scored "), NotePart.Arg(1)))
-  val gave: NoteKey = notes.key("gave", Vector(NotePart.Arg(0),
-    NotePart.Text(" gave "), NotePart.Arg(1), NotePart.Text(" to "),
-    NotePart.Arg(2)))
+  /** "p1 gave up 4 points to give p2 2 points.", one line per gift, as it
+    * is given (R28). */
+  val gaveUp: NoteKey = notes.key("gave-up", Vector(NotePart.Arg(0),
+    NotePart.Text(" gave up "), NotePart.Arg(1), NotePart.Text(" "),
+    NotePart.Plural(1, "point", "points"), NotePart.Text(" to give "),
+    NotePart.Arg(2), NotePart.Text(" "), NotePart.Arg(3), NotePart.Text(" "),
+    NotePart.Plural(3, "point", "points"), NotePart.Text(".")))
+  /** "p1 keeps 3 points", after at least one gift (R28, R29). */
+  val keeps: NoteKey = notes.key("keeps", Vector(NotePart.Arg(0),
+    NotePart.Text(" keeps "), NotePart.Arg(1), NotePart.Text(" "),
+    NotePart.Plural(1, "point", "points")))
+  /** "p1 scored 7 lineage points (3 base, 3 from Beast, 1 from Nomad)". */
+  val scoredWithBonus: NoteKey = notes.key("scored-with-bonus", Vector(
+    NotePart.Arg(0), NotePart.Text(" scored "), NotePart.Arg(1),
+    NotePart.Text(" ("), NotePart.Arg(2), NotePart.Text(" base, "),
+    NotePart.Arg(3), NotePart.Text(")")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
-  val steps: Vector[Operation] = Vector(Branch((state, _) =>
-    ChronicleTasks.winner(state).fold(violation =>
-      Vector(ChronicleTasks.failing(violation)), score(state, _))))
+  /** `player`'s legacy bonus by suit (CR, Score Lineage Points; Legacies
+    * ruling 10): for each active legacy the player holds (R33, narrowed by
+    * Legacy Chronicle powers R1), 1 point per card
+    * of its printed suit, denizens and edifices, intact or ruined (R32), at
+    * the sites the player rules; advisers do not count. Legacies of one
+    * suit add into one share, a suit that scores nothing is left out, and
+    * shares come in suit order (R31). After Crown Chancellor the winner is
+    * the Chancellor, so these are the Empire's sites (Chronicle ruling
+    * 11). A legacy already scored this game adds nothing, nor does a
+    * dormant one; Chronicler reads this for every seated player (Legacy
+    * Chronicle powers design, rulings 7 and 8; R1). */
+  def bonus(ready: ReadyGame, catalog: ExecutableCatalog, player: PlayerId)
+      : Vector[(Suit, Int)] =
+    val current = ready.game.current
+    val cards = current.map.inPlay
+      .filter(ChronicleTasks.rules(ready, player, _))
+      .flatMap(site => current.map.sites.get(site).toVector.flatMap(_.denizens))
+      .flatMap(card => catalog.suitOf(card.id))
+    val legacies = unscored(ready, player).flatMap(catalog.legacy)
+    Suit.all.map(suit => suit ->
+      legacies.count(_.suit == suit) * cards.count(_ == suit))
+      .filter(_._2 > 0)
+
+  /** `player`'s active legacies that no scoring has counted yet this game
+    * (Legacy Chronicle powers design, ruling 8). A dormant legacy does not
+    * score, and is not recorded, so it may score later this game (R1, R2,
+    * re-ruled by the owner 2026-11-14). Chronicler, Score Lineage Points
+    * and Iron Hand's scoring all read this set. */
+  def unscored(ready: ReadyGame, player: PlayerId): Vector[LegacyId] =
+    ChronicleTasks.lineageOf(ready, player)
+      .flatMap(ready.game.campaign.lineages.get).toVector.flatMap(_.legacies)
+      .filter(_.active).map(_.id).filterNot(ready.game.current.scoredLegacies)
+
+  def steps(catalog: ExecutableCatalog): Vector[Operation] =
+    Vector(Branch((state, _) =>
+      ChronicleTasks.winner(state).fold(violation =>
+        Vector(ChronicleTasks.failing(violation)),
+        winner => score(state, winner, bonus(state, catalog, winner)))),
+      // Iron Hand's Exile holder then scores their legacies' bonus, with no
+      // base and no gifts, recording them (Legacy Chronicle powers design,
+      // ruling 20; R33).
+      Branch((state, _) => ChronicleLegacyRules.ironHand(state).toVector
+        .flatMap(holder => IronHand.scoring(state, holder,
+          unscored(state, holder), bonus(state, catalog, holder)))))
 
   private def points(amount: Int): NoteArg =
     NoteArg.Amount(amount, NoteUnit.LineagePoint)
 
-  private def score(state: ReadyGame, winner: PlayerId): Vector[Operation] =
+  /** The earned total's line, then the gifts, bounded by half the total,
+    * rounded down, then the award (R28). The total is written before the
+    * gift question, as the winner knows it then. */
+  private def score(state: ReadyGame, winner: PlayerId,
+      shares: Vector[(Suit, Int)]): Vector[Operation] =
     val others = ChronicleTasks.seated(state).filterNot(_ == winner)
-    val giftable = winnerPoints / 2
+    val total = basePoints + shares.map(_._2).sum
+    val giftable = total / 2
+    val earned = Note(noteId, _ => Some(
+      if shares.isEmpty then
+        scored.sourceless(NoteArg.Player(winner), points(total))
+      else scoredWithBonus.sourceless(NoteArg.Player(winner), points(total),
+        NoteArg.Number(basePoints), NoteArg.SuitShares(
+          shares.map((suit, share) => share -> suit)))))
     if giftable == 0 || others.isEmpty then
-      Vector(award(state, winner, Vector.empty))
-    else Vector(
+      Vector(earned, award(state, winner, total, Vector.empty))
+    else Vector(earned,
       Decide(giftsDecisionId, winner, DecisionQuery.Distribute(
         others.map(player => DistributeSlot(DecisionOptionRef.Player(player),
           0, giftable, None)), 0, giftable,
@@ -42,24 +108,28 @@ object LineageScoring:
         confirmLabel = "Score")),
       Branch((live, pending) => PowerAnswers.distribution(pending,
         giftsDecisionId) match
-        case Some(rows) => Vector(award(live, winner, rows.collect {
+        case Some(rows) => Vector(award(live, winner, total, rows.collect {
           case DistributeAmount(DecisionOptionRef.Player(player), amount)
               if amount > 0 => player -> amount
         }))
         case None => Vector(ChronicleTasks.failing(
           PowerAnswers.missing(giftsDecisionId)))))
 
-  /** The winner's points less 2 per gift, then each gift, and their lines. */
-  private def award(state: ReadyGame, winner: PlayerId,
+  /** The winner's `total` less 2 per gift, recorded with each gift, then
+    * one line per gift and, after any gift, the points kept. A winner who
+    * keeps 0 records nothing and still reads "keeps 0 points" (R28, R29).
+    * The journal and the era scorepad record the kept points. */
+  private def award(state: ReadyGame, winner: PlayerId, total: Int,
       gifts: Vector[(PlayerId, Int)]): Operation =
-    val kept = winnerPoints - 2 * gifts.map(_._2).sum
+    val kept = total - 2 * gifts.map(_._2).sum
     val scoring = Option.when(kept > 0)(winner -> kept).toVector ++ gifts
     val ops = scoring.flatMap((player, amount) =>
       ChronicleTasks.lineageOf(state, player).map(
         LineagePointsScored(_, amount)))
     Sequence(BuildOps((_, _) => Right(ops), required = true) +:
-      (scoring.map((player, amount) => Note(noteId, _ => Some(
-        scored.sourceless(NoteArg.Player(player), points(amount))))) ++
-        gifts.map((player, amount) => Note(noteId, _ => Some(
-          gave.sourceless(NoteArg.Player(winner), points(amount),
-            NoteArg.Player(player)))))))
+      (gifts.map((player, amount) => Note(noteId, _ => Some(
+        gaveUp.sourceless(NoteArg.Player(winner), NoteArg.Number(2 * amount),
+          NoteArg.Player(player), NoteArg.Number(amount))))) ++
+        Option.when(gifts.nonEmpty)(Note(noteId, _ => Some(
+          keeps.sourceless(NoteArg.Player(winner), NoteArg.Number(kept)))))
+          .toVector))

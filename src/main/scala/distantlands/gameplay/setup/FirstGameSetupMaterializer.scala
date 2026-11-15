@@ -5,77 +5,116 @@ import distantlands.model._
 
 final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
 
-  def materialize(plan: FirstGameSetupPlan,
-      placements: Vector[PawnPlacement],
-      adviserChoices: Vector[(PlayerId, DenizenId)]): FirstGameSetupMaterial =
-    val placementMap = placements.map(p => p.playerId -> p.siteId).toMap
-    val adviserMap = adviserChoices.toMap
+  /** The table `plan` sets up, with Foundation IV's cards dealt as `deal`
+    * says. No pawn is placed and no adviser chosen: Setup's walk does
+    * both. */
+  def materialize(plan: FirstGameSetupPlan, deal: SetupDeal)
+      : FirstGameSetupMaterial =
     val relicsBySite = assignRelics(plan)
     val edifices = plan.homelandEdifices.toMap
-    val purple = plan.empire.fold(Set.empty[SiteId])(empire =>
-      empire.sites.take(MaterialBankState.ImperialWarbands -
-        3 * empire.imperial.size).map(_.site).toSet)
+    // Each board's starting warbands: 3, or what Circle of Swords gives
+    // (`StartingLegacies`). The Empire's sites take purple warbands from
+    // what the Imperial boards leave of the 24 (R3).
+    val boards = plan.participants.map(p => p.playerId ->
+      plan.legacies.boardWarbands.getOrElse(p.playerId, 3)).toMap
+    val purpleBoards = plan.empire.fold(0)(_.imperial.toVector
+      .map(boards).sum)
+    // Under Iron Hand the Empire's sites take its holder's warbands.
+    val purple = plan.empire.filter(_ => plan.legacies.ironHand.isEmpty)
+      .fold(Set.empty[SiteId])(empire =>
+        empire.sites.take(math.max(0,
+          MaterialBankState.ImperialWarbands - purpleBoards))
+          .map(_.site).toSet)
+    val held = heldForces(plan, boards)
     val empireSites = plan.empire.fold(Map.empty[SiteId, StoredSite])(
       _.sites.map(stored => stored.site -> stored).toMap)
     val atlasSites = plan.atlasSites.map(stored => stored.site -> stored).toMap
-    val map = MapState(
-      plan.orderedSites.take(2),
-      plan.orderedSites.slice(2, 5),
-      plan.orderedSites.slice(5, 8),
-      plan.orderedSites.map { siteId =>
-        val drawn = relicsBySite.getOrElse(siteId, Vector.empty)
-        siteId -> empireSites.get(siteId).map(empireSite(_, purple(siteId)))
-          .orElse(atlasSites.get(siteId).map(atlasSite(_, drawn)))
-          .getOrElse(firstGameSite(siteId, edifices.get(siteId), drawn))
-      }.toMap)
+    val rivalSites = plan.legacies.rivalSites
+      .map(stored => stored.site -> stored).toMap
+    val map = MapState.inSlots(plan.orderedSites.map { siteId =>
+      val drawn = relicsBySite.getOrElse(siteId, Vector.empty)
+      siteId -> empireSites.get(siteId).map(stored => empireSite(stored,
+          held.getOrElse(siteId, empireForces(purple(siteId)))))
+        .orElse(rivalSites.get(siteId).map(stored =>
+          empireSite(stored, held(siteId))))
+        .orElse(atlasSites.get(siteId).map(stored =>
+          atlasSite(stored, drawn, held.get(siteId))))
+        .getOrElse(firstGameSite(siteId, edifices.get(siteId), drawn))
+    })
     val usedRelics = relicsBySite.valuesIterator.flatten.toSet
     val players = plan.participants.map { participant =>
-      PlayerState(participant.playerId, participant.lineageId,
-        placementMap.get(participant.playerId),
-        PlayerBoardState(1, 1, 0, 3, SupplyTrack.full),
-        adviserMap.get(participant.playerId).toVector.map(id =>
+      PlayerState(participant.playerId, participant.lineageId, None,
+        PlayerBoardState(startingFavor(plan), 1, 0,
+          boards(participant.playerId), SupplyTrack.full),
+        deal.kept(plan.denizenOrder, participant.playerId).map(id =>
           DenizenState(id, Orientation.FaceDown, Tokens.empty)),
         Vector.empty, Vector.empty)
     }
     FirstGameSetupMaterial(players, map,
-      CardZones(plan.worldDeckOrder, plan.relicOrder.filterNot(usedRelics),
+      // An Oaths of Loyalty holder's Teeming World draws go to the bottom
+      // of the world deck, below the Visions (Legacy Chronicle powers R24,
+      // re-ruled), so every card of the deal is somewhere once.
+      CardZones(plan.worldDeckOrder ++ plan.participants.flatMap(p =>
+          deal.buried(plan.denizenOrder, p.playerId)),
+        plan.relicOrder.filterNot(usedRelics),
         catalog.edifices.map(e => EdificeId(e.id.value))
-          .filterNot(edificesOn(map)), Vector.empty,
-        initialDiscards(plan, placementMap, adviserMap)),
+          .filterNot(edificesOn(map)),
+        deal.discards(plan.denizenOrder)),
       BannersState(
-        PeoplesFavorState(PeoplesFavorFace.Mob, None, 1),
-        DarkestSecretState(DarkestSecretFace.WanderingFlame, None, 1)),
+        PeoplesFavorState(peoplesFavorFace(plan), None, 1),
+        DarkestSecretState(darkestSecretFace(plan), None, 1, festival = None)),
       // The first player begins round 1: in a later game, the Chancellor.
       GameTracks(1, 0, usurperLimited = true,
         roundStarter = plan.firstPlayer), favorBanks(plan, map),
-      temporaryHands = plan.participants.map(p =>
-        p.playerId -> handFor(plan, p.playerId)).toMap)
+      temporaryHands = plan.participants.map(p => p.playerId ->
+        deal.hand(plan.denizenOrder, p.playerId)).toMap)
 
-  /** A player's 3 cards in Foundation IV, dealt in seat order to the
-    * players with no starting advisers; none for a player with them. */
-  def handFor(plan: FirstGameSetupPlan, playerId: PlayerId): Vector[DenizenId] =
-    val index = plan.participants
-      .filterNot(p => plan.startingAdvisers.contains(p.playerId))
-      .indexWhere(_.playerId == playerId)
-    if index < 0 then Vector.empty
-    else plan.denizenOrder.slice(6 + index * 3, 9 + index * 3)
-
-  /** A first game deals every relic slot; a later game deals only the
-    * slots an atlas site's stored relics leave open, and none at the
-    * Empire's sites (Empire ruling R27). */
+  /** A first game deals every relic slot. With no Empire, the former
+    * Empire's sites take the slots their stored relics leave open, and an
+    * Empire's sites and Rival's take none (Empire ruling R27; R5); Imperial Maps' sites
+    * are dealt theirs as Setup's walk places them (`PlaceAtlasSite`). Slots
+    * are dealt Cradlemost first, and a relic deck that runs out leaves the
+    * last ones empty. */
   private def assignRelics(plan: FirstGameSetupPlan): Map[SiteId, Vector[RelicId]] =
     val stored = plan.atlasSites.map(site => site.site -> site).toMap
-    val empire = plan.empire.fold(Set.empty[SiteId])(_.sites.map(_.site).toSet)
+    // Rival's sites are placed by the Empire rules, which fill no empty
+    // relic slot (R5).
+    val noDraw = plan.empire.fold(Set.empty[SiteId])(_.sites.map(_.site)
+      .toSet) ++ plan.legacies.rivalSites.map(_.site)
     var offset = 0
     plan.orderedSites.map { site =>
       val slots = catalog.site(site).get.relicSlots
-      val count = if empire(site) then 0
-        else stored.get(site).fold(slots)(atlas => math.max(0,
-          slots - atlas.items.count(_.isInstanceOf[RelicId])))
+      val count = if noDraw(site) then 0
+        else stored.get(site).fold(slots)(atlas => SiteState.openRelicSlots(
+          slots, atlas.items.count(_.isInstanceOf[RelicId])))
       val assigned = plan.relicOrder.slice(offset, offset + count)
       offset += count
       site -> assigned
     }.toMap
+
+  /** The forces at each site a legacy gives an Exile holder's warbands:
+    * under Iron Hand the Empire's sites, or the former Empire's with no
+    * Empire, then Rival's sites, which are built by the Empire rules
+    * (ruling 8). A lineage's 14 warbands go to its board first, then to its
+    * sites Cradlemost first; a site its supply misses takes bandits (R2). */
+  private def heldForces(plan: FirstGameSetupPlan,
+      boards: Map[PlayerId, Int]): Map[SiteId, SiteForces] =
+    val lineageBoards = plan.participants.map(p => p.lineageId ->
+      boards(p.playerId)).toMap
+    val formerEmpire = plan.empire.fold(plan.atlasSites)(_.sites)
+    val sites = plan.legacies.ironHand.toVector.flatMap(lineage =>
+      formerEmpire.map(lineage -> _.site)) ++
+      plan.legacies.rival.toVector.flatMap(lineage =>
+        plan.legacies.rivalSites.map(lineage -> _.site))
+    sites.groupBy(_._1).flatMap { (lineage, held) =>
+      val reach = MaterialBankState.ExileWarbandsPerLineage -
+        lineageBoards.getOrElse(lineage, 3)
+      held.zipWithIndex.map { case ((_, site), index) =>
+        site -> (if index < reach then
+          SiteForces.Occupied(ForceKind.Exile(lineage), 1)
+        else bandits(site))
+      }
+    }
 
   private def bandits(site: SiteId): SiteForces =
     val capacity = catalog.site(site).get.capacity
@@ -91,22 +130,31 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
         EdificeState(id, EdificeSide.Ruined, Tokens.empty)),
       faceDown(drawn), catalog.site(site).get.startingResources)
 
+  /** An Empire site's forces: an Imperial warband while the supply the
+    * Imperial boards leave lasts (Empire ruling R30). A short site stays
+    * empty for game start's bandits. */
+  private def empireForces(purple: Boolean): SiteForces =
+    if purple then SiteForces.Occupied(ForceKind.Imperial, 1)
+    else SiteForces.Empty
+
   /** An Empire site: its stored edifice intact, its denizens faceup, its
-    * stored relics facedown, and an Imperial warband while the supply
-    * lasts (Empire ruling R30). A short site stays empty for game start's
-    * bandits. */
-  private def empireSite(stored: StoredSite, purple: Boolean): SiteState =
-    SiteState(if purple then SiteForces.Occupied(ForceKind.Imperial, 1)
-        else SiteForces.Empty,
+    * stored relics facedown, with `forces`. */
+  private def empireSite(stored: StoredSite, forces: SiteForces): SiteState =
+    SiteState(forces,
       storedDenizens(stored, EdificeSide.Intact), faceDown(storedRelics(stored)),
       catalog.site(stored.site).get.startingResources)
 
-  /** An atlas site in a later game keeps its stored cards, its edifice
-    * ruined, and fills its open relic slots (Empire ruling R27). */
-  private def atlasSite(stored: StoredSite, drawn: Vector[RelicId]): SiteState =
-    SiteState(bandits(stored.site), storedDenizens(stored, EdificeSide.Ruined),
-      faceDown(storedRelics(stored) ++ drawn),
-      catalog.site(stored.site).get.startingResources)
+  /** A former Empire's site with no Empire keeps its stored cards, its
+    * edifice ruined, and fills its open relic slots, as an atlas site
+    * Imperial Maps places does (Empire ruling R27). Under Iron Hand it
+    * takes `held` in place of its bandits. */
+  private def atlasSite(stored: StoredSite, drawn: Vector[RelicId],
+      held: Option[SiteForces]): SiteState =
+    val printed = catalog.site(stored.site).get
+    val site = SiteState.banditSite(printed.capacity,
+      printed.startingResources, storedDenizens(stored, EdificeSide.Ruined),
+      storedRelics(stored) ++ drawn)
+    held.fold(site)(forces => site.copy(forces = forces))
 
   private def storedDenizens(stored: StoredSite, side: EdificeSide)
       : Vector[SiteDenizenState] = stored.items.collect {
@@ -122,37 +170,40 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       case EdificeState(id, _, _) => id
     }.toSet
 
-  private def initialDiscards(plan: FirstGameSetupPlan,
-      placements: Map[PlayerId, SiteId],
-      choices: Map[PlayerId, DenizenId]): Map[Region, Vector[WorldCardId]] =
-    val seeded = Map[Region, Vector[WorldCardId]](
-      Region.Cradle -> plan.denizenOrder.slice(0, 2),
-      Region.Provinces -> plan.denizenOrder.slice(2, 4),
-      Region.Hinterland -> plan.denizenOrder.slice(4, 6))
-    plan.participants.foldLeft(seeded) { (discards, participant) =>
-      (placements.get(participant.playerId), choices.get(participant.playerId)) match
-        case (Some(site), Some(choice)) =>
-          val rejected = handFor(plan, participant.playerId).filterNot(_ == choice)
-          val destination = regionOf(plan, site) match
-            case Region.Cradle => Region.Provinces
-            case Region.Provinces => Region.Hinterland
-            case Region.Hinterland => Region.Cradle
-          discards.updated(destination, discards(destination) ++ rejected)
-        case _ => discards
-    }
+  /** Foundation V's face, on the People's Favor: Mob's Favor sets the
+    * Mob, and Grand Council flips it to the Grand Council. Both faces put
+    * 1 favor on it from the shared bank, and `LaterGameSetup` gives it to
+    * the Chancellor when the Oathkeeper goal is the People's Favor. */
+  private def peoplesFavorFace(plan: FirstGameSetupPlan): PeoplesFavorFace =
+    if plan.altered(FoundationNumber.V) then PeoplesFavorFace.GrandCouncil
+    else PeoplesFavorFace.Mob
 
-  private def regionOf(plan: FirstGameSetupPlan, site: SiteId): Region =
-    if plan.orderedSites.take(2).contains(site) then Region.Cradle
-    else if plan.orderedSites.slice(2, 5).contains(site) then Region.Provinces
-    else Region.Hinterland
+  /** Foundation VI's face, on the Darkest Secret: Wandering Flame sets the
+    * Wandering Flame, and Festival flips it to the Festival, its marker
+    * beside the map. Both faces put 1 secret on it from the shared bank,
+    * and `LaterGameSetup` gives it to the Chancellor when the Oathkeeper
+    * goal is the Darkest Secret. */
+  private def darkestSecretFace(plan: FirstGameSetupPlan): DarkestSecretFace =
+    if plan.altered(FoundationNumber.VI) then DarkestSecretFace.Festival
+    else DarkestSecretFace.WanderingFlame
 
-  /** Foundation II: 3 favor per suit, 1 more with 5 or more players, and 1
-    * more per denizen of that suit on the map, edifices included. */
+  /** The favor on each board: 1, and under Movers and Shakers (altered
+    * Foundation II) 5 more from the shared bank, which has no count. */
+  private def startingFavor(plan: FirstGameSetupPlan): Int =
+    if plan.altered(FoundationNumber.II) then 6 else 1
+
+  /** Foundation II. Powerful Tribes: 3 favor per suit, 1 more with 5 or
+    * more players, and 1 more per denizen of that suit on the map,
+    * edifices included. Movers and Shakers prints neither the 3 nor the
+    * fifth-player favor: each bank holds 1 per denizen of its suit on the
+    * map. A site Imperial Maps places in Setup's walk adds its own
+    * (`AtlasPlacement.suitFavor`). */
   private def favorBanks(plan: FirstGameSetupPlan, map: MapState)
       : Map[Suit, Int] =
-    val bonus = if plan.participants.size >= 5 then 1 else 0
-    val suits = map.sites.values.flatMap(_.denizens).flatMap {
-      case EdificeState(id, _, _) => catalog.edifice(id).map(_.suit)
-      case DenizenState(id, _, _) => catalog.denizen(id).map(_.suit)
-    }.toVector
-    Suit.all.map(suit => suit -> (3 + bonus + suits.count(_ == suit))).toMap
+    val printed =
+      if plan.altered(FoundationNumber.II) then 0
+      else if plan.participants.size >= 5 then 4
+      else 3
+    val suits = map.sites.values.flatMap(_.denizens)
+      .flatMap(AtlasPlacement.suitOf(catalog, _)).toVector
+    Suit.all.map(suit => suit -> (printed + suits.count(_ == suit))).toMap

@@ -176,86 +176,17 @@ private[gameplay] object OperationApplication:
       case ((result, state), _) => (result, state)
     reasons
 
+  /** Every Oath leaf goes to [[LeafApplication]], whose family matches are
+    * exhaustive. `Operation.flatten` of a `CoreOperation` yields only Oath
+    * leaves, so the last arm is for a leaf of some other vocabulary, a
+    * walker control node, which never reaches the applier; it is skipped
+    * as before.
+    */
   private def applyNonMoveLeaves(
       ready: ReadyGame,
       leaves: Vector[Operation]
   ): Either[OperationError, ReadyGame] =
     leaves.foldLeft[Either[OperationError, ReadyGame]](Right(ready)):
-      case (result, Flip(id, at, orientation)) =>
-        result.flatMap(CardFaceOperations.flipCard(_, id, at, orientation))
-      case (result, FlipSecrets(player, amount, from, to)) =>
-        result.flatMap(ResourceOperations.flipPlayerSecrets(
-          _, player, amount, from, to))
-      case (result, Peek(viewer, id, at)) =>
-        result.flatMap(CardFaceOperations.peek(_, viewer, id, at))
-      case (result, SpendSupply(player, amount, _)) =>
-        result.flatMap(TurnStateOperations.adjustSupply(_, player, -amount))
-      case (result, GainSupply(player, amount)) =>
-        result.flatMap(TurnStateOperations.adjustSupply(_, player, amount))
-      case (result, AdvanceVisionsDrawn) =>
-        result.flatMap(TurnStateOperations.advanceVisionsDrawn)
-      case (result, AdvanceRound) =>
-        result.flatMap(TurnStateOperations.advanceRound)
-      case (result, UsurperLimiterRemoved) =>
-        result.flatMap(TurnStateOperations.usurperLimiterRemoved)
-      case (result, Shuffle(pile, order)) =>
-        result.flatMap(PileOperations.shuffle(_, pile, order))
-      case (result, ModifyDicePool(pool, delta, _)) =>
-        result.flatMap(TurnStateOperations.adjustDicePool(_, pool, delta))
-      case (result, ModifyRollOutcome(pool, skulls, score)) =>
-        result.map(TurnStateOperations.modifyRollOutcome(_, pool, skulls, score))
-      case (result, Reroll(pool, indices, faces)) =>
-        result.flatMap(RollOperations.reroll(_, pool, indices, faces))
-      case (result, SetDieFaces(pool, faces)) =>
-        result.flatMap(RollOperations.setFaces(_, pool, faces))
-      case (result, RecordPowerUse(power)) =>
-        result.map(TurnStateOperations.recordPowerUse(_, power))
-      case (result, Defer(key, ops)) =>
-        result.map(TurnStateOperations.defer(_, key, ops))
-      case (result, TakeDeferred(key)) =>
-        result.map(TurnStateOperations.takeDeferred(_, key))
-      case (result, ActAsIf(site)) =>
-        result.map(TurnStateOperations.actAsIf(_, site))
-      case (result, ActAsIfAdvisers(player)) =>
-        result.flatMap(TurnStateOperations.actAsIfAdvisers(_, player))
-      case (result, TrackPawn(holder, target)) =>
-        result.flatMap(TurnStateOperations.trackPawn(_, holder, target))
-      case (result, ClearTrackedPawn(holder)) =>
-        result.flatMap(TurnStateOperations.clearTrackedPawn(_, holder))
-      case (result, OpenPick(decisionId, option, label)) =>
-        result.map(TurnStateOperations.openPick(_, decisionId, option, label))
-      case (result, ClosePick()) =>
-        result.map(TurnStateOperations.closePick)
-      case (result, EnterPhase(phase)) =>
-        result.flatMap(TurnStateOperations.enterPhase(_, phase))
-      case (result, SetOathkeeper(holder)) =>
-        result.flatMap(TurnStateOperations.setOathkeeper(_, holder))
-      case (result, SetOathkeeperGoal(goal)) =>
-        result.flatMap(TurnStateOperations.setOathkeeperGoal(_, goal))
-      case (result, ChronicleUpdated(chronicle)) =>
-        result.map(TurnStateOperations.chronicleUpdated(_, chronicle))
-      case (result, RoleChanged(lineage, role)) =>
-        result.flatMap(ChronicleStateOperations.roleChanged(_, lineage, role))
-      case (result, ChronicleTaskAssigned(task, player)) =>
-        result.flatMap(ChronicleStateOperations.taskAssigned(_, task, player))
-      case (result, GrandScepterFromBox(player)) =>
-        result.flatMap(ChronicleStateOperations.scepterFromBox(_, player))
-      case (result, SuitedReserveFromBox(suit, cards)) =>
-        result.flatMap(ChronicleStateOperations.suitedReserveFromBox(_, suit,
-          cards))
-      case (result, ImperialWarbandsTaken(count)) =>
-        result.map(ChronicleStateOperations.imperialWarbandsTaken(_, count))
-      case (result, WarbandsAdded(kind, count)) =>
-        result.flatMap(ChronicleStateOperations.warbandsAdded(_, kind, count))
-      case (result, LineagePointsScored(lineage, points)) =>
-        result.flatMap(ChronicleStateOperations.lineagePointsScored(_, lineage,
-          points))
-      case (result, EdificeBuilt(edifice, site)) =>
-        result.flatMap(ChronicleStateOperations.edificeBuilt(_, edifice, site))
-      case (result, RecordCampaignResult(fact)) =>
-        result.map(TurnStateOperations.recordCampaignResult(_, fact))
-      case (result, QueueProcedure(entry, atFront)) =>
-        result.map(TurnStateOperations.queueProcedure(_, entry, atFront))
-      case (result, BeginTurn(player, phase)) =>
-        result.flatMap(TurnStateOperations.beginTurn(_, player, phase))
+      case (result, leaf: PrimitiveOperation) =>
+        result.flatMap(LeafApplication(_, leaf))
       case (result, _) => result

@@ -1,14 +1,19 @@
 package distantlands.gameplay.chronicle
 
+import distantlands.gameplay.phases.rest.ArbiterCard
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.action.{BrassHorseCard, FaeMerchantCard}
+import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules,
+  LaterGameFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2, p3}
 
 /** What the journaled Chronicle carries from the campaign: the live roles,
-  * era scores, Oathkeeper goal and starting advisers over the baseline.
+  * era scores, Oathkeeper goal, foundation faces and starting advisers over
+  * the baseline.
   * `ChronicleExtraction` supplies the table fields. */
 class ChronicleRecordSuite extends munit.FunSuite:
   private val boxed = LineageId("lineage:boxed")
@@ -48,6 +53,14 @@ class ChronicleRecordSuite extends munit.FunSuite:
     assertEquals(ChronicleRecord.campaignFields(ready).lineages.head,
       LineageState(boxed, None, Role.Exile, Vector(legacy), Vector.empty))
 
+  test("a lineage that sat this game out is recorded with no previous " +
+      "player (R39)"):
+    val ready = Table.start.update(_.updateCampaign(campaign => campaign.copy(
+      baseline = campaign.baseline.copy(lineages = Vector(LineageState(boxed,
+        Some(PlayerId("p9")), Role.Exile, Vector(legacy), Vector.empty)))))).ready
+    assertEquals(ChronicleRecord.campaignFields(ready).lineages.head
+      .previousPlayer, None)
+
   test("a seated lineage the baseline lists takes its live state"):
     val start = Table.start.ready
     val lineage = lineageOf(start, p2)
@@ -67,7 +80,24 @@ class ChronicleRecordSuite extends munit.FunSuite:
     val record = ChronicleRecord.campaignFields(ready)
     assertEquals(record.copy(era = baseline.era,
       oathkeeperGoal = baseline.oathkeeperGoal,
+      foundations = baseline.foundations,
       lineages = baseline.lineages), baseline)
+
+  test("the record keeps the live foundation faces, a changed one and its " +
+      "sources included"):
+    val sourced = FoundationState(FoundationFace.Altered, Set(legacy.id))
+    val ready = Table.start
+      .foundation(FoundationNumber.III, FoundationFace.Altered)
+      .update(_.updateCampaign(campaign => campaign.copy(foundations =
+        campaign.foundations.updated(FoundationNumber.VI, sourced)))).ready
+    // The baseline lists no foundation: the record's faces are the game's.
+    assertEquals(ready.game.campaign.baseline.foundations, Map.empty)
+    val normal = FoundationState(FoundationFace.Normal, Set.empty)
+    assertEquals(ChronicleRecord.campaignFields(ready).foundations,
+      FoundationNumber.all.map(_ -> normal).toMap
+        .updated(FoundationNumber.III,
+          FoundationState(FoundationFace.Altered, Set.empty))
+        .updated(FoundationNumber.VI, sourced))
 
   test("a seated lineage takes the starting advisers this Chronicle kept"):
     val start = Table.start.ready
@@ -85,3 +115,42 @@ class ChronicleRecordSuite extends munit.FunSuite:
         _.map(_.copy(startingAdvisers = Vector(kept))))))).ready
     assertEquals(ChronicleRecord.campaignFields(ready).lineages.head
       .startingAdvisers, Vector(kept))
+
+  test("a game started from a lineage's legacies and starting relic records " +
+      "the same legacies, and the relic no longer as a starting relic"):
+    // A later game with a Chancellor: a first game played exile-only would
+    // wipe the stored legacies (R40).
+    val chronicle = LaterGameFixture.chronicle(LineageId("l1"),
+      LineageId("l2"))
+    val seated = LineageId("l1")
+    val relic = chronicle.relicDeck.head
+    val legacies = Vector(LegacyState(SeerCard.id, active = true),
+      LegacyState(ArbiterCard.id, active = false))
+    val keeping = chronicle.copy(relicDeck = chronicle.relicDeck.tail,
+      lineages = chronicle.lineages.map(lineage =>
+        if lineage.id == seated then lineage.copy(legacies = legacies,
+          startingRelics = Vector(relic))
+        else lineage))
+    val ready = GameStartRules.evolve(catalog, keeping,
+      LaterGameFixture.orders(keeping, p1)).toOption.get
+    val recorded = ChronicleRecord.campaignFields(ready).lineages
+      .find(_.id == seated)
+    // Quiet Ambitions' draw follows them; Setup has not run.
+    assertEquals(recorded.map(_.legacies.take(legacies.size)), Some(legacies))
+    assertEquals(recorded.map(_.startingRelics), Some(Vector.empty))
+
+  test("after a first game played exile-only, a boxed lineage's wiped " +
+      "legacies stay empty in the record (R40)"):
+    val saved = FirstGameSetupFixture.chronicle.copy(lineages = Vector(
+      LineageState(boxed, None, Role.Exile, Vector(legacy.copy(
+        id = SeerCard.id)), Vector.empty)))
+    val ready = GameStartRules.evolve(catalog, saved,
+      LaterGameFixture.orders(saved, p1)).toOption.get
+    assertEquals(ChronicleRecord.campaignFields(ready).lineages
+      .find(_.id == boxed).map(_.legacies), Some(Vector.empty))
+
+  test("a lineage the baseline lacks is recorded with its legacies (R1)"):
+    val ready = Table.start.legacy(p1, SeerCard, active = false).ready
+    val record = ChronicleRecord.campaignFields(ready)
+    assertEquals(record.lineages.find(_.id == lineageOf(ready, p1))
+      .map(_.legacies), Some(Vector(LegacyState(SeerCard.id, active = false))))

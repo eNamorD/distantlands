@@ -69,7 +69,8 @@ final class ModifierChoice(val actor: PlayerId, modifierWindow: PowerWindow,
   yield
     val ctx = PowerCtx(pass.powers.catalog, pass.state, actor, power.source,
       modifierWindow,
-      Vector.empty, this, pass.procedure, pass.answered)
+      Vector.empty, this, pass.procedure, pass.answered,
+      pass.powers.useRestrictions)
     val refusal = refusedUse(pass, power, ctx)
     // A refused pick is priced as its grant would leave it.
     val judging = pass.powers.quiet.without(refusal.fold(Set.empty)(_._1))

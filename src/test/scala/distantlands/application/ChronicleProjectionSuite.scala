@@ -2,8 +2,10 @@ package distantlands.application
 
 import distantlands.application.chronicle.ChronicleEntries
 import distantlands.gameplay.chronicle.EvolvedChronicleFixture
+import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules,
+  LaterGameFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
-import distantlands.model.OathState
+import distantlands.model._
 import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2}
 
@@ -35,3 +37,19 @@ class ChronicleProjectionSuite extends munit.FunSuite:
   test("a game not yet started has no Chronicle"):
     assertEquals(projector.project("g", LoadedGame(OathState.NoGame, 0L),
       p1).chronicle, None)
+
+  test("a first game played exile-only projects the saved Chronicle's " +
+      "digest, not the wiped baseline's (R40)"):
+    val saved = FirstGameSetupFixture.chronicle.copy(lineages = Vector(
+      LineageState(LineageId("l1"), None, Role.Exile,
+        Vector(LegacyState(catalog.legacies.head.id, active = true)),
+        Vector.empty)))
+    val ready = GameStartRules.evolve(catalog, saved,
+      LaterGameFixture.orders(saved, p1)).fold(
+      problem => fail(problem.toString), identity)
+    assertNotEquals(ready.game.campaign.baseline, saved)
+    val chronicle = projector.project("g", LoadedGame(OathState.Ready(ready),
+      1L), p1).chronicle
+    assertEquals(chronicle.map(_.startingDigest),
+      Some(entries.entry(saved).digest))
+

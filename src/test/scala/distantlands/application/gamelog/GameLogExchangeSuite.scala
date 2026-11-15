@@ -39,6 +39,29 @@ class GameLogExchangeSuite extends munit.FunSuite:
       s"${playerLabel(script.actor)} gave 1 favor to ${playerLabel(partner)}"),
       lines(script))
 
+  test("an agreed promise is written once, quoted, naming its author and the others"):
+    val script = negotiationPromised
+    val expected = s"${playerLabel(script.actor)} promised " +
+      s"${playerLabel(partner)}: “I will not attack you this round.”"
+    Vector(None, Some(script.actor), Some(partner), Some(bystander))
+      .foreach { viewer =>
+        val all = texts(format(script, viewer).filter(_.depth == 1))
+        assertEquals(all.count(_ == expected), 1, s"$viewer: $all")
+      }
+    assertEquals(lines(script).last, expected, lines(script))
+
+  test("an agreed binding promise is written once, naming its author and " +
+      "the others"):
+    val script = negotiationBindingPromised
+    val expected = s"${playerLabel(script.actor)} made a binding promise " +
+      s"to ${playerLabel(partner)}: “I will give you 2 favor next round.”"
+    Vector(None, Some(script.actor), Some(partner), Some(bystander))
+      .foreach { viewer =>
+        val all = texts(format(script, viewer).filter(_.depth == 1))
+        assertEquals(all.count(_ == expected), 1, s"$viewer: $all")
+      }
+    assertEquals(lines(script).last, expected, lines(script))
+
   /** A bystander reads the disclosed card as its back, not by its slot.
     * The rule this line replaced read it through `LogWords.slotted` and
     * wrote "facedown adviser (slot 1)"; a note's card word has no slot
@@ -58,6 +81,28 @@ class GameLogExchangeSuite extends munit.FunSuite:
     val (giver, recipient) = (playerLabel(partner), playerLabel(script.actor))
     assertEquals(shown(Some(bystander)), s"$giver showed $recipient a Denizen")
 
+  test("a site given under Deed Writer writes its own lines, not the " +
+      "generic warband line"):
+    val script = negotiationSiteGiven
+    val all = texts(format(script, Some(script.actor)))
+    val (giver, recipient) = (playerLabel(partner), playerLabel(script.actor))
+    assert(all.contains(s"$giver gave Broken Peaks to $recipient"), all)
+    assert(all.contains(s"$recipient placed 2 warbands at Broken Peaks"), all)
+    assert(!all.exists(_.startsWith("Moved ")), all)
+
+  test("a given facedown adviser is named to both who held it, a back to " +
+      "others"):
+    val script = negotiationAdviserGiven
+    val gave = (viewer: Option[PlayerId]) =>
+      val all = texts(format(script, viewer))
+      all.find(_.contains(" gave ")).getOrElse(
+        fail(s"no transfer line for $viewer in $all"))
+    val (giver, recipient) = (playerLabel(partner), playerLabel(script.actor))
+    Vector(Some(script.actor), Some(partner)).foreach(viewer =>
+      assertEquals(gave(viewer), s"$giver gave Birdsong to $recipient",
+        viewer.toString))
+    assertEquals(gave(Some(bystander)), s"$giver gave a Denizen to $recipient")
+
   test("a used power is named by its source card, once"):
     val all = texts(formatWithoutNotes(silverTongue, None).filter(_.depth == 1))
     assertEquals(all.count(_.startsWith("Used ")), 1, all)
@@ -71,3 +116,37 @@ class GameLogExchangeSuite extends munit.FunSuite:
     assertEquals(words.power(ready, p1,
       PowerId("banner.darkest-secret.wandering-flame.move"), None)
       .map(_.text).mkString, "Darkest Secret")
+
+  test("a private deal opens in private, and its transfer reads to all"):
+    val script = negotiationWhispered
+    val opened = s"Negotiated with ${playerLabel(p3)}, in private."
+    val gave = s"${playerLabel(script.actor)} gave 1 favor to " +
+      s"${playerLabel(p3)}"
+    Vector(None, Some(p1), Some(p2), Some(p3)).foreach { viewer =>
+      val all = texts(format(script, viewer).filter(_.depth == 1))
+      assertEquals(all.count(_ == opened), 1, s"$viewer: $all")
+      assertEquals(all.count(_ == gave), 1, s"$viewer: $all")
+    }
+
+  test("a private deal's promise reads only to its participants"):
+    val script = negotiationWhispered
+    val promise = s"${playerLabel(script.actor)} promised " +
+      s"${playerLabel(p3)}: “I will not attack you this round.”"
+    Vector(Some(p1) -> 1, Some(p3) -> 1, Some(p2) -> 0, None -> 0).foreach {
+      (viewer, count) =>
+        val all = texts(format(script, viewer))
+        assertEquals(all.count(_ == promise), count, s"$viewer: $all")
+    }
+
+  test("a Gathering names who gathered, and a deal another player opens " +
+      "names its opener"):
+    val script = theGathering
+    val all = lines(script)
+    val (actor, opener) = (playerLabel(p1), playerLabel(p2))
+    assert(all.exists(line => line.startsWith("Gathered at ") &&
+      line.endsWith(s": $actor and $opener.")), all)
+    assert(all.contains(s"$opener negotiated with $actor"), all)
+    assert(all.contains(s"$opener gave 1 secret to $actor"), all)
+    assert(all.contains(s"$actor gave 1 favor to $opener"), all)
+    // The pawn question's answer is told by the Gathered line.
+    assert(!all.exists(_.contains(" chose ")), all)

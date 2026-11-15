@@ -25,8 +25,11 @@ object ShufflePolicy:
    * The alpha policy (2026-09-21 Chronicle design, "Randomness"): implemented
    * cards are shuffled and placed on top, the rest shuffled below. Regional
    * discards, starting hands and the first packet are dealt from the top, so
-   * they draw implemented cards first. A uniform policy replaces this once
-   * the catalog is complete.
+   * they draw implemented cards first. Teeming World deals the whole stack
+   * to the players and the discard piles: the first card dealt to a pile is
+   * its top (`SetupDeal.discards`), so the cards shuffled below end at the
+   * bottoms of the piles. A uniform policy replaces this once the catalog
+   * is complete.
    */
   val implementedFirst: ShufflePolicy = new ShufflePolicy:
     def order[A](cards: Vector[A], implemented: A => Boolean,

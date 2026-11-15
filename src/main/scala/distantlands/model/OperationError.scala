@@ -204,3 +204,5 @@ object OperationError:
     case Location.SuitedReserve(suit) => s"${suit.key} reserve"
     case Location.StartingAdvisers(lineage) =>
       s"${lineage.value} starting advisers"
+    case Location.Legacies(lineage) => s"${lineage.value} legacies"
+    case Location.PublicLegacies => "public legacies"

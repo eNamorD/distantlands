@@ -1,6 +1,7 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.chronicle.legacies.TheEar
 import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
@@ -15,9 +16,13 @@ object ReliquaryAndRelics:
 
   /** The Throne holder adds every relic they hold but the Grand Scepter to
     * the Reliquary, facedown, then discards down to five of their choice.
-    * Before any relic leaves its holder, warbands on a card go back to
-    * their supply. */
+    * First every relic players hold but the Grand Scepter turns facedown
+    * and is forgotten by every viewer, so no relic is deducible from here
+    * on; each owner still sees their own (Legacy Chronicle powers R28,
+    * re-ruled by the owner 2026-11-14). Before any relic leaves its holder,
+    * warbands on a card go back to their supply. */
   val stock: Vector[Operation] = Vector(
+    BuildOps((state, _) => Right(hidden(state)), required = true),
     BuildOps((state, _) => Right(returnFromCards(state)), required = true),
     Branch((state, _) =>
     ChronicleTasks.forHolder(state, ChronicleTask.Throne)(holder => Vector(
@@ -36,6 +41,12 @@ object ReliquaryAndRelics:
         Move(Piece.Warbands(kind, n),
           PositionedLocation(Location.OnCard(card)),
           PositionedLocation(Location.WarbandBank(kind)))))
+
+  /** Every relic players hold but the Grand Scepter, hidden (R28). */
+  private def hidden(state: ReadyGame): Vector[CoreOperation] =
+    val relics = state.game.current.players.flatMap(player =>
+      held(state, player.player).map(_.id))
+    Option.when(relics.nonEmpty)(RelicsHidden(relics)).toVector
 
   private def held(state: ReadyGame, player: PlayerId): Vector[RelicState] =
     state.game.current.player(player).toVector
@@ -70,14 +81,24 @@ object ReliquaryAndRelics:
         PositionedLocation(Location.PlayArea(player.player)),
         relic.tokens.secrets, player.player)))), required = true),
     Shuffle(ShufflePile.SetAsideRelics),
+    // The Ear's holder, read once the relics are set aside, places them
+    // slot by slot first (Legacy Chronicle powers design, ruling 14).
+    Branch((state, _) => ChronicleLegacyRules.scatterer(state).toVector
+      .flatMap(TheEar.steps(catalog, state, _))),
     BuildOps((state, _) => Right(deal(catalog, state)), required = true))
+
+  /** One entry per empty relic slot of the sites in play, in Hinterward
+    * order: the slots Scatter Relics deals to. */
+  def emptySlots(catalog: ExecutableCatalog, state: ReadyGame)
+      : Vector[SiteId] =
+    val map = state.game.current.map
+    map.inPlay.flatMap(site => Vector.fill(math.max(0,
+      catalog.site(site).fold(0)(_.relicSlots) -
+        map.sites.get(site).fold(0)(_.relics.size)))(site))
 
   private def deal(catalog: ExecutableCatalog, state: ReadyGame)
       : Vector[CoreOperation] =
-    val map = state.game.current.map
-    val slots = map.inPlay.flatMap(site => Vector.fill(math.max(0,
-      catalog.site(site).fold(0)(_.relicSlots) -
-        map.sites.get(site).fold(0)(_.relics.size)))(site))
+    val slots = emptySlots(catalog, state)
     val relics = state.game.current.setAsideRelics
     val from = PositionedLocation(Location.SetAsideRelics)
     relics.zip(slots).map((relic, site) => Move(Piece.Card(relic), from,

@@ -3,8 +3,8 @@ package distantlands.frontend
 /** Whether an option has a place on the table (board decisions design,
   * "Board home"): a site's box, a card or an empty slot in a site's row or
   * on a player board, a revealed Vision spot, the world deck or a discard
-  * pile, a banner, a
-  * favor bank, or a player's name and pawns. An option
+  * pile, a banner, a favor bank, a player's name and pawns, or a legacy in
+  * a player's strip or the public row. An option
   * with none is drawn in the Action panel. The rule mirrors the keys the
   * table's renderers hand `BoardOptions`, so a home here is an element there.
   */
@@ -44,6 +44,9 @@ private[frontend] object BoardHomes:
       case "banner" => value.banners.exists(_.key == option.id)
       case "favor-bank" => value.favorBanks.exists(_.suit == option.id)
       case "player" => value.players.exists(_.playerId == option.id)
+      // A legacy in a player's strip or the Public Ambitions row.
+      case "legacy" => shown(value.playerBoards.flatMap(_.legacies) ++
+        value.publicLegacies).contains(option.id)
       case _ => false
 
   private def sites(value: GameProjection): Vector[GameSite] =

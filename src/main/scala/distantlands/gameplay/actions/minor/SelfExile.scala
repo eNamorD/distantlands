@@ -29,8 +29,7 @@ object SelfExile:
       .fold(0)(_.board.warbands))
 
   val build: MinorActionProcedures.Build = (_, ready, actor, args) => for
-    _ <- MinorActionProcedures.started(ready, actor, args,
-      ActionRef.SelfExile)
+    _ <- MinorActionProcedures.started(args, ActionRef.SelfExile)
     _ <- Either.cond(Imperials.role(ready, actor).contains(Role.Citizen), (),
       MinorActionUnavailable("Only a Citizen exiles themself"))
     chancellor <- Imperials.chancellor(ready).toRight(

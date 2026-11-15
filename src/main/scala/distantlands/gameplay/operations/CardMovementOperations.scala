@@ -61,8 +61,11 @@ private[operations] object CardMovementOperations:
       "non-stack destination cannot specify top or bottom"
     ))
 
+  /** The legacy deck is derived and keeps no order (Legacies design, ruling
+    * 3), so a move into it names no top or bottom. */
   private def isStack(location: Location): Boolean = location match
-    case _: Location.Deck | _: Location.RegionalDiscard => true
+    case Location.Deck(deck) => deck != CardDeck.Legacy
+    case _: Location.RegionalDiscard => true
     case _ => false
 
   private final case class ResolvedTransfer(
@@ -128,8 +131,10 @@ private[operations] object CardMovementOperations:
     val destination = transfer.to.location
     destination match
       case Location.Deck(deck) =>
-        if cardDeck(id).contains(deck) then None
-        else Some(InvalidDestination(transfer.piece, destination))
+        if !cardDeck(id).contains(deck) then
+          Some(InvalidDestination(transfer.piece, destination))
+        else if deck == CardDeck.Legacy then facedownLegacy(id, transfer)
+        else None
       case _: Location.RegionalDiscard =>
         if id.isInstanceOf[WorldCardId] then None
         else Some(InvalidDestination(transfer.piece, destination))
@@ -151,6 +156,13 @@ private[operations] object CardMovementOperations:
       case _: Location.SuitedReserve | _: Location.StartingAdvisers =>
         if id.isInstanceOf[DenizenId] then None
         else Some(InvalidDestination(transfer.piece, destination))
+      case _: Location.Legacies =>
+        if id.isInstanceOf[LegacyId] then None
+        else Some(InvalidDestination(transfer.piece, destination))
+      case Location.PublicLegacies =>
+        if !id.isInstanceOf[LegacyId] then
+          Some(InvalidDestination(transfer.piece, destination))
+        else facedownLegacy(id, transfer)
       case _: Location.Site => id match
         case _: DenizenId | _: EdificeId | _: RelicId =>
           statefulMaterializationViolation(located, transfer)
@@ -167,6 +179,13 @@ private[operations] object CardMovementOperations:
         "Atlas destination requires a stored-site identity"
       ))
       case _ => Some(InvalidDestination(transfer.piece, destination))
+
+  /** The public row is faceup and the derived deck keeps no face, so a move
+    * there may turn a legacy faceup or name no face, never facedown (R6). */
+  private def facedownLegacy(id: CardId, transfer: CardTransfer)
+      : Option[OperationError] =
+    Option.when(transfer.resultingOrientation.contains(Orientation.FaceDown))(
+      UnsupportedOrientation(id, transfer.to.location))
 
   private def statefulMaterializationViolation(
       located: LocatedCard,
@@ -197,8 +216,6 @@ private[operations] object CardMovementOperations:
       Some(ready.game.current.commonCards.relicDeck)
     case CardContainer.Deck(CardDeck.Edifice) =>
       Some(ready.game.current.commonCards.edificeDeck)
-    case CardContainer.Deck(CardDeck.Legacy) =>
-      Some(ready.game.current.commonCards.legacyDeck)
     case CardContainer.RegionalDiscard(region) =>
       Some(ready.game.current.commonCards.discard(region).reverse)
     case _ => None
@@ -234,7 +251,9 @@ private[operations] object CardMovementOperations:
       case CardDeck.World => cards.copy(worldDeck = cards.worldDeck.filterNot(_ == located.id))
       case CardDeck.Relic => cards.copy(relicDeck = cards.relicDeck.filterNot(_ == located.id))
       case CardDeck.Edifice => cards.copy(edificeDeck = cards.edificeDeck.filterNot(_ == located.id))
-      case CardDeck.Legacy => cards.copy(legacyDeck = cards.legacyDeck.filterNot(_ == located.id))
+      // Unreachable: nothing is indexed in the derived legacy deck, so no
+      // card is ever removed from it.
+      case CardDeck.Legacy => cards
     }}
     case CardContainer.RegionalDiscard(region) => updateCommonCards(ready) { cards =>
       cards.copy(regionalDiscards = cards.regionalDiscards.updated(region,
@@ -273,10 +292,20 @@ private[operations] object CardMovementOperations:
     case CardContainer.NewlyDispossessed => Right(ready.updateCurrent(current =>
       current.copy(newlyDispossessed =
         current.newlyDispossessed.filterNot(_ == located.id))))
+    case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
+      Right(ready.updateCampaign(campaign => campaign.copy(lineages =
+        campaign.lineages.updatedWith(lineage)(_.map(state => state.copy(
+          legacies = state.legacies.filterNot(_.id == located.id)))))))
+    case CardContainer.PublicLegacies => updateCommonCards(ready)(cards =>
+      cards.copy(publicLegacies =
+        cards.publicLegacies.filterNot(_ == located.id)))
     case CardContainer.SuitedReserve(suit) => Right(ready.updateCampaign(
       campaign => campaign.copy(suitedReserves = campaign.suitedReserves
         .updated(suit, campaign.suitedReserves.getOrElse(suit, Vector.empty)
           .filterNot(_ == located.id)))))
+    // A stored site's edifice, which the card index also lists under its
+    // denizens, leaves the Atlas only with its site (`PlaceAtlasSite`): no
+    // operation moves it alone.
     case CardContainer.AtlasSite(position, _, area) =>
       val entries = ready.game.campaign.atlas.entries.updated(position,
         ready.game.campaign.atlas.entries(position) match {
@@ -320,33 +349,18 @@ private[operations] object CardMovementOperations:
           current.copy(commonCards = cards.copy(regionalDiscards =
             cards.regionalDiscards.updated(region, inserted)))
       }
-      case Location.Hand(player) => ensureEmptyTokens(original.state, id).map:
-        _ => ready.updateCurrent { current =>
-          current.copy(temporaryHands = current.temporaryHands.updated(player,
-            current.temporaryHands.getOrElse(player, Vector.empty) :+
-              id.asInstanceOf[WorldCardId]))
-        }
+      case Location.Hand(_) | Location.SetAsideRelics |
+          Location.SetAsideEdifices | Location.CardGathering |
+          Location.NewlyDispossessed =>
+        ensureEmptyTokens(original.state, id).map(_ =>
+          appendedToCurrent(ready, transfer.to.location, id))
       case Location.Reliquary => ensureEmptyTokens(original.state, id).map(_ =>
         ready.copy(game = ready.game.copy(campaign = ready.game.campaign.copy(
           reliquary = ready.game.campaign.reliquary :+ id.asInstanceOf[RelicId]))))
-      case Location.SetAsideRelics => ensureEmptyTokens(original.state, id).map(_ =>
-        ready.updateCurrent(current => current.copy(
-          setAsideRelics = current.setAsideRelics :+ id.asInstanceOf[RelicId])))
-      case Location.SetAsideEdifices => ensureEmptyTokens(original.state, id).map(_ =>
-        ready.updateCurrent(current => current.copy(
-          setAsideEdifices = current.setAsideEdifices :+ id.asInstanceOf[EdificeId])))
       case Location.Dispossessed => ensureEmptyTokens(original.state, id).map(_ =>
         ready.copy(game = ready.game.copy(campaign = ready.game.campaign.copy(
           dispossessed = ready.game.campaign.dispossessed :+
             id.asInstanceOf[WorldCardId]))))
-      case Location.CardGathering => ensureEmptyTokens(original.state, id)
-        .map(_ => ready.updateCurrent(current => current.copy(
-          cardGathering = current.cardGathering :+
-            id.asInstanceOf[WorldCardId])))
-      case Location.NewlyDispossessed => ensureEmptyTokens(original.state, id)
-        .map(_ => ready.updateCurrent(current => current.copy(
-          newlyDispossessed = current.newlyDispossessed :+
-            id.asInstanceOf[WorldCardId])))
       case Location.SuitedReserve(suit) => ensureEmptyTokens(original.state, id)
         .map(_ => ready.updateCampaign(campaign => campaign.copy(
           suitedReserves = campaign.suitedReserves.updated(suit,
@@ -362,6 +376,18 @@ private[operations] object CardMovementOperations:
                   id.asInstanceOf[DenizenId],
                   transfer.resultingOrientation.getOrElse(
                     Orientation.FaceDown), Tokens.empty)))))))
+      // A legacy entering a lineage takes the move's face, dormant when none
+      // is given, whatever face it had (Legacies design, slice 1; R5).
+      case Location.Legacies(lineage) =>
+        val legacy = LegacyState(id.asInstanceOf[LegacyId],
+          active = transfer.resultingOrientation.contains(Orientation.FaceUp))
+        ready.game.campaign.lineages.get(lineage).toRight(
+          InvalidDestination(transfer.piece, transfer.to.location)).map(state =>
+          ready.updateCampaign(campaign => campaign.copy(lineages =
+            campaign.lineages.updated(lineage,
+              state.copy(legacies = state.legacies :+ legacy)))))
+      case Location.PublicLegacies =>
+        Right(appendedToCurrent(ready, transfer.to.location, id))
       case Location.SharedBank => ensureEmptyTokens(original.state, id)
         .map(_ => ready)
       case Location.Site(site) => adjustedState.flatMap:
@@ -384,6 +410,29 @@ private[operations] object CardMovementOperations:
           value.copy(relics = value.relics :+ state))
         case _ => Left(InvalidDestination(transfer.piece, transfer.to.location))
       case _ => Left(InvalidDestination(transfer.piece, transfer.to.location))
+
+  /** `id` appended to a current-game pile `location` names: a temporary
+    * hand, the set-aside relics or edifices, the card gathering, the newly
+    * dispossessed or the public legacy row. Kept out of `insertCard`, whose
+    * body the coverage instrumenter would otherwise skip as too large. */
+  private def appendedToCurrent(ready: ReadyGame, location: Location,
+      id: CardId): ReadyGame = ready.updateCurrent(current => location match
+    case Location.Hand(player) => current.copy(temporaryHands =
+      current.temporaryHands.updated(player,
+        current.temporaryHands.getOrElse(player, Vector.empty) :+
+          id.asInstanceOf[WorldCardId]))
+    case Location.SetAsideRelics => current.copy(
+      setAsideRelics = current.setAsideRelics :+ id.asInstanceOf[RelicId])
+    case Location.SetAsideEdifices => current.copy(
+      setAsideEdifices = current.setAsideEdifices :+ id.asInstanceOf[EdificeId])
+    case Location.CardGathering => current.copy(
+      cardGathering = current.cardGathering :+ id.asInstanceOf[WorldCardId])
+    case Location.NewlyDispossessed => current.copy(newlyDispossessed =
+      current.newlyDispossessed :+ id.asInstanceOf[WorldCardId])
+    case Location.PublicLegacies => current.copy(commonCards =
+      current.commonCards.copy(publicLegacies =
+        current.commonCards.publicLegacies :+ id.asInstanceOf[LegacyId]))
+    case _ => current)
 
   private def adjustCardOrientation(
       state: Option[CardState],
@@ -432,8 +481,8 @@ private[operations] object CardMovementOperations:
           cards.relicDeck, id.asInstanceOf[RelicId], position, topAtHead = true))
         case CardDeck.Edifice => cards.copy(edificeDeck = insertStack(
           cards.edificeDeck, id.asInstanceOf[EdificeId], position, topAtHead = true))
-        case CardDeck.Legacy => cards.copy(legacyDeck = insertStack(
-          cards.legacyDeck, id.asInstanceOf[LegacyId], position, topAtHead = true))
+        // A legacy returned to the deck leaves play: the deck is derived.
+        case CardDeck.Legacy => cards
       }
       current.copy(commonCards = updated)
     })

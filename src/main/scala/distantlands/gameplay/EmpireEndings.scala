@@ -27,10 +27,35 @@ object EmpireEndings:
     hasEmpire(ready) && imperialOathkeeper(ready) &&
       threshold(ready.game.current.tracks.round).nonEmpty
 
-  /** The win `face` gives at the end of the current round, or none. */
-  def stableRegime(ready: ReadyGame, face: Int): Option[GameResult] =
-    threshold(ready.game.current.tracks.round).filter(face >= _).flatMap(_ =>
-      chancellorWins(ready, VictoryKind.StableRegime))
+  /** The win the end die's `total` gives at the end of the current round,
+    * or none. The total is the face plus Arbiter's modifier (Legacy in-play
+    * powers ruling 21), read as "at least" the printed roll. */
+  def stableRegime(ready: ReadyGame, total: Int): Option[GameResult] =
+    threshold(ready.game.current.tracks.round).filter(total >= _).flatMap(_ =>
+      chancellorWins(ready, endDieWin))
+
+  /** The Chancellor's win on the end die. */
+  val endDieWin: VictoryKind = VictoryKind.StableRegime
+
+  /** The Chancellor's win at War Exhaustion: an Imperial Oathkeeper's
+    * Stable Regime, otherwise exhaustion. */
+  def exhaustionWin(ready: ReadyGame): VictoryKind =
+    if imperialOathkeeper(ready) then VictoryKind.StableRegime
+    else VictoryKind.ChancellorExhaustion
+
+  /** The Empire's wins: the Chancellor's and the Successor's in their
+    * place, the only ones Royal Line may name a winner of (Legacy Chronicle
+    * powers R39). */
+  val empireWins: Set[VictoryKind] = Set(VictoryKind.Successor,
+    VictoryKind.StableRegime, VictoryKind.ChancellorExhaustion)
+
+  /** The Chancellor's win the ended game gave, before any Successor took
+    * it, with the Successor substitution of `chancellorWins` skipped. Royal
+    * Line hands it back to the Chancellor (Legacy Chronicle powers R37).
+    * `exhaustionWin` alone decides it: the end die rolls only with an
+    * Imperial Oathkeeper, for whom `exhaustionWin` is `endDieWin`, Stable
+    * Regime, too. */
+  def empireWin(ready: ReadyGame): VictoryKind = exhaustionWin(ready)
 
   /** War Exhaustion with an Empire, in printed order: an Imperial
     * Oathkeeper gives the Chancellor the win; then an Exile Usurper wins;
@@ -39,13 +64,13 @@ object EmpireEndings:
     def resolved(result: GameResult) =
       WarExhaustionResolved(result.winner, result.kind, Vector.empty, Vector.empty)
     if imperialOathkeeper(ready) then
-      chancellorWins(ready, VictoryKind.StableRegime).map(resolved)
+      chancellorWins(ready, exhaustionWin(ready)).map(resolved)
     else ready.game.current.title match
       case OathkeeperState(Some(player), TitleSide.Usurper) =>
         Some(WarExhaustionResolved(player, VictoryKind.Usurper, Vector.empty,
           Vector.empty))
       case _ => StateBasedEvaluation.visionaryWin(ready).orElse(
-        chancellorWins(ready, VictoryKind.ChancellorExhaustion).map(resolved))
+        chancellorWins(ready, exhaustionWin(ready)).map(resolved))
 
   /** The Chancellor's win of `kind`, or the Successor's in its place. */
   def chancellorWins(ready: ReadyGame, kind: VictoryKind)

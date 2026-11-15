@@ -99,6 +99,21 @@ private[frontend] object ChroniclePage:
     section.appendChild(heading)
     section.appendChild(text("p", "chronicle-summary-line",
       ChronicleText.summaryLine(saved.entry.summary)))
+    // Each lineage on a line of its own, with its legacies, once any holds
+    // one (R39).
+    val scores = saved.entry.summary.scores
+    if scores.exists(_.legacies.nonEmpty) then
+      val list = element("ul", "chronicle-lineages")
+      list.setAttribute("aria-label", "Lineages")
+      scores.foreach(score =>
+        list.appendChild(text("li", "", ChronicleText.lineageLine(score))))
+      section.appendChild(list)
+    // The faces the next game starts on. An entry saved before foundations
+    // were kept lists none, and shows no strip.
+    val foundations = saved.entry.summary.foundations
+    if foundations.nonEmpty then
+      section.appendChild(FoundationStrip.render(
+        FoundationStrip.ofChronicle(foundations)))
     section.appendChild(status)
     section
 

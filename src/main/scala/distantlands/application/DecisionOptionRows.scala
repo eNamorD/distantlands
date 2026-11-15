@@ -137,6 +137,12 @@ private[application] final class DecisionOptionRows(
       case DecisionOption.Vision(vision) =>
         card(ready, viewer, index, vision.id)
           .flatMap(details => row(details.name, Some(details)))
+      // Another seated player's legacy names its holder, as Gatekeeper's
+      // options do (Legacy Chronicle powers implementation ruling R6).
+      case DecisionOption.Legacy(legacy) =>
+        card(ready, viewer, index, legacy.id).flatMap(details =>
+          row(details.name, Some(details), extra = heldBy(ready, viewer,
+            legacy.id).toVector))
       case DecisionOption.Edifice(edifice) =>
         index.flatMap(_.stateOf(edifice.id)).collect {
           case state: EdificeState => state
@@ -288,6 +294,14 @@ private[application] final class DecisionOptionRows(
       ready, viewer, id, orientationOf(located.state),
       located.location.container)).map(located => presentation.cardDetails(id,
         orientationOf(located.state), hidden = false))
+
+  /** "Held by p3" for a legacy a seated player other than `viewer` holds. */
+  private def heldBy(ready: ReadyGame, viewer: Option[PlayerId],
+      legacy: LegacyId): Option[String] =
+    ready.game.current.players.find(player => !viewer.contains(player.player) &&
+      ready.game.campaign.lineages.get(player.lineage)
+        .exists(_.legacies.exists(_.id == legacy)))
+      .map(holder => s"Held by ${presentation.playerLabel(holder.player)}")
 
   /** An unavailable option's reason as player text: a builder's own words,
     * or the note of the power that hid it, worded as the Game Log words it.

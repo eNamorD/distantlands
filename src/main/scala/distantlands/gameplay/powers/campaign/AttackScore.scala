@@ -18,7 +18,8 @@ enum HollowWorth:
   *  - `doubled`: Lancers doubles the count of every face rolled, skulls
   *    included, before the skull cap.
   *  - `skullsIgnored`: no skull kills a warband, and every skull face scores
-  *    its swords (Outriders, The Great Levy, Kindred Warriors, Rangers).
+  *    its swords (Outriders, The Great Levy, Kindred Warriors, Rangers,
+  *    Keeper of Order).
   *  - `skullFacesScoreNothing`: War Tortoise used by the defender. Payable
   *    skulls still kill.
   *  - `skullKills`: the warbands each skull kills, 2 with the defender's
@@ -93,6 +94,8 @@ object AttackScore:
     AttackChange(DecisionOptionRef.Denizen(KindredWarriorsCard.id),
       CampaignPlanSide.Attacker, ignored),
     AttackChange(DecisionOptionRef.Denizen(RangersCard.id),
+      CampaignPlanSide.Attacker, ignored),
+    AttackChange(DecisionOptionRef.Legacy(KeeperOfOrderCard.id),
       CampaignPlanSide.Attacker, ignored),
     AttackChange(DecisionOptionRef.Relic(WeepingBannerCard.id),
       CampaignPlanSide.Defender, _.copy(skullKills = 2)))

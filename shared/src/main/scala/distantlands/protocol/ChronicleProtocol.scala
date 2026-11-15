@@ -4,19 +4,36 @@ import distantlands.protocol.projection.ProjectionCodecSupport._
 
 /** A lineage's era score, and its Imperial role: `"chancellor"` or
   * `"citizen"`, absent for an Exile. An entry saved before roles were kept
-  * has none. */
+  * has none. `legacies` are the lineage's legacies in held order, every face
+  * shown (the Chronicle is its owner's own record); an entry saved before
+  * they were kept has none. */
 final case class ChronicleScore(lineage: String, score: Int,
-    role: Option[String] = None)
+    role: Option[String] = None,
+    legacies: Vector[ChronicleLegacy] = Vector.empty)
+
+/** A legacy a lineage holds, by its printed name, and whether it is
+  * active. */
+final case class ChronicleLegacy(name: String, active: Boolean)
 
 object ChronicleScore:
   val roles: Set[String] = Set("chancellor", "citizen")
 
+/** One foundation setup card as a Chronicle lists it (Foundations design,
+  * slice 1): its number, 1 to 6; the face the next game starts on, `normal`
+  * or `altered`; and that face's printed name. */
+final case class ChronicleFoundation(number: Int, face: String, name: String)
+
+object ChronicleFoundation:
+  val faces: Set[String] = Set("normal", "altered")
+
 /** What a browser lists for a Chronicle without decoding it (Chronicle
   * browsing design, "Summary"). `game` is the next game's number; it is
   * absent when the Chronicle has lineages but no scorepad, as a TTS import
-  * does. */
+  * does. `foundations` is the six setup cards, I to VI; an entry saved
+  * before they were kept has none. */
 final case class ChronicleSummary(name: String, game: Option[Int],
-    eraTarget: Int, scores: Vector[ChronicleScore])
+    eraTarget: Int, scores: Vector[ChronicleScore],
+    foundations: Vector[ChronicleFoundation] = Vector.empty)
 
 /** A Chronicle as a browser keeps it: canonical JSON, the JSON's SHA-256
   * digest, and its summary. */
@@ -32,8 +49,14 @@ object ChronicleEntryCodec:
       "scores" -> encoded(entry.summary.scores) { score =>
         val row = ujson.Obj("lineage" -> score.lineage, "score" -> score.score)
         score.role.foreach(role => row("role") = role)
+        if score.legacies.nonEmpty then row("legacies") = encoded(
+          score.legacies)(legacy => ujson.Obj("name" -> legacy.name,
+            "active" -> legacy.active))
         row
-      })
+      },
+      "foundations" -> encoded(entry.summary.foundations)(foundation =>
+        ujson.Obj("number" -> foundation.number, "face" -> foundation.face,
+          "name" -> foundation.name)))
     entry.summary.game.foreach(game => summary("game") = game)
     ujson.Obj("json" -> entry.json, "digest" -> entry.digest,
       "summary" -> summary)
@@ -52,8 +75,8 @@ object ChronicleEntryCodec:
       digest <- string(value, "digest", path)
       summaryRaw <- field(value, "summary", path)
       summary <- obj(summaryRaw, summaryPath)
-      _ <- exact(summary, Set("name", "game", "eraTarget", "scores"),
-        summaryPath)
+      _ <- exact(summary, Set("name", "game", "eraTarget", "scores",
+        "foundations"), summaryPath)
       name <- string(summary, "name", summaryPath)
       game <- optionalAbsent(summary, "game", summaryPath)(int)
       target <- int(summary, "eraTarget", summaryPath)
@@ -61,16 +84,41 @@ object ChronicleEntryCodec:
       scores <- traverse(scoreRaws, s"$summaryPath.scores") { (raw, child) =>
         for
           row <- obj(raw, child)
-          _ <- exact(row, Set("lineage", "score", "role"), child)
+          _ <- exact(row, Set("lineage", "score", "role", "legacies"), child)
           lineage <- string(row, "lineage", child)
           score <- int(row, "score", child)
           role <- optionalAbsent(row, "role", child)((raw, at) =>
             string(raw, at).filterOrElse(ChronicleScore.roles,
               ProtocolDecodeFailure.InvalidValue(at, "unknown role")))
-        yield ChronicleScore(lineage, score, role)
+          legacyRaws <- default(row, "legacies", child,
+            Vector.empty[ujson.Value])(array)
+          legacies <- traverse(legacyRaws, s"$child.legacies") { (raw, at) =>
+            for
+              legacy <- obj(raw, at)
+              _ <- exact(legacy, Set("name", "active"), at)
+              name <- string(legacy, "name", at)
+              active <- bool(legacy, "active", at)
+            yield ChronicleLegacy(name, active)
+          }
+        yield ChronicleScore(lineage, score, role, legacies)
+      }
+      // An entry a browser saved before foundations were kept has none.
+      foundationRaws <- default(summary, "foundations", summaryPath,
+        Vector.empty[ujson.Value])(array)
+      foundations <- traverse(foundationRaws, s"$summaryPath.foundations") {
+        (raw, child) =>
+          for
+            row <- obj(raw, child)
+            _ <- exact(row, Set("number", "face", "name"), child)
+            number <- int(row, "number", child)
+            face <- string(row, "face", child).filterOrElse(
+              ChronicleFoundation.faces, ProtocolDecodeFailure.InvalidValue(
+                s"$child.face", "unknown face"))
+            name <- string(row, "name", child)
+          yield ChronicleFoundation(number, face, name)
       }
     yield ChronicleEntry(json, digest, ChronicleSummary(name, game, target,
-      scores))
+      scores, foundations))
 
 /** `POST /chronicles/convert`'s body: a saved Chronicle's JSON, or a TTS
   * string with the name it is imported under. */

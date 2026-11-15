@@ -1,6 +1,7 @@
 package distantlands.gameplay.roles
 
 import distantlands.gameplay.actions.CardPlay
+import distantlands.gameplay.chronicle.legacies.IronHand
 import distantlands.gameplay.operations.GrandScepterSource
 import distantlands.gameplay.powers.PlayerFacts
 import distantlands.model._
@@ -83,7 +84,8 @@ object RoleChanges:
       ready.game.current.tracks.usurperLimited)(UsurperLimiterRemoved)
     bank.toVector ++ title(ready, player, role) ++ vision(ready, state) ++
       sites ++ board.toVector ++
-      Vector(RoleChanged(state.lineage, role)) ++ gained.toVector ++
+      Vector(RoleChanged(state.lineage, role)) ++
+      IronHand.inGameDiscard(ready, state.lineage) ++ gained.toVector ++
       scepter ++ limiter.toVector ++ finish(ready, state)
 
   def exile(ready: ReadyGame, player: PlayerId)
@@ -97,7 +99,8 @@ object RoleChanges:
     // Read before the change: the board still counts as purple, so the
     // own bank's count leaves it out.
     val gained = math.min(purple, PlayerFacts.banked(ready, own))
-    Option.when(purple > 0)(Move(Piece.Warbands(ForceKind.Imperial, purple),
+    Option.when[CoreOperation](purple > 0)(Move(
+      Piece.Warbands(ForceKind.Imperial, purple),
       PositionedLocation(Location.PlayArea(player)),
       PositionedLocation(Location.WarbandBank(ForceKind.Imperial))))
       .toVector ++ Vector(RoleChanged(state.lineage, Role.Exile)) ++
@@ -137,13 +140,19 @@ object RoleChanges:
       state.revealedVisions.map(held => Discard.Vision(held.id,
         PositionedLocation(Location.PlayArea(state.player)), region)))
 
+  /** Whether a role change of `player` now ends their Act phase: it is
+    * their turn, in the Act. `Citizenship` folds the `RestStart` window
+    * after the change exactly then. */
+  def endsAct(ready: ReadyGame, player: PlayerId): Boolean =
+    val turn = ready.game.current.turn
+    turn.activePlayer == player && turn.phase == Phase.Act
+
   /** End their Act phase if it is their turn, then refresh their Supply to
     * its leftmost space. */
   private def finish(ready: ReadyGame, state: PlayerState)
       : Vector[CoreOperation] =
-    val turn = ready.game.current.turn
-    val ending = Option.when(turn.activePlayer == state.player &&
-      turn.phase == Phase.Act)(EnterPhase(Phase.Rest))
+    val ending = Option.when(endsAct(ready, state.player))(
+      EnterPhase(Phase.Rest))
     val missing = SupplyTrack.Maximum - state.board.supply.supply
     ending.toVector ++
       Option.when(missing > 0)(GainSupply(state.player, missing)).toVector

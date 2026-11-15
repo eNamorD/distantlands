@@ -1,7 +1,8 @@
 package distantlands.application
 
 import distantlands.gameplay.powers.PowerImplementationStatus
-import distantlands.gameplay.setup.{FirstGameSetupFixture, GameStartRules}
+import distantlands.gameplay.setup.{EmpireSetupRules, FirstGameRulesData,
+  FirstGameSetupFixture, GameStartRules, LaterGameFixture, LegacyDeal}
 import distantlands.model._
 import distantlands.testkit.ChronicleShuffles
 import distantlands.testkit.Unwrap.{accepted, present}
@@ -46,6 +47,15 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
       case _ => true
     }, "a Homeland in play carries its suit's implemented edifice")
 
+  test("a new Chronicle carries no history and starts a first game"):
+    val plan = accepted(factory.build(config, ChronicleChoice.New("Fresh")))
+    assert(!EmpireSetupRules.hasHistory(catalog, plan.chronicle))
+    val ready = accepted(GameStartRules.evolve(catalog, plan.chronicle,
+      plan.orders))
+    assert(ready.setup.ignoreCitizenshipPowers)
+    assertEquals(ready.game.current.map.inPlay,
+      plan.chronicle.atlasBox.take(8).map(_.site))
+
   test("seating order and first player are shuffled, keeping every participant"):
     val plans = Vector.fill(30)(accepted(factory.build(config, ChronicleChoice.New("Test Chronicle"))).resolvedConfig)
     plans.foreach { resolved =>
@@ -80,7 +90,66 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     assertNotEquals(plan.orders.relicOrder, saved.relicDeck)
     assertEquals(plan.orders.relicOrder.sortBy(_.value),
       saved.relicDeck.sortBy(_.value))
+    val legacies = LegacyDeal.deck(catalog, saved)
+    assertNotEquals(plan.orders.legacyOrder, legacies)
+    assertEquals(plan.orders.legacyOrder.sortBy(_.value),
+      legacies.sortBy(_.value))
     assertEquals(plan.chronicle, saved)
+
+  test("a first game played exile-only deals its stored legacies back in " +
+      "the legacy deck, and the game starts from that deal (R40)"):
+    val stored = catalog.legacies.map(_.id).take(2)
+    val saved = FirstGameSetupFixture.chronicle.copy(lineages = Vector(
+      LineageState(FirstGameSetupFixture.participants.head.lineageId, None,
+        Role.Exile, stored.map(LegacyState(_, active = true)), Vector.empty),
+      LineageState(LineageId("boxed"), None, Role.Exile, Vector.empty,
+        Vector.empty)))
+    val plan = accepted(factory.build(config, ChronicleChoice.Saved(saved)))
+    assertEquals(plan.chronicle, saved)
+    assertEquals(plan.orders.legacyOrder.sortBy(_.value),
+      catalog.legacies.map(_.id).sortBy(_.value))
+    accepted(GameStartRules.evolve(catalog, plan.chronicle, plan.orders))
+
+  test("a Teeming World Chronicle is dealt a world deck of the five " +
+      "Visions, shuffled, and the game starts from that deal"):
+    val saved = FirstGameSetupFixture.chronicle.copy(foundations = Map(
+      FoundationNumber.IV -> FoundationState(FoundationFace.Altered,
+        Set.empty)))
+    val plan = accepted(new GeneratedFirstGamePlanFactory(catalog,
+      ChronicleShuffles.reversing).build(config, ChronicleChoice.Saved(saved)))
+    assertEquals(plan.orders.worldDeckOrder,
+      (FirstGameRulesData.visions: Vector[WorldCardId]).reverse)
+    val current = accepted(GameStartRules.evolve(catalog, plan.chronicle,
+      plan.orders)).game.current
+    assertEquals(current.commonCards.worldDeck, plan.orders.worldDeckOrder)
+    assertEquals(current.players.map(_.advisers.size), Vector(3, 3, 3))
+
+  test("under Teeming World the alpha shuffle's unimplemented denizens, " +
+      "last in the stack, top no discard pile"):
+    val implemented = ImplementedCardCatalog.denizens(catalog,
+      PowerImplementationStatus.implemented)
+    val unimplemented = present(catalog.denizens.map(definition =>
+      DenizenId(definition.id.value)).find(id => !implemented(id)),
+      "an unimplemented denizen")
+    val fixture = FirstGameSetupFixture.chronicle
+    val saved = fixture.copy(
+      worldDeck = fixture.worldDeck.filterNot(_ == unimplemented) :+
+        unimplemented,
+      foundations = Map(FoundationNumber.IV ->
+        FoundationState(FoundationFace.Altered, Set.empty)))
+    val plan = accepted(factory.build(config, ChronicleChoice.Saved(saved)))
+    val stack = plan.orders.denizenOrder
+    assert(!implemented(stack.last), "the shuffle puts the unimplemented " +
+      s"denizens last: $stack")
+    val discards = accepted(GameStartRules.evolve(catalog, plan.chronicle,
+      plan.orders)).game.current.commonCards
+    val tops = Region.all.map(discards.discard(_).last)
+    assert(tops.forall {
+      case id: DenizenId => implemented(id)
+      case _ => false
+    }, s"an unimplemented denizen tops a discard pile: $tops")
+    assert(Region.all.exists(discards.discard(_).head == stack.last),
+      "the stack's last card lies at the bottom of a pile")
 
   private def lineage(id: String, role: Role) =
     LineageState(LineageId(id), None, role, Vector.empty, Vector.empty)
@@ -109,3 +178,29 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     assertEquals(seatedFirst(citizens, ChronicleShuffles.unshuffled),
       PlayerId("p1"))
     assertEquals(seatedFirst(citizens, reversingCitizens), PlayerId("p3"))
+
+  test("a Chronicle that lists no Chancellor still sends a random seated " +
+      "Citizen first"):
+    val citizens = Vector(lineage("l1", Role.Citizen),
+      lineage("l3", Role.Citizen))
+    val reversingCitizens = new distantlands.application.ChronicleRandomPort:
+      def shuffle[A](values: Vector[A]): Vector[A] =
+        if values.size == 2 then values.reverse else values
+    assertEquals(seatedFirst(citizens, ChronicleShuffles.unshuffled),
+      PlayerId("p1"))
+    assertEquals(seatedFirst(citizens, reversingCitizens), PlayerId("p3"))
+
+  test("with no Chancellor and no Citizen seated the first seat of the " +
+      "shuffle goes first, and the game starts with no Empire"):
+    // l9 is the Chancellor and l8 a Citizen; p1 to p3 play l1 to l3.
+    val saved = LaterGameFixture.chronicle(LineageId("l9"), LineageId("l8"))
+    val plan = accepted(new GeneratedFirstGamePlanFactory(catalog,
+      ChronicleShuffles.reversing).build(config, ChronicleChoice.Saved(saved)))
+    assertEquals(plan.resolvedConfig.participants,
+      FirstGameSetupFixture.participants.reverse)
+    assertEquals(plan.resolvedConfig.firstPlayer, PlayerId("p3"))
+    val ready = accepted(GameStartRules.evolve(catalog, plan.chronicle,
+      plan.orders))
+    assertEquals(Imperials.players(ready), Vector.empty)
+    assertEquals(ready.game.current.turn.activePlayer, PlayerId("p3"))
+    assertEquals(ready.game.current.map.inPlay, saved.world.map(_.site))

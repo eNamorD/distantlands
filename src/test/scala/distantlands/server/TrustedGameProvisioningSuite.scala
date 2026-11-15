@@ -10,7 +10,7 @@ import distantlands.gameplay.chronicle.EvolvedChronicleFixture
 import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.{catalog, chronicle,
   orders, participants}
-import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.{LegacyDeal, SetupProcedure}
 import distantlands.gameplay.walker.ParkedDecisionAssertions
 import distantlands.persistence.HsqldbDatabaseOwner
 import distantlands.protocol._
@@ -212,16 +212,31 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
       assertEquals(created.chronicle, saved)
     }
 
-  test("an evolved Chronicle is refused with game start's reason, and " +
+  test("an evolved Chronicle whose Chancellor and Citizens sit out starts " +
+      "a game with no Empire"):
+    withDatabase { (owner, _) =>
+      val generated = codes.iterator
+      val evolved = ChronicleEntries().entry(EvolvedChronicleFixture.record)
+      val created = accepted(provision(owner, () => generated.next())
+        .create(request.copy(chronicle = ChronicleRequest.Saved(evolved.json)),
+          "http://127.0.0.1:8080"))
+      assertEquals(created.chronicle, evolved)
+    }
+
+  test("a Chronicle game start refuses is refused with its reason, and " +
       "unreadable JSON and an overlong name with theirs, storing nothing"):
     withDatabase { (owner, connection) =>
       val service = provision(owner, () => codes.head)
-      val evolved = ChronicleEntries().entry(EvolvedChronicleFixture.record)
+      // The crowned winner's sites go back to the atlas: an Empire with
+      // no site, which game start refuses (R28).
+      val record = EvolvedChronicleFixture.record
+      val evolved = ChronicleEntries().entry(record.copy(
+        atlasBox = record.world ++ record.atlasBox, world = Vector.empty))
       assertEquals(service.create(
         request.copy(chronicle = ChronicleRequest.Saved(evolved.json)),
         "http://127.0.0.1:8080"),
         Left(TrustedGameFailure.Refused(
-          "an Empire-less later game requires Wide Horizons")))
+          "an Empire needs at least one site")))
       service.create(request.copy(chronicle = ChronicleRequest.Saved("{")),
         "http://127.0.0.1:8080") match
         case Left(TrustedGameFailure.Refused(reason)) =>
@@ -257,7 +272,8 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
         fail("preparation must not write storage")
     val config = FirstGameBootstrapConfig(participants, orders.firstPlayer)
     val dealt = ChronicleFirstGamePlan.dealOrder(config,
-      chronicle.worldDeck, chronicle.relicDeck)
+      chronicle.worldDeck, chronicle.relicDeck,
+      LegacyDeal.deck(catalog, chronicle))
     val prepared = accepted(new GameApplicationService(catalog, untouched)
       .prepareBootstrap("prepared", chronicle, dealt))
     val journal = new InMemoryEventStreamRepository

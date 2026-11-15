@@ -66,6 +66,14 @@ enum TriggeredProcedureRef(val key: String) extends ProcedureRef:
     * N8). The turn boundary or the end of Setup starts it; nothing else may
     * run until it ends. */
   case ForcedWake extends TriggeredProcedureRef("forced-wake")
+  /** The first Wake of a player who placed no pawn in Setup (Legacy Setup
+    * powers design, ruling 20; R32): the placement and the steps Setup
+    * deferred. The driver starts it before the Wake checks. */
+  case QuestFirstWake extends TriggeredProcedureRef("quest-first-wake")
+  /** Arbiter's question before the end die (Legacy in-play powers design,
+    * ruling 21; R11). The driver starts it at a round's end when the end
+    * die will be rolled and a seated player holds Arbiter active. */
+  case Arbiter extends TriggeredProcedureRef("round-end-arbiter")
   /** Asks a follow-up entry's actor: the action, or Skip (walker-driven
     * game loop design, ruling 6). The driver starts it when it dequeues an
     * `Offer` entry. */
@@ -82,6 +90,10 @@ enum TriggeredProcedureRef(val key: String) extends ProcedureRef:
   /** The winner's Start Chronicle decision (Chronicle steps design). The
     * driver starts it once the game has a result. */
   case ChronicleBegin extends TriggeredProcedureRef("chronicle-begin")
+  /** The final winner, settled before Start Chronicle: Royal Line's choice,
+    * then Conspirator's comparison (Legacy in-play powers R36). The driver
+    * starts it once the game has a result. */
+  case ChronicleWinner extends TriggeredProcedureRef("chronicle-winner")
   /** The Sun task: reveal relics, legacies, crown the winner, assign tasks. */
   case ChronicleSun extends TriggeredProcedureRef("chronicle-sun")
   /** The Throne task, resolved by its holder. */
@@ -106,6 +118,8 @@ object ActionRef:
   case object Muster extends ActionRef { val key = "muster" }
   case object Trade extends ActionRef { val key = "trade" }
   case object Challenge extends ActionRef { val key = "challenge" }
+  /** Wide Horizons' action (Foundations design, slice 3). */
+  case object Explore extends ActionRef { val key = "explore" }
   case object PlaceBannerResource extends ActionRef:
     val key = "place-banner-resource"
   case object Negotiation extends ActionRef { val key = "negotiation" }
@@ -132,7 +146,7 @@ object ActionRef:
     * action.
     */
   val all: Vector[ActionRef] = Vector(Search, PlayFacedownAdviser,
-    Recover, Forge, Travel, TakeWealth, Muster, Trade, Challenge,
+    Recover, Forge, Travel, TakeWealth, Muster, Trade, Challenge, Explore,
     PlaceBannerResource, Negotiation, Campaign, PeekSiteRelics,
     RevealOwnedRelic, MoveWarbands,
     TransferWarbands, SelfExile)
@@ -149,9 +163,9 @@ object PhaseTransitionRef:
 
 object TriggeredProcedureRef:
   val all: Vector[TriggeredProcedureRef] = Vector(Oathkeeper, Setup,
-    ForcedWake, FollowUpOffer, WakeMenu, RestMenu, ActMenu, ChronicleBegin,
+    ForcedWake, FollowUpOffer, WakeMenu, RestMenu, ActMenu, ChronicleWinner, ChronicleBegin,
     ChronicleSun, ChronicleThrone, ChronicleWorld, ChronicleBeacon,
-    ChronicleStars, ChronicleFinish)
+    ChronicleStars, ChronicleFinish, QuestFirstWake, Arbiter)
 
 object StartableRef:
   /** The finite references. The parameterized use-power reference is not

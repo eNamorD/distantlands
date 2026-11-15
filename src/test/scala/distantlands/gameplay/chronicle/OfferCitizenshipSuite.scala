@@ -1,10 +1,17 @@
 package distantlands.gameplay.chronicle
 
+import distantlands.gameplay.phases.rest.ArbiterCard
+import distantlands.gameplay.powers.banner.TheNeedleCard
+import distantlands.gameplay.powers.legacies.PeacemakerCard
+import distantlands.gameplay.setup.legacies.SeerCard
+import distantlands.gameplay.chronicle.legacies.{ChroniclerCard, RivalCard,
+  SteadfastCard}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.setup.legacies.CircleOfSwordsCard
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import distantlands.testkit.{Look, Outcomes, ParkedNode, Table}
@@ -46,9 +53,13 @@ class OfferCitizenshipSuite extends munit.FunSuite:
     answer(step, by, OfferCitizenship.answerDecisionId(by),
       ChooseOneAnswer(ref))
 
+  /** Offer Citizenship's own lines: the Throne writes later steps' lines,
+    * Score Lineage Points' total among them, in the same walk. */
   private def lines(events: Vector[OathEvent]): Vector[String] =
+    val keys = OfferCitizenship.noteKeys
     NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone),
-      OfferCitizenship.noteKeys, events).map(_.text)
+      keys, events).filter(said => keys.exists(_.name == said.key))
+      .map(_.text)
 
   /** The Throne answers still open, in seat order. */
   private def openAnswers(step: OathTransition): Vector[Decide] =
@@ -176,3 +187,61 @@ class OfferCitizenshipSuite extends munit.FunSuite:
     val after = ready(done)
     assertEquals(Imperials.role(after, p3), Some(Role.Citizen))
     assertEquals(Look(after).player(p3).board.warbands, 0)
+
+  private def legaciesOf(step: OathTransition, player: PlayerId)
+      : Vector[LegacyState] =
+    val state = ready(step)
+    state.game.campaign.lineages(state.game.current.player(player).get.lineage)
+      .legacies
+
+  test("an Exile who accepts Citizenship reactivates their newly dormant " +
+      "legacies, and one who declines keeps them dormant (R20)"):
+    val table = exilesHoldSites.legacy(p2, CircleOfSwordsCard, active = false)
+      .legacy(p3, SeerCard, active = false)
+    val asked = offered(throneStarted(table), p2, p3)
+    val done = replied(replied(asked, p2, OfferCitizenship.accept), p3,
+      OfferCitizenship.decline)
+    assertEquals(legaciesOf(done, p2),
+      Vector(LegacyState(CircleOfSwordsCard.id, active = true)))
+    assertEquals(legaciesOf(done, p3),
+      Vector(LegacyState(SeerCard.id, active = false)))
+    assert(lines(done.events).contains(
+      s"p2 reactivated ${CircleOfSwordsCard.id.value}"), lines(done.events))
+
+  test("an accepting Exile left above three active legacies discards the " +
+      "excess once every answer is in, even when no Exile is left (R19)"):
+    val table = exilesHoldSites.legacy(p2, CircleOfSwordsCard).legacy(p2, SeerCard)
+      .legacy(p2, RivalCard).legacy(p2, ArbiterCard, active = false)
+    val asked = replied(replied(offered(throneStarted(table), p2, p3), p2,
+      OfferCitizenship.accept), p3, OfferCitizenship.accept)
+    val cap = ChronicleWalk.parked(asked.state).get
+    assertEquals((cap.decisionId, cap.owner),
+      (OfferCitizenship.capDecisionId(p2), p2))
+    val capped = answer(asked, p2, cap.decisionId, ChooseManyAnswer(
+      Vector(DecisionOptionRef.Legacy(SeerCard.id))))
+    assertEquals(legaciesOf(capped, p2).map(_.id),
+      Vector(CircleOfSwordsCard.id, RivalCard.id, ArbiterCard.id))
+    assert(legaciesOf(capped, p2).forall(_.active))
+
+  test("two Exiles who accept in reverse seat order are each capped, in " +
+      "seat order"):
+    val table = exilesHoldSites.legacy(p2, CircleOfSwordsCard).legacy(p2, SeerCard)
+      .legacy(p2, RivalCard).legacy(p2, ArbiterCard, active = false)
+      .legacy(p3, SteadfastCard).legacy(p3, ChroniclerCard)
+      .legacy(p3, PeacemakerCard).legacy(p3, TheNeedleCard, active = false)
+    val joined = replied(replied(offered(throneStarted(table), p2, p3), p3,
+      OfferCitizenship.accept), p2, OfferCitizenship.accept)
+    val first = ChronicleWalk.parked(joined.state).get
+    assertEquals(first.decisionId, OfferCitizenship.capDecisionId(p2))
+    val capped2 = answer(joined, p2, first.decisionId, ChooseManyAnswer(
+      Vector(DecisionOptionRef.Legacy(SeerCard.id))))
+    val second = ChronicleWalk.parked(capped2.state).get
+    assertEquals(second.decisionId, OfferCitizenship.capDecisionId(p3))
+    val capped3 = answer(capped2, p3, second.decisionId, ChooseManyAnswer(
+      Vector(DecisionOptionRef.Legacy(ChroniclerCard.id))))
+    assertEquals(legaciesOf(capped3, p2).map(_.id),
+      Vector(CircleOfSwordsCard.id, RivalCard.id, ArbiterCard.id))
+    assertEquals(legaciesOf(capped3, p3).map(_.id),
+      Vector(SteadfastCard.id, PeacemakerCard.id, TheNeedleCard.id))
+    assert((legaciesOf(capped3, p2) ++ legaciesOf(capped3, p3))
+      .forall(_.active))

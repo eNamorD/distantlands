@@ -31,10 +31,10 @@ _Avoid_: start argument (that is the player's selection), pinned value
 
 **Parked decision**:
 A question the procedure walker has stopped on and is waiting for its owner
-to answer, or, for a Negotiation deal, any of its co-owners. One walk is
-parked per game at a time. That park usually holds one decision; a
-`Simultaneous` node holds one per player, answered in any order, as the
-Throne's Citizenship offer does.
+to answer, or, for a Negotiation deal or The Gathering's open question,
+any of its co-owners. One walk is parked per game at a time. That park
+usually holds one decision; a `Simultaneous` node holds one per player,
+answered in any order, as the Throne's Citizenship offer does.
 _Avoid_: pending decision, walker decision, park
 
 **Phase menu**:
@@ -46,11 +46,11 @@ _Avoid_: action list, phase controls, wake actions
 
 **Form**:
 The kind of answer a parked decision asks for: choose one, choose many, choose
-an amount, partition, distribute, negotiate, or inspect. An inspect shows
-cards in order and takes one answer, Done: it asks for acknowledgement, not a
-choice. A parked decision has exactly one form. The form determines what else
-the question carries: its options, its sections, its slots, its cards, its
-bounds and the name of its confirm control.
+an amount, partition, distribute, negotiate, gathering, or inspect. An
+inspect shows cards in order and takes one answer, Done: it asks for
+acknowledgement, not a choice. A parked decision has exactly one form. The
+form determines what else the question carries: its options, its sections,
+its slots, its cards, its bounds and the name of its confirm control.
 _Avoid_: query type, decision type, panel type
 
 **Surface**:
@@ -88,6 +88,13 @@ parked decision and not yet confirmed, in the order picked. A choose-one
 holds at most one pick. A viewer has at most one draft, and only for a
 decision that asks to be confirmed.
 _Avoid_: pending selection, staged choice, highlighted site
+
+**Operation family**:
+One sealed area of Oath's operation vocabulary, in its own file in `model`:
+pieces, resources, cards, dice, the turn, or the Chronicle. `CoreOperation`
+is the union of the families, so a match over it stays exhaustive, and a
+new operation is a case of exactly one family.
+_Avoid_: operation group (the operation codec's old name for it), operation category
 
 ### Note
 
@@ -281,6 +288,74 @@ sites), plus one stated fact per step. A rule test states every fact it relies
 on and inherits nothing incidental from Setup.
 _Avoid_: board fixture, base state, initial ready
 
+### Foundations
+
+**Face**:
+One of a foundation setup card's two sides, normal or altered. The campaign
+keeps one for each of the six cards, and the next game's Setup reads them.
+Shape Foundation restores an altered face to normal.
+The same word names the two faces of a banner, the People's Favor or the
+Darkest Secret.
+_Avoid_: side (an edifice, the Oathkeeper title and a secret have sides),
+variant
+
+**Alteration source**:
+A legacy that keeps a foundation's face altered. Shape Foundation cannot
+restore a face while one of its sources is active. A face that Setup With No
+Empire eroded, or that an imported Chronicle stored altered, has none.
+_Avoid_: lock, altering legacy
+
+**Empty slot**:
+A place on the map that holds no site. The Cradle has two slots and the
+Provinces and the Hinterland three each. The table draws an empty slot as an
+empty frame, and Explore or Imperial Maps fills the next one going
+Hinterward.
+_Avoid_: gap, hole, missing site
+
+**Hintermost site**:
+The last site in Hinterward order; empty slots do not count. Under Wide
+Horizons a pawn there may Explore, and with an Empire an Exile may start at
+the Hintermost Empire site.
+_Avoid_: last site, edge site
+
+**Explore**:
+The major action Wide Horizons gives. From the Hintermost site the explorer
+rolls 2 defense dice per Supply against a difficulty of 4, then takes the
+site at the Recent or Forgotten end of the Atlas and places it in the next
+empty slot, and moves their pawn there. It borrows Recover's dice and
+nothing else: only powers on its own windows and the generic reroll window
+change it, so Jinx applies and Silver Charm does not (Foundations design,
+ruling 2).
+_Avoid_: recover a site, expand
+
+**Festival marker**:
+The token the Festival's holder places over the cards at their pawn's site
+at the start of each Rest; that site is the marked site. A marker beside the
+map guards nothing. Both of the Festival's ribbons remove it.
+_Avoid_: festival token, festival site
+
+**First game**:
+The game a brand-new Chronicle starts: no Chancellor, no Citizen, no Empire
+site and no history, as a New Chronicle has none. Only a first game ignores
+"become a Citizen" powers and places its Homelands' edifices by suit.
+_Avoid_: new game, fresh game
+
+**Exile-only game** (a first game played exile-only, `FirstGameExileOnly`):
+The game a Chronicle shaped like a first game's but carrying history starts,
+an imported one for example. The Atlas's first eight sites fill the map as
+bandit sites with their stored cards, and the stored foundations apply as
+stored, with no erosion. Stored starting advisers and relics go to their
+players, but every stored legacy, seated or boxed, is wiped back into the
+legacy deck before the deal, since a first game has none.
+_Avoid_: imported first game
+
+**Set-aside Reliquary**:
+The Reliquary of a game Setup With No Empire or an exile-only game
+started. Its relics stay in the
+campaign all game and no one can take one in play. Whoever wins, the Sun's
+Crown Chancellor step discards them, so Stock Reliquary never adds to them.
+_Avoid_: discarded Reliquary, empty Reliquary
+
 ### Undo
 
 **Command batch**:
@@ -304,3 +379,16 @@ _Avoid_: commit point, checkpoint
 A contiguous run of Game Log entries whose events an undo voided, shown
 struck through under one header.
 _Avoid_: undone section, deleted lines
+
+### Legacies
+
+**Public legacy**:
+A legacy in the Public Ambitions row (Foundation III's altered face), held
+by nobody. Players compete for it in the Chronicle.
+_Avoid_: shared legacy, row legacy
+
+**Derived deck**:
+A pile the game works out from what nobody holds instead of storing it.
+The legacy deck is one: every legacy no lineage holds and the public row
+does not show. A legacy returned to it leaves play.
+_Avoid_: legacy box (the box and the legacy deck are the same pile here)

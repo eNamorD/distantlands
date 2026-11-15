@@ -2,14 +2,20 @@ package distantlands.gameplay.cards
 
 import distantlands.catalog.{Denizen, Edifice, ExecutableCatalog, Legacy, Relic, Site}
 import distantlands.catalog.holding._
+import distantlands.gameplay.chronicle.legacies._
+import distantlands.gameplay.setup.legacies._
 import distantlands.gameplay.{ActingTroupeCard, BanditCrownCard, GrandMaskCard,
   MarriageCard, PledgeToDiscordCard, SacredGroundCard, SpitefulMirrorCard,
   VowOfKinshipCard}
 import distantlands.gameplay.actions.challenge.{MagiciansCodeCard,
   SchoolOfVinesCard, SigilOfTheEyeCard, SigilOfTheHeartCard}
 import distantlands.gameplay.actions.recover.UndergroundLibraryCard
+import distantlands.gameplay.actions.negotiation.{CouncilArbiterCard, DeedWriterCard,
+  FestivalDistrictCard, HighPriestCard, TheTribunalCard,
+  TravelingNegotiatorCard}
 import distantlands.gameplay.operations.{AncientBloodlineCard, BoilingLakeCard,
   HallOfMinistersCard, TheGrandScepterCard}
+import distantlands.gameplay.phases.rest.ArbiterCard
 import distantlands.gameplay.powers.action._
 import distantlands.gameplay.powers.banner._
 import distantlands.gameplay.powers.burn._
@@ -17,6 +23,7 @@ import distantlands.gameplay.powers.campaign._
 import distantlands.gameplay.powers.cardplay._
 import distantlands.gameplay.powers.dice._
 import distantlands.gameplay.powers.economy._
+import distantlands.gameplay.powers.legacies._
 import distantlands.gameplay.powers.poweruse._
 import distantlands.gameplay.powers.recover._
 import distantlands.gameplay.powers.rest._

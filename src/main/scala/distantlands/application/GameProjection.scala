@@ -131,6 +131,10 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
       relicDeckCount = current.commonCards.relicDeck.size)
       .copy(walkerDecision = pending.walkerDecision,
         chronicle = Some(chronicleView(context.ready.game.campaign)),
+        foundations = FoundationPresentation.ofGame(
+          context.ready.game.campaign.foundations),
+        publicLegacies = presentation.publicLegacies(context.ready),
+        reliquary = presentation.reliquary(context.ready, context.viewer),
         walkerWaiting = pending.walkerWaiting,
         temporaryHandPreview = handPreview(context, pending.walkerDecision),
         supplyMaximum = SupplyTrack.Maximum,
@@ -141,11 +145,13 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
 
   /** Every seat's Chronicle (Chronicle browsing design, "Projection"): the
     * name and starting digest from the start, the evolved Chronicle once
-    * the Chronicle Phase journals it. The relic deck's order shows; that is
-    * accepted. */
+    * the Chronicle Phase journals it. The relic deck's order shows, and so
+    * do the lineages' dormant legacies; both are accepted, since the evolved
+    * Chronicle is the save every player carries into the next game
+    * (Legacies implementation ruling R4). */
   private def chronicleView(campaign: CampaignState): ChronicleProjection =
     ChronicleProjection(campaign.baseline.name,
-      entries.entry(campaign.baseline).digest,
+      entries.entry(campaign.savedChronicle).digest,
       campaign.evolved.map(entries.entry))
 
   /** The cards the viewer is handling and nothing else on the panel draws:

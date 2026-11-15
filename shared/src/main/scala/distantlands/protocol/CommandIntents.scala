@@ -47,10 +47,15 @@ final case class WorldCard(kind: String, id: String)
 final case class NegotiationTerms(
     transfers: Vector[NegotiationTransfer],
     disclosures: Vector[NegotiationDisclosure],
-    citizenshipPlayerIds: Vector[String] = Vector.empty
+    citizenshipPlayerIds: Vector[String] = Vector.empty,
+    promises: Vector[String] = Vector.empty,
+    bindingPromises: Vector[String] = Vector.empty
 )
 final case class NegotiationTransfer(
-    recipientPlayerId: String, favor: Int, relicIds: Vector[String])
+    recipientPlayerId: String, favor: Int, relicIds: Vector[String],
+    advisers: Vector[WorldCard] = Vector.empty,
+    siteIds: Vector[String] = Vector.empty,
+    secrets: Int = 0)
 final case class NegotiationDisclosure(
     recipientPlayerId: String, information: NegotiationInformation)
 
@@ -103,6 +108,16 @@ object DecisionAnswerWire:
 
   /** Declines, which ends the negotiation. */
   case object DeclineDealWire extends DecisionAnswerWire
+
+  /** Opens a deal in The Gathering with the named players. */
+  final case class OpenDealWire(playerIds: Vector[String])
+      extends DecisionAnswerWire
+
+  /** Passes in The Gathering. */
+  case object PassGatheringWire extends DecisionAnswerWire
+
+  /** Takes back a pass in The Gathering. */
+  case object UnpassGatheringWire extends DecisionAnswerWire
 
 /** One option named in a [[DecisionAnswerWire.ChooseManyWire]]. */
 final case class DecisionOptionWire(optionKind: String, optionId: String)

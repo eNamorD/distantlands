@@ -1,10 +1,12 @@
 package distantlands.application
 
 import distantlands.gameplay.actions.challenge.MagiciansCodeCard
+import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.model._
 import distantlands.testkit.Table
 import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Unwrap.accepted
 import distantlands.protocol.projection.{CardDetailsProjection,
   PlayerBoardProjection}
 
@@ -38,6 +40,25 @@ class GamePresentationProjectorAdviserRedactionSuite extends munit.FunSuite:
       .ready
     val board = boardOf(projector.playerBoards(ready, Some(p2)), p1)
     assertRedacted(board.advisers)
+
+  test("a Teeming World game names the advisers a player drew only to that " +
+      "player: another player and a spectator see facedown denizens"):
+    val teemingWorld = chronicle.copy(foundations = Map(FoundationNumber.IV ->
+      FoundationState(FoundationFace.Altered, Set.empty)))
+    val ready = accepted(GameStartRules.evolve(catalog, teemingWorld,
+      LaterGameFixture.orders(teemingWorld, p1)))
+    val drawn = teemingWorld.worldDeck.take(3).map(_.value)
+    def p1Advisers(viewer: Option[PlayerId]) =
+      boardOf(projector.playerBoards(ready, viewer), p1).advisers
+    assertEquals(p1Advisers(Some(p1)).map(_.cardId), drawn)
+    Vector(Some(p2), None).foreach { viewer =>
+      val shown = p1Advisers(viewer)
+      assertEquals(shown.map(_.cardId), Vector.fill(3)("hidden"),
+        clue(viewer))
+      assertEquals(shown.map(_.name), Vector.fill(3)("Facedown denizen"),
+        clue(viewer))
+      assert(shown.forall(_.hidden), clue(viewer))
+    }
 
   test("playerBoards shows the tokens resting on the owner's faceup adviser"):
     val ready = Table.start.adviser(p1, MagiciansCodeCard)

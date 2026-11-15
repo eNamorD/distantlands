@@ -1,5 +1,6 @@
 package distantlands.gameplay.setup
 
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.actions.VisionRules
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.operations.TheGrandScepterCard
@@ -106,6 +107,16 @@ class ChronicleAccountingSuite extends munit.FunSuite:
       reliquary = Vector(RelicId("no-such-relic")))),
       Left("unknown relic no-such-relic"))
 
+  test("a foundation's alteration source must be a known legacy"):
+    def sourcedBy(legacy: LegacyId): Chronicle = chronicle.copy(
+      foundations = Map(FoundationNumber.III ->
+        FoundationState(FoundationFace.Altered, Set(legacy))))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog,
+      sourcedBy(LegacyId("no-such-legacy"))),
+      Left("unknown legacy no-such-legacy"))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog,
+      sourcedBy(LegacyId(catalog.legacies.head.id.value))), Right(()))
+
   test("an edifice stored at two sites is refused"):
     val withEdifice = chronicle.atlasBox.find(_.items.nonEmpty).get
     val edifice = withEdifice.items.head
@@ -115,3 +126,17 @@ class ChronicleAccountingSuite extends munit.FunSuite:
       world = Vector(bare.copy(items = Vector(edifice))))
     assertEquals(ChronicleAccounting.knownAndUnique(catalog, twice),
       Left(s"edifice ${edifice.value} is stored twice"))
+
+  test("a legacy two lineages hold is refused, and so is an unknown one"):
+    def holding(legacies: Vector[LegacyId]*): Chronicle = chronicle.copy(
+      lineages = legacies.zipWithIndex.map((held, n) => LineageState(
+        LineageId(s"lineage:$n"), None, Role.Exile,
+        held.map(LegacyState(_, active = true)), Vector.empty)).toVector)
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog,
+      holding(Vector(SeerCard.id), Vector(SeerCard.id))),
+      Left(s"legacy ${SeerCard.id.value} is held twice"))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog,
+      holding(Vector(LegacyId("no-such-legacy")))),
+      Left("unknown legacy no-such-legacy"))
+    assertEquals(ChronicleAccounting.knownAndUnique(catalog,
+      holding(Vector(SeerCard.id))), Right(()))

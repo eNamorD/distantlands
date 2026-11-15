@@ -229,16 +229,26 @@ object CampaignNotes:
       NoteArg.Number(count))
     case None => banditsLost.sourceless(NoteArg.Number(count))
 
-  /** What a won Raid took, read as what the attacker gained in the step:
-    * the relics first, then the banners, as the takes ran. A take a power
-    * refused is not named, because nothing was gained. */
+  /** What a won Raid took, read as the targets the attacker holds now: the
+    * relics first, in the attacker's order, then the banners, as the takes
+    * ran. A take a power refused is not named, because nothing was gained.
+    * It reads the result and the state, not the take's step, so a walk that
+    * parks right after the takes (The Needle) still writes it on resume
+    * (Legacy in-play powers R20). */
   def spoilsNote(states: NoteStates): Option[LogNote] = for
     result <- resultOf(states)
     defender <- result.defender.player
-    step <- states.previous
-    taken = NoteSupport.relicsGained(step, result.attacker)
+    current = states.now.game.current
+    relics = result.raidTargets.collect {
+      case CampaignRaidTarget.Relic(_, relic) => relic }
+    banners = result.raidTargets.collect {
+      case CampaignRaidTarget.Banner(_, banner) => banner }
+    taken = current.player(result.attacker).toVector
+      .flatMap(_.relics.map(_.id)).filter(relics.contains)
       .map(relic => NoteThing.Card(relic): NoteThing) ++
-      bannersGained(step, result.attacker).map(NoteThing.Banner(_))
+      Banner.all.filter(banner => banners.contains(banner) &&
+        BannerRules.holder(current, banner).contains(result.attacker))
+        .map(NoteThing.Banner(_))
     if taken.nonEmpty
   yield took.sourceless(NoteArg.Things(taken), NoteArg.Player(defender))
 
@@ -337,9 +347,3 @@ object CampaignNotes:
     ready.game.current.player(player).toVector.flatMap(
       state => state.advisers.map(_.id: CardId) ++
         state.relics.map(_.id: CardId))
-
-
-  private def bannersGained(step: NoteSupport.Step, player: PlayerId)
-      : Vector[Banner] = Banner.all.filter(banner =>
-    BannerRules.holder(step._2.game.current, banner).contains(player) &&
-      !BannerRules.holder(step._1.game.current, banner).contains(player))

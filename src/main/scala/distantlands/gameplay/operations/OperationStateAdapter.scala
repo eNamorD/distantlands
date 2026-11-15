@@ -188,5 +188,8 @@ object OperationStateAdapter:
         left == right
       case (CardContainer.Lineage(left, LineageCardArea.StartingAdvisers),
           Location.StartingAdvisers(right)) => left == right
+      case (CardContainer.Lineage(left, LineageCardArea.Legacies),
+          Location.Legacies(right)) => left == right
+      case (CardContainer.PublicLegacies, Location.PublicLegacies) => true
       case (_: CardContainer.AtlasSite, Location.Atlas) => true
       case _ => false

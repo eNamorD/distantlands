@@ -71,6 +71,23 @@ final case class Table private (private val game: ReadyGame,
     moving(id).onPlayer(player)(p => p.copy(relics = p.relics :+
       RelicState(id, orientation(facedown), Tokens.empty)))
 
+  /** `card` held by `player`'s lineage, active (faceup) unless `active` is
+    * false (dormant, facedown). */
+  def legacy(player: PlayerId, card: LegacyRef, active: Boolean = true)(
+      using munit.Location): Table =
+    val id = CardRefs.legacyId(card)
+    val lineage = playerOf(player).lineage
+    moving(id).update(_.updateCampaign(campaign => campaign.copy(lineages =
+      campaign.lineages.updatedWith(lineage)(_.map(state => state.copy(
+        legacies = state.legacies :+ LegacyState(id, active)))))))
+
+  /** `cards` dealt faceup to the Public Ambitions row, in order. */
+  def publicLegacies(cards: LegacyRef*): Table =
+    val ids = cards.map(CardRefs.legacyId).toVector
+    ids.foldLeft(this)(_.moving(_)).update(_.updateCurrent(c => c.copy(
+      commonCards = c.commonCards.copy(publicLegacies =
+        c.commonCards.publicLegacies ++ ids))))
+
   def denizen(card: DenizenRef, at: SiteRef,
       facedown: Boolean = false): Table =
     val id = CardRefs.denizenId(card)
@@ -264,6 +281,18 @@ final case class Table private (private val game: ReadyGame,
       c.banners.darkestSecret.copy(active = face, holder = holder,
         secrets = secrets)))))
 
+  /** The festival marker over the cards at `at`; the quiet table keeps it
+    * beside the map. */
+  def festival(at: SiteRef): Table =
+    update(_.updateCurrent(c => c.copy(banners = c.banners.copy(darkestSecret =
+      c.banners.darkestSecret.copy(festival = Some(CardRefs.siteId(at)))))))
+
+  /** Foundation `number` showing `face`, with no alteration source; the
+    * quiet table shows every normal face. */
+  def foundation(number: FoundationNumber, face: FoundationFace): Table =
+    update(_.updateCampaign(campaign => campaign.copy(foundations =
+      campaign.foundations.updated(number, FoundationState(face, Set.empty)))))
+
   /** `viewer` knows `card`, a relic lying at `at`, as a peek records it. */
   def knowsRelicAt(viewer: PlayerId, card: RelicRef,
       at: SiteRef)(using munit.Location): Table =
@@ -308,6 +337,61 @@ final case class Table private (private val game: ReadyGame,
     r.updateCurrent(c => c.copy(commonCards =
       c.commonCards.copy(relicDeck = deck.drop(n))))
       .updateCampaign(c => c.copy(reliquary = c.reliquary ++ deck.take(n))) }
+
+  /** The map cut to its first `count` sites Hinterward, with the slots
+    * past them empty, as Wide Horizons leaves it. A site that is cut must
+    * hold no card and no pawn. */
+  def sitesInPlay(count: Int)(using munit.Location): Table =
+    val map = game.game.current.map
+    val (kept, cut) = map.hinterward.splitAt(count)
+    cut.foreach { site =>
+      val state = map.sites(site)
+      if state.denizens.nonEmpty || state.relics.nonEmpty ||
+          game.game.current.players.exists(_.pawnSite.contains(site)) then
+        munit.Assertions.fail(
+          s"${site.value} holds a card or a pawn and cannot be cut")
+    }
+    update(_.updateCurrent(_.copy(map =
+      MapState.inSlots(kept.map(site => site -> map.sites(site))))))
+
+  /** The map cut to its first `kept` sites Hinterward, and each site cut
+    * stored in the Atlas with no card on it, the first one cut at the
+    * Recent end: a map Explore can add to. A site that is cut must hold no
+    * card and no pawn. */
+  def mapCutIntoAtlas(kept: Int)(using munit.Location): Table =
+    val cut = game.game.current.map.hinterward.drop(kept)
+    sitesInPlay(kept).update(_.updateCampaign(campaign => campaign.copy(
+      atlas = AtlasState(cut.map(AtlasEntry.StoredSite(_, Vector.empty,
+        Vector.empty)) ++ campaign.atlas.entries))))
+
+  /** `cards` stored on `site` in the Atlas, after any it already stores,
+    * as a Chronicle stores them: an edifice, denizens faceup and relics
+    * facedown. */
+  def storedInAtlas(site: SiteRef, cards: CardRef*)(
+      using munit.Location): Table =
+    val id = CardRefs.siteId(site)
+    if !game.game.campaign.atlas.sites.exists(_.id == id) then
+      munit.Assertions.fail(s"${id.value} is not in the Atlas")
+    def storing(stored: AtlasEntry.StoredSite, card: CardId)
+        : AtlasEntry.StoredSite = card match
+      case edifice: EdificeId => stored.copy(edifice = Some(edifice))
+      case denizen: DenizenId => stored.copy(denizens = stored.denizens :+
+        DenizenState(denizen, Orientation.FaceUp, Tokens.empty))
+      case relic: RelicId => stored.copy(relics = stored.relics :+
+        RelicState(relic, Orientation.FaceDown, Tokens.empty))
+      case other => munit.Assertions.fail(s"$other cannot be stored on a site")
+    cards.map(CardRefs.cardId).foldLeft(this)((table, card) =>
+      table.moving(card).update(_.updateCampaign(campaign => campaign.copy(
+        atlas = AtlasState(campaign.atlas.entries.map {
+          case stored: AtlasEntry.StoredSite if stored.id == id =>
+            storing(stored, card)
+          case other => other
+        })))))
+
+  /** The Reliquary set aside for the game, as Setup With No Empire leaves
+    * it: its relics stay where they are. */
+  def reliquarySetAside: Table =
+    update(_.updateCampaign(_.copy(reliquarySetAside = true)))
 
   /** A walker procedure for `action`, parked at step `path` of its tree
     * ("0" is the tree's first step), with `answered` already recorded. */
@@ -530,8 +614,9 @@ object Table:
     * denizens to the bottom of the world deck, edifices to the edifice deck, relics to the bottom of the relic
     * deck. `banks.warbandSupply` is the printed inventory and the bank holds
     * whatever is not in play, so clearing a site's forces returns them to
-    * the bank with no change there. Pawns go to [[homes]], and the turn is
-    * p1's Act. */
+    * the bank with no change there. The legacies Foundation III dealt go
+    * back to the derived deck, so no lineage holds one and the public row
+    * is empty. Pawns go to [[homes]], and the turn is p1's Act. */
   private def quiet(fresh: ReadyGame): ReadyGame = fresh.updateCurrent { c =>
     val sites = c.map.inPlay.map(c.map.sites)
     val hands = c.players.flatMap(p => c.temporaryHands.getOrElse(p.player,
@@ -546,7 +631,8 @@ object Table:
         worldDeck = c.commonCards.worldDeck ++ hands ++ discards ++ denizens,
         regionalDiscards = Region.all.map(_ -> Vector.empty[WorldCardId]).toMap,
         edificeDeck = c.commonCards.edificeDeck ++ edifices,
-        relicDeck = c.commonCards.relicDeck ++ relics),
+        relicDeck = c.commonCards.relicDeck ++ relics,
+        publicLegacies = Vector.empty),
       map = c.map.copy(sites = c.map.sites.view.mapValues(_ =>
         SiteState(SiteForces.Empty, Vector.empty, Vector.empty, Tokens.empty))
         .toMap),
@@ -554,7 +640,8 @@ object Table:
         c.map.inPlay.find(_ == homes(p.player)).getOrElse(throw AssertionError(
           s"${homes(p.player).value} is not in the fixture's first game"))))),
       turn = TurnState(p1, Phase.Act, Set.empty))
-  }
+  }.updateCampaign(campaign => campaign.copy(lineages =
+    campaign.lineages.view.mapValues(_.copy(legacies = Vector.empty)).toMap))
 
   /** `ready` with `card` taken out of every zone and every viewer's memory
     * of it. */
@@ -567,7 +654,7 @@ object Table:
         worldDeck = zones.worldDeck.filter(keep),
         relicDeck = zones.relicDeck.filter(keep),
         edificeDeck = zones.edificeDeck.filter(keep),
-        legacyDeck = zones.legacyDeck.filter(keep),
+        publicLegacies = zones.publicLegacies.filter(keep),
         regionalDiscards = zones.regionalDiscards.view.mapValues(
           _.filter(keep)).toMap),
       map = c.map.copy(sites = c.map.sites.view.mapValues(s => s.copy(

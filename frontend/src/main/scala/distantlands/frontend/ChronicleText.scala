@@ -1,6 +1,6 @@
 package distantlands.frontend
 
-import distantlands.protocol.ChronicleSummary
+import distantlands.protocol.{ChronicleScore, ChronicleSummary}
 import scala.scalajs.js
 
 /** How the Chronicle pages word a Chronicle's summary. */
@@ -13,6 +13,15 @@ private[frontend] object ChronicleText:
     (headline(summary) ++ Option.when(summary.scores.nonEmpty)(
       summary.scores.map(score => s"${lineage(score.lineage)} ${score.score}")
         .mkString(", "))).mkString(" · ")
+
+  /** "Red 9 · Seer, Iron Hand (dormant)": a lineage's score and its
+    * legacies, the dormant ones marked (Legacies implementation ruling
+    * R39). */
+  def lineageLine(score: ChronicleScore): String =
+    (s"${lineage(score.lineage)} ${score.score}" +: Option.when(
+      score.legacies.nonEmpty)(score.legacies.map(legacy =>
+        if legacy.active then legacy.name else s"${legacy.name} (dormant)")
+      .mkString(", ")).toVector).mkString(" · ")
 
   /** "Game 3 · Era: 20 to win · saved 2026-10-29". */
   def rowDetails(saved: SavedChronicle): String =

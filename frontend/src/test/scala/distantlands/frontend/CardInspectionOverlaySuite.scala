@@ -47,6 +47,27 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
     dom.document.body.appendChild(node)
     node
 
+  test("the Festival's inspection shows a copy of the map's Festival pill " +
+      "and the site the marker lies at"):
+    val MountedOverlay(root, overlay) = mountedOverlay()
+    overlay.showFestival("Banner of the Darkest Secret · Festival",
+      Vector("**Action:** Place [secret] on the banner."), Some("Deep Woods"),
+      focusableOpener())
+    val copies = all(root, ".card-overlay-details .festival-copy")
+    assertEquals(copies.map(_.textContent),
+      Vector("Festival marker: at Deep Woods"))
+    val pill = all(root, ".festival-copy .festival-marker")
+    assertEquals(pill.map(_.textContent), Vector("Festival"))
+    // A copy to look at, not the map's control.
+    assertEquals(pill.map(_.tagName), Vector("SPAN"))
+
+  test("before the first Rest the copy says the marker lies beside the map"):
+    val MountedOverlay(root, overlay) = mountedOverlay()
+    overlay.showFestival("Banner of the Darkest Secret · Festival",
+      Vector.empty, None, focusableOpener())
+    assertEquals(all(root, ".festival-copy").map(_.textContent),
+      Vector("Festival marker: beside the map"))
+
   test("each power sits under its braid, with its modifier tab and its cost"):
     val waystation = CardDetails("169", "denizen", "Way Station",
       orientation = Some("face-up"), powers = Vector(
@@ -96,6 +117,17 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
     assertEquals(firstMatch(node, ".card-name").map(_.textContent),
       Some("Old Oak"))
     assert(!node.querySelector(".card-face").classList.contains("card-face-down"))
+
+  test("a legacy's inspection names its suit and its goal"):
+    val MountedOverlay(root, overlay) = mountedOverlay()
+    overlay.show(CardDetails("L22", "legacy", "Seer", suit = Some("arcane"),
+      rulesText = Some("**SETUP:** Peek."), orientation = Some("face-down"),
+      legacyGoal = Some(distantlands.protocol.projection.LegacyGoalProjection(
+        "darkest-secret", "Hold the Darkest Secret."))), focusableOpener())
+    val properties = all(root.querySelector(".card-overlay"),
+      ".card-overlay-property").map(_.textContent)
+    assert(properties.contains("Goal" + "Hold the Darkest Secret."), properties)
+    assert(properties.contains("Suit" + "arcane"), properties)
 
   test("the details lead with the card name, above the suit"):
     val MountedOverlay(root, overlay) = mountedOverlay()
@@ -332,3 +364,20 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
     overlay.hide()
     assertEquals(dom.document.activeElement, opener)
     opener.remove()
+
+  /** A printed card that is shown as words on the table has its box in the
+    * overlay, at its real ratio, where its image will go. */
+  test("a text overlay with a plate leads with the card's box"):
+    val mount = mountedOverlay()
+    mount.overlay.showText("The Sun", Vector("Deal the sites."),
+      focusableOpener(), plate = Some("foundation"))
+    val body = Dom.one(mount.root, ".card-overlay-body")
+    val plate = Dom.one(body, ".card-plate")
+    assert(plate.classList.contains("card-plate-foundation"))
+    assertEquals(Dom.one(plate, ".card-name.printed").textContent, "The Sun")
+    assertEquals(body.firstElementChild, plate)
+
+  test("a text overlay without a plate draws no box"):
+    val mount = mountedOverlay()
+    mount.overlay.showText("Supply", Vector("A line."), focusableOpener())
+    assertEquals(Dom.all(mount.root, ".card-plate"), Vector.empty)

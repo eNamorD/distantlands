@@ -16,21 +16,19 @@ class ReadyGameSuite extends munit.FunSuite:
         ForceKind.Exile(second.lineage) -> 14,
         ForceKind.Bandit -> 24))
 
-  test("start stocks the seated lineages, the given banks and the first " +
-      "player, and starts with the fixed unaltered first-game profile and " +
-      "no knowledge"):
+  test("start stocks the seated lineages, the given banks, the first " +
+      "player and the Citizenship option, and starts with no knowledge"):
     val banks = Suit.all.map(_ -> 3).toMap
     val started = ReadyGame.start(twoSeats,
       Map(playerId -> PlayerColor.Red, second.player -> PlayerColor.Blue),
-      firstPlayer = second.player, favorBanks = banks)
+      firstPlayer = second.player, favorBanks = banks,
+      ignoreCitizenshipPowers = false)
 
     assertEquals(started.banks.favor, banks)
     assertEquals(started.banks.warbandSupply.keySet, Set[ForceKind](
       ForceKind.Exile(lineageId), ForceKind.Exile(second.lineage),
       ForceKind.Bandit))
-    // start is given no profile, so it defaults to FixedUnaltered, and the
-    // knowledge of a new ReadyGame defaults to empty.
-    assertEquals(started.setup,
-      FirstGameSupportState(FirstGameFoundationProfile.FixedUnaltered,
-        second.player))
+    // The knowledge of a new ReadyGame defaults to empty.
+    assertEquals(started.setup, FirstGameSupportState(second.player,
+      ignoreCitizenshipPowers = false))
     assertEquals(started.knowledge, CardKnowledge())

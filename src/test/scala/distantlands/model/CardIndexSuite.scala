@@ -1,5 +1,10 @@
 package distantlands.model
 
+import distantlands.gameplay.phases.rest.ArbiterCard
+import distantlands.gameplay.setup.legacies.SeerCard
+import distantlands.gameplay.chronicle.legacies.RivalCard
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 import distantlands.testkit.Unwrap.{accepted, rejected}
 
 class CardIndexSuite extends munit.FunSuite:
@@ -39,6 +44,21 @@ class CardIndexSuite extends munit.FunSuite:
         )
       )
     )
+
+  test("a stored site's edifice is indexed in the Atlas, after its " +
+      "denizens, with no state"):
+    val edifice = EdificeId("E-stored")
+    // Patched with copy: no Table is built on this fixture's game.
+    val storing = game.copy(campaign = game.campaign.copy(atlas = AtlasState(
+      game.campaign.atlas.entries.map {
+        case stored: AtlasEntry.StoredSite =>
+          stored.copy(edifice = Some(edifice))
+        case other => other
+      })))
+    val index = accepted(CardIndex.from(storing))
+    assertEquals(index.locationOf(edifice), Some(CardLocation(
+      CardContainer.AtlasSite(0, SiteId("S9"), SiteCardArea.Denizens), 1)))
+    assertEquals(index.stateOf(edifice), None)
 
   test("the derived index rejects a card present in two containers"):
     // Patched with copy, not a Table step: the test makes an illegal state
@@ -107,3 +127,19 @@ class CardIndexSuite extends munit.FunSuite:
       CardContainer.Player(unknown, PlayerCardArea.Hand), 0)))
     assert(DomainValidation.validate(prepared).contains(
       DomainProblem.UnknownTemporaryHandOwner(unknown)))
+
+  test("a lineage's legacies and the public row are indexed, and no " +
+      "legacy lies in the legacy deck"):
+    val ready = Table.start.legacy(p1, SeerCard)
+      .legacy(p1, ArbiterCard, active = false)
+      .publicLegacies(RivalCard).ready
+    val index = ready.game.cardIndex.toOption.get
+    val lineage = ready.game.current.player(p1).get.lineage
+    assertEquals(index.get(SeerCard.id).map(_.location.container),
+      Some(CardContainer.Lineage(lineage, LineageCardArea.Legacies)))
+    assertEquals(index.get(ArbiterCard.id).flatMap(_.state),
+      Some(LegacyState(ArbiterCard.id, active = false)))
+    assertEquals(index.get(RivalCard.id).map(_.location.container),
+      Some(CardContainer.PublicLegacies))
+    assert(index.ids.flatMap(index.get).forall(
+      _.location.container != CardContainer.Deck(CardDeck.Legacy)))

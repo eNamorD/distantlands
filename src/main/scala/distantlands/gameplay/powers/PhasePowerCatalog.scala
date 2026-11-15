@@ -4,10 +4,12 @@ import distantlands.gameplay.powerresolver.{PhasePower, PhasePowers}
 import distantlands.gameplay.powers.action.{DiceAndRelicDrawPowers, Elders,
   GrandScepterAction, ImperialSeal, MagicWaterskin, MovementPowers,
   OtherActionPowers, SelfActionPowers, StonePortal, TargetPowers, WaysideInn,
-  WorldActionPowers}
+  WhisperingStone, WorldActionPowers}
 import distantlands.gameplay.powers.banner.BannerFacePowers
 import distantlands.gameplay.powers.cardplay.VowOfObedience
 import distantlands.gameplay.powers.economy.VowOfPoverty
+import distantlands.gameplay.powers.legacies.{ConspiratorPrediction,
+  LegacyActionPowers}
 import distantlands.gameplay.powers.rest.{Insomnia, Naysayers, SilverTongue}
 import distantlands.gameplay.powers.wake.{HiddenPassages, Hunger,
   MarbleFountains, Quartermaster, RiverSitePower, SinkingPassages,
@@ -25,7 +27,7 @@ object PhasePowerCatalog:
       Vector[PhasePower](WaysideInn, Elders, MagicWaterskin, MarbleFountains,
         GrandScepterAction, ImperialSeal,
         Quartermaster, StonePortal, SinkingPassages, HiddenPassages,
-        TrackerAction, TrackerWake) ++
+        TrackerAction, TrackerWake, WhisperingStone) ++
       DiceAndRelicDrawPowers.powers ++
       TargetPowers.all ++
       MovementPowers.all ++
@@ -33,6 +35,7 @@ object PhasePowerCatalog:
       OtherActionPowers.all ++
       WorldActionPowers.all ++
       BannerFacePowers.phasePowers ++
-      Vector(Hunger) ++
+      Vector(Hunger, ConspiratorPrediction) ++
+      LegacyActionPowers.all ++
       RiverSitePower.all,
       WalkerPowerCatalog.useRestrictions)

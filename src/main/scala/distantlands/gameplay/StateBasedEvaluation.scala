@@ -81,8 +81,9 @@ object StateBasedEvaluation:
     else if EmpireEndings.rollsEndDie(ready) then
       val round = current.tracks.round
       val face = random.endDie()
-      val result = EmpireEndings.stableRegime(ready, face)
-      Right(EndDieRolled(round, face, result) +: Option.when(
+      val modifier = current.endDieModifier
+      val result = EmpireEndings.stableRegime(ready, face + modifier)
+      Right(EndDieRolled(round, face, result, modifier) +: Option.when(
         result.isEmpty)(RoundEnded(round, Some(round + 1))).toVector)
     else if current.tracks.round < 8 then
       Right(Vector(RoundEnded(current.tracks.round,
@@ -164,7 +165,9 @@ object StateBasedEvaluation:
             // After round 8 War Exhaustion runs from the last round's starter.
             val next = recorded.nextRound.fold(first)(_ =>
               TurnOrder.nextRoundStart(ready))
+            // A modifier no roll consumed ends with its round (R11).
             update(state)(current => current.copy(
+              endDieModifier = 0,
               tracks = current.tracks.copy(
                 round = recorded.nextRound.getOrElse(round),
                 usurperLimited = current.tracks.usurperLimited &&
@@ -196,12 +199,17 @@ object StateBasedEvaluation:
         else if recorded.round != round || recorded.face < 1 ||
             recorded.face > 6 then
           Left(InvalidEventOrder(s"end die mismatch: recorded $recorded"))
+        else if recorded.modifier != current.endDieModifier then
+          Left(InvalidEventOrder(s"end die modifier mismatch: expected " +
+            s"${current.endDieModifier}, recorded ${recorded.modifier}"))
         else
-          val expected = EmpireEndings.stableRegime(ready, recorded.face)
+          val expected = EmpireEndings.stableRegime(ready,
+            recorded.face + recorded.modifier)
           if expected != recorded.result then Left(InvalidEventOrder(
             s"Stable Regime mismatch: expected $expected, recorded " +
               s"${recorded.result}"))
-          else update(state)(_.copy(result = recorded.result))
+          else update(state)(_.copy(result = recorded.result,
+            endDieModifier = 0))
       }
       case _ => Left(InvalidEventOrder("not a state-based evaluation event"))
 

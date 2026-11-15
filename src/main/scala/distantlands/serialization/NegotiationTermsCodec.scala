@@ -13,7 +13,11 @@ private[serialization] object NegotiationTermsCodec:
     "transfers" -> ujson.Arr.from(terms.transfers.map(transfer => ujson.Obj(
       "recipientPlayerId" -> transfer.recipient.value,
       "favor" -> transfer.favor,
-      "relicIds" -> ujson.Arr.from(transfer.relics.map(r => ujson.Str(r.value)))))),
+      "relicIds" -> ujson.Arr.from(transfer.relics.map(r => ujson.Str(r.value))),
+      "advisers" -> ujson.Arr.from(transfer.advisers.map(encodeCardId)),
+      "siteIds" -> ujson.Arr.from(transfer.sites.map(site =>
+        ujson.Str(site.value))),
+      "secrets" -> transfer.secrets))),
     "disclosures" -> ujson.Arr.from(terms.disclosures.map { disclosure =>
       val information = disclosure.information match {
         case NegotiationDisclosureRef.Adviser(owner, card) => ujson.Obj(
@@ -30,17 +34,28 @@ private[serialization] object NegotiationTermsCodec:
         "information" -> information)
     }),
     "citizenship" -> ujson.Arr.from(terms.citizenship.map(p =>
-      ujson.Str(p.value))))
+      ujson.Str(p.value))),
+    "promises" -> ujson.Arr.from(terms.promises.map(ujson.Str(_))),
+    "bindingPromises" -> ujson.Arr.from(terms.bindingPromises.map(ujson.Str(_))))
 
   def decode(value: ujson.Value, path: String)
       : Either[WireError, NegotiationTerms] = try
     for
       transfers <- traverse(value("transfers").arr.toVector) { row =>
         val raw = row("favor").num
-        Either.cond(raw.isValidInt, raw.toInt, InvalidValue(
-          s"$path.transfers.favor", s"favor '$raw' is not an integer")).map(
-          favor => NegotiationTransfer(PlayerId(row("recipientPlayerId").str),
-            favor, row("relicIds").arr.toVector.map(v => RelicId(v.str))))
+        val rawSecrets = row("secrets").num
+        for
+          favor <- Either.cond(raw.isValidInt, raw.toInt, InvalidValue(
+            s"$path.transfers.favor", s"favor '$raw' is not an integer"))
+          secrets <- Either.cond(rawSecrets.isValidInt, rawSecrets.toInt,
+            InvalidValue(s"$path.transfers.secrets",
+              s"secrets '$rawSecrets' is not an integer"))
+          advisers <- traverse(row("advisers").arr.toVector)(card =>
+            decodeWorldCardId(card, s"$path.transfers.advisers"))
+        yield NegotiationTransfer(PlayerId(row("recipientPlayerId").str),
+          favor, row("relicIds").arr.toVector.map(v => RelicId(v.str)),
+          advisers, row("siteIds").arr.toVector.map(v => SiteId(v.str)),
+          secrets)
       }
       disclosures <- traverse(value("disclosures").arr.toVector) { row =>
         val info = row("information")
@@ -60,6 +75,8 @@ private[serialization] object NegotiationTermsCodec:
           PlayerId(row("recipientPlayerId").str), _))
       }
     yield NegotiationTerms(transfers, disclosures,
-      value("citizenship").arr.toVector.map(v => PlayerId(v.str)))
+      value("citizenship").arr.toVector.map(v => PlayerId(v.str)),
+      value("promises").arr.toVector.map(_.str),
+      value("bindingPromises").arr.toVector.map(_.str))
   catch { case NonFatal(error) => Left(InvalidValue(path,
     Option(error.getMessage).getOrElse("invalid Negotiation terms"))) }

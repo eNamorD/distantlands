@@ -1,7 +1,10 @@
 package distantlands.application.gamelog
 
+import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.protocol.projection.LogSpan
+import distantlands.testkit.Table
+import distantlands.testkit.Table.p1
 import LogSpan.Text
 
 class LogWordsSuite extends munit.FunSuite:
@@ -36,3 +39,12 @@ class LogWordsSuite extends munit.FunSuite:
     assertEquals(LogWords.dice(Vector(AttackDieFace.OneSword,
       DefenseDieFace.Blank)), None)
     assertEquals(LogWords.dice(Vector.empty), None)
+
+  test("a power printed on a foundation face reads as that face's name"):
+    val words = new LogWords(catalog, LogScripts.presentation)
+    def named(id: String): String = words.power(Table.start.ready, p1,
+      PowerId(id), None).map(_.text).mkString
+    assertEquals(named("foundation.i.wide-horizons"), "Wide Horizons")
+    assertEquals(named("foundation.v.mobs-favor"), "Mob's Favor")
+    // A banner side is still named by its banner.
+    assertEquals(named("banner.peoples-favor.mob"), "People's Favor")

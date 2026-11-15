@@ -95,11 +95,26 @@ object DecisionQueryProjection:
       heading: Option[String] = None) extends DecisionQueryProjection:
     def offeredOptions: Vector[DecisionOptionProjection] = slots.map(_.option)
 
+  /** One amount per slot, each within its bounds; with `distinct` no two
+    * equal (Seer's positions). Answered by a `DistributeWire`. */
+  final case class ChooseAmounts(slots: Vector[DecisionSlotProjection],
+      distinct: Boolean, confirmLabel: String,
+      heading: Option[String] = None) extends DecisionQueryProjection:
+    def offeredOptions: Vector[DecisionOptionProjection] = slots.map(_.option)
+
   /** A deal, as the viewer may see it. The deal is not optional here: the
     * projector always attaches one, and the old `Option` meant a negotiate
     * query with nothing to negotiate could be built.
     */
   final case class Negotiate(deal: NegotiationDealProjection,
+      heading: Option[String] = None) extends DecisionQueryProjection:
+    def offeredOptions: Vector[DecisionOptionProjection] = Vector.empty
+
+  /** The Gathering's open question, as one viewer may answer it: who is
+    * at the site, who has passed, and whom this viewer may name (empty for
+    * a viewer not at the site). */
+  final case class Gathering(presentPlayerIds: Vector[String],
+      passedPlayerIds: Vector[String], reachablePlayerIds: Vector[String],
       heading: Option[String] = None) extends DecisionQueryProjection:
     def offeredOptions: Vector[DecisionOptionProjection] = Vector.empty
 
@@ -339,19 +354,34 @@ final case class PlayerBoardProjection(
     supplyBands: Vector[SupplyBandProjection],
     /** How many advisers this player may hold: 3, or 2 under Silver Tongue
       * or Insomnia. The board draws that many adviser slots. */
-    adviserLimit: Int = 3
+    adviserLimit: Int = 3,
+    /** The player's lineage's legacies, in held order: active faceup,
+      * dormant facedown, and a legacy back where the viewer may not know
+      * one (Legacies design, ruling 1; implementation ruling R18). */
+    legacies: Vector[CardDetailsProjection] = Vector.empty
 )
 final case class NegotiationTransferProjection(authorPlayerId: String,
     recipientPlayerId: String, favor: Int, relicCount: Int,
-    relics: Vector[CardDetailsProjection])
+    relics: Vector[CardDetailsProjection], adviserCount: Int = 0,
+    advisers: Vector[CardDetailsProjection] = Vector.empty,
+    sites: Vector[NegotiationSiteProjection] = Vector.empty,
+    secrets: Int = 0)
 final case class NegotiationDisclosureProjection(authorPlayerId: String,
     recipientPlayerId: String, kind: String,
     card: Option[CardDetailsProjection])
 final case class NegotiationSiteRelicProjection(siteId: String,
     card: CardDetailsProjection)
+/** A site on offer in a deal, by id and name. Sites are public, so every
+  * viewer sees them (Deed Writer). */
+final case class NegotiationSiteProjection(siteId: String, name: String)
 /** An author's offer of Citizenship to a recipient (the Grand Scepter). */
 final case class NegotiationCitizenshipProjection(authorPlayerId: String,
     recipientPlayerId: String)
+/** One promise an author wrote into the deal, as they wrote it. `binding`
+  * is whether it is a binding promise (catalog batch 12, rulings 10 and
+  * 11). */
+final case class NegotiationPromiseProjection(authorPlayerId: String,
+    text: String, binding: Boolean)
 /** What the viewer may put into the deal: present only for a participant. */
 final case class NegotiationEditingProjection(editableFavor: Int,
     editableRelics: Vector[CardDetailsProjection],
@@ -361,17 +391,46 @@ final case class NegotiationEditingProjection(editableFavor: Int,
     /** The participants the viewer may offer Citizenship, and why they may
       * offer none while holding the Scepter. */
     editableCitizenship: Vector[String] = Vector.empty,
-    citizenshipRefused: Option[String] = None)
+    citizenshipRefused: Option[String] = None,
+    /** Whether the viewer may add binding promises (The Tribunal). */
+    bindingPromisesOpen: Boolean = false,
+    /** The advisers the viewer may give, and to whom (Council Arbiter,
+      * Festival District). */
+    giftableAdvisers: Vector[CardDetailsProjection] = Vector.empty,
+    adviserRecipients: Vector[String] = Vector.empty,
+    /** The participants the current terms would leave over their adviser
+      * limit; while any is, nobody may accept. */
+    overAdviserLimit: Vector[String] = Vector.empty,
+    /** The sites the viewer may give, and to whom (Deed Writer). */
+    giftableSites: Vector[NegotiationSiteProjection] = Vector.empty,
+    siteRecipients: Vector[String] = Vector.empty,
+    /** The recipients the current terms would leave with too few warbands
+      * to rule every site they receive; while any is, nobody may accept. */
+    shortOfWarbands: Vector[String] = Vector.empty,
+    /** The faceup secrets the viewer may give, and to whom (catalog batch
+      * 12, ruling 31). */
+    editableSecrets: Int = 0,
+    secretRecipients: Vector[String] = Vector.empty)
 
 /** A parked negotiation as one viewer sees it. Everyone sees the participants,
-  * who has accepted, favor amounts, relic counts and faceup relic details, and
-  * each disclosure's kind and recipient. Only an author sees the identity of
+  * who has accepted, favor amounts, relic and adviser counts and the details of
+  * faceup relics and advisers, the sites on offer, and
+  * each disclosure's kind and recipient, and every promise. Only an author sees the identity of
   * their own facedown relics and of information they promise. `editing` is
-  * present only for a participant.
+  * present only for a participant. In a private deal, a viewer outside it
+  * gets the participants and the accepted marks only.
   */
 final case class NegotiationDealProjection(participantPlayerIds: Vector[String],
     acceptedPlayerIds: Vector[String],
     transfers: Vector[NegotiationTransferProjection],
     disclosures: Vector[NegotiationDisclosureProjection],
     editing: Option[NegotiationEditingProjection] = None,
-    citizenship: Vector[NegotiationCitizenshipProjection] = Vector.empty)
+    citizenship: Vector[NegotiationCitizenshipProjection] = Vector.empty,
+    promises: Vector[NegotiationPromiseProjection] = Vector.empty,
+    /** The deal is private (Whispering Stone): a viewer outside it gets
+      * no terms. True for every viewer of such a deal. */
+    privateDeal: Boolean = false,
+    /** The players outside a Gathering deal who may still pass in it, and
+      * those of them who have. Empty in every other deal. */
+    bystanderPlayerIds: Vector[String] = Vector.empty,
+    passedPlayerIds: Vector[String] = Vector.empty)

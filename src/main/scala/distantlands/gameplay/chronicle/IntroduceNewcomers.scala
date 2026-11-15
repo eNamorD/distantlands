@@ -2,6 +2,7 @@ package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.legacies.TheBrightBeacon
 import distantlands.model._
 
 /** Introduce Newcomers, the Beacon's first step (CR p. 39). The Beacon task
@@ -25,7 +26,18 @@ object IntroduceNewcomers:
     NotePart.Arg(0), NotePart.Text(" returned to the box")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
-  def steps(catalog: ExecutableCatalog): Vector[Operation] =
+  /** The Bright Beacon's holder first chooses the source; from the
+    * Dispossessed they take six there, and otherwise the ordinary step runs
+    * (Legacy Chronicle powers design, ruling 17). The second Branch reads
+    * the source answer, so its shape holds on resume. */
+  def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
+    Branch((state, _) => TheBrightBeacon.askSource(state)),
+    Branch((state, pending) =>
+      if TheBrightBeacon.fromDispossessed(state, pending) then
+        TheBrightBeacon.fromDispossessedSteps(state)
+      else ordinary(catalog)))
+
+  private def ordinary(catalog: ExecutableCatalog): Vector[Operation] =
     draws.indices.toVector.map(at => Branch((state, pending) =>
       ChronicleTasks.forHolder(state, ChronicleTask.Beacon)(holder => Vector(
         Decide(suitDecisionId(draws(at)), holder, DecisionQuery.ChooseOne(

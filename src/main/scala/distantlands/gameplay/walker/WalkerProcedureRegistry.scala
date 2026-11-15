@@ -1,11 +1,13 @@
 package distantlands.gameplay.walker
 
 import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
+  ChronicleWinnerProcedure,
   ChronicleBeaconProcedure, ChronicleFinishProcedure, ChronicleStarsProcedure,
   ChronicleSunProcedure, ChronicleThroneProcedure, ChronicleWorldProcedure}
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure, PlaceBannerResourceProcedure}
 import distantlands.gameplay.actions.economy.{MusterProcedure, TradeProcedure}
+import distantlands.gameplay.actions.explore.ExploreProcedure
 import distantlands.gameplay.actions.forge.ForgeProcedure
 import distantlands.gameplay.actions.campaign.CampaignProcedure
 import distantlands.gameplay.actions.minor.{MinorActionProcedures,
@@ -17,11 +19,13 @@ import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.dice.RerollChoice
 import distantlands.gameplay.actions.travel.{TravelOptions, TravelProcedure}
 import distantlands.gameplay.phases.wake.{EndWakeProcedure, ForcedWakeProcedure,
-  TakeWealthProcedure}
-import distantlands.gameplay.phases.rest.{BeginRestProcedure, FinishRestProcedure}
+  QuestFirstWakeProcedure, TakeWealthProcedure}
+import distantlands.gameplay.phases.rest.{ArbiterStep, BeginRestProcedure,
+  FinishRestProcedure}
 import distantlands.gameplay.phases.{PhaseMenu, PhasePowerProcedure}
 import distantlands.gameplay.oathkeeper.OathkeeperProcedure
 import distantlands.gameplay.powerresolver.PhasePowers
+import distantlands.gameplay.powers.AdviserLimit
 import distantlands.model.{ActionRef, Answered, Decide, DecisionOption, DecisionOptionRef, OathViolation, Operation, PendingTree, PhaseTransitionRef, PlayerId, PowerId, PowerWindow, ProcedureRef, ReadyGame, TriggeredProcedureRef}
 
 /** The one place a procedure registers its walker tree-building functions,
@@ -64,8 +68,8 @@ object WalkerProcedureRegistry:
     * `ContributingPower`s, and at which `ModifierOffers.offerable` looks.
     *
     * It is `Option` because not every procedure has such a window:
-    * `PowerWindow` carries a `*ModifierSelection` case for each of the eight
-    * [[distantlands.model.MajorActionType]]s and Take Wealth
+    * `PowerWindow` carries a `*ModifierSelection` case for each
+    * [[distantlands.model.MajorActionType]] and Take Wealth
     * is not one of them -- its only window is `WakeTakeWealth`, an
     * `OtherWindow` whose `associatedMajorAction` is `None`. `None` here means
     * the procedure offers no player-selected powers at all: `offerableWalkerPowers`
@@ -219,6 +223,15 @@ object WalkerProcedureRegistry:
       build = ChallengeProcedure.build,
       rebuild = ChallengeProcedure.rebuild),
 
+    /** Explore. Its gates are start gates, and its first step after the
+      * modifier decision spends the Supply, so it cannot use the
+      * playable-option gate. Its rolls are automatic, so no roll parks. */
+    ActionRef.Explore -> Entry(
+      modifierWindow = Some(PowerWindow.ExploreModifierSelection),
+      build = withoutStartArgs(ActionRef.Explore, ExploreProcedure.build),
+      rebuild = withoutStartArgs(ActionRef.Explore, ExploreProcedure.rebuild),
+      rollFeedback = ExploreProcedure.rollFeedback),
+
     /** Place Banner Resource is not a major action: it has no fallback kind
       * and, like Take Wealth, no modifier window.
       */
@@ -227,11 +240,10 @@ object WalkerProcedureRegistry:
       rebuild = PlaceBannerResourceProcedure.rebuild),
 
     /** Negotiation is a minor action: no modifier window (none of its powers
-      * is player-selected).
+      * is player-selected). Its start reads the walk's power-use
+      * restrictions, so `lookup` builds it from the walk's powers.
       */
-    ActionRef.Negotiation -> Entry(
-      build = NegotiationProcedure.build,
-      rebuild = NegotiationProcedure.rebuild),
+    ActionRef.Negotiation -> negotiationEntry(WalkerPowers.empty),
 
     /** Campaign. Its first step spends the Supply, so a start runs an operation
       * before its first decision and cannot use the playable-option gate. No
@@ -304,6 +316,11 @@ object WalkerProcedureRegistry:
     TriggeredProcedureRef.Oathkeeper -> Entry.withoutStartGates(OathkeeperProcedure.build),
     TriggeredProcedureRef.Setup ->
       Entry.withoutStartGates(distantlands.gameplay.setup.SetupProcedure.build),
+    TriggeredProcedureRef.QuestFirstWake ->
+      Entry.withoutStartGates(QuestFirstWakeProcedure.build),
+    TriggeredProcedureRef.Arbiter -> Entry.withoutStartGates(ArbiterStep.build),
+    TriggeredProcedureRef.ChronicleWinner ->
+      Entry.withoutStartGates(ChronicleWinnerProcedure.build),
     TriggeredProcedureRef.ChronicleBegin -> Entry.withoutStartGates(ChronicleBeginProcedure.build),
     TriggeredProcedureRef.ChronicleSun -> Entry.withoutStartGates(ChronicleSunProcedure.build),
     TriggeredProcedureRef.ChronicleThrone ->
@@ -383,6 +400,17 @@ object WalkerProcedureRegistry:
   private def forcedWakeEntry(powers: PhasePowers): Entry =
     Entry.withoutStartGates(ForcedWakeProcedure.build(powers))
 
+  /** Negotiation reads the power-use restrictions at its start: The
+    * Tribunal, Traveling Negotiator, Council Arbiter and Festival District
+    * reach no further than their users may use them (catalog batch 12,
+    * rulings 24 and 26). Its deal reads the adviser limit, which only the
+    * powers know (ruling 17). A resume reads the start facts and needs no
+    * powers. */
+  private def negotiationEntry(powers: WalkerPowers): Entry = Entry(
+    build = NegotiationProcedure.build(AdviserLimit, powers.useRestrictions),
+    rebuild = NegotiationProcedure.rebuild(AdviserLimit),
+    startFacts = NegotiationProcedure.startFacts(powers.useRestrictions))
+
   /** The follow-up offer prices its action by a dry run of the action's
     * start, which needs the walk's powers. It is started by the driver, so
     * it has no fallback kind, no modifier window and no start selection. */
@@ -406,6 +434,7 @@ object WalkerProcedureRegistry:
       case ActionRef.UsePower(id) =>
         Right(usePowerEntry(id, powers, walkerPowers))
       case TriggeredProcedureRef.ForcedWake => Right(forcedWakeEntry(powers))
+      case ActionRef.Negotiation => Right(negotiationEntry(walkerPowers))
       case TriggeredProcedureRef.FollowUpOffer =>
         Right(followUpOfferEntry(powers, walkerPowers))
       case TriggeredProcedureRef.WakeMenu =>
@@ -511,6 +540,8 @@ object WalkerProcedureRegistry:
   /** The start facts `procedure` derives at a fresh start, empty for one that
     * declares none. */
   def startFacts(procedure: ProcedureRef, catalog: ExecutableCatalog,
-      state: ReadyGame, actor: PlayerId): Vector[DecisionOptionRef] =
-    lookup(procedure, entries).toOption.fold(Vector.empty)(
+      state: ReadyGame, actor: PlayerId,
+      walkerPowers: WalkerPowers = WalkerPowers.empty)
+      : Vector[DecisionOptionRef] =
+    lookup(procedure, entries, PhasePowers.empty, walkerPowers).toOption.fold(Vector.empty)(
       _.startFacts(catalog, state, actor))

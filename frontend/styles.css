@@ -306,7 +306,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 }
 
 .world { margin-top: 18px; }
-.round-tracker svg { display: block; width: min(100%, 150px); height: auto; margin: 0 auto; }
+.round-tracker svg { display: block; }
 .round-segment { fill: var(--site); stroke: var(--line-mid); stroke-width: 2; }
 .round-current { fill: var(--brass); stroke: var(--cream-bright); stroke-width: 3; }
 .round-tracker text { fill: var(--cream-bright); font-weight: 700; }
@@ -320,60 +320,369 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    player's colour: purple text under the tracker read as the purple player. */
 .usurper-notice { margin: 3px 0 0; color: var(--brass-bright); font-size: 0.78rem;
   font-weight: 700; text-align: center; }
-.regions {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-.region {
-  min-width: 0;
-  padding: 10px;
-  border: 1px solid var(--line-dim);
-  border-radius: 9px;
-}
-.region-label {
-  margin: 0 0 8px;
-  color: var(--ink-dim);
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
+/* The map is the mat: one board with the mat's proportions. Everything on
+   it is placed from MatLayout as a percentage of the board, so the mat's
+   image can lie under it without moving anything. Until then the board
+   paints the mat's three lights, blended as the mat blends them. */
+.mat-board { position: relative; width: 100%; aspect-ratio: var(--ratio-mat);
+  overflow: hidden; border-radius: 9px;
+  background: linear-gradient(90deg, #213a24 0 27%, #1d3441 39% 61%,
+    #46261a 73% 100%); }
+.mat-board .mat-slot { position: absolute; box-sizing: border-box; margin: 0; }
+/* The groups a piece belongs to are there for reading order and names, not
+   for layout: each is a box of no size, and its pieces are positioned in
+   the board. */
+.mat-board :is(.regions, .region, .region-header, .sites, .deck-row,
+  .favor-banks, .round-tracker, .visions-drawn, .site-details, .site-cards) {
+  position: static; display: block; margin: 0; padding: 0; border: 0;
+  background: none; min-height: 0; }
+.mat-board .region-label { height: auto; margin: 0; overflow: hidden;
+  white-space: nowrap; color: var(--cream-bright); font-family: Georgia, serif;
+  font-weight: 700; letter-spacing: 0.01em; text-transform: none;
+  line-height: 1.1;
+  font-size: clamp(2.6rem, calc(14px / var(--map-scale, 1)), 3.9rem); }
 
-.sites { display: grid; grid-template-columns: 1fr; gap: 9px; }
-/* One size for every site, whatever it holds this turn. A pawn arriving, a
-   Travel preview opening or a site holding forces used to grow the box and
-   shift the board under the player, so each of those now has a place that
-   costs the same height empty as full. */
-.site {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  height: var(--site-h);
-  padding: 12px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: var(--site);
-  color: var(--cream);
-  text-align: left;
-  /* The card row fills the site's width: three cards and their two gaps.
-     The ceiling is what fits the map pane's column, and the percentage takes
-     over wherever a site is drawn narrower than that. */
-  --card-w: min(8.6rem, calc((100% - 2 * var(--card-gap)) / 3));
-  /* Heading, pawns, three cards and two lines of powers; the box is the
-     same height on the zoomed-out map, where the powers hold the glance
-     size and clamp to one line. */
-  --site-h: 21.5rem;
+/* A site is its card and the three slots to its right: one row, one option
+   target. The row itself draws nothing but a decision's ring. */
+.mat-board .site { border: 1px solid transparent; border-radius: 9px; }
+/* The site card, at the real card's proportions, in the frame the mat
+   prints for it. */
+.site-face { aspect-ratio: var(--ratio-site); border: 1px solid var(--line);
+  border-radius: 9px; background: var(--site); }
+/* A site's words are laid over its face. What the card prints: the name in
+   a band at its foot, the powers and the requirement over the band, the
+   defense in the upper right. What lies on it in play: loose tokens in the
+   upper left, where the card prints its starting resources, then the pawns
+   and the forces. */
+.mat-board .site-heading { display: contents; }
+.mat-board .site-name { position: absolute; bottom: 0; left: var(--face-left);
+  width: var(--face-w); box-sizing: border-box; padding: 4px 8px;
+  border-radius: 0 0 9px 9px; background: #1a1610d9; line-height: 1.15; }
+/* The lines from the top stand on rows of one height, `--row`, so a line
+   set larger on the zoomed-out map moves the lines under it with it. */
+.mat-board .site { --row: 1.3rem; --name-band: 2.5rem; }
+.mat-board .site-tokens { position: absolute; top: 6px;
+  left: calc(var(--face-left) + 8px); }
+.mat-board .site-defense { position: absolute; top: 6px;
+  right: calc(100% - var(--face-left) - var(--face-w) + 8px); }
+.mat-board .site-pawns { position: absolute; top: calc(6px + var(--row));
+  margin: 0; left: calc(var(--face-left) + 8px);
+  width: calc(var(--face-w) - 16px); }
+.mat-board .site-forces { position: absolute;
+  top: calc(6px + var(--row) * 2); margin: 0; line-height: 1.15;
+  left: calc(var(--face-left) + 8px); display: flex;
+  max-width: calc(var(--face-w) - 16px); white-space: nowrap; }
+.mat-board .site-forces-label { min-width: 0; overflow: hidden;
+  text-overflow: ellipsis; white-space: pre; }
+.mat-board .site-forces-count { flex: none; }
+.mat-board .site-footer { position: absolute; bottom: var(--name-band);
+  margin: 0; left: calc(var(--face-left) + 8px);
+  width: calc(var(--face-w) - 16px); }
+/* A decision's cost badge sits at the face's foot, over the name's tail,
+   the one thing on the face it may cover. */
+.mat-board .site > .target-detail-badge { position: absolute; bottom: 2px;
+  right: calc(100% - var(--face-left) - var(--face-w) + 4px); margin: 0;
+  z-index: 1; }
+/* A card fills the slot the mat gives it. */
+.mat-board .site-cards > .mat-slot > .card-face { width: 100%; height: 100%;
+  aspect-ratio: auto; }
+
+/* A deck fills its slot; its caption lies on its upper edge, as the mat
+   prints the slot's name inside it. */
+.mat-board .deck-figure { display: block; }
+.mat-board .deck-figure > .board-option-card { display: block; width: 100%;
+  height: 100%; }
+.mat-board .deck-body { display: block; box-sizing: border-box; width: 100%;
+  height: 100%; margin: 0; padding: 0; }
+.mat-board .deck-card { width: 100%; height: 100%; padding-bottom: 0;
+  font-size: 2.6rem; }
+/* The letter and the count each have a row of their own, the letter's of a
+   set height, so the count stays put whether or not the back's letter is
+   drawn. */
+.mat-board .deck-card { display: grid; justify-items: center;
+  grid-template-rows: 1fr 1.1em auto 1fr; row-gap: 0.1em; }
+.mat-board .deck-card > .deck-letter { grid-row: 2; }
+.mat-board .deck-card > .pile-count { grid-row: 3; }
+.mat-board .deck-caption { position: absolute; top: 6px; right: 0; left: 0;
+  text-align: center; pointer-events: none; }
+.mat-board .deck-body > .target-detail-badge { position: absolute;
+  bottom: 6px; left: 50%; transform: translateX(-50%); }
+.mat-board .deck-figure .board-option-inspect { top: auto; right: 4px;
+  bottom: 4px; }
+
+/* The Cradle's foot. */
+.track-note { overflow: hidden; font-size: 1.05rem; line-height: 1.2; }
+.track-note p { display: inline; margin: 0 1.2em 0 0; font-size: inherit; }
+.vision-cell { display: flex; align-items: flex-start;
+  justify-content: center; padding-top: 3px; border: 2px solid var(--line-mid);
+  border-radius: 4px; font-size: 1.1rem; font-weight: 700; }
+.visions-drawn-label { display: flex; align-items: center;
+  color: var(--parchment-dim); font-family: Georgia, serif; line-height: 1.1; }
+.vision-marker { pointer-events: none; }
+/* The marker is the cell's box; its dot sits near the cell's foot, under
+   the number the cell prints. */
+.vision-marker::after { content: ""; position: absolute; bottom: 8%;
+  left: 27%; width: 46%; aspect-ratio: 1; border-radius: 50%;
+  background: var(--brass-bright); }
+
+/* A favor bank on the mat's pair of circles: the suit, the count, favor. */
+.mat-board .favor-bank { padding: 0 6px; border-radius: 999px;
+  background: #1a1610b3; font-size: 1.05rem; line-height: 1.1; }
+/* Each part of a bank has its own place, so hiding one moves no other: the
+   suit's glyph, the count, favor. The suit's name does not fit beside them
+   in the place the mat gives a bank at any scale, so it steps out of sight
+   and stays in the bank's words ("Arcane: 3"). */
+.mat-board .favor-bank { display: grid; grid-template-columns: 1.25em auto 1.25em;
+  column-gap: 0.2em; align-items: center; justify-content: center; }
+.mat-board .favor-bank > .token-glyph { width: 1.25em; height: 1.25em; }
+.mat-board .favor-bank > .token-glyph:first-child { grid-column: 1; }
+.mat-board .favor-bank > .favor-bank-count { grid-column: 2; grid-row: 1; }
+.mat-board .favor-bank > .token-favor { grid-column: 3; grid-row: 1; }
+.mat-board .favor-bank > .printed:not(.token-glyph) { position: absolute;
+  width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
+  white-space: nowrap; }
+
+/* Beside the mat, as the physical table has them: the Public Ambitions,
+   then the oath, the banners and the foundations in one row. */
+.table-edge { display: flex; align-items: flex-start; gap: 16px;
+  margin-top: 12px; }
+.table-edge .shared-bank { display: flex; flex: 1; align-items: flex-start;
+  gap: 16px; padding: 0; border: 0; }
+.table-edge .shared-bank > h3 { margin: 0; font-size: 1rem; }
+/* A banner on the table's edge keeps its larger side (ruling R3, amended):
+   the real banner is three card widths across. */
+.table-edge { --banner-edge-side: 8.6rem; }
+.table-edge .shared-banners { grid-template-columns: repeat(2, var(--banner-edge-side));
+  margin-top: 0; }
+/* The Reliquary's relics stand as large as the banners beside them,
+   square as a relic is (Legacy in-play powers ruling 9). */
+.table-edge .shared-reliquary { --card-w: var(--banner-edge-side);
+  margin-top: 0; }
+.table-edge .foundations { flex: 1; margin-top: 0; }
+.table-edge .foundation-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.table-edge .public-legacies { margin: 0; }
+/* The edge is on the board's zoom surface, so its words hold the glance
+   size as the board's do, and its rows wrap rather than run off the edge
+   once they are set larger. Its cards keep the box they have at rest, in
+   rem rather than in the glance size, and take the compact face: the name
+   or its initials, and the tokens. */
+.map-compact .table-edge, .map-compact .table-edge .shared-bank {
+  flex-wrap: wrap; }
+.map-compact .table-edge :is(.shared-bank > h3, .oathkeeper-status,
+  .public-legacies-label, .shared-reliquary-label, .foundations-title) {
+  font-size: var(--glance-text); }
+/* Set larger, the foundations take a row of their own, so their names
+   keep the room to be read. */
+.map-compact .table-edge .foundations { flex: 1 1 100%; }
+.map-compact .table-edge .public-legacies-cards { --card-h: 9.1rem;
+  --card-w: calc(9.1rem * var(--ratio-denizen)); font-size: var(--glance-text); }
+.map-compact .table-edge .public-legacies-cards .card-face {
+  padding: 1.7em 0.25em 0.25em; justify-content: center;
+  align-items: center; text-align: center; container-type: inline-size; }
+/* A legacy's goal in words is study, read in the overlay, as a card's power
+   marks are on the zoomed-out map. */
+.map-compact .table-edge .public-legacies-cards .legacy-goal { display: none; }
+/* Smaller still, a legacy's box holds one line at the glance size: the
+   name or its initials, without the suit in the corner. */
+.map-tiny .table-edge .public-legacies-cards .card-face { padding: 0.15em; }
+.map-tiny .table-edge .public-legacies-cards .card-header .token-glyph {
+  display: none; }
+.map-tiny .table-edge .public-legacies-cards .card-name-short {
+  font-size: 1em; }
+/* The Oath goal is a control: a hit area of 24px on screen at any zoom. */
+.table-edge .oathkeeper-status > .oathkeeper-goal { display: flex;
+  align-items: center; min-height: calc(24px / var(--map-scale, 1)); }
+
+/* The glance layer on the mat. A site's face is a fixed box, so each line
+   it holds is set against the scale, its rows grow with it, and the name
+   keeps one line, cut, its whole text being the site's name for assistive
+   technology and on a zoom. */
+.map-compact .mat-board .site { --row: calc(var(--glance-text) * 1.3);
+  --name-band: calc(var(--glance-name) * 1.05 + 10px); }
+.map-compact .mat-board .site-name { font-size: var(--glance-name);
+  line-height: 1.05; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; }
+.map-compact .mat-board :is(.site-tokens, .site-defense, .site-pawns,
+  .site-forces, .site-footer, .target-detail-badge, .track-note,
+  .vision-cell, .visions-drawn-label, .deck-caption, .favor-bank) {
+  font-size: var(--glance-text); }
+/* One line of powers, cut, beside the requirement: each power's words are
+   its hover note and open in the overlay. */
+.map-compact .mat-board .site-powers { display: block; flex: 1 1 0;
+  white-space: nowrap; text-overflow: ellipsis; }
+/* The mat's label for the track, in two lines at its printed place; a
+   word a little wider than the place runs onto the bare mat beside it. */
+.map-compact .mat-board .visions-drawn-label {
+  font-size: calc(var(--glance-text) * 0.8); line-height: 1;
+  overflow: visible; }
+/* Zoomed out, a pawn is its dot and its player's initial on one line that
+   never wraps and never leaves the face (ruling R6); the name steps out of
+   sight and stays the pawn's name. The festival marker is its initial too,
+   its whole name its label. */
+.pawn-initial { display: none; }
+.map-compact .mat-board .site-pawns { display: flex; flex-wrap: nowrap;
+  gap: 0.12em; overflow: hidden; white-space: nowrap; margin: 0;
+  justify-content: flex-start; font-size: calc(var(--glance-text) * 0.85);
+  line-height: 1.15; }
+/* A black pawn's pill keeps its colour readable on the dark face; it holds
+   no padding there, so six pawns keep the room they need. */
+.map-compact .mat-board :is(.pawn-dot, .pawn-initial).player-black {
+  padding: 0 0.1em; }
+.map-compact .mat-board .pawn-long { position: absolute; width: 1px;
+  height: 1px; overflow: hidden; clip-path: inset(50%); }
+.map-compact .mat-board .pawn-initial { display: inline; font-weight: 700; }
+/* At rest a face holds two pawns by name on its one line; from three on,
+   each shows its dot and initial there too. A name too long for its share
+   of the line is cut with an ellipsis; a dot never is. The thresholds count
+   pawns, not the festival marker. */
+.mat-board .site-pawns { flex-wrap: nowrap; overflow: hidden;
+  white-space: nowrap; min-height: 0; }
+.mat-board .pawn { display: inline-flex; flex: 0 1 auto; min-width: 0;
+  overflow: hidden; }
+.mat-board .pawn-dot, .mat-board .pawn-initial { flex: none; }
+.mat-board .pawn-long { min-width: 0; overflow: hidden;
+  text-overflow: ellipsis; white-space: pre; }
+.mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn) .pawn-long {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); }
+.mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn) .pawn-initial {
+  display: inline; font-weight: 700; }
+.mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn) .festival-marker {
+  font-size: 0; padding: 0 0.2em; }
+.mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn) .festival-marker::after {
+  content: "F"; font-size: 0.72rem; }
+/* Five pawns or more on one zoomed-out face leave no room for initials:
+   each is its dot, its player's name still its name and hover note. */
+.map-compact .mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn ~ .pawn ~ .pawn)
+  .pawn-initial { display: none; }
+.map-compact .mat-board .site-pawns .festival-marker { font-size: 0;
+  padding: 0 0.2em; }
+.map-compact .mat-board .site-pawns .festival-marker::after { content: "F";
+  font-size: calc(var(--glance-text) * 0.85); }
+.map-tiny .mat-board .site-pawns .festival-marker::after {
+  font-size: min(var(--glance-text), 32px); line-height: 1.05; }
+/* A deck's letter and count at the glance size, the count under the
+   letter. */
+.map-compact .mat-board .deck-card { font-size: calc(var(--glance-text) * 1.5);
+  line-height: 0.95; }
+.map-compact .mat-board .deck-card > .pile-count { font-size: var(--glance-text); }
+/* The wheel's numbers are drawn in its own units, large enough to read
+   while the zoomed-out map still has room for them. */
+.mat-board .round-tracker text { font-size: 22px; }
+.mat-board .round-tracker .limiter-marker { font-size: 30px; }
+/* The tracker's line repeats what the board shows: the Visions Drawn marker
+   and the First Player badge. Zoomed out, only the Usurper's lock is left
+   in words. */
+.map-compact .mat-board .track-summary { display: none; }
+/* Smaller still, a site's face keeps its name, its tokens, who stands
+   there, who rules it and its defense, the last two in a short form
+   (implementation ruling R5). Its powers, the wheel's numbers and a bank's
+   favor glyph would fall under a readable size and leave the board: the
+   powers are read and opened on a zoom or in the overlay, the wheel's
+   numbers are in the tracker's name, and the bank's count says favor in
+   its own words. */
+.map-tiny .mat-board :is(.site-footer,
+  .round-tracker text:not(.limiter-marker), .favor-bank > .token-favor) {
+  display: none; }
+/* What carries a name or state steps out of sight without leaving the
+   accessibility tree: the tracker's words, the slots' names and the track's
+   label. */
+.map-tiny .mat-board :is(.track-note, .deck-caption, .visions-drawn-label) {
+  width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
+  white-space: nowrap; }
+/* The short forms of defense and forces show only there; the long forms
+   step out of sight but stay what assistive technology reads. */
+.site-defense-short, .site-forces-short { display: none; }
+.map-tiny .mat-board :is(.site-defense, .site-forces) { width: 1px;
+  height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.map-tiny .mat-board :is(.site-defense-short, .site-forces-short) {
+  position: absolute; display: flex; align-items: center; gap: 0.1em;
+  right: calc(100% - var(--face-left) - var(--face-w) + 8px);
+  font-size: var(--glance-text); font-weight: 700; line-height: 1.15; }
+/* On the far zoomed-out face the tokens have the first row to themselves,
+   forces and defense share the second, and the pawns take a row of their
+   own over the name (ruling R6). The rows are a little tighter there. */
+.map-tiny .mat-board .site { --row: calc(var(--glance-text) * 1.12);
+  --name-band: calc(var(--glance-name) * 1.05 + 6px); }
+.map-tiny .mat-board :is(.site-defense-short, .site-forces-short,
+  .site-tokens) .token-glyph { width: 1.05em; height: 1.05em; }
+.map-tiny .mat-board .site-tokens { line-height: 1.1; }
+.map-tiny .mat-board .site-forces-short { top: calc(6px + var(--row));
+  right: auto; left: calc(var(--face-left) + 8px); }
+.map-tiny .mat-board .site-defense-short { top: calc(6px + var(--row)); }
+/* Each pawn is its dot alone, sized so six pawns and the festival marker
+   fit the face's width (seven items of about 1.12em in its 256px); the row
+   never wraps. */
+.map-tiny .mat-board .site-pawns { top: calc(6px + var(--row) * 2);
+  font-size: min(var(--glance-text), 32px); line-height: 1.05; }
+.map-tiny .mat-board .site-tokens .site-token-count { margin-right: 0.1em; }
+/* A bank is its suit's glyph and its count there, the glyph a little
+   smaller so a two-digit count fits the bank's place. */
+.map-tiny .mat-board .favor-bank { grid-template-columns: 0.75em auto;
+  column-gap: 0.05em; padding: 0; }
+.map-tiny .mat-board .favor-bank > .token-glyph { width: 0.75em;
+  height: 0.75em; }
+.map-tiny .mat-board .site-pawns .pawn-initial { display: none; }
+/* A phone's face holds two rows under the name. Defense steps out first
+   (ruling R5); the pawns share the forces' row, forces at its left and
+   pawns at its right, at the glance size, and shrink only as far as their
+   number needs to fit beside the forces' count (ruling R6, amended). A
+   cost badge wider than the face grows rightward over its own row. */
+@media (max-width: 620px) {
+  .map-tiny .mat-board .site { --row: var(--glance-text); }
+  .map-tiny .mat-board :is(.site-tokens, .site-forces-short) { line-height: 1; }
+  .map-tiny .mat-board .site-forces-short .token-glyph { width: 1em;
+    height: 1em; }
+  .map-tiny .mat-board .site-tokens .token-glyph { width: 0.85em;
+    height: 0.85em; }
+  .map-tiny .mat-board .site-defense-short { display: none; }
+  .map-tiny .mat-board .site-forces-short .site-token-count { margin-right: 0; }
+  .map-tiny .mat-board .site-pawns { top: calc(6px + var(--row));
+    left: auto; right: calc(100% - var(--face-left) - var(--face-w) + 8px);
+    width: auto; max-width: calc(var(--face-w) - 16px - var(--glance-text) * 2.1);
+    height: var(--glance-text); align-items: center; justify-content: flex-end;
+    gap: 0.12em; line-height: 1; }
+  .map-tiny .mat-board .site-pawns,
+  .map-tiny .mat-board .site-pawns .festival-marker::after {
+    font-size: var(--glance-text); }
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(3)),
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(3)) .festival-marker::after {
+    font-size: min(var(--glance-text), 37px); }
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(4)),
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(4)) .festival-marker::after {
+    font-size: min(var(--glance-text), 28px); }
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(5)),
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(5)) .festival-marker::after {
+    font-size: min(var(--glance-text), 22px); }
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(6)),
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(6)) .festival-marker::after {
+    font-size: min(var(--glance-text), 18px); }
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(7)),
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(7)) .festival-marker::after {
+    font-size: min(var(--glance-text), 16px); }
+  .map-tiny .mat-board .site > .target-detail-badge { line-height: 1;
+    padding: 0 0.3em; }
 }
-/* Sized from the width rather than a length of their own, so a card keeps its
-   proportions as the row divides up whatever width the site has. */
-.site .card-face { height: auto; aspect-ratio: 1 / 1.4; }
-.site .card-face-relic { height: auto; aspect-ratio: 1 / 1; }
-/* Drawn over the site's upper right, out of the flow: the preview appears and
-   disappears as actions are chosen, and nothing below it may move. */
-.site > .target-detail-badge { position: absolute; top: 8px; right: 10px;
-  margin: 0; }
+/* On the tiny map a cost badge is wider than the face it sits on: it grows
+   rightward from the face's left edge over its own row, cutting its text
+   last, and never leaves the row. */
+.map-tiny .mat-board .site > .target-detail-badge { right: auto;
+  left: var(--face-left); max-width: 100%; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; box-sizing: border-box; }
+/* What stays keeps one size: a deck's letter and count, and a cell's
+   number, each at the glance size, inside the place the mat gives it. */
+.map-tiny .mat-board .deck-card { font-size: var(--glance-text);
+  line-height: 1; grid-template-rows: 1fr 1em auto 1fr; row-gap: 0; }
+.map-tiny .mat-board .deck-card > .pile-count { font-size: 1em; }
+.map-tiny .mat-board .vision-cell { padding-top: 0; line-height: 1; }
+
+.site { position: relative; min-width: 0; color: var(--cream);
+  text-align: left; }
+/* A slot that holds no site: the frame the mat prints for it, dashed as
+   every place that is not filled yet. */
+.site-slot-empty { min-width: 0; border: 1px dashed var(--line-mid);
+  border-radius: 9px; background: transparent; }
 .site-readonly { cursor: default; }
 /* Board decisions (spec 2026-10-03): an option drawn where it lies. Nothing
    that is not an option changes, and only an unavailable option is dimmed. */
@@ -432,6 +741,44 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* A played pick is numbered in play order, not locked: the player chose it. */
 .card-face.board-option-played::before,
 .site.board-option-played::before { content: attr(data-played-order); }
+/* On the mat a site's face and its three slots, and a deck's card, fill
+   the option box and would cover a ring drawn on it. There the ring and the
+   selected fill are drawn over them, on a layer that takes no pointer and
+   lies under the badge; the box itself draws neither. */
+.mat-board :is(.site, .deck-body).board-option { box-shadow: none;
+  background: none; }
+.mat-board :is(.site, .deck-body).board-option::after { content: "";
+  position: absolute; inset: 0; z-index: 1; border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 var(--option-ring) var(--option-line); }
+.mat-board :is(.site, .deck-body).board-option:is(:hover, :focus-visible,
+  .board-option-hover)::after {
+  box-shadow: inset 0 0 0 var(--option-ring) var(--cream-bright),
+    0 0 0 calc(var(--option-ring) * 2) var(--option-glow); }
+.mat-board :is(.site, .deck-body):is(.board-option-selected,
+  .board-option-locked, .board-option-played)::after {
+  box-shadow: inset 0 0 0 var(--option-ring) var(--selection);
+  background: color-mix(in srgb, var(--selection-fill) 45%, transparent); }
+.mat-board :is(.site, .deck-body).board-option-askable::after {
+  box-shadow: inset 0 0 0 var(--option-ring) var(--consent-amber); }
+.mat-board :is(.site, .deck-body).board-option-askable:is(:hover,
+  :focus-visible, .board-option-hover)::after {
+  box-shadow: inset 0 0 0 var(--option-ring) var(--cream-bright),
+    0 0 0 calc(var(--option-ring) * 2) rgba(232, 163, 61, 0.5); }
+.mat-board :is(.site, .deck-body).board-option-unavailable::after {
+  box-shadow: none; }
+.mat-board .site:is(.board-option-selected, .board-option-locked,
+  .board-option-played)::before { z-index: 2; }
+/* The favor banks stand near the board's foot, which clips what lies
+   outside it, so their hover glow is drawn inside the ring. */
+.mat-board .favor-bank.board-option:is(:hover, :focus-visible,
+  .board-option-hover) {
+  box-shadow: inset 0 0 0 var(--option-ring) var(--cream-bright),
+    inset 0 0 0 calc(var(--option-ring) * 3) var(--option-glow); }
+.mat-board .favor-bank.board-option-askable:is(:hover, :focus-visible,
+  .board-option-hover) {
+  box-shadow: inset 0 0 0 var(--option-ring) var(--cream-bright),
+    inset 0 0 0 calc(var(--option-ring) * 3) rgba(232, 163, 61, 0.5); }
 /* A card and its inspect button share one box: a button may not hold a
    button. The button sits over the card's bottom-right corner, where no
    card content is drawn, on every card, banner and deck; the top-right
@@ -443,6 +790,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .board-option-card { position: relative; display: inline-flex;
   flex: 0 0 auto; }
 .board-option-card:has(> .card-face) { width: var(--card-w); }
+.board-option-card:has(> .card-face-legacy) { width: var(--card-h); }
 .board-option-card > .card-face { width: 100%; }
 .board-option-inspect { position: absolute; right: 4px; bottom: 4px;
   z-index: 1; width: 22px; height: 22px; padding: 0;
@@ -478,12 +826,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   font-weight: 700;
 }
 .site-details {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-  margin-top: 9px;
   color: var(--parchment-muted);
   font-size: 0.86rem;
   line-height: 1.45;
@@ -504,7 +846,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* A button that opens the power: it reads as the label it was. */
 .site-power { appearance: none; background: none; border: 0; padding: 0;
   margin: 0; font: inherit; color: inherit; cursor: pointer;
-  text-decoration: underline dotted; text-underline-offset: 2px; }
+  text-decoration: underline dotted; text-underline-offset: 2px;
+  /* Its label is printed; the button keeps a hit area of its own. */
+  min-width: 1.5em; min-height: 1.2em; }
 .site-power:hover { color: var(--cream-bright); }
 .site-requirement { display: flex; align-items: center; flex: 0 0 auto;
   gap: 0.15em; align-self: flex-end; color: var(--cream-bright); font-weight: 700; }
@@ -514,6 +858,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .force-blue { color: var(--player-blue); }
 .force-yellow { color: var(--player-yellow); }
 .force-purple, .force-empire { color: var(--player-purple); }
+/* A force drawn as its warband glyph takes the force's colour, glyph and
+   count alike, on a site's short form and on a card. The Empire's purple is
+   a player's purple too, so its glyph also wears a ring (ruling R7). */
+:is(.site-forces-short, .card-warbands) .token-warband { color: inherit; }
+:is(.site-forces-short, .card-warbands).force-empire .token-warband {
+  border-radius: 50%; box-shadow: 0 0 0 0.09em currentColor; }
 .force-white { color: #ffffff; }
 .force-black { color: #111111; background: var(--player-black-pill); border-radius: 999px;
   padding: 0 0.4em; }
@@ -536,6 +886,15 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .site-pawns { display: flex; flex-wrap: wrap; gap: 4px 10px; min-height: 1.25em;
   margin-top: 7px; }
 .pawn { display: inline-block; font-size: 0.9rem; }
+/* The festival marker over a site's cards: the first player badge's pill,
+   at the end of the pawn row, one line tall. */
+.festival-marker { align-self: center; border: 1px solid #a98b58;
+  border-radius: 999px; padding: 0 0.45em; color: var(--brass-bright);
+  font-size: 0.72rem; font-weight: 700; line-height: 1.15;
+  white-space: nowrap; background: none; cursor: pointer; }
+/* Its copy in the Festival's inspection is a picture of the marker, not a
+   control. */
+.festival-copy .festival-marker { display: inline-block; cursor: default; }
 
 .player-ref { font-weight: 700; }
 .player-purple { color: var(--player-purple); }
@@ -597,9 +956,19 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .distribute-amount { text-align: center; font-weight: 700;
   font-variant-numeric: tabular-nums; }
 .distribute-maximum { color: #9a8f7c; font-size: 0.85em; white-space: nowrap; }
+/* ChooseAmounts (Seer's positions): the Distribute rows, with a number
+   field between the steppers, and a line per clash. */
+.amounts-slots { display: grid; align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto 3.5em auto auto; gap: 6px 8px; }
+.amounts-slot { display: contents; }
+.amounts-decrement, .amounts-increment { min-width: 2.2em; }
+.amounts-field { width: 3.5em; min-height: 36px; text-align: center;
+  font-weight: 700; font-variant-numeric: tabular-nums; }
+.amounts-maximum { color: #9a8f7c; font-size: 0.85em; white-space: nowrap; }
+.amounts-clash { color: var(--error-text); }
 /* One term per row: control and caption together, so a deal reads as a list
    of offers instead of a paragraph of checkboxes. */
-.negotiation-item { display: flex; align-items: center; gap: 8px;
+.negotiation-item, .gathering-item { display: flex; align-items: center; gap: 8px;
   margin: 6px 0; }
 .card-link { display: inline; margin: 0; padding: 0; border: 0;
   background: none; color: inherit; font: inherit; line-height: inherit;
@@ -608,6 +977,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .card-link:hover { color: var(--cream-bright); text-decoration-color: var(--brass); }
 .card-link:focus-visible { outline: 2px solid var(--cream-focus); outline-offset: 1px; }
 .negotiation-item input[type=number] { width: 5em; }
+/* A promise field takes the row's width; its count and Remove wrap below it
+   on a narrow screen rather than pushing the row off the page. */
+.negotiation-promise-item { flex-wrap: wrap; }
+.negotiation-promise-item input[type=text] { flex: 1 1 16em; min-width: 0; }
+.negotiation-promise-count { color: var(--ink-dim); white-space: nowrap;
+  font-variant-numeric: tabular-nums; }
 /* A withheld checkbox (aria-disabled, its reason in the hover note) looks
    disabled but still takes the tap that shows the reason. */
 .negotiation-item input[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
@@ -667,6 +1042,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
      nor asks a phone for its callout. */
   cursor: grab; user-select: none; -webkit-user-select: none;
   -webkit-touch-callout: none; }
+.partition-zone .decision-option:has(.card-face-legacy) { width: var(--card-h); }
 /* The held card stays in the row at the place a drop would put it, faded,
    so the row reads as the answer it would become. */
 .partition-zone .decision-option.dragging { opacity: 0.4; }
@@ -696,9 +1072,26 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   padding-bottom: 0; }
 .partition-footer .partition-confirm { display: block; width: 100%;
   margin: 0; }
+/* The real proportions of each card kind, as the pixel size of its image
+   (docs/catalog/asset-proportions.md). Every card box reads this table, so
+   a drawn card and its licensed image fill the same box. */
+:root {
+  --ratio-denizen: 381 / 596;
+  --ratio-site: 770 / 596;
+  --ratio-relic: 1 / 1;
+  --ratio-banner: 1 / 1;
+  --ratio-legacy: 596 / 381;
+  --ratio-foundation: 469 / 803;
+  --ratio-oath-goal: 673 / 898;
+  --ratio-oathkeeper-title: 1016 / 700;
+  /* The mat image, which MatLayout's numbers are measured on. */
+  --ratio-mat: 5787 / 2303;
+}
 /* One box per card type, in ex so a pane's font size scales every card in it
-   together. Never overridden per pane: per-context size is font size alone. */
-:root { --card-w: 13ex; --card-h: calc(var(--card-w) * 1.4);
+   together. Never overridden per pane: per-context size is font size alone.
+   The height is the one a card has always had; the width follows from it,
+   so a pane's height budget did not change when the ratio did. */
+:root { --card-h: 18.2ex; --card-w: calc(var(--card-h) * var(--ratio-denizen));
   --card-gap: 0.55ex; }
 .card-face { position: relative; display: flex; flex-direction: column;
   gap: 0.15em; box-sizing: border-box; width: var(--card-w);
@@ -708,7 +1101,16 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   border: 1px solid transparent; border-radius: 0.35em;
   background: var(--base); color: var(--cream); font: inherit; line-height: 1.15; }
 .card-face-denizen { border-color: var(--line); }
-.card-face-relic { height: var(--card-w); border-color: #7a6a4c; }
+/* Heights are worked out from the table rather than left to
+   `aspect-ratio`, so a card in a row that stretches its items keeps its
+   shape. */
+.card-face-relic { height: calc(var(--card-w) / (var(--ratio-relic)));
+  border-color: #7a6a4c; }
+.banner-face { height: calc(var(--card-w) / (var(--ratio-banner))); }
+/* A legacy is the denizen card turned on its side: the same two lengths,
+   exchanged. */
+.card-face-legacy { width: var(--card-h);
+  height: calc(var(--card-h) / (var(--ratio-legacy))); border-color: var(--line); }
 .card-face-unimplemented { border-style: dashed; border-color: var(--unimplemented); }
 /* An empty slot is a place, not a card: nothing to inspect, so no ring. */
 .card-face:not(.card-slot-empty):hover, .card-face:focus-visible {
@@ -729,13 +1131,46 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   font-size: max(0.95em, 0.7rem); overflow-wrap: anywhere; hyphens: auto; }
 /* The initials, for the zoomed-out map only; the name is the button's label. */
 .card-name-short { display: none; }
-.card-tokens { display: flex; align-items: center; gap: 0.15em;
-  font-size: 1em; }
+/* What lies on a card in play is anchored to the card's box, not to what
+   the card prints: a band across the card at its foot region, the same
+   place over a drawn face and over an image (implementation ruling R4).
+   Every length is set on the face, per box kind, so the band, the power
+   marks and the room the face keeps free agree. On a denizen-shaped box the
+   band stands just above the power marks' row; on a square or landscape box,
+   which has no room for both rows, it stands at the foot unless the card
+   prints power marks there. An Unimplemented band or a Replace badge lifts
+   the marks, and the band with them. */
+.card-face { --marks-bottom: 0.35em; --band-h: 1.3em;
+  --band-bottom: calc(var(--marks-bottom) + 1.65em); }
+:is(.card-face-relic, .card-face-legacy):not(:has(> .card-power-marks)) {
+  --band-bottom: calc(var(--marks-bottom) - 0.05em); }
+/* A knowable card's hover summary holds its own marks and tokens, so the
+   summary sets the band above its marks as the face would. */
+.card-hover-summary:has(> .card-power-marks) {
+  --band-bottom: calc(var(--marks-bottom) + 1.65em); }
+.card-face:has(> .card-unimplemented-badge) {
+  --marks-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
+.card-face.board-option-replace { --marks-bottom: calc(0.35em + 1.6em); }
+.card-tokens { position: absolute; right: 0.3em; bottom: var(--band-bottom);
+  left: 0.3em; display: flex; align-items: center; justify-content: center;
+  gap: 0.15em; height: var(--band-h); font-size: 1em; }
+:is(.card-face, .card-hover-summary) > :is(.card-header, .legacy-goal) {
+  flex-shrink: 1; min-height: 0; overflow: hidden; }
 .card-token-count { margin-right: 0.35em; font-weight: 700; }
 /* The header's right end, in the flow, so a name that wraps is laid out
    beside the dice rather than under them. */
 .card-defense { display: flex; flex: 0 0 auto; align-items: flex-start;
   gap: 0.05em; margin-left: auto; font-size: 1em; }
+/* A relic is a square a denizen's width, too short for a two-line name, the
+   dice under it and the power marks at its foot. Its dice lead the header,
+   in its upper right, so its name wraps under them instead of pushing them
+   down onto the marks. */
+.card-face-relic .card-header > .card-defense { order: -1; }
+/* With power marks at its foot as well, the name keeps one line, cut; the
+   whole name is the face's hover note and accessible name. */
+:is(.card-face-relic, .card-face-relic .card-hover-summary):has(> .card-power-marks)
+  > .card-header > .card-name { white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; }
 /* The suit glyph with the restriction banner hung under it, one column at
    the header's left, as the printed card hangs its banner under the suit. */
 .card-emblems { display: flex; flex: 0 0 auto; flex-direction: column;
@@ -744,12 +1179,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* Each power's modifier tab or battle-plan crown, in the lower-left corner,
    lifted above the unimplemented band or a Replace badge when either is
    there. */
-.card-power-marks { position: absolute; left: 0.35em; bottom: 0.35em;
-  display: flex; gap: 0.15em; }
+.card-power-marks { position: absolute; left: 0.35em;
+  bottom: var(--marks-bottom); display: flex; gap: 0.15em; }
 .card-power-marks .power-mark { width: 1.5em; height: 1.5em; }
-.card-face:has(> .card-unimplemented-badge) > .card-power-marks {
-  bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
-.card-face.board-option-replace > .card-power-marks { bottom: calc(0.35em + 1.6em); }
 /* A band across the card's foot, out to the dashed border, so the word gets
    the card's whole width: at the floor's 0.7rem, mixed case, "Unimplemented"
    fits the smallest card in a pane. The card keeps the band's height free
@@ -761,6 +1193,22 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   white-space: nowrap; }
 .card-face:has(> .card-unimplemented-badge) {
   padding-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
+/* A face holding tokens keeps the band's room free, the Unimplemented
+   band's with it: what it prints stops above the band, and a name too long
+   for what is left is cut there, its whole text being the face's hover note
+   and accessible name. */
+:is(.card-face, .card-hover-summary):has(> .card-tokens) {
+  padding-bottom: calc(var(--band-bottom) + var(--band-h) + 0.15em); }
+/* A legacy's goal in words, under its name, until goals have icons
+   (Legacies implementation ruling R34). */
+.legacy-goal { font-size: max(0.62em, 0.7rem); line-height: 1.2;
+  color: var(--mark-modifier); }
+/* A dormant legacy its viewer knows keeps its face, with the back's colour
+   at its edge and a tag in its upper right (R36). */
+.card-face-dormant { border-color: #cbb7dd; }
+.legacy-dormant { position: absolute; top: 0.3em; right: 0.3em;
+  padding: 0 0.3em; border-radius: 0.3em; background: #2a2333;
+  color: #cbb7dd; font-size: max(0.62em, 0.7rem); line-height: 1.35; }
 .card-face-down { align-items: center; justify-content: center;
   border-style: solid; background: #2a2333; container-type: inline-size; }
 /* The letter and the pip are sized off the card as well as the type, so a
@@ -885,18 +1333,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .walker-amount-option[aria-selected="true"]::after { content: "✓";
   color: var(--brass); }
 .decision-cards, .board-cards { gap: var(--card-gap); }
-.site-cards { display: flex; flex: 0 0 auto; flex-wrap: wrap;
-  align-items: flex-start; justify-content: flex-end; min-width: 0;
-  gap: var(--card-gap); }
+/* The Public Ambitions row, over the regions while it holds a legacy
+   (R38). */
+.public-legacies { display: flex; align-items: center; gap: 10px;
+  margin: 0 0 8px; }
+.public-legacies-label { margin: 0; font-size: 0.9rem; }
+.public-legacies-cards { display: flex; gap: var(--card-gap); }
 
-.pile-display { display: flex; align-items: center; gap: 6px; margin: 7px 0; }
-.pile-display > .pile-card { display: inline-flex; box-sizing: border-box;
-  flex: 0 0 1.65rem; width: 1.65rem; min-width: 1.65rem; height: 2.3rem;
-  min-height: 2.3rem; align-items: center; justify-content: center;
-  border: 2px solid var(--brass); border-radius: 4px; font-weight: 700;
-  line-height: 1; vertical-align: middle; }
-.pile-display > .pile-back { background-color: var(--pile-back); color: #fff; }
-.pile-display > .pile-empty { background-color: var(--base); color: transparent; }
 /* The pile and the Supply figure as controls, with the title pill's hover.
    A button resets the text it inherits, so the colour and font are given
    back. The pile keeps the deck body's frame (below). */
@@ -977,39 +1420,17 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    cost badge when there is one, so it is placed from the top. */
 .deck-figure .board-option-inspect { top: calc(var(--deck-h) - 22px - 3px);
   right: 3px; bottom: auto; }
-/* A region's header: the name, and the discard in the upper right with the
-   card's top level with the name's. It is as tall as a discard carrying a
-   cost badge, so a badge coming and going never moves the sites. */
-.region-header { display: flex; align-items: flex-start;
-  justify-content: space-between; gap: 12px; min-height: 140px;
-  margin: 0 0 6px; }
-.region .region-header > .region-label { min-width: 0; margin: 0; }
-/* The Cradle's foot: the round tracker and the world deck, spaced evenly
-   across it and centred in the height the Cradle's two sites leave beside
-   its neighbours' three, the deck as tall as the tracker's wheel. The
-   tracker is as wide as its wheel, so the lines under it wrap there and
-   the spacing is measured between the wheel and the deck. */
-.region:has(> .deck-row) { display: flex; flex-direction: column; }
-.deck-row { display: flex; flex: 1 0 auto; align-items: center;
-  justify-content: space-evenly; margin-top: 10px; }
-.deck-row > .round-tracker { flex: 0 1 150px; min-width: 0; }
-.deck-row .deck-figure { --deck-h: 150px; }
-/* The world deck never has an inspect button, so its face stays centred. */
-.deck-row .deck-card { width: 107px; padding-bottom: 0; font-size: 3rem; }
-.deck-row .deck-card > .pile-count { font-size: 0.42em; }
 .player-boards { margin-top: 18px; }
-/* The shared bank stands beside the regions, framed as a region is. The map
-   pane is wider than it is tall, so the map fits by its height, and a column
-   costs nothing that a row under the regions did. */
-.world-layout { display: grid; grid-template-columns: minmax(0, 1fr)
-  var(--bank-w, 360px); gap: 12px; align-items: start; }
-.shared-bank { padding: 10px; border: 1px solid var(--line-dim);
-  border-radius: 9px; }
 .shared-bank > h3 { margin-top: 0; }
 .oathkeeper-status { margin: 0 0 6px; color: var(--brass-bright); font-weight: 700; }
-/* The oath and its holder each take a line: run together, the holder
-   wrapped mid-phrase in the bank's column. */
-.oathkeeper-status > span { display: block; }
+/* The oath and its holder each take a line, so the holder never wraps
+   mid-phrase. */
+.oathkeeper-status > * { display: block; }
+/* The goal opens the Oath's card, a link in the line's own colour and
+   weight. */
+.oathkeeper-status > .oathkeeper-goal { font-weight: inherit; text-align: left; }
+/* At rest only, so the link's hover colour still answers the pointer. */
+.oathkeeper-status > .oathkeeper-goal:not(:hover) { color: inherit; }
 /* A banner is drawn as its component: square, its side across the top in
    the banner's own colour and its name in the middle. The People's Favor
    is amber and the Darkest Secret teal, as printed. The frame is the
@@ -1034,16 +1455,56 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    the side stays on the shared bank's face and in the overlay. */
 .player-board .banner-face { padding-top: 0.4em; }
 .player-board .banner-side, .player-board .banner-name-prefix { display: none; }
-/* Two side by side across the bank's column, each a square as large as the
-   column allows: larger than a site's card, so easy to find and click. */
+/* Two side by side on the table's edge, each a square larger than a
+   site's card, so easy to find and click. */
 .shared-banners { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px; margin-top: 10px; }
 .shared-banners .board-option-card { width: 100%; }
-.shared-banners .banner-face { width: 100%; height: auto; aspect-ratio: 1; }
+/* The Reliquary, facedown, under the unheld banners (Legacy in-play
+   powers ruling 9). */
+.shared-reliquary { display: flex; flex-wrap: wrap; gap: var(--card-gap);
+  margin-top: 10px; }
+.shared-reliquary-label { flex: 1 1 100%; margin: 0; font-size: 0.9rem; }
+.shared-banners .banner-face { width: 100%; height: auto;
+  aspect-ratio: var(--ratio-banner); }
+/* The six foundation setup cards (Foundations design, slice 1), a card a
+   row: its numeral, the name of the face in use in the serif that names
+   things, and on an altered card the word. The word alone marks it: brass
+   on the board means an option, so the frame stays the neutral line. On the
+   table a row is one line of name and at most one of mark and never wraps.
+   Its height is not fixed: on the compact map it follows the glance text
+   size, and so the Fit scale. The strip stays shorter than the regions
+   beside it, whose height sets the map's. The table's cards are buttons
+   that read the face's rules; the Chronicle page's are not. */
+.foundations { margin-top: 12px; }
+.foundations-title { margin: 0 0 6px; font-size: 1rem; }
+.foundation-strip { list-style: none; margin: 0; padding: 0; display: grid;
+  gap: 4px; }
+.foundation-card { box-sizing: border-box; display: grid;
+  grid-template-columns: 1.8em minmax(0, 1fr); column-gap: 6px;
+  align-items: baseline; width: 100%; padding: 4px 8px;
+  border: 1px solid var(--line); border-radius: 4px; background: var(--base);
+  color: var(--cream); font: inherit; text-align: left; }
+button.foundation-card { cursor: pointer; }
+button.foundation-card:hover { background: var(--pressed);
+  border-color: var(--cream-bright); }
+.foundation-number { color: var(--ink-dim); font-weight: 700;
+  text-align: center; }
+.foundation-name { font-family: Georgia, serif; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.foundation-mark { grid-column: 2; color: var(--parchment-dim);
+  font-size: max(0.72em, 0.7rem); font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; }
+/* On the zoomed-out map the cards hold the glance text size, as a site's
+   details do; a name the row cannot hold is cut, never wrapped. */
+.map-compact .foundation-card { font-size: var(--glance-text); }
+/* On the Chronicle page the six stand three abreast. The page scrolls, so
+   a name its column cannot hold wraps. */
+.chronicle-loaded .foundation-strip {
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 0.5rem; }
+.chronicle-loaded .foundation-name { white-space: normal; }
 /* Under the regions, where the physical board keeps them. Their text is set
    larger than the map's own, as the map is drawn at about half size. */
-.favor-banks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 8px; margin-top: 10px; }
 .favor-bank { display: flex; align-items: center; justify-content: center;
   gap: 0.3em; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px;
   text-align: center; font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
@@ -1089,15 +1550,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 @media (max-width: 760px) {
   #app { padding: 20px 12px 36px; }
   h1 { font-size: clamp(1.8rem, 9vw, 2.5rem); }
-  .regions { grid-template-columns: 1fr; }
-  .region { padding: 9px; }
-  .sites { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .debug-toolbar { align-items: stretch; flex-direction: column; }
   .debug-toolbar input { min-width: 0; width: 100%; }
 }
 
 @media (max-width: 440px) {
-  .sites { grid-template-columns: 1fr; }
   .panel { padding: 13px; }
 }
 /* Arcs-inspired persistent table. Existing content styles stay in styles.css. */
@@ -1175,6 +1632,23 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .game-table .player-board > * { grid-column: 1; }
 .game-table .player-board > .board-cards { grid-column: 2; grid-row: 1;
   margin: 0; padding-bottom: 3px; flex-wrap: nowrap; }
+/* A lineage's legacies, a row of their own under its cards in play (R37):
+   chips, since the pane leaves a board one line there. */
+.board-legacies { display: flex; flex-wrap: nowrap; gap: 4px;
+  align-items: center; }
+.legacy-chip { display: inline-flex; align-items: center; gap: 0.3em;
+  min-height: 24px; margin: 0; padding: 1px 6px; border: 1px solid var(--line-mid);
+  border-radius: 5px; background: var(--raised); color: inherit;
+  font-size: 0.78rem; white-space: nowrap; cursor: pointer; }
+.legacy-chip .token-glyph { width: 1.1em; height: 1.1em; }
+.legacy-chip-dormant { border-color: #cbb7dd; }
+.legacy-chip .legacy-dormant { position: static; }
+.legacy-chip-back { background: #2a2333; }
+/* Room for the inspect button a decision hangs on an offered chip. */
+.legacy-chip.board-option { padding-right: 30px; }
+.legacy-chip-back .card-back-letter { font-size: 0.9rem; }
+.game-table .player-board > .board-legacies { grid-column: 2; grid-row: 2;
+  margin: 2px 0 0; }
 .game-table .player-board-active { outline: 1px dashed #c8b48b; outline-offset: -2px;
   background: #29251d; }
 /* The block that stands for the player when a decision picks one. The
@@ -1245,6 +1719,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .card-overlay-close:hover, .log-new:hover,
 .log-overlay-close:hover { border-color: var(--cream-bright); background: var(--pressed); }
 .player-title:hover, .player-slot-vision:hover, .supply-open:hover,
+button.festival-marker:hover,
 .pile-open:not(:disabled):hover { background: var(--raised); }
 .zoom-label { font-size: .72rem; color: #c0b398; min-width: 35px; text-align: center; }
 /* One draggable surface, like the Arcs map: the wheel zooms, the drag pans,
@@ -1255,10 +1730,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .map-surface { position: relative; overflow: hidden; }
 /* Pinned, never inherited: the map is additionally transform-scaled, so an
    inherited font-size change would compound with that invisibly. */
-/* The regions keep 1500px, as a site's card width is a share of its
-   region; the shared bank's column and its gap are added beside them. */
-.map-content { position: absolute; width: calc(1500px + 12px + var(--bank-w));
-  padding: 8px; --bank-w: 360px;
+/* The board is 2400px wide before the map is scaled (MatLayout
+   .DesignWidthPx): a card slot is then about 135px, the size a map card
+   has always had. */
+.map-content { position: absolute; width: 2416px; padding: 8px;
   transform-origin: top left; font-size: 1rem; }
 /* The glance layer. Below 0.72 the map's own text falls under 11px on
    screen, so what a player scans the board for (region and site names,
@@ -1268,55 +1743,16 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    the map zooms. The site footer (powers and requirement) sits inside
    the details and so holds the glance size too, one line of it; a card's
    own study layer (defense, restriction, badge) is hidden here and read
-   on a zoom or in the overlay. Nothing here changes the height of the
-   map: the site box is fixed and
-   clips, and the region title has a fixed line, so a Fit that lands near
-   the threshold cannot flip the class and re-fit forever. */
-/* The box re-grids: the name has the whole width to itself and the two
-   corners share the pawn row. At this size a name beside its tokens wraps,
-   and a second line is one the fixed box does not have. */
-.map-compact .site { display: grid; gap: 3px 6px; align-items: center;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-rows: auto auto minmax(0, 1fr); }
-.map-compact .site-heading { display: contents; }
-/* The glance layer's two sizes, named once so the compact site below can
-   size its card row from what the text leaves it. */
-.map-compact { --glance-name: clamp(1.08rem, calc(12px / var(--map-scale, 1)), 3rem);
-  --glance-text: clamp(0.86rem, calc(11.6px / var(--map-scale, 1)), 3.2rem); }
-.map-compact .site-name { grid-column: 1 / -1; line-height: 1.1;
-  font-size: var(--glance-name); }
-.map-compact .site-tokens { grid-row: 2; grid-column: 1; }
-.map-compact .site-pawns { grid-row: 2; grid-column: 2; margin: 0;
-  justify-content: center; }
-.map-compact .site-defense { grid-row: 2; grid-column: 3; }
+   on a zoom or in the overlay. The board has the mat's fixed ratio; the
+   table's edge under it grows as the scale falls, which only lowers Fit,
+   so a Fit that lands near a threshold settles instead of flipping. */
+/* The glance layer's two sizes, named once for the board and the edge. */
+.map-compact { --glance-name: clamp(1.08rem, calc(12px / var(--map-scale, 1)), 3.6rem);
+  --glance-text: clamp(0.86rem, calc(11.6px / var(--map-scale, 1)), 3.6rem); }
 .map-compact .site-tokens, .map-compact .site-defense, .map-compact .site-pawns,
 .map-compact .site-details { font-size: var(--glance-text); }
-.map-compact .pawn { font-size: inherit; }
-.map-compact .site-details { grid-column: 1 / -1; align-self: stretch;
-  margin: 0; line-height: 1.15; }
-.map-compact .site-forces { margin-top: 4px; }
-/* The footer is inside the details, so it is counter-scaled with them and
-   reads at the glance size; on the zoomed-out map it is one line (the
-   second shows from the compact threshold up, where the box has the room),
-   cut at a word with the hover title carrying the rest. */
-.map-compact .site-powers { -webkit-line-clamp: 1; }
-/* The card row takes what the fixed box leaves under the counter-scaled
-   text and the footer, so neither pushes a line out of the box as the map
-   shrinks: the box less its padding and grid gaps (30px), less one 1.1
-   line of name, one 1.25 line of pawns and one 1.25 line of powers, is the
-   row's height, and a denizen is 1.4 of its width.
-   Above a scale of about 0.35 the row's own ceiling wins and nothing
-   changes. A site holding forces gives the line up first: the forces line
-   (1.15 plus its 4px margin) comes off the row as well, and its ceiling is
-   lower to begin with. */
-.map-compact .site { --card-w: min(8.6rem,
-  calc((100% - 2 * var(--card-gap)) / 3),
-  calc((var(--site-h) - 30px - var(--glance-name) * 1.1
-    - var(--glance-text) * 2.5) / 1.4)); }
-.map-compact .site:has(.site-forces) { --card-w: min(7.3rem,
-  calc((100% - 2 * var(--card-gap)) / 3),
-  calc((var(--site-h) - 34px - var(--glance-name) * 1.1
-    - var(--glance-text) * 3.65) / 1.4)); }
+.map-compact .pawn, .map-compact .festival-marker { font-size: inherit; }
+.map-compact .site-details { margin: 0; line-height: 1.15; }
 /* The compact card face: the name in the middle, the suit in the corner.
    The card inherits the counter-scaled size from the site, so its own em
    rules hold the name at the floor without a clamp of their own. The
@@ -1332,7 +1768,33 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .map-compact .card-header { display: contents; }
 .map-compact .card-header .token-glyph { position: absolute; top: 0.2em;
   left: 0.2em; width: 1.5em; height: 1.5em; }
-.map-compact .card-tokens { justify-content: center; }
+.map-compact .card-tokens { bottom: 0.25em; justify-content: center; }
+/* A card holding three kinds of token or more takes a band of two lines,
+   and the face keeps the room for both. */
+.card-tokens { flex-wrap: wrap-reverse; align-content: flex-start;
+  row-gap: 0; }
+:is(.card-face, .card-hover-summary):has(> .card-tokens > :nth-child(5)) {
+  --band-h: 2.6em; }
+/* A card's tokens keep their glyphs whole, and on the mat a crowded band
+   wraps upward from the card's foot, two kinds a line. Further out the band
+   is sized from the card's width, as the pawns' dots are from the face's. */
+.card-tokens > *, .card-tokens .token-glyph { flex: none; }
+.card-warbands { display: inline-flex; align-items: center; }
+.map-compact .mat-board .site-cards .card-tokens { height: auto;
+  flex-wrap: wrap-reverse; align-content: flex-start; row-gap: 0; }
+/* The face keeps the band's real height free, one line or two, and the
+   name is cut above it (ruling R4), as on a hand's or a board's card. */
+.map-compact .mat-board .site-cards .card-face:has(> .card-tokens) {
+  padding-bottom: calc(0.25em + 1.2em); }
+.map-compact .mat-board .site-cards .card-face:has(> .card-tokens > :nth-child(4)) {
+  padding-bottom: calc(0.25em + 2.4em); }
+.map-compact .mat-board .site-cards .card-face :is(.card-name, .card-name-short) {
+  flex-shrink: 1; min-height: 0; overflow: hidden; }
+.map-compact .mat-board .site-cards .card-tokens .token-glyph { width: 1em;
+  height: 1em; }
+.map-compact .mat-board .site-cards .card-token-count { margin-right: 0.1em; }
+.map-tiny .mat-board .site-cards .card-tokens {
+  font-size: min(var(--glance-text), 28px); }
 .map-compact .card-face .card-defense, .map-compact .card-face .card-power-marks,
 .map-compact .card-face .card-unimplemented-badge { display: none; }
 /* The banner takes the corner opposite the suit glyph, in the room the
@@ -1373,24 +1835,6 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .map-compact .card-name-short { display: block; font-size: 1.5em;
   font-weight: 700; letter-spacing: 0.02em; overflow: hidden;
   max-height: calc((1 - var(--fits)) * 2lh); }
-.map-content .regions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.map-content .sites { grid-template-columns: 1fr; }
-/* The board's three regions each have their own light, in board order:
-   Cradle green, Provinces teal-blue, Hinterland orange-red. Painted deep
-   enough that cream text still reads on them, with each frame cut from its
-   own hue, so the map is the one place the table shows the board's colour. */
-.map-content .region { background: #213a24; border-color: #3d5f40; padding: 12px; }
-.map-content .region:nth-child(2) { background: #1d3441; border-color: #3a5b6d; }
-.map-content .region:nth-child(3) { background: #46261a; border-color: #7a4a35; }
-/* The region's name is its title, set like the board's brushed lettering:
-   large, mixed case, and the brightest text on the map. Its line is a fixed
-   height so the counter-scaled size below never changes the map's height,
-   which the Fit scale is computed from. */
-.map-content .region-label { margin: 0 0 6px; height: 2.4rem;
-  line-height: 2.4rem; overflow: hidden; white-space: nowrap; color: var(--cream-bright);
-  font-family: Georgia, serif; font-weight: 700; letter-spacing: 0.01em;
-  text-transform: none;
-  font-size: clamp(1.6rem, calc(12.5px / var(--map-scale, 1)), 2.2rem); }
 .map-dragging, .map-dragging * { cursor: grabbing !important; user-select: none !important; }
 /* The Actions pane scrolls only downward: what it holds wraps and shrinks
    to its width, a word broken where nothing else fits, and anything that
@@ -1408,7 +1852,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .pane-actions :where(button:not(.card-face)) { min-height: 44px;
   padding: 8px 12px; border: var(--option-ring) solid var(--option-line);
   border-radius: 7px; background: #282117; color: #fff; }
-.pane-actions :where(.distribute-decrement, .distribute-increment, .plan-aid-step) {
+.pane-actions :where(.distribute-decrement, .distribute-increment,
+  .amounts-decrement, .amounts-increment, .plan-aid-step) {
   border-color: var(--brass-line); border-radius: 4px; background: var(--raised); color: #e8d9bb; }
 .pane-actions :where(button:not(.card-face)):hover:not(:disabled, [aria-disabled="true"]) {
   border-color: var(--cream-bright); background: var(--pressed);
@@ -1696,6 +2141,21 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 /* The card reuses its type's ratio at overlay scale, the way haunt-roll-fail's
    courtCard is card's exact ratio at 1.34x. No third ratio. */
 .card-overlay-body > .card-face { font-size: 1.9em; }
+/* The overlay reads a Vision upright, in the landscape box it is printed
+   in. */
+.card-overlay-body > .card-face-vision { width: var(--card-h);
+  height: calc(var(--card-h) / (var(--ratio-legacy))); }
+/* A card the table shows as words has its box here, at its real ratio,
+   where its image will go. */
+.card-plate { display: flex; align-items: center; justify-content: center;
+  box-sizing: border-box; flex: 0 0 auto; height: calc(var(--card-h) * 1.9);
+  padding: 0.6em; border: 1px solid var(--line); border-radius: 0.35em;
+  background: var(--base); color: var(--cream); text-align: center;
+  font-family: Georgia, serif; }
+.card-plate-foundation { aspect-ratio: var(--ratio-foundation); }
+.card-plate-oath-goal { aspect-ratio: var(--ratio-oath-goal); }
+.card-plate-oathkeeper-title { aspect-ratio: var(--ratio-oathkeeper-title);
+  height: calc(var(--card-w) * 1.9); }
 .card-overlay-details { flex: 1 1 22em; min-width: 0; max-width: 34em;
   font-size: 0.82em; }
 .card-overlay-name { margin: 0 0 0.6em; font-family: Georgia, serif;
@@ -1705,6 +2165,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .card-overlay-property { display: contents; }
 .card-overlay-property dt { color: var(--ink-dim); }
 .card-overlay-property dd { margin: 0; text-transform: capitalize; }
+.card-overlay-sentence dd { text-transform: none; }
 /* The consent confirmation and a ruler's preferences grid (consent
    design), in the overlay's own button style. */
 .overlay-confirm { display: grid; grid-template-columns: auto auto;
@@ -1758,8 +2219,11 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 /* The columns share the list's whole width, and each card follows its
    column's width at its ratio, as a site's card row does. */
 .card-list-item > .card-face { width: 100%; height: auto;
-  aspect-ratio: 1 / 1.4; }
-.card-list-item > .card-face-relic { aspect-ratio: 1 / 1; }
+  aspect-ratio: var(--ratio-denizen); }
+.card-list-item > .card-face-relic { aspect-ratio: var(--ratio-relic); }
+/* A legacy takes two columns of the list, so it reads at a card's size. */
+.card-list-item:has(> .card-face-legacy) { grid-column: span 2; }
+.card-list-item > .card-face-legacy { aspect-ratio: var(--ratio-legacy); }
 /* In the action pane, about a row and a half shows at most (a column is at
    most a third wider than a card there), so a longer pile says it scrolls
    and Done stays in reach under it. */

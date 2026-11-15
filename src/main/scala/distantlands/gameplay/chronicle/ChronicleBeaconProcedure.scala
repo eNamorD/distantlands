@@ -1,6 +1,8 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.chronicle.legacies.{LegacyChroniclePowers,
+  OathsOfLoyalty}
 import distantlands.gameplay.walker.ProcedureStart
 import distantlands.model._
 
@@ -14,12 +16,15 @@ object ChronicleBeaconProcedure:
 
   /** The notes the Beacon's steps write. */
   def noteKeys: Vector[NoteKey] =
-    IntroduceNewcomers.noteKeys ++ WelcomeStranger.noteKeys
+    IntroduceNewcomers.noteKeys ++ WelcomeStranger.noteKeys ++
+      ShapeFoundation.noteKeys ++
+      OathsOfLoyalty.noteKeys(TriggeredProcedureRef.ChronicleBeacon) ++
+      LegacyChroniclePowers.beaconNoteKeys
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
     ChronicleWindows.step(PowerWindow.ChronicleIntroduceNewcomers,
       IntroduceNewcomers.steps(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleWelcomeStranger,
       WelcomeStranger.steps),
-    // Shape Foundation (CR p. 39) waits for Foundations.
-    ChronicleWindows.step(PowerWindow.ChronicleShapeFoundation, Vector.empty))
+    ChronicleWindows.step(PowerWindow.ChronicleShapeFoundation,
+      ShapeFoundation.steps(catalog)))

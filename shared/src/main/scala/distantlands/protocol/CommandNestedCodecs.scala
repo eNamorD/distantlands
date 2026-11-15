@@ -7,17 +7,23 @@ private[protocol] object CommandNestedCodecs:
   def encodeNegotiation(value: NegotiationTerms): ujson.Obj = ujson.Obj(
     "transfers" -> ujson.Arr.from(value.transfers.map { row => ujson.Obj(
       "recipientPlayerId" -> row.recipientPlayerId, "favor" -> row.favor,
-      "relicIds" -> ujson.Arr.from(row.relicIds.map(ujson.Str(_)))) }),
+      "relicIds" -> ujson.Arr.from(row.relicIds.map(ujson.Str(_))),
+      "advisers" -> ujson.Arr.from(row.advisers.map(world)),
+      "siteIds" -> ujson.Arr.from(row.siteIds.map(ujson.Str(_))),
+      "secrets" -> row.secrets) }),
     "disclosures" -> ujson.Arr.from(value.disclosures.map { row => ujson.Obj(
       "recipientPlayerId" -> row.recipientPlayerId,
       "information" -> encodeInformation(row.information)) }),
     "citizenshipPlayerIds" -> ujson.Arr.from(
-      value.citizenshipPlayerIds.map(ujson.Str(_))))
+      value.citizenshipPlayerIds.map(ujson.Str(_))),
+    "promises" -> ujson.Arr.from(value.promises.map(ujson.Str(_))),
+    "bindingPromises" -> ujson.Arr.from(
+      value.bindingPromises.map(ujson.Str(_))))
 
   def decodeNegotiation(value: ujson.Value, path: String)
       : Either[ProtocolDecodeFailure, NegotiationTerms] = obj(value, path).flatMap { root => for
-    _ <- exact(root, Set("transfers", "disclosures", "citizenshipPlayerIds"),
-      path)
+    _ <- exact(root, Set("transfers", "disclosures", "citizenshipPlayerIds",
+      "promises", "bindingPromises"), path)
     transferValues <- field(root, "transfers", path).flatMap(array(_, s"$path.transfers"))
     transfers <- traverse(transferValues.zipWithIndex) { case (v, i) => decodeTransfer(v, s"$path.transfers[$i]") }
     disclosureValues <- field(root, "disclosures", path).flatMap(array(_, s"$path.disclosures"))
@@ -28,7 +34,12 @@ private[protocol] object CommandNestedCodecs:
     citizenshipValue <- field(root, "citizenshipPlayerIds", path)
     citizenship <- strings(citizenshipValue, s"$path.citizenshipPlayerIds")
     _ <- noDuplicates(citizenship, s"$path.citizenshipPlayerIds")
-  yield NegotiationTerms(transfers, disclosures, citizenship) }
+    promiseValue <- field(root, "promises", path)
+    promises <- strings(promiseValue, s"$path.promises")
+    bindingValue <- field(root, "bindingPromises", path)
+    bindingPromises <- strings(bindingValue, s"$path.bindingPromises")
+  yield NegotiationTerms(transfers, disclosures, citizenship, promises,
+    bindingPromises) }
 
   /** Mirrors the journal's generic decision-answer tags (`"choose-one"` /
     * `"partition"`) and its kind/id option spelling, so a client's answer and
@@ -78,6 +89,13 @@ private[protocol] object CommandNestedCodecs:
       ujson.Obj("kind" -> "propose-terms", "terms" -> encodeNegotiation(terms))
     case DecisionAnswerWire.AcceptDealWire => ujson.Obj("kind" -> "accept-deal")
     case DecisionAnswerWire.DeclineDealWire => ujson.Obj("kind" -> "decline-deal")
+    case DecisionAnswerWire.OpenDealWire(playerIds) => ujson.Obj(
+      "kind" -> "open-deal",
+      "playerIds" -> ujson.Arr.from(playerIds.map(ujson.Str(_))))
+    case DecisionAnswerWire.PassGatheringWire =>
+      ujson.Obj("kind" -> "pass-gathering")
+    case DecisionAnswerWire.UnpassGatheringWire =>
+      ujson.Obj("kind" -> "unpass-gathering")
 
   def decodeDecisionAnswerWire(value: ujson.Value, path: String)
       : Either[ProtocolDecodeFailure, DecisionAnswerWire] = obj(value, path).flatMap { root =>
@@ -124,6 +142,16 @@ private[protocol] object CommandNestedCodecs:
         .map(_ => DecisionAnswerWire.AcceptDealWire)
       case "decline-deal" => exact(root, Set("kind"), path)
         .map(_ => DecisionAnswerWire.DeclineDealWire)
+      case "open-deal" => for
+        _ <- exact(root, Set("kind", "playerIds"), path)
+        raw <- field(root, "playerIds", path)
+        playerIds <- strings(raw, s"$path.playerIds")
+        _ <- noDuplicates(playerIds, s"$path.playerIds")
+      yield DecisionAnswerWire.OpenDealWire(playerIds)
+      case "pass-gathering" => exact(root, Set("kind"), path)
+        .map(_ => DecisionAnswerWire.PassGatheringWire)
+      case "unpass-gathering" => exact(root, Set("kind"), path)
+        .map(_ => DecisionAnswerWire.UnpassGatheringWire)
       case kind => Left(InvalidValue(s"$path.kind", s"unknown decision answer '$kind'"))
     }}
 
@@ -157,12 +185,19 @@ private[protocol] object CommandNestedCodecs:
     case NegotiationInformation.HeldRelic(owner, relic) => ujson.Obj("kind" -> "held-relic", "ownerPlayerId" -> owner, "relicId" -> relic)
     case NegotiationInformation.SiteRelic(site, relic) => ujson.Obj("kind" -> "site-relic", "siteId" -> site, "relicId" -> relic)
   private def decodeTransfer(value: ujson.Value, path: String) = obj(value, path).flatMap { row => for
-    _ <- exact(row, Set("recipientPlayerId", "favor", "relicIds"), path)
+    _ <- exact(row, Set("recipientPlayerId", "favor", "relicIds", "advisers",
+      "siteIds", "secrets"), path)
     recipient <- string(row, "recipientPlayerId", path)
     favor <- field(row, "favor", path).flatMap(integer(_, s"$path.favor"))
+    secrets <- field(row, "secrets", path).flatMap(integer(_, s"$path.secrets"))
     relics <- field(row, "relicIds", path).flatMap(strings(_, s"$path.relicIds"))
     _ <- noDuplicates(relics, s"$path.relicIds")
-  yield NegotiationTransfer(recipient, favor, relics) }
+    adviserValues <- field(row, "advisers", path).flatMap(array(_, s"$path.advisers"))
+    advisers <- traverse(adviserValues.zipWithIndex) { case (v, i) => decodeWorld(v, s"$path.advisers[$i]") }
+    _ <- noDuplicates(advisers.map(card => s"${card.kind}/${card.id}"), s"$path.advisers")
+    sites <- field(row, "siteIds", path).flatMap(strings(_, s"$path.siteIds"))
+    _ <- noDuplicates(sites, s"$path.siteIds")
+  yield NegotiationTransfer(recipient, favor, relics, advisers, sites, secrets) }
   private def decodeDisclosure(value: ujson.Value, path: String) = obj(value, path).flatMap { row => for
     _ <- exact(row, Set("recipientPlayerId", "information"), path)
     recipient <- string(row, "recipientPlayerId", path)

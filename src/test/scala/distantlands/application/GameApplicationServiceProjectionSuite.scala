@@ -17,7 +17,8 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer,
   PartitionAnswer}
 import distantlands.server.GameHttpWire
-import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.{LegacyDeal, SetupAdviserSteps,
+  SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.model.OathState.Ready
 import distantlands.gameplay.actions.VisionRules
@@ -242,8 +243,13 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
       Commands.resolveWalker(holder, TreeDecision(
         SetupProcedure.pawnDecisionId(holder),
         ChooseOneAnswer(DecisionOptionRef.Site(ancientCity))))))
+    // Quiet Ambitions asks first, with the hand still a preview.
+    val keeping = LoadedGame(placed.state, placed.nextSequence)
+    assertEquals(projector.project("game-hand", keeping, holder)
+      .temporaryHandPreview.map(_.cardId), hand.map(_.cardId))
+    val kept = keepFirstLegacy(service, "game-hand", placed)
     val asked = projector.project("game-hand",
-      LoadedGame(placed.state, placed.nextSequence), holder)
+      LoadedGame(kept.state, kept.nextSequence), holder)
 
     assert(asked.walkerDecision.exists(
       _.query.exists(_.offeredOptions.nonEmpty)))
@@ -317,11 +323,23 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
   private val wizardsConclave = WizardsConclaveCard.id
   private val natureWorship = NatureWorshipCard.id
 
-  /** The fixture's first game begun, and the first player, p2, placed at
-    * Ancient City: p2 is now asked which adviser to keep. Replays Begin and
-    * the first placement, since the adviser choice and the hands it offers
-    * come from Setup's deal. */
-  private def askedForAdvisers(service: GameApplicationService,
+  /** The legacies Quiet Ambitions drew for `player`. */
+  private def drawnLegacies(player: PlayerId): Vector[LegacyId] =
+    LegacyDeal.of(chronicle, orders.participants)
+      .drawn(orders.legacyOrder, player)
+
+  /** The first player, parked on Quiet Ambitions' keep, keeps the first
+    * legacy drawn. */
+  private def keepFirstLegacy(service: GameApplicationService, gameId: String,
+      placed: GameAccepted)(using munit.Location): GameAccepted =
+    accepted(service.handle(gameId, placed.nextSequence,
+      Commands.resolveWalker(firstPlayer, TreeDecision(
+        SetupProcedure.legacyDecisionId(firstPlayer),
+        ChooseOneAnswer(DecisionOptionRef.Legacy(
+          drawnLegacies(firstPlayer).head))))))
+
+  /** The first player's pawn placed, parked on Quiet Ambitions' keep. */
+  private def askedForLegacy(service: GameApplicationService,
       gameId: String)(using munit.Location): GameAccepted =
     val begun = accepted(service.handle(gameId, 0L,
       GameCommand.Begin(chronicle, orders)))
@@ -329,6 +347,33 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
       Commands.resolveWalker(firstPlayer, TreeDecision(
         SetupProcedure.pawnDecisionId(firstPlayer),
         ChooseOneAnswer(DecisionOptionRef.Site(ancientCity))))))
+
+  /** The fixture's first game begun, the first player, p2, placed at
+    * Ancient City and keeping the first legacy Quiet Ambitions drew: p2 is
+    * now asked which adviser to keep. Replays Begin, the placement and the
+    * keep, since the adviser choice and the hands it offers come from
+    * Setup's deal. */
+  private def askedForAdvisers(service: GameApplicationService,
+      gameId: String)(using munit.Location): GameAccepted =
+    keepFirstLegacy(service, gameId, askedForLegacy(service, gameId))
+
+  test("the keep decision names both drawn legacies to their owner and " +
+      "neither to anyone else"):
+    // Replays Setup's deal: the legacies Quiet Ambitions drew are the subject.
+    val service = new GameApplicationService(catalog,
+      new InMemoryEventStreamRepository)
+    val parked = askedForLegacy(service, "game-legacy")
+    val stored = LoadedGame(parked.state, parked.nextSequence)
+    val drawn = drawnLegacies(firstPlayer).map(_.value)
+    val own = projector.project("game-legacy", stored, firstPlayer)
+    assertEquals(own.walkerDecision.toVector.flatMap(_.query.toVector
+      .flatMap(_.offeredOptions)).map(option => option.kind -> option.id),
+      drawn.map("legacy" -> _))
+    Vector(projector.project("game-legacy", stored, p1),
+        projector.projectPublic("game-legacy", stored)).foreach { other =>
+      val json = GameHttpWire.encodeProjection(other)
+      assert(drawn.forall(id => !json.contains(s"\"$id\"")), json)
+    }
 
   test("player projection redacts other adviser hands and hidden orders"):
     // Replays Setup's deal: the hands and deck orders it deals are the subject.
@@ -374,11 +419,11 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
         SetupProcedure.adviserDecisionId(firstPlayer),
         PartitionAnswer(Vector(
           DecisionPlacement(DecisionOptionRef.Denizen(wizardsConclave),
-            SetupProcedure.adviserKeepKey),
+            SetupAdviserSteps.keepKey),
           DecisionPlacement(DecisionOptionRef.Denizen(errandBoy),
-            SetupProcedure.adviserDiscardKey),
+            SetupAdviserSteps.discardKey),
           DecisionPlacement(DecisionOptionRef.Denizen(natureWorship),
-            SetupProcedure.adviserDiscardKey)))))))
+            SetupAdviserSteps.discardKey)))))))
     // Wizard's Conclave may be revealed, so Reveal Cards follows while p2
     // holds it facedown: everyone else is told who is deciding, and nothing
     // names the card.

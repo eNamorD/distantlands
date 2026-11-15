@@ -1,6 +1,7 @@
 package distantlands.application
 
-import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
+import distantlands.gameplay.powers.{PhasePowerCatalog,
+  PowerImplementationStatus, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.model._
 import distantlands.testkit.TestCards
@@ -22,8 +23,10 @@ class GamePresentationProjectorImplementedSuite extends munit.FunSuite:
   /** The walker or phase catalog runs the power. */
   private def builtInWalkerOrPhase(id: PowerId): Boolean = walkerOrPhase(id)
 
-  /** Neither the walker nor the phase catalog covers the power. */
-  private def unbuilt(id: PowerId): Boolean = !walkerOrPhase(id)
+  /** Nothing covers the power: not the walker or phase catalog, nor a
+    * printed restriction or a site handler. */
+  private def unbuilt(id: PowerId): Boolean =
+    !PowerImplementationStatus.implemented(id)
 
   /** A denizen whose printed powers all satisfy `built`. */
   private def denizenWhosePowers(built: PowerId => Boolean): DenizenId =

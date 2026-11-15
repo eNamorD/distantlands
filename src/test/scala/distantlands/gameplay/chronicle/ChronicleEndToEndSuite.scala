@@ -5,7 +5,7 @@ import distantlands.gameplay.setup.{ChronicleAccounting, FirstGameSetupFixture,
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.WalkerCompleted
 import distantlands.model._
-import distantlands.testkit.{Outcomes, Situation}
+import distantlands.testkit.{Outcomes, Situation, Table}
 import distantlands.testkit.Table.p1
 import distantlands.testkit.Unwrap.accepted
 
@@ -72,6 +72,22 @@ class ChronicleEndToEndSuite extends munit.FunSuite:
     assert(Set(Phase.Wake, Phase.Act)(woken.ready.game.current.turn.phase))
     assertEquals(woken.ready.game.current.tracks.round, 1)
     assert(woken.ready.game.current.players.forall(_.pawnSite.nonEmpty))
+
+  test("a foundation face game 1 holds is journaled, and game 2 starts " +
+      "with it"):
+    val altered = FoundationState(FoundationFace.Altered, Set.empty)
+    // The fixture's game, with Foundation III turned before p1 wakes.
+    val alteredWakes = Table.from(Outcomes.ready(usurperWakes))
+      .foundation(FoundationNumber.III, FoundationFace.Altered).state
+    val journaled = EvolvedChronicleFixture.chronicleJournaledBy(
+      EvolvedChronicleFixture.chronicleAnsweredAfter(
+        EvolvedChronicleFixture.gameWonFrom(alteredWakes)))
+    assertEquals(journaled.foundations.get(FoundationNumber.III),
+      Some(altered))
+    val next = accepted(GameStartRules.evolve(catalog, journaled,
+      LaterGameFixture.orders(journaled, p1)))
+    assertEquals(next.game.campaign.foundations(FoundationNumber.III),
+      altered)
 
   test("game start refuses a crowned Chancellor whose Empire has no site"):
     val withoutEmpire = record.copy(atlasBox = record.world ++ record.atlasBox,

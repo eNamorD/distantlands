@@ -82,7 +82,7 @@ class GreatClockSuite extends munit.FunSuite:
   test("a jump from round 5 rolls no die for round 5; the round's end " +
       "rolls round 6's and moves on to round 7"):
     val events = roundEndAfterClockFrom(5, face = 1)
-    assertEquals(events.collect { case EndDieRolled(round, _, _) => round },
+    assertEquals(events.collect { case EndDieRolled(round, _, _, _) => round },
       Vector(6))
     assert(events.contains(RoundEnded(6, Some(7))))
 

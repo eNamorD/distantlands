@@ -115,9 +115,10 @@ object SearchProcedure:
   private def gated(ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Region] = for
     _ <- ProcedureStart.noSelection("search", args)
-    _ <- Either.cond(ready.game.current.temporaryHands.valuesIterator
-      .forall(_.isEmpty), (), OathViolation.SearchDrawMismatch(
-      "a temporary card hand already exists"))
+    // Only the actor's own hand: a player who stayed off the map with Quest
+    // to Distant Lands keeps their Ties hand until their first Wake (R33).
+    _ <- Either.cond(hand(ready, actor).isEmpty, (),
+      OathViolation.SearchDrawMismatch("a temporary card hand already exists"))
     origin <- actorRegion(ready, actor)
   yield origin
 

@@ -1,0 +1,27 @@
+0.0 round 0 | Setup
+1.0 action 1 | [player:p3|p3] started with 8 warbands with [card:L06|Circle of Swords]
+2.0 action 1 | [player:p2|p2] started with the Grand Scepter with [card:L09|Scepter Bearer]
+3.0 action 1 | [player:p3|p3] placed a warband at [site:site:ancient-city|Ancient City] with [card:L01|Iron Hand]
+4.0 action 1 | [player:p3|p3] placed a warband at [site:site:broken-peaks|Broken Peaks] with [card:L01|Iron Hand]
+5.0 action 1 | [player:p3|p3] placed a warband at [site:site:buried-giant|Buried Giant] with [card:L17|Rival]
+6.0 action 1 | [player:p3|p3] placed a warband at [site:site:deep-woods|Deep Woods] with [card:L17|Rival]
+7.0 action 1 | [player:p3|p3] placed a warband at [site:site:desolate-shore|Desolate Shore] with [card:L17|Rival]
+12.0 action 1 | [player:p1|p1] took a relic from the Reliquary
+16.0 action 1 | [player:p1|p1] filled the map from Recent Sites
+18.0 action 1 | [player:p1|p1] placed [site:site:dunes|Dunes] on the map
+20.0 action 1 | [player:p1|p1] placed [site:site:fair-isle|Fair Isle] on the map
+22.0 action 1 | [player:p1|p1] placed [site:site:golden-valley|Golden Valley] on the map
+27.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
+32.0 decision 1 | [player:p1|p1] kept a legacy
+37.0 decision 1 | [player:p1|p1] kept [card:207|Glamor]
+45.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+50.0 decision 1 | [player:p2|p2] kept a legacy
+55.0 decision 1 | [player:p2|p2] kept a Denizen
+63.0 action 1 | [player:p3|p3] placed their pawn at [site:site:ancient-city|Ancient City]
+68.0 decision 1 | [player:p3|p3] kept a legacy
+73.0 decision 1 | [player:p3|p3] kept a Denizen
+74.0 round 0 | Round 1
+74.1 turn 0 | [player:p1|p1]'s turn
+74.2 phase 0 | Wake
+76.0 action 1 | Nothing happened in Wake
+76.1 phase 0 | Act

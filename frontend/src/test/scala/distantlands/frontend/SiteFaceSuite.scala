@@ -67,6 +67,12 @@ class SiteFaceSuite extends munit.FunSuite:
   /** A slot a site owns is drawn whether or not a card sits in it, so the row
     * reads as the site's capacity rather than as its current contents.
     */
+  /** A relic's back is what the card prints on that side. */
+  test("an unknown relic's back letter is marked printed"):
+    val back = ServerUiSupport.facedownCard("relic")
+    assertEquals(all(back, ".card-back-letter").map(_.getAttribute("class")),
+      Vector("card-back-letter printed"))
+
   test("an empty relic slot is drawn like an empty denizen slot"):
     val row = firstMatch(ServerUiSupport.siteDetails(woods.copy(
       denizenCapacity = 1, relicCapacity = 2, denizens = Vector.empty,
@@ -151,7 +157,7 @@ class SiteFaceSuite extends munit.FunSuite:
       "site-powers")
     assertEquals(all(footer, ".site-power").map(_.textContent), Vector("Coast"))
     assertEquals(as[dom.Element](footer.lastChild).getAttribute("class"),
-      "site-requirement")
+      "site-requirement printed")
 
   /** The box has room for one line of powers, so a second power joins the
     * first on it rather than wrapping onto a line the box then clips. Each
@@ -188,3 +194,75 @@ class SiteFaceSuite extends munit.FunSuite:
     assertEquals(all(ServerUiSupport.siteDetails(woods.copy(
       recoverDifficulty = None, forgeCost = None)), ".site-requirement"),
       Vector.empty)
+
+  /** Zoomed far out a site keeps its defense and its forces in a short form
+    * the stylesheet swaps in, so a zoom never re-renders (ruling R5). The
+    * short forms are for the eye: assistive technology reads the long ones,
+    * and the hover note carries the long text. */
+  test("defense has a short form: one die and its count, hidden from " +
+      "assistive technology"):
+    val heading = ServerUiSupport.siteHeading(woods.copy(defense = 2))
+    val short = firstMatch(heading, ".site-defense-short")
+      .getOrElse(fail("no short defense"))
+    assertEquals(short.getAttribute("aria-hidden"), "true")
+    assertEquals(all(short, ".token-glyph").map(_.getAttribute("class")),
+      Vector("token-glyph token-defense-die"))
+    assertEquals(short.textContent, "2")
+    assertEquals(short.getAttribute(HoverTip.Attribute), "Defense 2")
+    assert(short.classList.contains("printed"))
+    assertEquals(firstMatch(heading, ".site-defense")
+      .map(_.getAttribute("aria-label")), Some("Defense 2"))
+
+  test("forces have a short form: the warband in the force's colour and " +
+      "its count"):
+    val forces = SiteForces.Bandit(3, "Bandit Warbands")
+    val details = ServerUiSupport.siteDetails(woods.copy(forces = Some(forces)))
+    val short = firstMatch(details, ".site-forces-short")
+      .getOrElse(fail("no short forces"))
+    assert(short.classList.contains("force-bandit"), short.getAttribute("class"))
+    assertEquals(short.getAttribute("aria-hidden"), "true")
+    assertEquals(all(short, ".token-glyph").map(_.getAttribute("class")),
+      Vector("token-glyph token-warband"))
+    assertEquals(short.textContent, "3")
+    assertEquals(short.getAttribute(HoverTip.Attribute), "Bandit Warbands x3")
+    assert(!short.classList.contains("printed"))
+    assertEquals(firstMatch(details, "p.site-forces").map(_.textContent),
+      Some("Bandit Warbands x3"))
+
+  /** An Exile's and the Empire's short forms carry their force's colour
+    * class, which the glyph takes too, and the long text as the hover note;
+    * the Empire's carries its outline ring in the stylesheet (ruling R7). */
+  test("the short forces of an Exile and of the Empire carry their class " +
+      "and their words"):
+    Vector(
+      SiteForces.Exile(12, "purple-exile", distantlands.model.PlayerColor.Purple,
+        "Purple Warbands") -> ("force-purple", "Purple Warbands x12"),
+      SiteForces.Imperial(10, "Imperial Warbands") ->
+        ("force-empire", "Imperial Warbands x10")).foreach {
+      case (forces, (cssClass, words)) =>
+        val short = firstMatch(ServerUiSupport.siteDetails(
+          woods.copy(forces = Some(forces))), ".site-forces-short")
+          .getOrElse(fail("no short forces"))
+        assert(short.classList.contains(cssClass), short.getAttribute("class"))
+        assertEquals(short.getAttribute(HoverTip.Attribute), words)
+        assertEquals(short.textContent, forces.count.toString)
+    }
+
+  /** A long forces line cuts its words inside the face, never its count. */
+  test("the forces line holds its words and its count apart"):
+    val row = firstMatch(ServerUiSupport.siteDetails(woods.copy(forces =
+      Some(SiteForces.Bandit(12, "Bandit Warbands")))), "p.site-forces")
+      .getOrElse(fail("no forces line"))
+    assertEquals(all(row, ":scope > span").map(_.getAttribute("class")),
+      Vector("site-forces-label", "site-forces-count"))
+    assertEquals(row.textContent, "Bandit Warbands x12")
+
+  /** The label inside is printed and may be hidden; the button keeps its
+    * name in its own attribute (ruling R9). */
+  test("a site-power button is named by its own label"):
+    val details = ServerUiSupport.siteDetails(woods.copy(powers = Vector(
+      distantlands.protocol.projection.SitePowerProjection("action",
+        "Mountain", Some("Rule")))))
+    val power = firstMatch(details, ".site-power").getOrElse(fail("no power"))
+    assertEquals(power.getAttribute("aria-label"), "Mountain")
+    assertEquals(power.textContent, "Mountain")

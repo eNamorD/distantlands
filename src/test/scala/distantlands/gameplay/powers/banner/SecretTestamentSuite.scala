@@ -3,12 +3,13 @@ package distantlands.gameplay.powers.banner
 import distantlands.gameplay.CampaignFixture.{on, raidBoard, rules}
 import distantlands.gameplay.actions.BannerRules
 import distantlands.gameplay.actions.campaign.CampaignIds
+import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.NoteText
 import distantlands.gameplay.powers.campaign.PlanDriver.{commit, winningDice}
 import distantlands.gameplay.powers.targeting.TargetingFixture
 import distantlands.model._
 import distantlands.model.OathState.Ready
-import distantlands.testkit.{ActPowerHarness, Look, Outcomes}
+import distantlands.testkit.{ActPowerHarness, Look, Outcomes, Table}
 import distantlands.testkit.Outcomes.assertWireRoundTrips
 import distantlands.testkit.Table.{p1, p2}
 import distantlands.testkit.Unwrap.accepted
@@ -72,6 +73,19 @@ class SecretTestamentSuite extends munit.FunSuite:
     assertEquals(said(done.events), Vector(NoteText.Said("took-secrets",
       s"${p2.value} took 3 secrets from the Darkest Secret.",
       covers = false)))
+
+  test("on the Festival the holder takes every secret, and the marker " +
+      "still leaves the map"):
+    val board = Table.from(challengingTestamentHolder())
+      .darkestSecret(Some(p2), secrets = 3, DarkestSecretFace.Festival)
+      .festival(AncientCitySite).ready
+    val done = challenged(board, Banner.DarkestSecret, 4)
+    val end = Outcomes.ready(done.state)
+    assertEquals(end.game.current.banners.darkestSecret,
+      DarkestSecretState(DarkestSecretFace.Festival, Some(p1), 4,
+        festival = None))
+    assertEquals(Look(end).faceUpSecrets(p2),
+      Look(board).faceUpSecrets(p2) + 3)
 
   test("a facedown Secret Testament leaves the ribbon as it is"):
     val board = challengingTestamentHolder(facedown = true)

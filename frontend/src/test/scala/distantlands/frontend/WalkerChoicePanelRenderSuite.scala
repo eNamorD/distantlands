@@ -213,6 +213,26 @@ class WalkerChoicePanelRenderSuite extends munit.FunSuite:
     // A Campaign's defense rolls the defense die.
     assertEquals(all(panel, ".die-face-defense").size, 2)
 
+  test("an Explore question draws its dice as shields against the " +
+      "difficulty, then the engine's two buttons"):
+    val outcome = WalkerRollOutcomeState("explore",
+      Vector(DieFace.OneShield, DieFace.Blank), 1, Some(4))
+    val query = DecisionQueryState.ChooseOne(Vector(
+      DecisionOptionState("button", "continue", "Roll 2 more dice (1 Supply)"),
+      DecisionOptionState("button", "stop", "Stop exploring")),
+      heading = Some("Explore"))
+    val panel = draw(WalkerDecisionState("explore", "explore.choice",
+      query = Some(query), rollOutcome = Some(outcome)))
+    assertEquals(all(panel, ".walker-roll-totals").map(_.textContent),
+      Vector("Shields 1 · need 4"))
+    assertEquals(all(panel, ".walker-roll-faces").map(
+      _.getAttribute("aria-label")),
+      Vector("Rolled shield, blank -- 1 shields so far (need 4)."))
+    assertEquals(all(panel, ".die-face-defense").size, 2)
+    assertEquals(Dom.one(panel, "h2").textContent, "Explore")
+    assertEquals(all(panel, ".walker-choice").map(_.textContent),
+      Vector("Roll 2 more dice (1 Supply)", "Stop exploring"))
+
   test("an unavailable option is a withheld control that says why in its note"):
     val ui = new RecordingControls()
     val blocked = pub.copy(state = "unavailable",

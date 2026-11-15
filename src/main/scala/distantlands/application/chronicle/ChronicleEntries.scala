@@ -3,8 +3,11 @@ package distantlands.application.chronicle
 import java.nio.charset.StandardCharsets.UTF_8
 import java.security.MessageDigest
 
+import distantlands.application.FoundationPresentation
+import distantlands.gameplay.cards.NewFoundations
 import distantlands.model.{Chronicle, Role}
-import distantlands.protocol.{ChronicleEntry, ChronicleScore, ChronicleSummary}
+import distantlands.protocol.{ChronicleEntry, ChronicleLegacy, ChronicleScore,
+  ChronicleSummary}
 
 /** A Chronicle as a browser keeps it (Chronicle browsing design, "Digest"
   * and "Summary"). */
@@ -32,4 +35,11 @@ object ChronicleEntries:
           lineage.role match
             case Role.Chancellor => Some("chancellor")
             case Role.Citizen => Some("citizen")
-            case Role.Exile => None)))
+            case Role.Exile => None,
+          // By printed name, every face shown: the Chronicle is its owner's
+          // record (Legacies implementation ruling R39). A legacy the
+          // catalog does not know keeps its id.
+          lineage.legacies.map(legacy => ChronicleLegacy(
+            NewFoundations.catalog.legacy(legacy.id).fold(legacy.id.value)(
+              _.name), legacy.active)))),
+      FoundationPresentation.ofChronicle(chronicle))

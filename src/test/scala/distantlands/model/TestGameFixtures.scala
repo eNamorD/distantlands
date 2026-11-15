@@ -128,7 +128,6 @@ object TestGameFixtures:
       worldDeck = Vector(worldDenizen),
       relicDeck = Vector.empty,
       edificeDeck = Vector.empty,
-      legacyDeck = Vector.empty,
       regionalDiscards = Map.empty
     ),
     banners = BannersState(
@@ -140,7 +139,8 @@ object TestGameFixtures:
       DarkestSecretState(
         DarkestSecretFace.WanderingFlame,
         holder = None,
-        secrets = 1
+        secrets = 1,
+        festival = None
       )
     ),
     title = OathkeeperState(None, TitleSide.Oathkeeper),

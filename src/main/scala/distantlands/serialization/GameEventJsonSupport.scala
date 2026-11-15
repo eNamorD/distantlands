@@ -234,7 +234,8 @@ private[serialization] trait GameEventJsonSupport:
       "firstPlayer" -> orders.firstPlayer.value,
       "denizenOrder" -> stringArray(orders.denizenOrder.map(_.value)),
       "worldDeckOrder" -> ujson.Arr.from(orders.worldDeckOrder.map(encodeCardId)),
-      "relicOrder" -> stringArray(orders.relicOrder.map(_.value))
+      "relicOrder" -> stringArray(orders.relicOrder.map(_.value)),
+      "legacyOrder" -> stringArray(orders.legacyOrder.map(_.value))
     )
 
   protected final def decodeSetupOrders(value: ujson.Value, path: String)
@@ -253,7 +254,8 @@ private[serialization] trait GameEventJsonSupport:
         case (item, index) => decodeWorldCardId(item, s"$path.worldDeckOrder[$index]")
     yield SetupOrders(participants, PlayerId(obj("firstPlayer").str),
       obj("denizenOrder").arr.toVector.map(v => DenizenId(v.str)),
-      worldDeckOrder, obj("relicOrder").arr.toVector.map(v => RelicId(v.str)))
+      worldDeckOrder, obj("relicOrder").arr.toVector.map(v => RelicId(v.str)),
+      obj("legacyOrder").arr.toVector.map(v => LegacyId(v.str)))
   catch
     case NonFatal(error) =>
       Left(InvalidValue(path,

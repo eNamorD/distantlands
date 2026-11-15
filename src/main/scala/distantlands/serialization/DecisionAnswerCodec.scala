@@ -1,7 +1,7 @@
 package distantlands.serialization
 
 import distantlands.model.{DecisionAnswer, DecisionOptionRef, DecisionPlacement,
-  DistributeAmount}
+  DistributeAmount, PlayerId}
 import distantlands.serialization.WireError.InvalidValue
 
 /** Journal wire form of a walker [[DecisionAnswer]].
@@ -32,6 +32,9 @@ private[serialization] object DecisionAnswerCodec:
   private val ProposeTermsTag = "propose-terms"
   private val AcceptDealTag = "accept-deal"
   private val DeclineDealTag = "decline-deal"
+  private val OpenDealTag = "open-deal"
+  private val PassGatheringTag = "pass-gathering"
+  private val UnpassGatheringTag = "unpass-gathering"
 
   def encode(answer: DecisionAnswer): ujson.Value = answer match
     case DecisionAnswer.ChooseOneAnswer(selected) => ujson.Obj(
@@ -54,6 +57,12 @@ private[serialization] object DecisionAnswerCodec:
       "kind" -> ProposeTermsTag, "terms" -> NegotiationTermsCodec.encode(terms))
     case DecisionAnswer.AcceptDeal => ujson.Obj("kind" -> AcceptDealTag)
     case DecisionAnswer.DeclineDeal => ujson.Obj("kind" -> DeclineDealTag)
+    case DecisionAnswer.OpenDeal(players) => ujson.Obj(
+      "kind" -> OpenDealTag,
+      "players" -> ujson.Arr.from(players.map(p => ujson.Str(p.value))))
+    case DecisionAnswer.PassGathering => ujson.Obj("kind" -> PassGatheringTag)
+    case DecisionAnswer.UnpassGathering =>
+      ujson.Obj("kind" -> UnpassGatheringTag)
 
   def decode(value: ujson.Value,
       path: String): Either[WireError, DecisionAnswer] =
@@ -90,6 +99,10 @@ private[serialization] object DecisionAnswerCodec:
         s"$path.terms").map(DecisionAnswer.ProposeTerms.apply)
       case AcceptDealTag => Right(DecisionAnswer.AcceptDeal)
       case DeclineDealTag => Right(DecisionAnswer.DeclineDeal)
+      case OpenDealTag => Right(DecisionAnswer.OpenDeal(
+        value("players").arr.toVector.map(v => PlayerId(v.str))))
+      case PassGatheringTag => Right(DecisionAnswer.PassGathering)
+      case UnpassGatheringTag => Right(DecisionAnswer.UnpassGathering)
       case other => Left(InvalidValue(s"$path.kind",
         s"unknown walker decision answer '$other'"))
 

@@ -101,6 +101,13 @@ private[operations] object BoardControlOperations:
                 Some(destination))))
           else (Vector(InsufficientPieces(Piece.Banner(banner), from, 0)),
             state)
+    // Back to the shared bank, which holds a banner nobody holds.
+    case (Location.PlayArea(source), Location.SharedBank) =>
+      val holder = state.bannerHolders.getOrElse(banner, None)
+      if !holder.contains(source) then
+        (Vector(MissingPiece(Piece.Banner(banner), from)), state)
+      else (Vector.empty, state.copy(
+        bannerHolders = state.bannerHolders.updated(banner, None)))
     case _ =>
       (Vector(IncompatibleLocation(Piece.Banner(banner), to)), state)
 
@@ -139,14 +146,58 @@ private[operations] object BoardControlOperations:
       case (Location.SharedBank, Location.PlayArea(destination)) =>
         playerState(ready, destination).map(_ =>
           setBannerHolder(ready, banner, destination))
+      case (Location.PlayArea(_), Location.SharedBank) =>
+        Right(holdBanner(ready, banner, None))
       case _ => Left(IncompatibleLocation(Piece.Banner(banner), to))
+
+  /** The festival marker over `site`, or off the map. It goes only on a
+    * site on the map, only while the Festival face is up, and comes off
+    * only when it is on the map. */
+  def setFestivalMarker(ready: ReadyGame, site: Option[SiteId])
+      : Either[OperationError, ReadyGame] =
+    val secret = ready.game.current.banners.darkestSecret
+    site match
+      case Some(at) if !ready.game.current.map.inPlay.contains(at) =>
+        Left(UnknownSite(at))
+      case Some(_) if secret.active != DarkestSecretFace.Festival =>
+        Left(InvalidDescription(
+          "the festival marker is placed only on the Festival face"))
+      case None if secret.festival.isEmpty =>
+        Left(InvalidDescription("the festival marker is not on the map"))
+      case _ => Right(ready.updateCurrent(current => current.copy(
+        banners = current.banners.copy(darkestSecret =
+          secret.copy(festival = site)))))
+
+  /** `banner` on its other face; the Festival marker comes off with the
+    * Festival face (Legacy in-play powers ruling 20). */
+  def flipBanner(ready: ReadyGame, banner: Banner): ReadyGame =
+    ready.updateCurrent(current => current.copy(banners = banner match
+      case Banner.PeoplesFavor =>
+        val held = current.banners.peoplesFavor
+        current.banners.copy(peoplesFavor = held.copy(active =
+          held.active match
+            case PeoplesFavorFace.Mob => PeoplesFavorFace.GrandCouncil
+            case PeoplesFavorFace.GrandCouncil => PeoplesFavorFace.Mob))
+      case Banner.DarkestSecret =>
+        val held = current.banners.darkestSecret
+        current.banners.copy(darkestSecret = held.active match
+          case DarkestSecretFace.WanderingFlame =>
+            held.copy(active = DarkestSecretFace.Festival)
+          case DarkestSecretFace.Festival =>
+            held.copy(active = DarkestSecretFace.WanderingFlame,
+              festival = None))))
 
   private def setBannerHolder(ready: ReadyGame, banner: Banner,
       player: PlayerId): ReadyGame =
+    holdBanner(ready, banner, Some(player))
+
+  /** `banner` held by `holder`, or by nobody, in the shared bank. */
+  private def holdBanner(ready: ReadyGame, banner: Banner,
+      holder: Option[PlayerId]): ReadyGame =
     val current = ready.game.current
     val banners = banner match
       case Banner.PeoplesFavor => current.banners.copy(
-        peoplesFavor = current.banners.peoplesFavor.copy(holder = Some(player)))
+        peoplesFavor = current.banners.peoplesFavor.copy(holder = holder))
       case Banner.DarkestSecret => current.banners.copy(
-        darkestSecret = current.banners.darkestSecret.copy(holder = Some(player)))
+        darkestSecret = current.banners.darkestSecret.copy(holder = holder))
     ready.copy(game = ready.game.copy(current = current.copy(banners = banners)))

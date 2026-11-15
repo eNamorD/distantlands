@@ -2,8 +2,8 @@ package distantlands.frontend
 
 import distantlands.protocol.{ChronicleConvertRequest,
   ChronicleConvertRequestCodec, ChronicleConvertResponse,
-  ChronicleConvertResponseCodec, ChronicleEntry, ChronicleScore,
-  ChronicleSummary, ChronicleEntryCodec}
+  ChronicleConvertResponseCodec, ChronicleEntry, ChronicleFoundation,
+  ChronicleScore, ChronicleSummary, ChronicleEntryCodec}
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Future
 
@@ -22,6 +22,22 @@ private[frontend] object ChronicleFixtures:
       digest,
       ChronicleSummary(name, game, 20, Vector(
         ChronicleScore("red-lineage", 9), ChronicleScore("blue-lineage", 6))))
+
+  /** `entry` listing the six foundations, those numbered in `altered` on
+    * their altered face. */
+  def listingFoundations(entry: ChronicleEntry, altered: Int*)
+      : ChronicleEntry =
+    val faces = Vector("Imperial Maps" -> "Wide Horizons",
+      "Powerful Tribes" -> "Movers and Shakers",
+      "Quiet Ambitions" -> "Public Ambitions",
+      "Ties of Fellowship" -> "Teeming World",
+      "Mob's Favor" -> "Grand Council", "Wandering Flame" -> "Festival")
+    entry.copy(summary = entry.summary.copy(foundations =
+      faces.zipWithIndex.map { case ((normal, turned), index) =>
+        if altered.contains(index + 1) then
+          ChronicleFoundation(index + 1, "altered", turned)
+        else ChronicleFoundation(index + 1, "normal", normal)
+      }))
 
   def converted(entry: ChronicleEntry, tts: Option[String] = None)
       : TransportResponse =

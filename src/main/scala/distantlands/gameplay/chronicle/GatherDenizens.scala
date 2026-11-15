@@ -1,6 +1,7 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
 import distantlands.model._
 
 /** Gather Denizens, the World's second step (CR p. 38). Every adviser and
@@ -11,6 +12,9 @@ object GatherDenizens:
   val dealt: Int = 9
 
   def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
+    // Oaths of Loyalty's holder first keeps up to three faceup advisers
+    // (Legacy Chronicle powers design, ruling 15); the rest gather.
+    Branch((state, _) => OathsOfLoyalty.keep(catalog, state)),
     BuildOps((state, _) => Right(gatherAdvisers(catalog, state)),
       required = true),
     BuildOps((state, _) => Right(gatherDiscards(state)), required = true),
@@ -23,22 +27,29 @@ object GatherDenizens:
   private def gatherAdvisers(catalog: ExecutableCatalog, state: ReadyGame)
       : Vector[CoreOperation] =
     state.game.current.players.flatMap(player => player.advisers.collect {
-      case DenizenState(id, _, tokens) =>
-        val onCard = PositionedLocation(Location.OnCard(id))
-        val favor = catalog.denizen(id).filter(_ => tokens.favor > 0).map(
-          denizen => Move(Piece.Favor(tokens.favor), onCard,
-            PositionedLocation(Location.FavorBank(denizen.suit))))
-        // Returned secrets land faceup and turn facedown, as a discard's do.
-        val secrets =
-          if tokens.secrets == 0 then Vector.empty
-          else Vector(Move(Piece.Secrets(tokens.secrets), onCard,
-            PositionedLocation(Location.PlayArea(player.player))),
-            FlipSecrets(player.player, tokens.secrets, SecretSide.FaceUp,
-              SecretSide.FaceDown))
-        favor.toVector ++ secrets ++ Vector(Move(Piece.Card(id),
+      case card: DenizenState =>
+        returnTokens(catalog, player.player, card) :+ Move(Piece.Card(card.id),
           PositionedLocation(Location.PlayArea(player.player)),
-          PositionedLocation(Location.CardGathering)))
+          PositionedLocation(Location.CardGathering))
     }.flatten)
+
+  /** An adviser's tokens back to their banks: favor to its suit's bank,
+    * secrets to its holder, facedown. Gather Denizens and Oaths of
+    * Loyalty's keep both return them. */
+  def returnTokens(catalog: ExecutableCatalog, player: PlayerId,
+      card: DenizenState): Vector[CoreOperation] =
+    val onCard = PositionedLocation(Location.OnCard(card.id))
+    val favor = catalog.denizen(card.id).filter(_ => card.tokens.favor > 0)
+      .map(denizen => Move(Piece.Favor(card.tokens.favor), onCard,
+        PositionedLocation(Location.FavorBank(denizen.suit))))
+    // Returned secrets land faceup and turn facedown, as a discard's do.
+    val secrets =
+      if card.tokens.secrets == 0 then Vector.empty
+      else Vector[CoreOperation](Move(Piece.Secrets(card.tokens.secrets),
+          onCard, PositionedLocation(Location.PlayArea(player))),
+        FlipSecrets(player, card.tokens.secrets, SecretSide.FaceUp,
+          SecretSide.FaceDown))
+    favor.toVector ++ secrets
 
   private def gatherDiscards(state: ReadyGame): Vector[CoreOperation] =
     Region.all.flatMap(region =>

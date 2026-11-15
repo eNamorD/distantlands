@@ -41,19 +41,25 @@ final case class RelicState(
 
 final case class LegacyState(id: LegacyId, active: Boolean) extends CardState
 
-enum Region(val key: String):
-  case Cradle extends Region("cradle")
-  case Provinces extends Region("provinces")
-  case Hinterland extends Region("hinterland")
+/** A region of the map. `slots` is the number of sites it has room for
+  * (rulebook, "The Map at Large"). */
+enum Region(val key: String, val slots: Int):
+  case Cradle extends Region("cradle", 2)
+  case Provinces extends Region("provinces", 3)
+  case Hinterland extends Region("hinterland", 3)
 object Region:
   val all: Vector[Region] = Vector(Cradle, Provinces, Hinterland)
 
+/** The shared card piles of a game. The legacy deck is not stored: it is
+  * every legacy no lineage holds and the public row does not show
+  * (Legacies design, ruling 3), and every legacy draw happens at game
+  * start. `publicLegacies` is the Public Ambitions row, faceup. */
 final case class CardZones(
     worldDeck: Vector[WorldCardId],
     relicDeck: Vector[RelicId],
     edificeDeck: Vector[EdificeId],
-    legacyDeck: Vector[LegacyId],
-    regionalDiscards: Map[Region, Vector[WorldCardId]]
+    regionalDiscards: Map[Region, Vector[WorldCardId]],
+    publicLegacies: Vector[LegacyId] = Vector.empty
 ):
   def discard(region: Region): Vector[WorldCardId] =
     regionalDiscards.getOrElse(region, Vector.empty)

@@ -31,6 +31,12 @@ object CardPlay:
   def homelandSuit(catalog: ExecutableCatalog, site: SiteId): Option[Suit] =
     catalog.site(site).flatMap(_.homeland)
 
+  /** Whether `player` may reveal a Vision onto a Vision space: Exiles can,
+    * and the Chancellor and Citizens, whose Imperial boards have none,
+    * cannot. */
+  def hasVisionSpace(ready: ReadyGame, player: PlayerId): Boolean =
+    Imperials.role(ready, player).forall(_.hasVisionSlot)
+
   /** The region whose discard pile takes a card `player` discards in a play:
     * the one after their pawn's. */
   def discardRegion(ready: ReadyGame, player: PlayerId): Option[Region] =
@@ -152,7 +158,7 @@ object CardPlay:
         if !FirstGameRulesData.visions.contains(id) then Left(UnknownWorldCard(id))
         else if orientation == Orientation.FaceUp &&
             id != VisionRules.Conspiracy &&
-            !Imperials.role(ready, player.player).forall(_.hasVisionSlot) then
+            !hasVisionSpace(ready, player.player) then
           Left(InvalidSearchPlacement("an Imperial board has no Vision slot"))
         else planVision(ready, player, origin, id, orientation, replace)
 

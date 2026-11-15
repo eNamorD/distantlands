@@ -1,5 +1,6 @@
 package distantlands.model
 
+import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.operations.HallOfMinistersCard
 import distantlands.gameplay.powers.campaign.WrestlersCard
@@ -17,6 +18,22 @@ class DecisionOptionRefSuite extends munit.FunSuite:
 
   test("an edifice reference is presentable from the reference alone"):
     assertEquals(DecisionOption.forRef(hall), Some(DecisionOption.Edifice(hall)))
+
+  private val seer = DecisionOptionRef.Legacy(SeerCard.id)
+
+  test("a legacy reference spells itself as a kind and id pair, parses " +
+      "back and is presentable from the reference alone"):
+    assertEquals((seer.kind, seer.wireId), ("legacy", "L22"))
+    assertEquals(DecisionOptionRef.fromWire(seer.kind, seer.wireId),
+      Some(seer))
+    assertEquals(DecisionOption.forRef(seer), Some(DecisionOption.Legacy(seer)))
+
+  test("a legacy names itself as a card option and as a power source, and " +
+      "back (in-play powers ruling 6)"):
+    assertEquals(DecisionOptionRef.ofCard(SeerCard.id), Some(seer))
+    assertEquals(DecisionOptionRef.cardOf(seer), Some(SeerCard.id))
+    assertEquals(PowerSourceRef.of(seer),
+      Some(PowerSourceRef.Card(SeerCard.id)))
 
   private val slot = DecisionOptionRef.RelicSlot(PlayerId("blue"), 2)
   private val banner =

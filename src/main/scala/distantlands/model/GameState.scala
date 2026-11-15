@@ -35,7 +35,8 @@ final case class LineageState(
     legacies: Vector[LegacyState],
     startingAdvisers: Vector[AdviserState],
     /** Relics the lineage keeps between games, as the TTS player section
-      * stores them. Nothing creates them until Legacies. */
+      * stores them. Game start hands a seated lineage's to its player
+      * facedown; no rule yet creates them (Heirloom, a legacy power, will). */
     startingRelics: Vector[RelicId] = Vector.empty
 )
 
@@ -75,8 +76,26 @@ final case class CampaignState(
     evolved: Option[Chronicle] = None,
     // Roles this Chronicle gave to lineages nobody seated, which the
     // baseline holds (Crown Chancellor: "even in the box", CR p. 36).
-    boxRoles: Map[LineageId, Role] = Map.empty
-)
+    boxRoles: Map[LineageId, Role] = Map.empty,
+    // Setup With No Empire discards the Reliquary until the Chronicle
+    // Phase: its relics stay in `reliquary`, no one can take one in play,
+    // and Crown Chancellor discards them whoever wins (Foundations ruling
+    // 3).
+    reliquarySetAside: Boolean = false,
+    // The Chronicle as `GameStarted` carried it, when game start changed it
+    // into `baseline`: a first game played exile-only wipes its stored
+    // legacies (Legacy Setup powers R40). The projection's starting digest
+    // is this one's, so a browser still matches its saved entry.
+    saved: Option[Chronicle] = None
+):
+  /** The Chronicle the game was started from, as saved. */
+  def savedChronicle: Chronicle = saved.getOrElse(baseline)
+
+  /** The Reliquary's relics a player may take in play: none while the
+    * Reliquary is set aside. Every taker reads this, never `reliquary`,
+    * which the card index and the Chronicle Phase read whole. */
+  def reliquaryInPlay: Vector[RelicId] =
+    if reliquarySetAside then Vector.empty else reliquary
 
 /** `key` is the phase's wire spelling, carried here rather than in a codec
   * because the phase is now a journalled value: `EnterPhase` records a phase
@@ -131,6 +150,7 @@ object PowerSourceRef:
     case DecisionOptionRef.Relic(id) => Some(Card(id))
     case DecisionOptionRef.Vision(id) => Some(Card(id))
     case DecisionOptionRef.Edifice(id) => Some(Card(id))
+    case DecisionOptionRef.Legacy(id) => Some(Card(id))
     case DecisionOptionRef.Site(id) => Some(Site(id))
     case DecisionOptionRef.Banner(banner) => Some(Banner(banner))
     case _ => None
@@ -171,6 +191,10 @@ final case class GameTracks(
   require(round <= 8, "round must be eight or less")
   require(visionsDrawn >= 0, "Visions Drawn must be non-negative")
 
+/** A prediction Conspirator's holder wrote down: the round the game will
+  * end in and who will win (Legacy in-play powers ruling 25). */
+final case class Prediction(round: Int, winner: PlayerId)
+
 enum VictoryKind(val key: String):
   case Usurper extends VictoryKind("usurper")
   case Visionary extends VictoryKind("visionary")
@@ -184,6 +208,9 @@ enum VictoryKind(val key: String):
   /** A Citizen's win in the Chancellor's place (Successor to the
     * Chancellor). */
   case Successor extends VictoryKind("successor")
+  /** Conspirator's holder's win, when they wrote down the round the game
+    * ended in and its final winner (Legacy in-play powers ruling 27). */
+  case Conspirator extends VictoryKind("conspirator")
 
 /** `visions` is a Visionary win's qualifying Visions, which Swear an Oath
   * reads (catalog batch 11, ruling 30); empty for every other win. */
@@ -219,6 +246,9 @@ final case class CurrentGameState(
     setAsideEdifices: Vector[EdificeId] = Vector.empty,
     // Who holds each Chronicle task card (Assign Tasks, CR p. 36).
     chronicleTasks: Map[ChronicleTask, PlayerId] = Map.empty,
+    // The legacies scored this game, which no later scoring counts again
+    // (Legacy Chronicle powers design, ruling 8).
+    scoredLegacies: Set[LegacyId] = Set.empty,
     // Cards gathered for a shuffle: the World task's dealt denizens (CR p.
     // 38), stack by stack, the facedown stack last when the protected stack
     // leaves; or the discard piles Autumn Wind deals out again.
@@ -299,7 +329,18 @@ final case class CurrentGameState(
     // (catalog batch 10, slice 14). Not walker scratch: it outlives the
     // turn, and the holder's next End Wake clears it. Public, as the choice
     // was made openly.
-    trackedPawns: Map[PlayerId, PlayerId] = Map.empty
+    trackedPawns: Map[PlayerId, PlayerId] = Map.empty,
+    // Arbiter's modifier, chosen before the end die and read by the roll,
+    // which clears it (Legacy in-play powers ruling 21; R11). A round that
+    // ends without a roll consuming it clears it too, so none outlives its
+    // round. Public, as the choice was made openly.
+    endDieModifier: Int = 0,
+    // Conspirator's predictions, by holder: hidden information, written at
+    // the holder's first Wake and read by `ChronicleWinnerProcedure`, after
+    // Royal Line's choice and before Start Chronicle, which clears it
+    // (Legacy in-play powers rulings 25-27; R36). Never projected; the
+    // holder reads it in their own log line.
+    predictions: Map[PlayerId, Prediction] = Map.empty
 ):
   /** The warbands of `kind` on `card`. */
   def warbandsOn(card: CardId, kind: ForceKind): Int =

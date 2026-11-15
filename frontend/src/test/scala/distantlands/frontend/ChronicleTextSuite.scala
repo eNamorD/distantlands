@@ -1,6 +1,7 @@
 package distantlands.frontend
 
-import distantlands.protocol.ChronicleSummary
+import distantlands.protocol.{ChronicleLegacy, ChronicleScore,
+  ChronicleSummary}
 
 class ChronicleTextSuite extends munit.FunSuite:
   test("lineage names a generated lineage by its color"):
@@ -22,3 +23,12 @@ class ChronicleTextSuite extends munit.FunSuite:
     assertEquals(ChronicleText.rowDetails(SavedChronicle(
       ChronicleFixtures.entry("A"), ChronicleFixtures.savedAt)),
       "Game 1 · Era: 20 to win · saved 2026-10-29")
+
+  test("a lineage's line names its score and legacies, the dormant ones " +
+      "marked (R39)"):
+    assertEquals(ChronicleText.lineageLine(ChronicleScore("red-lineage", 9,
+      legacies = Vector(ChronicleLegacy("Seer", active = true),
+        ChronicleLegacy("Iron Hand", active = false)))),
+      "Red 9 · Seer, Iron Hand (dormant)")
+    assertEquals(ChronicleText.lineageLine(ChronicleScore("blue-lineage", 6)),
+      "Blue 6")

@@ -33,8 +33,37 @@ class PanelPlacementSuite extends munit.FunSuite:
       oath.copy(goal = "supremacy", holderPlayerId = None)))
     val status = Dom.firstMatch(world(value), ".shared-bank .oathkeeper-status")
       .getOrElse(fail("no oath line in the shared bank"))
-    assertEquals(Dom.all(status, "span").map(_.textContent),
+    assertEquals(Dom.all(status, ":scope > *").map(_.textContent),
       Vector("Oathkeeper of Supremacy", "Oathkeeper: unheld"))
+
+  /** The Oath is a printed card the table shows as words, so its goal opens
+    * the overlay at the card's real ratio (implementation ruling R2). The
+    * holder's line is state, not the card, and stays text. */
+  test("the oath's goal opens its card with the Oath goal's plate"):
+    var opened = Vector.empty[(String, Vector[String], Option[String])]
+    CardInspection.onOpen:
+      case CardInspection.Request.Text(title, lines, _, plate) =>
+        opened :+= (title, lines, plate)
+      case _ => ()
+    val status = Dom.one(world(projection()), ".shared-bank .oathkeeper-status")
+    Dom.one(status, ".oathkeeper-goal").asInstanceOf[dom.html.Button].click()
+    CardInspection.clear()
+    assertEquals(opened, Vector(("Oathkeeper of Supremacy",
+      Vector("Rules the most sites",
+        "Successor to the Chancellor: Holds more relics"),
+      Some("oath-goal"))))
+    assertEquals(Dom.one(status, ".oathkeeper-holder").tagName, "SPAN")
+
+  test("a goal the table does not know opens as its key, with no lines"):
+    var opened = Vector.empty[(String, Vector[String])]
+    CardInspection.onOpen:
+      case CardInspection.Request.Text(title, lines, _, _) =>
+        opened :+= title -> lines
+      case _ => ()
+    Dom.one(world(projection(oathkeeper = Some(oath.copy(goal = "unknown")))),
+      ".oathkeeper-goal").asInstanceOf[dom.html.Button].click()
+    CardInspection.clear()
+    assertEquals(opened, Vector("unknown" -> Vector.empty))
 
   /** The goal is projected, so the panel prints the oath actually in play
     * rather than the one the first game happens to start with.
@@ -45,18 +74,32 @@ class PanelPlacementSuite extends munit.FunSuite:
       ".shared-bank .oathkeeper-goal").map(_.textContent),
       Some("Oathkeeper of the People"))
 
+  test("the foundations close the shared bank, and a projection with " +
+      "none draws no strip"):
+    val foundations = Vector(
+      distantlands.protocol.projection.FoundationProjection(1, "normal",
+        "Imperial Maps", "Fill the map."),
+      distantlands.protocol.projection.FoundationProjection(3, "altered",
+        "Public Ambitions", "Deal 4 legacy cards."))
+    val bank = Dom.firstMatch(world(projection().copy(
+      foundations = foundations)), ".shared-bank")
+      .getOrElse(fail("no shared bank"))
+    assertEquals(bank.lastElementChild.getAttribute("class"), "foundations")
+    assertEquals(Dom.all(bank, ".foundation-name").map(_.textContent),
+      Vector("Imperial Maps", "Public Ambitions"))
+    assertEquals(Dom.all(world(projection()), ".foundations").size, 0)
+
   /** Beside the regions rather than under them: the map pane is wider than
     * it is tall, so a column costs nothing at fit and a row below costs the
     * whole map's scale.
     */
-  test("the shared bank stands beside the regions and their favor banks"):
-    val layout = Dom.firstMatch(world(projection()), ".world-layout")
-      .getOrElse(fail("no world layout"))
-    val columns = (0 until layout.children.length).map(layout.children(_))
-    assertEquals(columns.map(_.getAttribute("class")), Vector("world-main", "shared-bank"))
-    val main = columns.head
-    assertEquals((0 until main.children.length).map(main.children(_).getAttribute("class")),
-      Vector("regions", "favor-banks"))
+  test("the shared bank stands on the table's edge, under the mat"):
+    val panel = world(projection())
+    assertEquals(Dom.all(panel, ":scope > div").map(_.getAttribute("class")),
+      Vector("mat-board", "table-edge"))
+    assertEquals(Dom.all(Dom.one(panel, ".mat-board"), ":scope > *")
+      .map(_.getAttribute("class")), Vector("regions", "favor-banks"))
+    assertEquals(Dom.all(panel, ".table-edge > .shared-bank").size, 1)
 
   test("the usurper notice sits under the round tracker, at the projected round"):
     val round4 = projection(trackState =
@@ -102,3 +145,18 @@ class PanelPlacementSuite extends munit.FunSuite:
     assertEquals(Dom.all(panel, ".site-resources"), Vector.empty)
     assert(!panel.textContent.contains("loose wealth"), panel.textContent)
     assert(!panel.textContent.contains("Usurper"), panel.textContent)
+
+  /** The far zoomed-out map hides the tracker's words, so the lock is also
+    * in the tracker's name and on the limiter mark's hover note. */
+  test("the round tracker's name and the limiter mark state the lock"):
+    val tracker = Dom.one(world(projection(trackState =
+      Some(tracks.copy(usurperLimited = true, limiterRound = 4)))),
+      ".round-tracker")
+    assert(tracker.getAttribute("aria-label")
+      .contains("Usurper locked until round 4"),
+      tracker.getAttribute("aria-label"))
+    assertEquals(Dom.one(tracker, ".limiter-marker")
+      .getAttribute(HoverTip.Attribute), "Usurper locked until round 4")
+    val open = Dom.one(world(projection(trackState =
+      Some(tracks.copy(usurperLimited = false)))), ".round-tracker")
+    assert(!open.getAttribute("aria-label").contains("Usurper"))

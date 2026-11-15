@@ -83,13 +83,16 @@ class TableSuite extends munit.FunSuite:
     assertEquals((look.favor(p1), look.faceUpSecrets(p1), look.boardWarbands(p1),
       look.supply(p1)), (1, 1, 3, 7))
 
-  test("the quiet table holds exactly the cards the game started with"):
+  test("the quiet table holds exactly the cards the game started with, " +
+      "except the legacies Foundation III dealt"):
     // Starts the game from the Chronicle: the start it was built from is the
-    // thing compared.
+    // thing compared. The quiet table returns the dealt legacies to the
+    // derived deck, where no card is indexed.
     val started = accepted(GameStartRules.evolve(catalog,
       FirstGameSetupFixture.chronicle, FirstGameSetupFixture.orders))
     assertEquals(accepted(CardIndex.from(Table.start.ready.game)).ids,
-      accepted(CardIndex.from(started.game)).ids)
+      accepted(CardIndex.from(started.game)).ids
+        .filterNot(_.isInstanceOf[LegacyId]))
 
   test("placing a card takes it out of the zone that held it"):
     // Threatening Roar tops the quiet table's world deck.
@@ -224,6 +227,14 @@ class TableSuite extends munit.FunSuite:
     // a bank of 6 takes 2 of them.
     val returned = Table.start.boardWarbands(p1, 10).warbandsInBank(p1, 6)
     assertEquals(Look(returned.ready).boardWarbands(p1), 8)
+
+  test("foundation turns one setup card and leaves the other five"):
+    val table = Table.start.foundation(FoundationNumber.III,
+      FoundationFace.Altered)
+    assertEquals(table.ready.game.campaign.foundations,
+      Table.start.ready.game.campaign.foundations.updated(
+        FoundationNumber.III,
+        FoundationState(FoundationFace.Altered, Set.empty)))
 
   test("each step states one fact"):
     val ready = Table.start
@@ -410,3 +421,25 @@ class TableSuite extends munit.FunSuite:
       Vector[WorldCardId](DazzleCard.id, ScryerCard.id))
     assertEquals(ready.game.current.commonCards.worldDeck.lastOption,
       Some(EldersCard.id))
+
+  test("a map cut into the Atlas keeps its first sites and stores the " +
+      "rest, the first one cut at the Recent end, and a stored card leaves " +
+      "its zone"):
+    import distantlands.gameplay.powers.setup.GreatMarketCard
+    val whole = Table.start.ready.game.current.map.hinterward
+    val table = Table.start.mapCutIntoAtlas(3)
+      .storedInAtlas(whole(3), GreatMarketCard, EldersCard, StickyFireCard)
+    val ready = table.ready
+    assertEquals(ready.game.current.map.hinterward, whole.take(3))
+    assertEquals(ready.game.campaign.atlas.sites.map(_.id), whole.drop(3))
+    assertEquals(ready.game.campaign.atlas.site(AtlasEnd.Recent),
+      Some(AtlasEntry.StoredSite(whole(3),
+        Vector(DenizenState(EldersCard.id, Orientation.FaceUp, Tokens.empty)),
+        Vector(RelicState(StickyFireCard.id, Orientation.FaceDown,
+          Tokens.empty)), Some(GreatMarketCard.id))))
+    val zones = ready.game.current.commonCards
+    assert(!zones.edificeDeck.contains(GreatMarketCard.id))
+    assert(!zones.worldDeck.contains(EldersCard.id))
+    assert(!zones.relicDeck.contains(StickyFireCard.id))
+    intercept[munit.FailException](
+      Table.start.storedInAtlas(whole(3), EldersCard))

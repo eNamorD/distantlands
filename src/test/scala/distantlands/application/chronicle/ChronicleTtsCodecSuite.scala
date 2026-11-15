@@ -1,14 +1,16 @@
 package distantlands.application.chronicle
 
 import distantlands.application.FirstGameBootstrapMapper.lineageOf
-import distantlands.catalog.holding.{ArbiterCard, LightFingersCard}
+import distantlands.gameplay.phases.rest.ArbiterCard
+import distantlands.gameplay.powers.wake.LightFingersCard
 import distantlands.gameplay.actions.challenge.SigilOfTheEyeCard
 import distantlands.gameplay.powers.search.CrackedHornCard
 import distantlands.gameplay.SpitefulMirrorCard
 import distantlands.gameplay.powers.action.WhistleCard
 import distantlands.gameplay.powers.campaign.ScoutsCard
 import distantlands.gameplay.powers.cardplay.LostTapestryCard
-import distantlands.gameplay.setup.FirstGameSetupFixture
+import distantlands.gameplay.setup.{EmpireSetupRules, FirstGameSetupFixture,
+  GameStartRules, SetupMode}
 import distantlands.model._
 
 /** TTS strings to and from Chronicles (Chronicle TTS codec design). */
@@ -96,6 +98,27 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
       FoundationNumber.VI).map(_ -> FoundationState(FoundationFace.Altered,
         Set.empty)).toMap)
     assertEquals(roundTripped(altered), altered)
+
+  test("an imported mask's altered face reaches the game its Chronicle " +
+      "starts"):
+    // Bit 2 is Foundation III, the one altered face game start accepts.
+    val imported = codec.fromTts(TtsChronicle(foundations =
+      Some(TtsFoundations(1 << 2, None))), "Imported").fold(fail(_), identity)
+    val altered = FoundationState(FoundationFace.Altered, Set.empty)
+    assertEquals(imported.foundations, Map(FoundationNumber.III -> altered))
+    val ready = GameStartRules.evolve(FirstGameSetupFixture.catalog,
+      chronicle.copy(foundations = imported.foundations),
+      FirstGameSetupFixture.orders).fold(
+        refusal => fail(s"game start refused: $refusal"), identity)
+    assertEquals(ready.game.campaign.foundations(FoundationNumber.III),
+      altered)
+
+  test("a brand-new Chronicle's TTS string, mask 0, lists no face and " +
+      "decodes to a first game"):
+    val decoded = roundTripped(chronicle)
+    assertEquals(decoded.foundations, Map.empty)
+    assertEquals(EmpireSetupRules.resolve(FirstGameSetupFixture.catalog,
+      decoded, FirstGameSetupFixture.orders), Right(SetupMode.FirstGame))
 
   test("a version 3 goal digit of 0 reads as Supremacy"):
     val unset = TtsChronicle(foundations = Some(TtsFoundations(0, Some(0))))

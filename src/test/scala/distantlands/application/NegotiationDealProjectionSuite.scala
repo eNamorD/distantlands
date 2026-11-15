@@ -1,19 +1,25 @@
 package distantlands.application
 
 import distantlands.gameplay.{GrandMaskCard, OathRules}
-import distantlands.gameplay.actions.negotiation.NegotiationDeal
+import distantlands.gameplay.actions.negotiation.{CouncilArbiterCard,
+  DeedWriterCard,
+  NegotiationDeal, TheTribunalCard}
 import distantlands.gameplay.cards.{BrokenPeaksSite, DunesSite}
 import distantlands.gameplay.operations.TheGrandScepterCard
-import distantlands.gameplay.powers.action.BrassHorseCard
+import distantlands.gameplay.powers.action.{BrassHorseCard, WhisperingStone,
+  WhisperingStoneCard}
 import distantlands.gameplay.powers.campaign.StickyFireCard
+import distantlands.gameplay.powers.economy.BirdsongCard
+import distantlands.gameplay.powers.rest.SilverTongueCard
 import distantlands.gameplay.powers.search.TruthfulHarpCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{AcceptDeal, ChooseManyAnswer, ProposeTerms}
 import distantlands.protocol.projection.{DecisionQueryProjection,
   NegotiationCitizenshipProjection,
-  GameProjection, NegotiationDealProjection}
-import distantlands.testkit.{MenuPlay, Table}
+  GameProjection, NegotiationDealProjection, NegotiationPromiseProjection,
+  NegotiationSiteProjection}
+import distantlands.testkit.{ActPowerHarness, MenuPlay, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 
 /** What each viewer of a parked deal is shown. */
@@ -155,3 +161,154 @@ class NegotiationDealProjectionSuite extends munit.FunSuite:
     Vector(p1, p2, p3).foreach(viewer => assertEquals(
       deal(view(state, viewer)).citizenship,
       Vector(NegotiationCitizenshipProjection("p1", "p2")), viewer.value))
+
+  test("every viewer reads every promise; the binding box stays closed"):
+    val terms = NegotiationTerms(promises = Vector("I will not attack you."))
+    val state = parkedDeal(gathered, Vector(p2), Some(terms))
+    Vector(p1, p2, p3).foreach { viewer =>
+      assertEquals(deal(view(state, viewer)).promises, Vector(
+        NegotiationPromiseProjection(p1.value, "I will not attack you.",
+          binding = false)), viewer.value)
+    }
+    val public = projector.projectPublic("negotiation", LoadedGame(state, 30))
+    assertEquals(deal(public).promises.map(_.text),
+      Vector("I will not attack you."))
+    val editing = deal(view(state, p2)).editing.getOrElse(fail("editing"))
+    assert(!editing.bindingPromisesOpen)
+
+  test("with The Tribunal in reach, every author's editing opens binding " +
+      "promises"):
+    val state = parkedDeal(gathered.edifice(TheTribunalCard,
+      EdificeSide.Intact, at = site), who = Vector(p2))
+    Vector(p1, p2).foreach { viewer =>
+      val editing = deal(view(state, viewer)).editing
+        .getOrElse(fail(s"${viewer.value} edits"))
+      assert(editing.bindingPromisesOpen, viewer.value)
+    }
+
+  test("a facedown adviser on offer is named to its author and counted " +
+      "for everyone else"):
+    val birdsong: WorldCardId = BirdsongCard.id
+    val table = gathered.adviser(p1, CouncilArbiterCard.id)
+      .adviser(p1, BirdsongCard.id, facedown = true)
+    val state = parkedDeal(table, who = Vector(p2, p3), terms = Some(
+      NegotiationTerms(Vector(NegotiationTransfer(p2, 0, Vector.empty,
+        Vector(birdsong))))))
+    val own = deal(view(state, p1)).transfers.head
+    assertEquals((own.adviserCount, own.advisers.map(_.cardId)),
+      (1, Vector(birdsong.value)))
+    Vector(p2, p3).foreach { viewer =>
+      val seen = deal(view(state, viewer)).transfers.head
+      assertEquals((seen.adviserCount, seen.advisers), (1, Vector.empty),
+        viewer.value)
+    }
+
+  test("the editor offers each author's movable advisers to the recipients " +
+      "the rules allow"):
+    val table = gathered.adviser(p1, CouncilArbiterCard.id)
+    val state = parkedDeal(table, who = Vector(p2, p3))
+    val p1Editing = deal(view(state, p1)).editing.getOrElse(fail("editing"))
+    assertEquals(p1Editing.giftableAdvisers.map(_.cardId),
+      Vector(CouncilArbiterCard.id.value))
+    assertEquals(p1Editing.adviserRecipients, Vector(p2.value, p3.value))
+    val p2Editing = deal(view(state, p2)).editing.getOrElse(fail("editing"))
+    assertEquals(p2Editing.adviserRecipients, Vector(p1.value))
+
+  test("terms over an adviser limit are projected with who they leave over"):
+    // p2 holds Silver Tongue faceup (a limit of 2) and Birdsong; p1 offers
+    // them Council Arbiter.
+    val table = gathered.adviser(p1, CouncilArbiterCard.id)
+      .adviser(p2, SilverTongueCard.id)
+      .adviser(p2, BirdsongCard.id, facedown = true)
+    val state = parkedDeal(table, who = Vector(p2), terms = Some(
+      NegotiationTerms(Vector(NegotiationTransfer(p2, 0, Vector.empty,
+        Vector(CouncilArbiterCard.id))))))
+    Vector(p1, p2).foreach { viewer =>
+      val editing = deal(view(state, viewer)).editing.getOrElse(fail("editing"))
+      assertEquals(editing.overAdviserLimit, Vector(p2.value), viewer.value)
+      assert(!editing.canAccept, viewer.value)
+    }
+
+  private val dunesOffer = NegotiationSiteProjection(DunesSite.id.value,
+    "Dunes")
+
+  test("every viewer sees a site on offer by name"):
+    val table = gathered.adviser(p1, DeedWriterCard.id)
+      .warbandsAt(DunesSite, p1, 2)
+    val state = parkedDeal(table, who = Vector(p2, p3), terms = Some(
+      NegotiationTerms(Vector(NegotiationTransfer(p2, 0, Vector.empty,
+        Vector.empty, Vector(DunesSite.id))))))
+    Vector(p1, p2, p3).foreach(viewer => assertEquals(
+      deal(view(state, viewer)).transfers.head.sites, Vector(dunesOffer),
+      viewer.value))
+
+  test("the editor offers each author's sites to the recipients the " +
+      "rules allow"):
+    val table = gathered.adviser(p1, DeedWriterCard.id)
+      .warbandsAt(DunesSite, p1, 2)
+    val state = parkedDeal(table, who = Vector(p2, p3))
+    val p1Editing = deal(view(state, p1)).editing.getOrElse(fail("editing"))
+    assertEquals(p1Editing.giftableSites, Vector(dunesOffer))
+    assertEquals(p1Editing.siteRecipients, Vector(p2.value, p3.value))
+    val p2Editing = deal(view(state, p2)).editing.getOrElse(fail("editing"))
+    assertEquals(p2Editing.siteRecipients, Vector(p1.value))
+
+  test("terms that leave a recipient short of warbands are projected " +
+      "with who"):
+    val table = gathered.adviser(p1, DeedWriterCard.id)
+      .warbandsAt(DunesSite, p1, 2).boardWarbands(p2, 0)
+    val state = parkedDeal(table, who = Vector(p2), terms = Some(
+      NegotiationTerms(Vector(NegotiationTransfer(p2, 0, Vector.empty,
+        Vector.empty, Vector(DunesSite.id))))))
+    Vector(p1, p2).foreach { viewer =>
+      val editing = deal(view(state, viewer)).editing.getOrElse(fail("editing"))
+      assertEquals(editing.shortOfWarbands, Vector(p2.value), viewer.value)
+      assert(!editing.canAccept, viewer.value)
+    }
+
+  /** p1's private Negotiation with p3 through Whispering Stone, with p1's
+    * offer of 2 favor and a promise proposed. p2 stands outside it. */
+  private def whisperedDeal: OathState =
+    val stoneRules = ActPowerHarness.rules()
+    val table = gathered.relic(p1, WhisperingStoneCard.id)
+      .secrets(p1, faceUp = 1)
+    val used = ActPowerHarness.use(stoneRules, table.ready,
+      WhisperingStone.id, DecisionOptionRef.Relic(WhisperingStoneCard.id))
+      .getOrElse(fail("the Stone must start"))
+    val chosen = stoneRules.resolveWalker(used.state, p1,
+      NegotiationDeal.negotiatorsDecisionId, ChooseManyAnswer(Vector(
+        DecisionOptionRef.Player(p3)))).getOrElse(fail("negotiators"))
+    stoneRules.resolveWalker(chosen.state, p1, dealId, ProposeTerms(
+      NegotiationTerms(Vector(NegotiationTransfer(p3, 2, Vector.empty)),
+        promises = Vector("I will not attack you this round."))))
+      .getOrElse(fail("terms")).state
+
+  test("a player outside a private deal sees who negotiates and who has " +
+      "accepted, never the terms"):
+    val state = whisperedDeal
+    Vector(deal(view(state, p2)),
+        deal(projector.projectPublic("negotiation", LoadedGame(state, 30))))
+      .foreach { seen =>
+        assertEquals(seen.participantPlayerIds, Vector(p1.value, p3.value))
+        assertEquals(seen.acceptedPlayerIds, Vector.empty)
+        assertEquals(seen.transfers, Vector.empty)
+        assertEquals(seen.disclosures, Vector.empty)
+        assertEquals(seen.citizenship, Vector.empty)
+        assertEquals(seen.promises, Vector.empty)
+        assertEquals(seen.editing, None)
+        assert(seen.privateDeal)
+      }
+
+  test("a participant in a private deal sees its terms"):
+    val seen = deal(view(whisperedDeal, p3))
+    assertEquals(seen.transfers.map(_.favor), Vector(2))
+    assertEquals(seen.promises.map(_.text),
+      Vector("I will not attack you this round."))
+    assert(seen.privateDeal)
+    assert(seen.editing.nonEmpty)
+
+  test("the Negotiate action's editor offers no secrets"):
+    val editing = deal(view(parkedDeal(gathered.secrets(p1, faceUp = 2),
+      Vector(p2)), p1)).editing.getOrElse(fail("p1 edits the deal"))
+    assertEquals(editing.editableSecrets, 0)
+    assertEquals(editing.secretRecipients, Vector.empty[String])

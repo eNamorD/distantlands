@@ -10,14 +10,30 @@ class EnumWireKeySuite extends munit.FunSuite:
     assertEquals(Region.all.map(_.key),
       Vector("cradle", "provinces", "hinterland"))
     assertEquals(MajorActionType.all.map(_.key), Vector("search", "travel",
-      "campaign", "muster", "trade", "forge", "recover", "challenge"))
+      "campaign", "muster", "trade", "forge", "recover", "challenge",
+      "explore"))
 
   test("triggered procedure keys stay as journaled walker events spell them"):
     assertEquals(TriggeredProcedureRef.all.map(_.key),
       Vector("oathkeeper", "setup", "forced-wake", "follow-up-offer",
+        "wake-menu", "rest-menu", "act-menu", "chronicle-winner", "chronicle-begin",
+        "chronicle-sun", "chronicle-throne", "chronicle-world",
+        "chronicle-beacon", "chronicle-stars", "chronicle-finish",
+        "quest-first-wake", "round-end-arbiter"))
+
+  test("every older triggered procedure key still decodes, and the first " +
+      "Wake's is new (R32)"):
+    Vector("oathkeeper", "setup", "forced-wake", "follow-up-offer",
         "wake-menu", "rest-menu", "act-menu", "chronicle-begin",
         "chronicle-sun", "chronicle-throne", "chronicle-world",
-        "chronicle-beacon", "chronicle-stars", "chronicle-finish"))
+        "chronicle-beacon", "chronicle-stars", "chronicle-finish")
+      .foreach(key => assertEquals(TriggeredProcedureRef.all
+        .find(_.key == key).map(_.key), Some(key)))
+    assertEquals(TriggeredProcedureRef.all.find(_.key == "quest-first-wake"),
+      Some(TriggeredProcedureRef.QuestFirstWake))
+    // Arbiter's question before the end die (Legacy in-play powers R11).
+    assertEquals(TriggeredProcedureRef.all.find(_.key == "round-end-arbiter"),
+      Some(TriggeredProcedureRef.Arbiter))
 
 
   test("Phase.Chronicle round-trips through its wire key"):

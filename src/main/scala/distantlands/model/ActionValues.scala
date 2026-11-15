@@ -91,6 +91,12 @@ object ShufflePile:
   /** The Dispossessed, for the random cards of Great Spire, Fallen Spire
     * and Pilgrimage (catalog batch 10, slice 6). */
   case object Dispossessed extends ShufflePile
+  /** The world deck rebuilt in the card's layout after Secret Society's
+    * take: the denizens keep their order and the Visions are placed at
+    * random, two among the first 12 cards and two among the next 17, or
+    * anywhere with fewer than 25 denizens (Legacy Setup powers ruling 14;
+    * R19). The walker fills the order. */
+  case object VisionPackets extends ShufflePile
 
   /** The pile's cards in stored order. */
   def cards(pile: ShufflePile, game: OathGame): Vector[CardId] =
@@ -103,6 +109,7 @@ object ShufflePile:
         game.campaign.suitedReserves.getOrElse(suit, Vector.empty)
       case Reliquary => game.campaign.reliquary
       case Dispossessed => game.campaign.dispossessed
+      case VisionPackets => game.current.commonCards.worldDeck
 
   /** How a failure names the pile. */
   def name(pile: ShufflePile): String = pile match
@@ -113,3 +120,4 @@ object ShufflePile:
     case SuitedReserve(suit) => s"${suit.key} reserve"
     case Reliquary => "Reliquary"
     case Dispossessed => "Dispossessed"
+    case VisionPackets => "world deck"

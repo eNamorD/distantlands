@@ -1,5 +1,6 @@
 package distantlands.gameplay.powers.action
 
+import distantlands.gameplay.actions.negotiation.FestivalDistrictCard
 import distantlands.gameplay.actions.VisionRules
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.{NoteText, PowerFixture}
