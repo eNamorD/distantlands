@@ -202,8 +202,10 @@ private[frontend] object WalkerPanelSupport:
       }
       choose.disabled = !canControl
       // A card option reads its rules text on hover, as the menu panel's
-      // power buttons do; `withholds` below puts a reason in its place.
-      option.card.filter(_ => option.badge.isEmpty).flatMap(_.rulesText)
+      // power buttons do, and a legacy its goal, as the legacy strip does;
+      // `withholds` below puts a reason in its place.
+      option.card.filter(_ => option.badge.isEmpty)
+        .flatMap(card => card.legacyGoal.map(_.text).orElse(card.rulesText))
         .foreach(HoverTip.set(choose, _))
       // An askable option asks its granters first (consent design,
       // "Frontend").
