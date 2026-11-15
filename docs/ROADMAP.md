@@ -136,17 +136,6 @@ Left behind by the
   reaches, and Golden Key's peek at the Reliquary was seen in the browser
   only during Setup. Both are covered by tests only. The journaled
   arranged start would seed them.
-- [ ] **Drop the Sun's leftover names.** Royal Line now acts in the
-  final-winner step before Start Chronicle
-  ([implementation ruling R36](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)),
-  but its decision id is still `chronicle.sun.legacy.royal-line.<player>`,
-  and the Sun's `ChronicleStartOfSun` window is left empty. Rename the id
-  and remove or reuse the window before the public release fixes the
-  formats.
-- [ ] **Discard the batch's dev saves.** A dev-database game saved after a
-  game end during the batch, or parked at Start Chronicle, no longer loads
-  or skips Royal Line and the prediction's reveal (R35, R37). The
-  implementer's test game `game-nvruop2xq65z` is among them.
 
 ### Phase - Campaign battle summary
 

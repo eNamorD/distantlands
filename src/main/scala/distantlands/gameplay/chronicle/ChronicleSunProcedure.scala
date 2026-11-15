@@ -64,7 +64,6 @@ object ChronicleSunProcedure:
       violation => Vector(ChronicleTasks.failing(violation)), steps))
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
-    ChronicleWindows.step(PowerWindow.ChronicleStartOfSun, Vector.empty),
     // Iron Hand's first checkpoint opens the Sun (Legacy Chronicle powers
     // design, ruling 18; R30).
     ChronicleWindows.step(PowerWindow.ChronicleRevealRelics, Vector(

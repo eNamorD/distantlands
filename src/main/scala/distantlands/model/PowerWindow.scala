@@ -212,11 +212,6 @@ object PowerWindow:
     * Legacy in-play powers R36). Empty with no power. */
   case object ChronicleFinalWinner extends OtherWindow:
     val key = "chronicle.final-winner"
-  /** The Sun's first window, before Reveal Relics. Royal Line's step was
-    * here (Legacy Chronicle powers R40) until Legacy in-play powers R36
-    * moved it before Start Chronicle; empty with no power. */
-  case object ChronicleStartOfSun extends OtherWindow:
-    val key = "chronicle.sun.start-of-sun"
   case object ChronicleRevealRelics extends OtherWindow:
     val key = "chronicle.sun.reveal-relics"
   /** Before players resolve legacies, after Reveal Relics: Gatekeeper's

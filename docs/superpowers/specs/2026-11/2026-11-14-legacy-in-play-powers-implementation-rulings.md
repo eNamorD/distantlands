@@ -277,3 +277,12 @@ R36 ruled by the owner on 2026-11-14; R37 by the orchestrator.
   journals may not format their old Sun notes. *Reason:* no release
   contains Royal Line or Conspirator; only dev-database games from this
   batch are affected, as under R35. *Slice/files:* slice 4, R36 change.
+
+After the run, at the owner's request, two ROADMAP cleanups closed the
+R36 and R37 leftovers. Royal Line's decision id is now
+`chronicle.final-winner.royal-line.<player>`, after the step it runs in,
+and the Sun's empty first window, `ChronicleStartOfSun`
+(`chronicle.sun.start-of-sun`), is removed, so the Sun opens with Reveal
+Relics. The three dev-database games created during the batch
+(`game-nvruop2xq65z`, `game-sd5uqootvi3e` and `game-rj5bxx5xlnnw`) are
+deleted. None had reached a game end or Start Chronicle.

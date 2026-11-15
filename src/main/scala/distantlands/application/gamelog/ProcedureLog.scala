@@ -424,7 +424,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       RoyalLine.named -> LogKind.Decision,
       ConspiratorReveal.revealed -> LogKind.Decision,
       ConspiratorReveal.won -> LogKind.Victory)),
-    narratedPrefixes = Vector("chronicle.sun.legacy.royal-line."),
+    narratedPrefixes = Vector("chronicle.final-winner.royal-line."),
     isSection = false)
 
   private lazy val chronicleSun: ProcedureLog = ProcedureLog(tag = None,

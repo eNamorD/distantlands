@@ -254,14 +254,15 @@ class ChronicleSunSuite extends munit.FunSuite:
         state.flatMap(rules.evolve(_, event)))), done.state)
 
   test("Crown Chancellor and Assign Tasks read the winner when reached"):
-    // A test power at the Sun's first window, now empty in play (Royal Line
-    // acts before Start Chronicle since Legacy in-play powers R36), names p2
-    // the winner; the Crown and the Throne task then go to p2.
+    // A test power at the Sun's first window, where no printed power names
+    // a winner (Royal Line acts before Start Chronicle since Legacy in-play
+    // powers R36), names p2 the winner; the Crown and the Throne task then
+    // go to p2.
     final case class NamesP2() extends ContributingPower:
       val id: PowerId = PowerId("test.chronicle.names-p2")
       val source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
       val contributions: Map[PowerWindow, Vector[Contribution]] = Map(
-        PowerWindow.ChronicleStartOfSun -> Vector(Transform((_, ops) =>
+        PowerWindow.ChronicleRevealRelics -> Vector(Transform((_, ops) =>
           ops :+ BuildOps((_, _) => Right(Vector(
             WinnerNamed(p2, VictoryKind.Successor))), required = true))))
     val table = ChronicleWalk.chronicleWonByP1.imperial(p1, p2)

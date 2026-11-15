@@ -170,6 +170,9 @@ class RoyalLineSuite extends munit.FunSuite:
     assert(scored.exists(_.startsWith("p2 scored ")), scored)
     assert(!scored.exists(_.startsWith("p1 scored ")), scored)
 
+  test("its question's id names the final winner step (R36)"):
+    assertEquals(RoyalLine.decisionId(p3), "chronicle.final-winner.royal-line.p3")
+
   test("a walk resumed at Royal Line's question applies the answer"):
     val table = ended(stable)
     val parked = ChronicleWalk.walkedTo(rules, ChronicleWalk.started(rules,
