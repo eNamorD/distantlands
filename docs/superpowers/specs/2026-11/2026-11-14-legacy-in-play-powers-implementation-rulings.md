@@ -264,6 +264,13 @@ Ruled by the owner on 2026-11-14.
   the Sun's first window (its design ruling 22 and R40). *Reason:* the
   owner's ruling; nothing in the rules happens between the game's end and
   the Sun's first window, so only the digital Start Chronicle pause moves
-  relative to them. *Slice/files:* slice 4, R36 change;
-  `ChronicleWinnerProcedure`, `ChronicleSequence`, `RoyalLine`,
-  `ConspiratorReveal`, `ChronicleSunProcedure`.
+  relative to them. Dev saves from before R36 should be discarded (R37).
+  *Slice/files:* slice 4, R36 change; `ChronicleWinnerProcedure`,
+  `ChronicleSequence`, `RoyalLine`, `ConspiratorReveal`,
+  `ChronicleSunProcedure`.
+- **R37. What of saves from before R36?** *Decision:* accept that a dev
+  save from before R36, parked at Start Chronicle with Royal Line or a
+  stored prediction, loads but skips both steps, and that old completed
+  journals may not format their old Sun notes. *Reason:* no release
+  contains Royal Line or Conspirator; only dev-database games from this
+  batch are affected, as under R35. *Slice/files:* slice 4, R36 change.
