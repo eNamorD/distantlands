@@ -1,0 +1,319 @@
+# Catalog Batch 13: Cards that act on legacies
+
+**Status:** designed 2026-11-14, approved section by section by the owner.
+Not yet planned. Plan each slice after the
+[Legacy in-play powers](2026-11-14-legacy-in-play-powers-design.md) batch's
+slice 4 (The Mouth) lands: slice 5 here reuses The Mouth's activation, and
+slice 2 changes where The Mouth's Iron Hand discard sends the card.
+
+**Builds on** the [Legacies design](2026-11-13-legacies-design.md), the
+[Legacy Setup powers](2026-11-13-legacy-setup-powers-design.md) batch (the
+Quiet Ambitions keep, Matchmaker, The Standard Bearer and Wealthy in
+`SetupPawnPlaced`) and the [Foundations design](2026-11-11-foundations-design.md)
+(Explore, `WhenExplored`, `EdificeSetupSupport`). The batch 4 rulings that
+apply to a whole batch, and the cost and log-line rules of
+[batch 8](../2026-10/2026-10-12-catalog-batch-8-design.md), apply unchanged.
+
+## Goal and scope
+
+The last cards in `catalog/holding/`, the one card face out of holding
+that does not yet run, and Matchmaker for a legacy draw during a game.
+When this batch lands, `catalog/holding/` is empty. It clears the ROADMAP's
+**Cards that act on legacies** item.
+
+| Slice | Cards | Seam |
+|---|---|---|
+| 1. Reliquary Raid | Reliquary Raid (220) | `ReliquaryDraws`, unchanged |
+| 2. Set-aside legacies and the draw | Ancient Writ (R22), Matchmaker during a game | `setAsideLegacies`; a derived legacy deck; a keep decision during a game |
+| 3. The keep in Foundation III | none | `SetupProcedure`, `LegacyKeep` |
+| 4. Power order | none | an ordering host over `SetupPawnPlaced` |
+| 5. The Doors | Amber Doors and Lost Doors (E05) | `EdificeSetupSupport`; The Mouth's activation |
+| 6. Chronicle cards | Stone Baths and Ruined Baths (E04), Ruined Temple (E10 ruined) | `ResolveLegacies`; a win step; `LineageScoring` |
+
+Slice 1 stands alone and touches nothing the other slices touch. Slices 2
+to 4 build what slice 5 needs. Slice 6 reuses slice 4's host for Ruined
+Temple's Setup burn. Slices 3 and 4 change the Setup walk, so they run the
+Setup, replay and golden suites in full before landing.
+
+Reliquary Raid was held for "a stocked Reliquary"
+([batch 9](2026-11-02-catalog-batch-9-design.md)). The Chronicle now stocks
+it, and Bewitch, Ancient Pact and Royal Ambitions already draw from it.
+
+## Rulings
+
+Taken with the owner on 2026-11-14. They open a "Catalog batch 13 rulings"
+section of `docs/rules/ambiguities.md`, which the implementation rulings
+then continue.
+
+### General
+
+1. **A legacy draw during a game derives the deck when it runs.** The
+   deck is every catalog legacy that no lineage holds (seated or boxed),
+   that is not in the Public Ambitions row, and that is not set aside
+   (ruling 2). The draw shuffles that pile, the walker journals the order
+   as a hidden outcome, and the drawer takes the top N, dormant. A short
+   deck draws what remains. An empty deck draws nothing, and a line says
+   so.
+2. **Set-aside legacies.** A legacy Quiet Ambitions returns "to the box"
+   and every legacy discarded during a game go to `setAsideLegacies`. No
+   set-aside legacy is drawn again in that game. The discards are Iron
+   Hand's when its holder is Imperial, The Mouth's Iron Hand discard,
+   Ancient Writ's two, Lost Doors' one and Amber Doors' all. The Chronicle
+   stores nothing new: the next game's deal derives its deck from the
+   Chronicle as today, so set-aside legacies return to the deck between
+   games. The Sun's returns still go to the legacy deck, since by then the
+   game is over and both piles are the same. This amends Legacies ruling 3,
+   which treated "return to the box" and "return to the legacy deck" as one
+   pile while every draw happened in setup.
+3. **The keep moves to Foundation III in later games.** The Quiet
+   Ambitions keep runs while Foundation III resolves (CR "Later games",
+   step 5), for every seated player in seat order, before any pawn is
+   placed. Matchmaker's holder answers every other player's keep, as Legacy
+   Setup powers ruling 13 and R16 say. A first game's keep stays after
+   pawn placement (CR p. 7). Neither Doors face reaches a first game: the
+   first-game Homeland edifice is the lowest-numbered implemented edifice of
+   its suit (E01 for Discord, E06 for Nomad), and Explore needs Foundation I
+   altered.
+4. **The placer orders the powers in their `SetupPawnPlaced` window.**
+   Whenever two or more powers apply in a player's window, that player is
+   asked "Choose a power to resolve", with each power named by its card.
+   The chosen power resolves. Then the window is gathered again against the
+   live state, so a power that no longer applies drops out and a newly
+   applicable one joins. Each power resolves at most once per window. With
+   one power left, it resolves without a question. The pick writes no line;
+   each power's own line appears in the order chosen. Legacy Setup powers
+   R27's order (edifice, The Standard Bearer, Wealthy) applies only when
+   nothing is asked. This narrows the ROADMAP's **Simultaneous setup
+   effects** item to effects on several players.
+5. **The Standard Bearer and Wealthy read their holder at their own
+   step.** A legacy a Doors face discarded before it resolved does not
+   resolve. A legacy Amber Doors activated in the same window does.
+6. **Set-aside legacies are not shown.** The projection carries no
+   set-aside zone for any viewer. An owner's knowledge of the legacies
+   they set aside is kept in `CardKnowledge`, as for any card leaving
+   play, but no surface displays it.
+
+### Slice 1: Reliquary Raid
+
+7. **Reliquary Raid.** WHEN PLAYED, the player takes a random relic from
+   the Reliquary, facedown, as Bewitch, Ancient Pact and Royal Ambitions
+   do. An empty Reliquary takes nothing and writes ruling R22's line. A
+   Reliquary Setup With No Empire set aside cannot be drawn from
+   (Foundations ruling 3).
+
+### Slice 2: Ancient Writ and Matchmaker
+
+8. **Ancient Writ.** ACTION: the holder buries the relic, draws 3
+   legacies (fewer from a short deck), keeps 1 dormant and sets the others
+   aside. A single drawn legacy is kept without a question, and an empty
+   deck asks nothing.
+9. **Matchmaker during a game.** When another seated player holds
+   Matchmaker active, that player draws and chooses for the Ancient Writ
+   holder: they see the drawn legacies while the keep is the parked
+   decision, as in R16, and answer off turn. The owner never identifies
+   the legacies they did not keep. A holder using Ancient Writ themself
+   chooses for themself.
+10. **Only Ancient Writ triggers Matchmaker.** Amber Doors is excluded by
+    Matchmaker's printed text. Lost Doors' discard is the owner's choice
+    (ruling 13).
+
+### Slice 5: the Doors
+
+11. **Both Doors resolve at Setup and When Explored.** "If you place your
+    pawn here" is the player whose pawn was just placed at this site: the
+    placer in `SetupPawnPlaced`, the explorer in `WhenExplored`
+    (`EdificeSetupSupport.pawnPlacement`).
+12. **Amber Doors.** "You may". On yes, every legacy the player holds,
+    active and dormant, is set aside. They draw 2 dormant legacies and
+    choose one to activate; the other stays dormant. A short deck draws
+    what remains, and a single draw is activated without a question; an
+    empty deck draws and activates nothing.
+    Activation is The Mouth's: it sets the legacy's foundation, and Iron
+    Hand activated by an Imperial is discarded at once. The activated
+    legacy acts from then on. A SETUP power whose step has passed does not
+    resolve, but one in the same window does (ruling 4).
+13. **Lost Doors.** The player draws 1 dormant legacy, then sets aside one
+    dormant legacy they hold, the new one included. Active legacies are
+    never discarded by it. With a single dormant legacy, it is set aside
+    without a question; with none (an empty deck and no dormant legacy),
+    nothing happens. Matchmaker plays no part.
+
+### Slice 6: Chronicle cards
+
+14. **Stone Baths.** CHRONICLE (SUN): in Sun step 2, a seated player whose
+    pawn is at this site does not discard their dormant legacies. A dormant
+    legacy whose goal they meet still activates; one whose goal they do not
+    meet stays dormant on their lineage.
+15. **Ruined Baths.** CHRONICLE (SUN): in Sun step 3, a seated Exile whose
+    pawn is at this site keeps every active legacy, whether or not they
+    meet its goal. Steadfast and the cap are unaffected.
+16. **The Baths are read at the Sun.** The Sun is the Chronicle's first
+    task, so the edifice and the pawns are still on the map. A pawn
+    off the map (Quest to Distant Lands before its first Wake) is at no
+    site.
+17. **Ruined Temple's pledge.** "You may" burn a secret at Setup or When
+    Explored. Each player who burns records a pledge for the game. Several
+    players may place their pawns at this site in Setup, and each may
+    pledge. A player with no secret is not asked.
+18. **Ruined Temple at the win.** If the winner pledged, then at the win,
+    before Crown Chancellor, every bandit site loses its bandits to the
+    bandit supply and takes one of the winner's warbands (Imperial for an
+    Imperial winner), their bank topped up when short. Crown Chancellor,
+    Shape Empire and the rest then treat those sites as the winner's.
+19. **Ruined Temple's double.** Score Lineage Points doubles the winner's
+    legacy bonus. The 3 base points are not doubled. Gifts are spent from
+    the doubled total.
+
+## Approach
+
+### Slice 1: Reliquary Raid
+
+`ReliquaryRaid` is a WHEN PLAYED power whose steps are
+`ReliquaryDraws.steps(power, player, source)`. `ReliquaryRaidCard` moves
+from `HoldingDiscordDenizens` to sit beside its power, and that file is
+deleted.
+
+### Slice 2: set-aside legacies and the draw
+
+- **Zone.** `setAsideLegacies: Vector[LegacyId]` beside `setAsideRelics`
+  and `setAsideEdifices`, with `CardContainer.SetAsideLegacies` in
+  `CardIndex` and a matching `Location`. Its order means nothing. A move
+  into it names no top or bottom and no facedown face, as with the legacy
+  deck today (R3, R6). `CardMovementOperations` gains its arms;
+  `CardOperationCodec` and `GameEventJsonSupport` its codec.
+- **Pile.** `ShufflePile.LegacyDeck`, derived when read (ruling 1).
+- **Draw.** `LegacyDraws`, mirroring `ReliquaryDraws`: a `Branch` that
+  reads the pile when reached, then `Shuffle(ShufflePile.LegacyDeck)`,
+  then a `BuildOps` moving the top N to `Location.Legacies(lineage)`,
+  dormant, through the existing `facedownLegacy` knowledge path. The
+  shuffle is a hidden outcome (`HiddenOutcomes`), so undo never takes a
+  draw back.
+- **Redirects.** `LegacyKeep.returnLegacies`, `IronHand.inGameDiscard` and
+  The Mouth's Iron Hand discard move to the set-aside zone in place of
+  `Location.Deck(CardDeck.Legacy)`.
+- **Ancient Writ.** An ACTION through the relic ACTION path: it buries the
+  relic through the existing bury operation, then `LegacyDraws(3)`, then a
+  keep decision. `SetupLegacyRules.keeper` is widened, or a sibling added,
+  so the keeper is Matchmaker's seated active holder during a game too.
+  `AncientWritCard` leaves `HoldingRelics`, and that file is deleted.
+- **Saved games.** Journals from before this slice replay their returns
+  into the deck, so such a game may draw a returned legacy again. This is
+  accepted for the alpha.
+
+### Slice 3: the keep in Foundation III
+
+`SetupProcedure` calls `LegacyKeep.step` for every seat, in seat order,
+inside Foundation III's resolution in later games, and leaves the call in
+each player's pawn turn for a first game. `LegacyKeep.drawn` reads the
+lineage's baseline (R13) and needs no change. Secret Society and Seer now
+follow the keep. A Quest to Distant Lands holder who places no pawn keeps
+in Foundation III like everyone else. The plan checks that a game saved
+mid-Setup replays: answers are keyed by decision id.
+
+### Slice 4: power order
+
+A new `OfferHost`, `OrderedWindow`, wraps the `SetupPawnPlaced` fold. On
+every fold it gathers the powers that apply to the placer, reads which
+already resolved from the answers, and asks a `ChooseOne` headed "Choose a
+power to resolve" while two or more remain. Its shape is a pure function of
+the offers and the answers, so a resumed walk folds it the same way (the
+`OfferHost` contract). The Standard Bearer and Wealthy move their holder
+check into a `Branch` at their step (ruling 5). The test that pins R27's
+registration order is replaced by one that pins it only when nothing is
+asked.
+
+### Slice 5: the Doors
+
+Both faces contribute to `SetupPawnPlaced` and `WhenExplored`, as Proving
+Grounds and Great Forge do. The Mouth's private activation is extracted to
+a shared `LegacyActivation` that both The Mouth and Amber Doors call.
+Amber Doors sets aside every held legacy, calls `LegacyDraws(2)`, then
+asks which to activate. Lost Doors calls `LegacyDraws(1)`, then asks which
+dormant legacy to set aside. `AmberDoorsCard` leaves `HoldingEdifices`.
+
+### Slice 6: Chronicle cards
+
+- **Baths.** `ResolveLegacies.flip` (step 2) and `dormancy` (step 3) skip
+  the players the Baths exempt, read through a new
+  `BathsRules.exempt(ready, face)`: the site holding E04 with that face up,
+  and the seated players whose pawns are there (Exiles only for Ruined
+  Baths). `StoneBathsCard` leaves `HoldingEdifices`, and that file is
+  deleted.
+- **Pledge.** `templePledges: Set[PlayerId]` on the game, written by a
+  recorded operation when a player burns. At Setup the burn is one of the
+  powers slice 4's host orders.
+- **The win.** A step at the start of `ChronicleWinnerProcedure`, before
+  Crown Chancellor, rules the bandit sites for a pledged winner.
+- **The double.** `LineageScoring.bonus` doubles for a pledged winner, and
+  the scoring line names it.
+
+## Hidden information
+
+- A drawn legacy is dormant and facedown; only its owner sees it, and
+  Matchmaker's holder while they answer the keep (ruling 9).
+- Set-aside legacies are not projected for any viewer (ruling 6).
+- The draw's shuffle is a hidden outcome.
+- The power-order question lists the placer's own active legacies, which
+  are faceup, and the edifice at their site, which is public.
+
+## Lines
+
+Settled against existing shapes in each slice's plan:
+
+- "p2 took a relic from the Reliquary with Reliquary Raid"
+- "p2 drew 3 legacies with Ancient Writ", then "p2 kept a legacy" or
+  "p3 kept a legacy for p2 with Matchmaker"
+- "p2 discarded their legacies with Amber Doors", then "p2 activated Seer"
+- "p2 drew a legacy with Lost Doors", then "p2 discarded a dormant legacy"
+- "The legacy deck was empty."
+- "p2 burned a secret at Ruined Temple"
+- "p2 took rule of 3 bandit sites with Ruined Temple"
+- The scoring line names the doubled bonus in R28's shape.
+
+The Baths add no line: a legacy they keep is simply not among the
+discards. The power-order pick adds no line (ruling 4).
+
+## Testing
+
+- One suite per card: `ReliquaryRaidSuite`, `AncientWritSuite`,
+  `AmberDoorsSuite`, `LostDoorsSuite`, `BathsSuite`, `RuinedTempleSuite`.
+- `LegacyDrawSuite`: the derived pile, a short pile, an empty pile, and no
+  set-aside legacy drawn again (a Quiet Ambitions return, an Iron Hand
+  discard, an Ancient Writ discard).
+- Matchmaker during a game: another holder chooses, sees the draw, and the
+  owner does not identify the legacies not kept.
+- The keep's position: a first game after pawn placement, a later game in
+  Foundation III, Matchmaker in both, and replay of a game saved mid-Setup.
+- `OrderedWindowSuite`: Wealthy before Amber Doors; Amber Doors first,
+  discarding Wealthy so it does not resolve; a Standard Bearer that Amber
+  Doors activated resolving in the same window; a single power asking
+  nothing; a resume inside the window.
+- Projection: no viewer sees a set-aside zone.
+- Chronicle: Stone Baths at step 2, Ruined Baths at step 3, Ruined
+  Temple's bandit sites before Crown Chancellor for an Exile and an
+  Imperial winner, the doubled bonus with a gift.
+- `CardCatalogSuite` with `catalog/holding/` empty; the first-game
+  generator's goldens unchanged (Discord stays E01, Nomad E06); the Setup
+  and Explore goldens updated where slices 3 and 4 change them.
+
+## Docs
+
+Each slice updates, as it lands:
+
+- `docs/rules/ambiguities.md`: the rulings above, and Legacies ruling 3
+  amended (ruling 2);
+- `docs/rules/rules-reference.md`: a "Digital:" note on each rule a card
+  changes, and on Later games step 5 for the keep;
+- `docs/rules/implementation-traceability.md`: each card's row, and the
+  Explore row's "Lost Doors and Ruined Temple wait" note removed;
+- `docs/catalog/README.md`: the holding sentence once the folder is empty;
+- `docs/ROADMAP.md`: **Cards that act on legacies** deleted when slice 6
+  lands; **Simultaneous setup effects** narrowed by slice 4; the "Legacy
+  powers: in play" item's Matchmaker clause moved here.
+
+## Out of scope
+
+- Ordering simultaneous effects on several players, and ordering any window
+  but `SetupPawnPlaced`.
+- Any display of set-aside legacies.
+- Eras and the reset of lineage points.
