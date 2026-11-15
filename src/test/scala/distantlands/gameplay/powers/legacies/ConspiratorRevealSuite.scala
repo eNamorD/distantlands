@@ -329,10 +329,12 @@ class ConspiratorRevealSuite extends munit.FunSuite:
       reloaded.history(gameId)), "a stored game").steps, Some(p1)))
     assertEquals(written.count(_ == revealLine(p2, 5)), 1, written)
 
-  test("while Royal Line's question waits no other viewer can tell one " +
-      "prediction from another (R36)"):
-    val (oneService, one) = rested(withRoyalLine(Prediction(5, p2)))
-    val (otherService, other) = rested(withRoyalLine(Prediction(2, p1)))
+  test("while Royal Line's question waits no other viewer can tell a " +
+      "prediction that will hold from one that will fail (R36)"):
+    // Under the same Royal Line options, naming p1 would make (5, p1) hold
+    // and (5, p2) fail.
+    val (oneService, one) = rested(withRoyalLine(Prediction(5, p1)))
+    val (otherService, other) = rested(withRoyalLine(Prediction(5, p2)))
     val viewsOf = (at: GameAccepted) =>
       val loaded = LoadedGame(at.state, at.nextSequence)
       Vector(projector.project(gameId, loaded, p1),
