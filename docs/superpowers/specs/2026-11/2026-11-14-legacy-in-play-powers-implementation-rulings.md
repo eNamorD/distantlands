@@ -170,8 +170,8 @@ open questions, ruled on 2026-11-14.
 - **R24. Is Conspirator's prediction compared before or after Royal
   Line?** *Decision:* after Royal Line's CHRONICLE (SUN) choice has been
   made, against the winner that results from it: after the Successor
-  substitution and any Royal Line choice. The comparison runs at the Sun's
-  first window, right after Royal Line's step, so a Conspirator win then
+  substitution and any Royal Line choice. The comparison runs right after the
+  Sun's first window, where Royal Line's step is, so a Conspirator win then
   overrides the result, and every later Chronicle step reads it.
   *Reason:* the owner's ruling, overriding the first one ("Conspirator
   should check after Royal Line power is activated"). This supersedes the
