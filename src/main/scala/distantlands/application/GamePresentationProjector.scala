@@ -8,7 +8,7 @@ import distantlands.gameplay.powers.{AdviserLimit, PlayerFacts, PowerImplementat
   WalkerPowerCatalog}
 import distantlands.gameplay.powers.legacies.GoldenKey
 import distantlands.gameplay.powers.wake.TrackerWake
-import distantlands.gameplay.setup.{LegacyKeep, SetupProcedure}
+import distantlands.gameplay.setup.SetupProcedure
 import distantlands.gameplay.setup.legacies.{SecretSociety, Seer,
   SetupLegacyRules}
 import distantlands.gameplay.walker.{ProcedureWalker, WalkerPowers}
@@ -327,9 +327,7 @@ private[application] final class GamePresentationProjector(
     *  - A lineage's active legacy is named to every viewer, a dormant one
     *    only to the player seated with that lineage, except in the
     *    Chronicle Phase, where every legacy is named to everyone; the
-    *    public row to every viewer. A draw Matchmaker's holder keeps for
-    *    another player is named to the holder alone while that keep is the
-    *    parked decision, and to nobody before (R16).
+    *    public row to every viewer.
     *  - A legacy in a hand, which a legacy draw leaves there, is named only
     *    to the hand's holder: the drawer, or Matchmaker's holder drawing
     *    for another player (catalog batch 13, rulings 6 and 9).
@@ -393,22 +391,14 @@ private[application] final class GamePresentationProjector(
       // owner's play area, and only they know it (Legacies design, ruling 1).
       // In the Chronicle Phase the game is over and goals are checked
       // openly, so every legacy is named to everyone (implementation ruling
-      // R18); after Resolve Legacies the only dormant ones were active.
-      // Matchmaker's holder chooses another player's kept legacy: the
-      // draw is named to the holder alone, and only while that keep is the
-      // parked decision; the owner sees backs until one is kept (Legacy
-      // Setup powers ruling 13; R16).
+      // R18); after Resolve Legacies the only dormant ones were active. A
+      // legacy Matchmaker's holder draws for another player waits in the
+      // holder's hand, which the hand arm names to them alone (catalog
+      // batch 13, ruling 6).
       case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
-        val matchmade = id match
-          case legacy: LegacyId if !faceup =>
-            LegacyKeep.matchmade(ready, lineage, legacy)
-          case _ => None
-        matchmade.fold(
-          faceup || ready.game.current.turn.phase == Phase.Chronicle ||
-            viewer.exists(player => ready.game.current.players
-              .exists(seat => seat.player == player &&
-                seat.lineage == lineage)))((owner, keeper) =>
-          viewer.contains(keeper) && keepPending(ready, owner))
+        faceup || ready.game.current.turn.phase == Phase.Chronicle ||
+          viewer.exists(player => ready.game.current.players
+            .exists(seat => seat.player == player && seat.lineage == lineage))
       // The Public Ambitions row is faceup.
       case CardContainer.PublicLegacies => true
       // A set-aside relic a player peeked: The Ear's holder examines the
@@ -434,10 +424,6 @@ private[application] final class GamePresentationProjector(
   /** The full walker catalog, for reading Setup's open decisions. */
   private lazy val setupPowers: WalkerPowers =
     WalkerPowers.selected(WalkerPowerCatalog.default(catalog), Vector.empty)
-
-  /** Whether Setup's walk is parked on `owner`'s keep (R16). */
-  private def keepPending(ready: ReadyGame, owner: PlayerId): Boolean =
-    setupOpen(ready).contains(LegacyKeep.decisionId(owner))
 
   /** Whether Setup's walk is parked on `viewer`'s Secret Society or Seer
     * question, whose options name the world deck's Visions (R20, R22,

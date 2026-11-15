@@ -1,6 +1,6 @@
 package distantlands.application
 
-import distantlands.gameplay.setup.{LaterGameFixture, LegacyDeal, LegacyKeep,
+import distantlands.gameplay.setup.{LaterGameFixture, LegacyKeep,
   SetupLegacyFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.application.gamelog.{GoldenLog, LaterGameLogScripts,
@@ -23,8 +23,7 @@ class MatchmakerProjectionSuite extends munit.FunSuite:
     LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2")), l3,
     Role.Exile, MatchmakerCard.id -> true)
   private val orders = LaterGameFixture.orders(record, p1)
-  private val drawn = LegacyDeal.of(record, orders.participants)
-    .drawn(orders.legacyOrder, p2)
+  private val drawn = SetupLegacyFixture.drawn(orders, p2)
 
   private def parkedAt(decisionId: String) =
     Situation.start(Situation.rules(catalog).withAnswers {
@@ -67,8 +66,7 @@ class MatchmakerProjectionSuite extends munit.FunSuite:
   test("without Matchmaker the owner identifies their own draw"):
     val plain = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
     val plainOrders = LaterGameFixture.orders(plain, p1)
-    val own = LegacyDeal.of(plain, plainOrders.participants)
-      .drawn(plainOrders.legacyOrder, p2)
+    val own = SetupLegacyFixture.drawn(plainOrders, p2)
     val at = Situation.start(Situation.rules(catalog))
       .parkedAt(LegacyKeep.decisionId(p2))(GameCommand.Begin(plain,
         plainOrders)).ready

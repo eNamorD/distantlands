@@ -23,10 +23,9 @@ class LegacyDeckSuite extends munit.FunSuite:
   private def deckOf(ready: ReadyGame): Vector[LegacyId] =
     ready.game.current.commonCards.legacyDeck
 
-  test("Quiet Ambitions' game start keeps the order the draws leave"):
+  test("Quiet Ambitions' game start keeps the whole order as the deck"):
     val ready = accepted(GameStartRules.evolve(catalog, chronicle, orders))
-    assertEquals(deckOf(ready),
-      orders.legacyOrder.drop(LegacyDeal.QuietDraw * orders.participants.size))
+    assertEquals(deckOf(ready), orders.legacyOrder)
     assertEquals(ready.game.cardIndex.toOption.get.get(deckOf(ready).head)
       .map(_.location), Some(CardLocation(CardContainer.Deck(CardDeck.Legacy), 0)))
 

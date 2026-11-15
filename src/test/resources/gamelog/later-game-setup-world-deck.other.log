@@ -10,16 +10,16 @@
 27.0 action 1 | [player:p2|p2] took a Vision as a facedown adviser with [card:L28|Secret Society]
 36.0 action 1 | [player:p2|p2] placed the Visions with [card:L22|Seer]
 41.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
-46.0 decision 1 | [player:p1|p1] kept a legacy
-51.0 decision 1 | [player:p1|p1] kept a Denizen
-59.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
-64.0 decision 1 | [player:p2|p2] kept a legacy
-69.0 decision 1 | [player:p2|p2] kept [card:175|Nature Worship]
-77.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
-82.0 decision 1 | [player:p3|p3] kept a legacy
-87.0 decision 1 | [player:p3|p3] kept a Denizen
-88.0 round 0 | Round 1
-88.1 turn 0 | [player:p1|p1]'s turn
-88.2 phase 0 | Wake
-90.0 action 1 | Nothing happened in Wake
-90.1 phase 0 | Act
+47.0 decision 1 | [player:p1|p1] kept a legacy
+52.0 decision 1 | [player:p1|p1] kept a Denizen
+60.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+66.0 decision 1 | [player:p2|p2] kept a legacy
+71.0 decision 1 | [player:p2|p2] kept [card:175|Nature Worship]
+79.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
+85.0 decision 1 | [player:p3|p3] kept a legacy
+90.0 decision 1 | [player:p3|p3] kept a Denizen
+91.0 round 0 | Round 1
+91.1 turn 0 | [player:p1|p1]'s turn
+91.2 phase 0 | Wake
+93.0 action 1 | Nothing happened in Wake
+93.1 phase 0 | Act

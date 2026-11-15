@@ -71,8 +71,8 @@ object OperationRun:
   * whole batch is rejected.
   *
   * A card may leave the game only through a `Move` to `Location.SharedBank`,
-  * a legacy through a `Move` to the derived legacy deck, or a relic through
-  * `StartingRelicKept`, that the batch declares; its id is then removed from the expected card set. Any other change to the card inventory still fails the batch.
+  * or a relic through `StartingRelicKept`, that the batch declares; its id
+  * is then removed from the expected card set. Any other change to the card inventory still fails the batch.
   *
   * `requireAll` treats every operation as `required` (a reduced or skipped
   * effect rejects the batch). The walker sets it for the `Move` children of a

@@ -47,16 +47,13 @@ object GameStartRules:
         legacyDeck = legacyDeal.rest(orders.legacyOrder))
       // A seated lineage the Chronicle lists starts from its record, its
       // legacies with their stored faces; `LaterGameSetup` hands its
-      // starting relics to its player. Foundation III's draw joins it
-      // dormant (`LegacyDeal`); the player keeps one in Setup.
+      // starting relics to its player. Quiet Ambitions' draw waits for the
+      // keep in Setup (`LegacyKeep`).
       recorded = chronicle.lineages.map(lineage => lineage.id -> lineage).toMap
       lineages = plan.participants.map { participant =>
-        val record = recorded.getOrElse(participant.lineageId,
+        participant.lineageId -> recorded.getOrElse(participant.lineageId,
           LineageState(participant.lineageId, None, Role.Exile, Vector.empty,
             Vector.empty))
-        participant.lineageId -> record.copy(legacies = record.legacies ++
-          legacyDeal.drawn(orders.legacyOrder, participant.playerId)
-            .map(LegacyState(_, active = false)))
       }.toMap
       // The atlas sites not placed on the map stay in the atlas, in order,
       // with every stored card: the inverse of
