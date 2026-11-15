@@ -5,6 +5,8 @@
 **Goal:** The game stores an ordered legacy deck, discarded legacies go to
 its bottom, drawn legacies wait in the drawer's hand, and Ancient Writ (relic
 R22) runs, with Matchmaker's holder drawing and choosing for another player.
+Setup's Quiet Ambitions keep then draws the same way, so the Setup-only
+Matchmaker visibility code goes.
 
 **Architecture:** Today the legacy deck is derived and unstored, so a legacy
 moved into it leaves play and nothing can be drawn from it during a game.
@@ -17,8 +19,13 @@ bottom. Drawn legacies go to `CurrentGameState.legacyHands`, which shares
 `LegacyDraws` draws the top N with a `Draw`, which is a hidden outcome.
 Ancient Writ is a `PaidAction`: bury the relic, draw 3 into the keeper's
 hand, ask which to keep, then move one to the owner's lineage, dormant, and
-the rest to the deck's bottom. The keeper is `SetupLegacyRules.keeper`:
-Matchmaker's seated active holder, else the owner.
+the rest to the deck's bottom, which empties the hand again. The keeper is
+`SetupLegacyRules.keeper`: Matchmaker's seated active holder, else the
+owner. Last, game start stops dealing Quiet Ambitions' two legacies to each
+lineage: `LegacyKeep.step` draws them at the keep into the keeper's hand,
+so Matchmaker's holder sees another player's draw because it is in their
+own hand, and `LegacyKeep.matchmade` and the projection's Matchmaker arm
+are deleted.
 
 **Tech Stack:** Scala 3.9.0, munit, `./sbtw` (sbt wrapper), compiler flags
 `-deprecation -feature -unchecked -Wunused:imports,privates,locals,implicits,nowarn -Werror`.
@@ -27,7 +34,8 @@ Matchmaker's seated active holder, else the owner.
 rulings 1, 2, 6, 8, 9 and 10, and section "Slice 2: the legacy deck and the
 draw". The spec was amended on 2026-11-15, while this plan was written:
 the owner chose a stored, ordered deck with discards at its bottom (in
-place of a set-aside zone) and drawn legacies in a hand.
+place of a set-aside zone), drawn legacies in a hand, Setup's keep drawing
+the same way, and Matchmaker's question naming the player it chooses for.
 
 ## Global Constraints
 
@@ -62,6 +70,8 @@ place of a set-aside zone) and drawn legacies in a hand.
   `gameplay/operations/OperationPipeline.scala`.
 - Game start: `gameplay/setup/LegacyDeal.scala`,
   `gameplay/setup/GameStartRules.scala`.
+- Setup's keep (Task 5): `gameplay/setup/LegacyKeep.scala` rewritten to
+  draw into the keeper's hand; `LegacyDeal.drawn` deleted.
 - Bottom placement: `gameplay/setup/LegacyKeep.scala`,
   `gameplay/powers/legacies/TheMouth.scala`,
   `gameplay/chronicle/ResolveLegacies.scala`,
@@ -71,7 +81,8 @@ place of a set-aside zone) and drawn legacies in a hand.
 - Registration: `gameplay/powers/PhasePowerCatalog.scala`.
 - Delete: `catalog/holding/HoldingRelics.scala`.
 - Matchmaker comment: `gameplay/setup/legacies/Matchmaker.scala`.
-- Projection comment: `application/GamePresentationProjector.scala`.
+- Projection: `application/GamePresentationProjector.scala` (the hand
+  comment; Task 5 deletes the Matchmaker arm and `keepPending`).
 - Tests: `testkit/Table.scala`; new
   `gameplay/operations/LegacyDeckSuite.scala`,
   `gameplay/operations/LegacyHandSuite.scala`,
@@ -79,10 +90,14 @@ place of a set-aside zone) and drawn legacies in a hand.
   `gameplay/powers/action/AncientWritSuite.scala`,
   `application/AncientWritProjectionSuite.scala`; updated
   `LegacyMovesSuite`, `CardIndexSuite`, `LegacySetupSuite`,
-  `IronHandCitizenshipSuite`; snapshots `powers/unimplemented.txt` and
-  `notes/declared-keys.txt`.
-- Docs: `docs/rules/ambiguities.md`, the Legacies implementation rulings
-  file, `docs/rules/rules-reference.md`,
+  `IronHandCitizenshipSuite`, and in Task 5 `LegacyDealSuite`,
+  `GameStartRulesSuite`, `ExileOnlySetupSuite`, `MatchmakerSuite`,
+  `MatchmakerProjectionSuite`, `GameApplicationServiceProjectionSuite`,
+  `CombinedLegaciesRedactionSuite` and `SetupLegacyFixture`; snapshots
+  `powers/unimplemented.txt` and `notes/declared-keys.txt`; the game-log
+  goldens only if a drawn legacy's name moves.
+- Docs: `docs/rules/ambiguities.md`, the Legacies and Legacy Setup powers
+  implementation rulings files, `docs/rules/rules-reference.md`,
   `docs/rules/implementation-traceability.md`, `docs/ROADMAP.md`, the
   spec's status line.
 
@@ -816,9 +831,12 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Produces:
   - `LegacyDraws.steps(power: PowerId, drawer: PlayerId, count: Int,
     source: PowerSourceRef, drew: Int => LogNote): Vector[Operation]`,
+    `LegacyDraws.top(ready: ReadyGame, count: Int): Vector[LegacyId]`,
+    `LegacyDraws.draw(drawer: PlayerId, legacies: Vector[LegacyId]): Operation`,
     `LegacyDraws.hand(ready: ReadyGame, player: PlayerId): Vector[LegacyId]`,
-    `LegacyDraws.empty: NoteKey` (key `"legacy-deck-empty"`). Slice 5's
-    Doors reuse them.
+    `LegacyDraws.empty: NoteKey` (key `"legacy-deck-empty"`). Task 5's
+    Setup keep uses `top`, `draw` and `hand`; slice 5's Doors reuse them
+    all.
   - `AncientWritCard` (`RelicId("R22")`, power id `relic.ancient-writ`).
   - `case object AncientWrit extends PaidAction` with `Drawn = 3`,
     `decisionId = "power.ancient-writ.keep"`, keys `drew` (`"used"`) and
@@ -966,19 +984,30 @@ object LegacyDraws:
   val empty: NoteKey = notes.key("legacy-deck-empty",
     Vector(NotePart.Text("The legacy deck was empty.")))
 
-  /** `drawer` draws up to `count` legacies, written under `power` from
-    * `source`. `drew` is the line for the number actually drawn. The deck
-    * is read when the step is reached, not when the tree is built. */
+  /** The top `count` legacies of the deck in `ready`, fewer from a short
+    * deck. */
+  def top(ready: ReadyGame, count: Int): Vector[LegacyId] =
+    ready.game.current.commonCards.legacyDeck.take(count)
+
+  /** `drawer` takes `legacies`, the deck's top, into their hand. Callers
+    * read `legacies` with [[top]] in the same `Branch`. */
+  def draw(drawer: PlayerId, legacies: Vector[LegacyId]): Operation =
+    BuildOps((_, _) => Right(Vector(Draw(drawer, legacies,
+      Location.Deck(CardDeck.Legacy), Location.Hand(drawer)))),
+      required = true)
+
+  /** A power's draw: `drawer` draws up to `count` legacies, written under
+    * `power` from `source`. `drew` is the line for the number actually
+    * drawn. The deck is read when the step is reached, not when the tree
+    * is built. Setup's keep uses [[top]] and [[draw]] alone: it writes no
+    * draw line. */
   def steps(power: PowerId, drawer: PlayerId, count: Int,
       source: PowerSourceRef, drew: Int => LogNote): Vector[Operation] =
     Vector(Branch((live, _) =>
-      live.game.current.commonCards.legacyDeck.take(count) match
+      top(live, count) match
         case Vector() => Vector(Note(power, _ => Some(empty(source))))
-        case top => Vector(
-          BuildOps((_, _) => Right(Vector(Draw(drawer, top,
-            Location.Deck(CardDeck.Legacy), Location.Hand(drawer)))),
-            required = true),
-          Note(power, _ => Some(drew(top.size))))))
+        case taken => Vector(draw(drawer, taken),
+          Note(power, _ => Some(drew(taken.size))))))
 
   /** The legacies waiting in `player`'s hand, in draw order. */
   def hand(ready: ReadyGame, player: PlayerId): Vector[LegacyId] =
@@ -1173,7 +1202,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - [ ] **Step 1: Write the failing tests**
 
 Append to `AncientWritSuite` (add `MatchmakerCard` to the
-`setup.legacies` import, and `p3` to the `Table` import):
+`setup.legacies` import, `p3` to the `Table` import, and
+`import distantlands.protocol.projection.DecisionQueryProjection`):
 
 ```scala
   /** The parked decision's id and who it waits on. */
@@ -1204,6 +1234,13 @@ Append to `AncientWritSuite` (add `MatchmakerCard` to the
     assertEquals(NoteText.said(AncientWrit, used.events ++ kept.events)
       .map(_.text), Vector("p3 drew 2 legacies for p1 with Matchmaker.",
         "p3 kept a legacy for p1 with Matchmaker."))
+
+  test("Matchmaker's question names the player it keeps for"):
+    val used = accepted(use(holding(SeerCard, PopulistCard)
+      .legacy(p3, MatchmakerCard).ready, AncientWrit, source))
+    assertEquals(PhasePowerHarness.queryOf(used, p3).collect {
+      case one: DecisionQueryProjection.ChooseOne => one.heading }.flatten,
+      Some("Matchmaker: keep a legacy for p1"))
 
   test("a dormant Matchmaker chooses for nobody"):
     val used = accepted(use(holding(SeerCard, PopulistCard)
@@ -1350,8 +1387,11 @@ In `keep`, replace the `line` and the heading:
 ```scala
             heading = Some(
               if chooser == owner then "Ancient Writ: keep a legacy"
-              else "Matchmaker: keep a legacy for Ancient Writ's holder"),
+              else s"Matchmaker: keep a legacy for ${owner.value}"),
 ```
+
+A heading names a player by its id, as `GamePresentationProjector.playerLabel`
+and the log lines do.
 
 In the object's scaladoc, add after "the keeper's hand (`LegacyDraws`)":
 "The keeper is the owner, or another seated player who holds Matchmaker
@@ -1375,7 +1415,7 @@ both ask it."
 - [ ] **Step 4: Run the suites**
 
 Run: `./sbtw "testOnly distantlands.gameplay.powers.action.AncientWritSuite distantlands.application.AncientWritProjectionSuite"`
-Expected: PASS, 12 and 2 tests.
+Expected: PASS, 13 and 2 tests.
 
 - [ ] **Step 5: Regenerate the note keys and run the full suite**
 
@@ -1398,13 +1438,450 @@ not kept (catalog batch 13, ruling 9).
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
-### Task 5: Record the rulings and close the slice
+### Task 5: Setup's Quiet Ambitions keep draws into the keeper's hand
 
 **Files:**
-- Modify: `docs/rules/ambiguities.md` ("Legacies rulings" item 3;
-  "Catalog batch 13 rulings")
+- Modify: `src/main/scala/distantlands/gameplay/setup/LegacyDeal.scala`
+- Modify: `src/main/scala/distantlands/gameplay/setup/GameStartRules.scala:47-60`
+- Modify: `src/main/scala/distantlands/gameplay/setup/LegacyKeep.scala`
+- Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala`
+  (the lineage-legacies arm of `identifiesCard`, its scaladoc, `keepPending`)
+- Modify: `src/main/scala/distantlands/gameplay/setup/legacies/Matchmaker.scala` (scaladoc)
+- Modify: `src/test/scala/distantlands/gameplay/setup/SetupLegacyFixture.scala` (new `drawn`)
+- Modify: `src/test/scala/distantlands/gameplay/setup/LegacySetupSuite.scala`,
+  `LegacyDealSuite.scala`, `GameStartRulesSuite.scala:97-112`,
+  `ExileOnlySetupSuite.scala:219-226`,
+  `src/test/scala/distantlands/gameplay/setup/legacies/MatchmakerSuite.scala:29-31`,
+  `src/test/scala/distantlands/application/MatchmakerProjectionSuite.scala:26-27,71-72`,
+  `src/test/scala/distantlands/application/GameApplicationServiceProjectionSuite.scala:326-329`,
+  `src/test/scala/distantlands/application/gamelog/CombinedLegaciesRedactionSuite.scala:38-41`,
+  `src/test/scala/distantlands/gameplay/operations/LegacyDeckSuite.scala` (first test)
+- Modify: `src/test/resources/gamelog/*.log` only if the goldens move (Step 7)
+
+**Interfaces:**
+- Consumes: `LegacyDraws.top`, `LegacyDraws.draw`, `LegacyDraws.hand`
+  (Task 3); `PositionedLocation.legacyDeckBottom` (Task 1);
+  `SetupLegacyRules.keeper`; `LegacyKeep.decisionId`, `keptLegacy`,
+  `Matchmaker.keptFor` (unchanged).
+- Produces:
+  - Game start deals no legacy to a lineage under Quiet Ambitions:
+    `CardZones.legacyDeck` holds the whole shuffled order less the public
+    row (`LegacyDeal#rest`).
+  - `LegacyKeep.step(participant)` draws `LegacyDeal.QuietDraw` into the
+    keeper's hand, then keeps. Its decision id, lines and answers are
+    unchanged; its Matchmaker heading names the owner.
+  - Deleted: `LegacyDeal#drawn`, `LegacyKeep.drawn`, `LegacyKeep.matchmade`,
+    `GamePresentationProjector.keepPending`.
+  - Test helper `SetupLegacyFixture.drawn(orders: SetupOrders, player: PlayerId): Vector[LegacyId]`.
+
+Setup's keeps run in turn order from the first player
+(`SetupProcedure.turnOrder`), so each keep draws the next 2 from the top in
+that order, not in seat order. With a deck of at least 2 per player, player
+`k` in that order draws `legacyOrder.slice(2k, 2k + 2)`, which is what
+`SetupLegacyFixture.drawn` computes. A short deck differs: a legacy an
+earlier keep returned to the bottom can reach a later player (spec ruling
+6).
+
+- [ ] **Step 1: Write the test helper and the failing tests**
+
+In `src/test/scala/distantlands/gameplay/setup/SetupLegacyFixture.scala`,
+add to the object:
+
+```scala
+  /** The legacies `player` draws at their Quiet Ambitions keep, when the
+    * deck holds at least 2 per player: the keeps run in turn order from
+    * the first player, and each draws the next 2 from the top of
+    * `orders.legacyOrder` (catalog batch 13, ruling 6). */
+  def drawn(orders: SetupOrders, player: PlayerId): Vector[LegacyId] =
+    val seats = orders.participants.map(_.playerId)
+    val start = seats.indexOf(orders.firstPlayer)
+    val at = (seats.drop(start) ++ seats.take(start)).indexOf(player)
+    if at < 0 then Vector.empty
+    else orders.legacyOrder.slice(LegacyDeal.QuietDraw * at,
+      LegacyDeal.QuietDraw * (at + 1))
+```
+
+In `LegacySetupSuite.scala`:
+
+- Replace the test "Quiet Ambitions deals each seated lineage 2 dormant
+  legacies, after those it holds" with:
+
+```scala
+  test("Quiet Ambitions' game start deals no legacy: each seated lineage " +
+      "starts from its record and the deck holds the whole order"):
+    val seated = seats.head.lineageId
+    val kept = LegacyState(SeerCard.id, active = true)
+    val keeping = later.copy(lineages = later.lineages.map(lineage =>
+      if lineage.id == seated then lineage.copy(legacies = Vector(kept))
+      else lineage))
+    val order = LegacyDeal.deck(catalog, keeping)
+    val ready = accepted(GameStartRules.evolve(catalog, keeping,
+      LaterGameFixture.orders(keeping, seats.head.playerId)
+        .copy(legacyOrder = order)))
+    seats.foreach(seat => assertEquals(
+      ready.game.campaign.lineages(seat.lineageId).legacies,
+      if seat.lineageId == seated then Vector(kept) else Vector.empty,
+      seat.playerId.value))
+    assertEquals(ready.game.current.commonCards.legacyDeck, order)
+    assertEquals(ready.game.current.commonCards.publicLegacies, Vector.empty)
+```
+
+- Replace `private val deal = LegacyDeal.of(chronicle, seats)` and the
+  `drawn` helper below it with:
+
+```scala
+  private def drawn(player: PlayerId): Vector[LegacyId] =
+    SetupLegacyFixture.drawn(orders, player)
+```
+
+- Replace the test "a short deck draws 2, 1 and 0 in seat order: ..."
+  with (the setup lines that build `short` and `shortOrders` stay as they
+  are):
+
+```scala
+  test("a short deck draws in keep order, and a later keep can draw a " +
+      "legacy an earlier one returned (R9; catalog batch 13, ruling 6)"):
+    // Box lineages hold every legacy but 3, so the derived deck is short.
+    // A later game with a Chancellor keeps them; a first game played
+    // exile-only would wipe them back into the deck (R40).
+    val held = catalog.legacies.map(_.id).dropRight(3)
+    val boxed = held.grouped(12).zipWithIndex.map((ids, n) => LineageState(
+      LineageId(s"boxed-$n"), None, Role.Exile,
+      ids.map(LegacyState(_, active = true)), Vector.empty)).toVector
+    val short = later.copy(lineages = later.lineages ++ boxed)
+    val shortOrders = LaterGameFixture.orders(short, seats.head.playerId)
+      .copy(legacyOrder = LegacyDeal.deck(catalog, short))
+    val Vector(a, b, c) = shortOrders.legacyOrder
+    val started = accepted(GameStartRules.evolve(catalog, short, shortOrders))
+    val Vector(first, second, third) = seats
+    // The default answer keeps the first option: the first keep takes a
+    // and returns b to the bottom, under c; the second draws c and b,
+    // keeps c and returns b; the third draws b alone and keeps it unasked.
+    val setup = walked(started)
+    assertEquals(legacyQuestions(setup.asked).map(_.owner),
+      Vector(first.playerId, second.playerId))
+    def holding(seat: FirstGameParticipant) =
+      setup.ready.game.campaign.lineages(seat.lineageId).legacies
+    assertEquals(holding(first), Vector(LegacyState(a, active = false)))
+    assertEquals(holding(second), Vector(LegacyState(c, active = false)))
+    assertEquals(holding(third), Vector(LegacyState(b, active = false)))
+    assertEquals(setup.ready.game.current.commonCards.legacyDeck, Vector.empty)
+    val kept = notes(setup.events).filter(_.key ==
+      SetupProcedure.keptLegacy.name).map(_.args)
+    assertEquals(kept.toSet, seats.map(seat =>
+      Vector[NoteArg](NoteArg.Player(seat.playerId))).toSet)
+```
+
+- In "in a first game each player keeps one dormant legacy and returns
+  the other to the deck", add after the `seats.foreach { ... }` block,
+  before Task 1's bottom-of-deck assertion:
+
+```scala
+    assert(seats.forall(seat =>
+      ready.game.current.legacyHands.getOrElse(seat.playerId, Vector.empty)
+        .isEmpty), "every hand is empty after the keeps")
+```
+
+In `LegacyDealSuite.scala`, replace the four tests that call `drawn` (the
+Quiet Ambitions, Public Ambitions and short-deck ones) with:
+
+```scala
+  test("Quiet Ambitions deals no public row and leaves the whole order " +
+      "as the deck"):
+    val deal = LegacyDeal.of(withFace(FoundationFace.Normal), seats)
+    assertEquals(deal.publicRow(order), Vector.empty)
+    assertEquals(deal.rest(order), order)
+
+  test("Public Ambitions deals the first 4 faceup and leaves the rest"):
+    val deal = LegacyDeal.of(withFace(FoundationFace.Altered), seats)
+    assertEquals(deal.publicRow(order), order.take(4))
+    assertEquals(deal.rest(order), order.drop(4))
+
+  test("a short deck deals what remains to the public row"):
+    val short = order.take(3)
+    assertEquals(LegacyDeal(FoundationFace.Altered, Vector(p1))
+      .publicRow(short), short)
+    assertEquals(LegacyDeal(FoundationFace.Altered, Vector(p1))
+      .rest(short), Vector.empty)
+```
+
+Keep "a Chronicle that lists no Foundation III deals Quiet Ambitions" and
+"the deck is every legacy no lineage holds, seated or in the box". If
+`p2` and `p3` are now unused, change the `val Vector(p1, p2, p3)` line to
+`private val p1 = seats.head.playerId`. Change the class comment to
+"Foundation III's deal of the legacy deck, on both faces (Legacies design,
+slice 2, rulings 3-5; catalog batch 13, ruling 6): the public row, and the
+rest the game keeps as its deck."
+
+In `LegacyDeckSuite.scala`, replace the first test's first assertion with
+`assertEquals(deckOf(ready), orders.legacyOrder)` and rename the test
+"Quiet Ambitions' game start keeps the whole order as the deck".
+
+- [ ] **Step 2: Run them to see them fail**
+
+Run: `./sbtw "testOnly distantlands.gameplay.setup.LegacySetupSuite distantlands.gameplay.setup.LegacyDealSuite distantlands.gameplay.operations.LegacyDeckSuite"`
+Expected: FAIL: game start still deals 2 legacies to each lineage, so the
+deck is short of them and the short-deck walk still asks only the first
+keeper.
+
+- [ ] **Step 3: Stop dealing the draws at game start**
+
+In `gameplay/setup/LegacyDeal.scala`:
+
+- Delete `drawn` and its scaladoc.
+- `rest` becomes:
+
+```scala
+  /** What the deal leaves of `order`, top first: the game's legacy deck.
+    * Quiet Ambitions deals nothing at game start, since each keep draws its
+    * own (catalog batch 13, rulings 1 and 6). */
+  def rest(order: Vector[LegacyId]): Vector[LegacyId] =
+    if public then order.drop(LegacyDeal.PublicRow) else order
+```
+
+- Replace the class scaladoc with:
+
+```scala
+/** Foundation III's deal of the legacy deck at game start (Legacies
+  * design, slice 2; implementation ruling R16; catalog batch 13, ruling
+  * 6). `seats` lists every seated player in seat order; `order` below is
+  * always the deal's `legacyOrder`, the derived deck shuffled.
+  *
+  * Public Ambitions, the altered face: the first 4 are dealt faceup to the
+  * public row and nobody draws. Quiet Ambitions, the normal face and every
+  * first game's (ruling 4): game start deals nothing, and each player's
+  * keep in Setup draws 2 from the deck (`LegacyKeep`). A short deck deals
+  * or draws what remains (ruling 5).
+  */
+```
+
+`seats` stays a field: `LegacyDeal.of` and the tests pass it. If the
+compiler reports it unused, leave it; it is a public constructor field.
+
+In `gameplay/setup/GameStartRules.scala`, the lineages no longer gain the
+draw:
+
+```scala
+      // A seated lineage the Chronicle lists starts from its record, its
+      // legacies with their stored faces; `LaterGameSetup` hands its
+      // starting relics to its player. Quiet Ambitions' draw waits for the
+      // keep in Setup (`LegacyKeep`).
+      recorded = chronicle.lineages.map(lineage => lineage.id -> lineage).toMap
+      lineages = plan.participants.map { participant =>
+        participant.lineageId -> recorded.getOrElse(participant.lineageId,
+          LineageState(participant.lineageId, None, Role.Exile, Vector.empty,
+            Vector.empty))
+      }.toMap
+```
+
+- [ ] **Step 4: Draw at the keep**
+
+Replace the body of `object LegacyKeep` in
+`gameplay/setup/LegacyKeep.scala` from the `step` scaladoc to the end of
+the file with:
+
+```scala
+  /** Quiet Ambitions: draw 2 legacies from the top of the legacy deck,
+    * keep one facedown and return the other to the bottom (CR "Set Up
+    * Players"; Legacies design, slice 2; catalog batch 13, rulings 2 and
+    * 6). The draw goes to the keeper's hand: Matchmaker's holder draws and
+    * keeps for every other player (Legacy Setup powers ruling 13), and a
+    * hand is private to its holder, so only the keeper sees the draw. The
+    * keep is its own `Branch`, after the draw's, so a walk resumed at the
+    * question reads the same hand. A short deck's single legacy is kept
+    * without a question, and a player who draws none is asked nothing
+    * (R9). Public Ambitions draws nothing. */
+  def step(participant: FirstGameParticipant): Operation =
+    val owner = participant.playerId
+    val lineage = participant.lineageId
+    val decisionId = LegacyKeep.decisionId(owner)
+    Sequence(Vector(
+      Branch((state, _) =>
+        if !quiet(state) then Vector.empty
+        else LegacyDraws.top(state, LegacyDeal.QuietDraw) match
+          case Vector() => Vector.empty
+          case top => Vector(LegacyDraws.draw(
+            SetupLegacyRules.keeper(state, owner), top))),
+      Branch((state, _) =>
+        val keeper = SetupLegacyRules.keeper(state, owner)
+        LegacyDraws.hand(state, keeper) match
+          case Vector() => Vector.empty
+          case Vector(only) => Vector(
+            BuildOps((_, _) => Right(Vector(keptMove(only, keeper, lineage))),
+              required = true),
+            keptNote(keeper, owner))
+          case drawn => Vector(
+            Decide(decisionId, keeper, DecisionQuery.ChooseOne(
+              drawn.map(id =>
+                DecisionOption.Legacy(DecisionOptionRef.Legacy(id))),
+              heading = Some(
+                if keeper == owner then "Keep a legacy"
+                else s"Matchmaker: keep a legacy for ${owner.value}"),
+              confirmVerb = Some("Keep"))),
+            BuildOps(settled(lineage, keeper, drawn, decisionId),
+              required = true),
+            keptNote(keeper, owner)))))
+
+  /** Whether Foundation III shows Quiet Ambitions, whose keep draws. */
+  private def quiet(state: ReadyGame): Boolean =
+    state.game.campaign.foundations.get(FoundationNumber.III)
+      .forall(_.face == FoundationFace.Normal)
+
+  private def keptNote(keeper: PlayerId, owner: PlayerId): Operation =
+    Note(ProcedureNotes.id(TriggeredProcedureRef.Setup), _ => Some(
+      if keeper == owner then keptLegacy.sourceless(NoteArg.Player(owner))
+      else Matchmaker.keptFor.sourceless(NoteArg.Player(keeper),
+        NoteArg.Player(owner), NoteArg.Card(MatchmakerCard.id))))
+
+  /** The kept legacy, from the keeper's hand to the owner's lineage, with
+    * no face: dormant. */
+  private def keptMove(legacy: LegacyId, keeper: PlayerId,
+      lineage: LineageId): Move =
+    Move(Piece.Card(legacy), PositionedLocation(Location.Hand(keeper)),
+      PositionedLocation(Location.Legacies(lineage)))
+
+  private def settled(lineage: LineageId, keeper: PlayerId,
+      drawn: Vector[LegacyId], decisionId: String)
+      : (ReadyGame, PendingTree) => Either[OathViolation, Vector[CoreOperation]] =
+    (_, pending) =>
+      pending.answered.find(_.decisionId == decisionId).map(_.answer) match
+        case Some(DecisionAnswer.ChooseOneAnswer(
+            DecisionOptionRef.Legacy(kept))) if drawn.contains(kept) =>
+          Right(keptMove(kept, keeper, lineage) +: drawn.filterNot(_ == kept)
+            .map(id => Move(Piece.Card(id),
+              PositionedLocation(Location.Hand(keeper)),
+              PositionedLocation.legacyDeckBottom)))
+        case _ => Left(InvalidEventOrder(
+          s"no legacy answer is recorded for $decisionId"))
+```
+
+Add `import distantlands.gameplay.powers.LegacyDraws` to the file's
+imports, and change the object's scaladoc first sentence to "Foundation
+III's Quiet Ambitions keep in Setup's walk: each player draws two legacies
+from the legacy deck, keeps one facedown and returns the other to the
+bottom (Legacies design, slice 2; catalog batch 13, ruling 6)."
+
+- [ ] **Step 5: Drop the projection's Matchmaker arm**
+
+In `application/GamePresentationProjector.scala`:
+
+- The lineage-legacies arm of `identifiesCard` becomes:
+
+```scala
+      // An active legacy is faceup for all; a dormant one is facedown in its
+      // owner's play area, and only they know it (Legacies design, ruling 1).
+      // In the Chronicle Phase the game is over and goals are checked
+      // openly, so every legacy is named to everyone (implementation ruling
+      // R18); after Resolve Legacies the only dormant ones were active. A
+      // legacy Matchmaker's holder draws for another player waits in the
+      // holder's hand, which the hand arm names to them alone (catalog
+      // batch 13, ruling 6).
+      case CardContainer.Lineage(lineage, LineageCardArea.Legacies) =>
+        faceup || ready.game.current.turn.phase == Phase.Chronicle ||
+          viewer.exists(player => ready.game.current.players
+            .exists(seat => seat.player == player && seat.lineage == lineage))
+```
+
+- In the scaladoc list above `identifiesCard`, delete the sentence "A
+  draw Matchmaker's holder keeps for another player is named to the holder
+  alone while that keep is the parked decision, and to nobody before
+  (R16)."
+- Delete `keepPending` and its scaladoc. Keep `setupPowers` and
+  `setupOpen`: `deckQuestionPending` still reads them.
+- Remove `LegacyKeep` from the file's imports if nothing else uses it.
+
+In `setup/legacies/Matchmaker.scala`, replace "the holder sees both drawn
+legacies while that keep is open, and the owner only the one kept for them
+(`LegacyKeep.matchmade`, R16)." with "the holder draws them into their own
+hand, so they see both and the owner only the one kept for them (catalog
+batch 13, ruling 6)."
+
+- [ ] **Step 6: Move the remaining tests to the helper**
+
+Each of these computes a player's draw with `LegacyDeal...drawn(order,
+player)`. Replace it with `SetupLegacyFixture.drawn(orders, player)`, where
+`orders` is the `SetupOrders` the test starts the game with (pass
+`orders.copy(legacyOrder = order)` when the test overrides the order), and
+delete any `LegacyDeal.of(...)` value left unused:
+
+- `gameplay/setup/legacies/MatchmakerSuite.scala` (`deal`, `drawn`)
+- `application/MatchmakerProjectionSuite.scala` (`drawn`; `own` in
+  "without Matchmaker the owner identifies their own draw", with
+  `plainOrders`)
+- `application/GameApplicationServiceProjectionSuite.scala`
+  (`drawnLegacies`)
+- `application/gamelog/CombinedLegaciesRedactionSuite.scala` (`deal`,
+  `drawn` in "no log names a legacy Matchmaker's holder kept for another
+  player")
+
+In `gameplay/setup/GameStartRulesSuite.scala`, "a seated lineage the
+Chronicle lists starts from its record, and an unlisted one starts as a
+fresh Exile": delete the `drawn` helper and its comment, and assert
+
+```scala
+    assertEquals(ready.game.campaign.lineages(listed), record)
+    assertEquals(ready.game.campaign.lineages(unlisted), LineageState(unlisted,
+      None, Role.Exile, Vector.empty, Vector.empty))
+```
+
+In `gameplay/setup/ExileOnlySetupSuite.scala`, the test at line 219 asserts
+each seated lineage's legacies at game start: replace the `deal` value and
+the `foreach` with
+
+```scala
+    orders.participants.foreach(seat => assertEquals(
+      ready.game.campaign.lineages(seat.lineageId).legacies, Vector.empty))
+```
+
+and keep its baseline assertion.
+
+`MatchmakerProjectionSuite`'s assertions keep their meaning: before p2's
+keep the draw is still in the deck, while it waits it is in p3's hand, and
+once kept it is on p2's lineage. They need no other change.
+
+- [ ] **Step 7: Run the full suite and check the goldens**
+
+Run: `./sbtw test`
+Expected: PASS, except possibly `GameLogGoldenSuite`. The keep's lines are
+unchanged, but a player now draws other legacies than before when the
+first player is not the first seat, so a golden that names a kept legacy
+to its owner, or an active legacy dealt in a later game, may move. If
+`GameLogGoldenSuite` fails, regenerate:
+
+Run: `GAMELOG_GOLDEN=write ./sbtw "testOnly distantlands.application.gamelog.GameLogGoldenSuite"`
+
+Then read `git diff src/test/resources/gamelog` line by line. Accept only
+lines whose legacy names changed because a different legacy was drawn.
+Any new, lost or reordered line is a regression: stop and report it.
+
+Any other failure that reads a drawn legacy off a lineage before the keep
+pinned the old deal: point it at `SetupLegacyFixture.drawn` or at the
+keeper's hand, and name it in the commit message.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add src/main src/test
+git commit -m "feat(setup): draw Quiet Ambitions' legacies into the keeper's hand at the keep
+
+Game start deals no legacy to a lineage; each keep draws 2 from the top of
+the legacy deck into the keeper's hand, as Ancient Writ does, so
+Matchmaker's holder sees another player's draw in their own hand. The
+Setup-only Matchmaker visibility rule is deleted, and the Matchmaker
+question names the player it keeps for (catalog batch 13, ruling 6).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+```
+
+### Task 6: Record the rulings and close the slice
+
+**Files:**
+- Modify: `docs/rules/ambiguities.md` ("Legacies rulings" items 3 and 5;
+  "Legacy Setup powers rulings" item 29; "Catalog batch 13 rulings")
 - Modify: `docs/superpowers/specs/2026-11/2026-11-13-legacies-implementation-rulings.md`
-  (R3, R6)
+  (R3, R6, R13)
+- Modify: `docs/superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md`
+  (R16)
 - Modify: `docs/rules/rules-reference.md` (after the Reliquary Raid bullet)
 - Modify: `docs/rules/implementation-traceability.md` (row "Legacy SETUP
   powers in the foundations", last column; row "Legacies on the table")
@@ -1414,7 +1891,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   (status line)
 
 **Interfaces:**
-- Consumes: Tasks 1 to 4's behaviour and lines.
+- Consumes: Tasks 1 to 5's behaviour and lines.
 - Produces: "Catalog batch 13 rulings" items 2 to 7, which slices 3 to 6
   continue from item 8.
 
@@ -1423,7 +1900,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 In `docs/rules/ambiguities.md`, replace Legacies rulings item 3 with:
 
 ```markdown
-3. **The legacy deck is derived between games and stored during one.** Between games it is every catalog legacy that no lineage holds, seated or in the box, and that is not in the public row. Game start shuffles it, deals from it, and keeps the rest in order; a returned or discarded legacy goes to its bottom, and a draw during a game takes from its top ([Catalog batch 13 rulings](#catalog-batch-13-rulings), items 2 and 3). The Chronicle stores no deck, and Sun step 5, Shuffle, has nothing to do (design, ruling 3; amended by catalog batch 13, ruling 2).
+3. **The legacy deck is derived between games and stored during one.** Between games it is every catalog legacy that no lineage holds, seated or in the box, and that is not in the public row. Game start shuffles it, deals the public row from it, and keeps the rest in order; a returned or discarded legacy goes to its bottom, and a draw during a game takes from its top ([Catalog batch 13 rulings](#catalog-batch-13-rulings), items 2 and 3). The Chronicle stores no deck, and Sun step 5, Shuffle, has nothing to do (design, ruling 3; amended by catalog batch 13, ruling 2).
 ```
 
 - [ ] **Step 2: Add the batch 13 slice 2 rulings**
@@ -1436,9 +1913,9 @@ append after item 1:
 ```markdown
 2. **The game stores the legacy deck.** Game start keeps what Foundation III's deal leaves of the shuffled deck. A draw during a game takes the top legacies into the drawer's hand; a short deck draws what remains, and an empty deck draws nothing and writes "The legacy deck was empty." The deck is not shuffled during a game. A draw is a hidden outcome, so undo never takes it back.
 3. **Discarded legacies go to the bottom of the legacy deck:** Quiet Ambitions' return, Iron Hand's discard during a game and The Mouth's, Ancient Writ's two, and the Sun's returns. A discarded legacy comes back only once every legacy above it is drawn.
-4. **Drawn legacies wait in the drawer's hand,** which only the drawer sees. The kept one joins the owner's lineage, dormant. The legacy deck is not shown.
+4. **Drawn legacies wait in the drawer's hand,** which only the drawer sees. The kept one joins the owner's lineage, dormant, and the hand is empty again. The legacy deck is not shown. Quiet Ambitions' keep draws the same way: game start deals no legacy to a lineage, and each keep draws 2 from the top into the keeper's hand, Matchmaker's holder's when they keep for another player, whose question names that player ("Matchmaker: keep a legacy for p2"). The keeps draw in turn order from the first player, so a short deck can give a later player a legacy an earlier keep returned.
 5. **Ancient Writ.** ACTION: bury it, draw 3 legacies, keep 1 dormant and discard the others to the bottom of the legacy deck. A single drawn legacy is kept without a question, and an empty deck asks nothing. Lines: "p1 drew 3 legacies." and "p1 kept a legacy.", never naming the legacy.
-6. **Matchmaker during a game.** When another seated player holds Matchmaker active, they draw Ancient Writ's legacies into their own hand and keep one for the Writ's holder, off turn; the question reads "Matchmaker: keep a legacy for Ancient Writ's holder". The owner never identifies the legacies not kept. A holder using Ancient Writ themself chooses for themself. Lines: "p3 drew 3 legacies for p1 with Matchmaker." and "p3 kept a legacy for p1 with Matchmaker."
+6. **Matchmaker during a game.** When another seated player holds Matchmaker active, they draw Ancient Writ's legacies into their own hand and keep one for the Writ's holder, off turn; the question names that player, "Matchmaker: keep a legacy for p1". The owner never identifies the legacies not kept. A holder using Ancient Writ themself chooses for themself. Lines: "p3 drew 3 legacies for p1 with Matchmaker." and "p3 kept a legacy for p1 with Matchmaker."
 7. **Only Ancient Writ triggers Matchmaker** during a game: Amber Doors is excluded by Matchmaker's printed text, and Lost Doors' discard is the owner's choice.
 ```
 
@@ -1459,6 +1936,34 @@ and one at the end of R6:
 *Amended 2026-11-15* by [catalog batch 13](2026-11-14-catalog-batch-13-design.md), ruling 2: the move into the deck names the bottom; it still never names a facedown face.
 ```
 
+In the same file, add at the end of R13 (`**R13. Which legacies the keep
+decision offers.**`):
+
+```markdown
+*Superseded 2026-11-15* by [catalog batch 13](2026-11-14-catalog-batch-13-design.md), ruling 6: the keep draws its own legacies into the keeper's hand and offers what that hand holds.
+```
+
+In `docs/superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-implementation-rulings.md`,
+add at the end of the R16 bullet (`- **R16. When Matchmaker's holder sees
+another player's draw.**`), as its last sentence:
+
+```markdown
+*Superseded 2026-11-15* by [catalog batch 13](2026-11-14-catalog-batch-13-design.md), ruling 6: the holder draws into their own hand, so the hand rule names the draw to them alone.
+```
+
+In `docs/rules/ambiguities.md`, Legacies rulings item 5, replace "in seat
+order," with:
+
+```markdown
+in turn order from the first player, each keep drawing from the top as it is reached ([Catalog batch 13 rulings](#catalog-batch-13-rulings), item 4),
+```
+
+and replace Legacy Setup powers rulings item 29 with:
+
+```markdown
+29. **Matchmaker's holder sees another player's draw because it is in their hand:** they draw it there at that player's keep, and nobody else sees a hand. Once kept, the legacy is named to its owner alone, and the returned one to nobody (R16, superseded by [Catalog batch 13 rulings](#catalog-batch-13-rulings), item 4).
+```
+
 - [ ] **Step 4: Add the Digital note**
 
 In `docs/rules/rules-reference.md`, after the bullet beginning
@@ -1476,8 +1981,12 @@ In `docs/rules/implementation-traceability.md`:
   "Matchmaker on draws during a game (Amber Doors, Lost Doors, Ancient
   Writ) waits for its batch." with "Matchmaker during a game keeps
   Ancient Writ's draw for its holder (`powers/action/AncientWritSuite`,
-  `application/AncientWritProjectionSuite`); the Doors wait for catalog
+  `application/AncientWritProjectionSuite`), and draws Setup's keep into
+  their own hand (`setup/LegacySetupSuite`,
+  `application/MatchmakerProjectionSuite`); the Doors wait for catalog
   batch 13, slice 5."
+- Same row, third column: replace "seeing that draw only while the keep is
+  the parked decision" with "drawing it into their own hand".
 - Row "Legacies on the table", third column: append this sentence (one
   line in the table cell):
 
