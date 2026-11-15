@@ -6,6 +6,10 @@ batch has landed, slice 4 (The Mouth) included: slice 5 here reuses The
 Mouth's activation, and slice 2 changes where The Mouth's Iron Hand discard
 sends the card. Each slice is planned when the one before it lands. Slice 1
 landed 2026-11-14; with it every printed denizen power is implemented.
+Amended 2026-11-15 by the owner while slice 2 was planned: the legacy deck
+is stored and ordered, discarded legacies go to its bottom in place of a
+set-aside zone, and drawn legacies wait in the drawer's hand (rulings 1, 2,
+6, 9, 12 and 13; "Slice 2").
 
 **Builds on** the [Legacies design](2026-11-13-legacies-design.md), the
 [Legacy Setup powers](2026-11-13-legacy-setup-powers-design.md) batch (the
@@ -25,7 +29,7 @@ When this batch lands, `catalog/holding/` is empty. It clears the ROADMAP's
 | Slice | Cards | Seam |
 |---|---|---|
 | 1. Reliquary Raid | Reliquary Raid (220) | `ReliquaryDraws`, unchanged |
-| 2. Set-aside legacies and the draw | Ancient Writ (R22), Matchmaker during a game | `setAsideLegacies`; a derived legacy deck; a keep decision during a game |
+| 2. The legacy deck and the draw | Ancient Writ (R22), Matchmaker during a game | a stored legacy deck; legacies in a hand; a keep decision during a game |
 | 3. The keep in Foundation III | none | `SetupProcedure`, `LegacyKeep` |
 | 4. Power order | none | an ordering host over `SetupPawnPlaced` |
 | 5. The Doors | Amber Doors and Lost Doors (E05) | `EdificeSetupSupport`; The Mouth's activation |
@@ -48,24 +52,24 @@ then continue.
 
 ### General
 
-1. **A legacy draw during a game derives the deck when it runs.** The
-   deck is every catalog legacy that no lineage holds (seated or boxed),
-   that is not in the Public Ambitions row, and that is not set aside
-   (ruling 2). The draw shuffles that pile, the walker journals the order
-   as a hidden outcome, and the drawer takes the top N, dormant. A short
-   deck draws what remains. An empty deck draws nothing, and a line says
-   so.
-2. **Set-aside legacies.** A legacy Quiet Ambitions returns "to the box"
-   and every legacy discarded during a game go to `setAsideLegacies`. No
-   set-aside legacy is drawn again in that game. The discards are Iron
-   Hand's when its holder is Imperial, The Mouth's Iron Hand discard,
-   Ancient Writ's two, Lost Doors' one and Amber Doors' all. The Chronicle
-   stores nothing new: the next game's deal derives its deck from the
-   Chronicle as today, so set-aside legacies return to the deck between
-   games. The Sun's returns still go to the legacy deck, since by then the
-   game is over and both piles are the same. This amends Legacies ruling 3,
-   which treated "return to the box" and "return to the legacy deck" as one
-   pile while every draw happened in setup.
+1. **The game stores the legacy deck.** Game start keeps what Foundation
+   III's deal leaves of the shuffled deck: every catalog legacy that no
+   lineage holds (seated or boxed), less the Public Ambitions row and the
+   legacies the players drew. A draw during a game takes the top N into
+   the drawer's hand. A short deck draws what remains. An empty deck draws
+   nothing, and a line says so. The deck is not shuffled during a game.
+   A draw shows the drawer cards nobody saw, so it is a hidden outcome and
+   undo never takes it back.
+2. **Discarded legacies go to the bottom of the legacy deck.** A legacy
+   Quiet Ambitions returns "to the box", and every legacy discarded during
+   a game, goes there. The discards are Iron Hand's when its holder is
+   Imperial, The Mouth's Iron Hand discard, Ancient Writ's two, Lost Doors'
+   one and Amber Doors' all. A discarded legacy is drawn again only once
+   every legacy above it is drawn. The Sun's returns go to the bottom too.
+   The Chronicle stores nothing new: the next game's deal derives its deck
+   from the Chronicle as today. This amends Legacies ruling 3 (a derived
+   deck with no order, which a returned legacy leaves) and implementation
+   rulings R3 and R6 (a move into the deck names no position).
 3. **The keep moves to Foundation III in later games.** The Quiet
    Ambitions keep runs while Foundation III resolves (CR "Later games",
    step 5), for every seated player in seat order, before any pawn is
@@ -89,10 +93,12 @@ then continue.
 5. **The Standard Bearer and Wealthy read their holder at their own
    step.** A legacy a Doors face discarded before it resolved does not
    resolve. A legacy Amber Doors activated in the same window does.
-6. **Set-aside legacies are not shown.** The projection carries no
-   set-aside zone for any viewer. An owner's knowledge of the legacies
-   they set aside is kept in `CardKnowledge`, as for any card leaving
-   play, but no surface displays it.
+6. **Drawn legacies wait in the drawer's hand.** A hand is private to its
+   holder, so no other viewer identifies a drawn legacy, and the keep's
+   question shows it to the drawer through its options. The kept legacy
+   then joins the owner's lineage, dormant, and the others go to the
+   bottom of the deck, where nobody identifies them. The legacy deck is
+   not shown.
 
 ### Slice 1: Reliquary Raid
 
@@ -105,15 +111,14 @@ then continue.
 ### Slice 2: Ancient Writ and Matchmaker
 
 8. **Ancient Writ.** ACTION: the holder buries the relic, draws 3
-   legacies (fewer from a short deck), keeps 1 dormant and sets the others
-   aside. A single drawn legacy is kept without a question, and an empty
-   deck asks nothing.
+   legacies (fewer from a short deck), keeps 1 dormant and discards the
+   others to the bottom of the legacy deck. A single drawn legacy is kept
+   without a question, and an empty deck asks nothing.
 9. **Matchmaker during a game.** When another seated player holds
-   Matchmaker active, that player draws and chooses for the Ancient Writ
-   holder: they see the drawn legacies while the keep is the parked
-   decision, as in R16, and answer off turn. The owner never identifies
-   the legacies they did not keep. A holder using Ancient Writ themself
-   chooses for themself.
+   Matchmaker active, that player draws into their own hand and chooses
+   for the Ancient Writ holder, off turn. The question names the player
+   they choose for. The owner never identifies the legacies they did not
+   keep. A holder using Ancient Writ themself chooses for themself.
 10. **Only Ancient Writ triggers Matchmaker.** Amber Doors is excluded by
     Matchmaker's printed text. Lost Doors' discard is the owner's choice
     (ruling 13).
@@ -125,7 +130,8 @@ then continue.
     placer in `SetupPawnPlaced`, the explorer in `WhenExplored`
     (`EdificeSetupSupport.pawnPlacement`).
 12. **Amber Doors.** "You may". On yes, every legacy the player holds,
-    active and dormant, is set aside. They draw 2 dormant legacies and
+    active and dormant, goes to the bottom of the legacy deck. They draw 2
+    legacies and
     choose one to activate; the other stays dormant. A short deck draws
     what remains, and a single draw is activated without a question; an
     empty deck draws and activates nothing.
@@ -133,10 +139,11 @@ then continue.
     Hand activated by an Imperial is discarded at once. The activated
     legacy acts from then on. A SETUP power whose step has passed does not
     resolve, but one in the same window does (ruling 4).
-13. **Lost Doors.** The player draws 1 dormant legacy, then sets aside one
-    dormant legacy they hold, the new one included. Active legacies are
-    never discarded by it. With a single dormant legacy, it is set aside
-    without a question; with none (an empty deck and no dormant legacy),
+13. **Lost Doors.** The player draws 1 dormant legacy, then discards one
+    dormant legacy they hold, the new one included, to the bottom of the
+    legacy deck. Active legacies are never discarded by it. With a single
+    dormant legacy, it is discarded without a question; with none (an
+    empty deck and no dormant legacy),
     nothing happens. Matchmaker plays no part.
 
 ### Slice 6: Chronicle cards
@@ -174,32 +181,36 @@ then continue.
 from `HoldingDiscordDenizens` to sit beside its power, and that file is
 deleted.
 
-### Slice 2: set-aside legacies and the draw
+### Slice 2: the legacy deck and the draw
 
-- **Zone.** `setAsideLegacies: Vector[LegacyId]` beside `setAsideRelics`
-  and `setAsideEdifices`, with `CardContainer.SetAsideLegacies` in
-  `CardIndex` and a matching `Location`. Its order means nothing. A move
-  into it names no top or bottom and no facedown face, as with the legacy
-  deck today (R3, R6). `CardMovementOperations` gains its arms;
-  `CardOperationCodec` and `GameEventJsonSupport` its codec.
-- **Pile.** `ShufflePile.LegacyDeck`, derived when read (ruling 1).
-- **Draw.** `LegacyDraws`, mirroring `ReliquaryDraws`: a `Branch` that
-  reads the pile when reached, then `Shuffle(ShufflePile.LegacyDeck)`,
-  then a `BuildOps` moving the top N to `Location.Legacies(lineage)`,
-  dormant, through the existing `facedownLegacy` knowledge path. The
-  shuffle is a hidden outcome (`HiddenOutcomes`), so undo never takes a
-  draw back.
-- **Redirects.** `LegacyKeep.returnLegacies`, `IronHand.inGameDiscard` and
-  The Mouth's Iron Hand discard move to the set-aside zone in place of
-  `Location.Deck(CardDeck.Legacy)`.
+- **Deck.** `CardZones.legacyDeck: Vector[LegacyId]`, top first, beside
+  the edifice deck. Game start fills it from the deal (ruling 1), and
+  `CardIndex` indexes it as `CardContainer.Deck(CardDeck.Legacy)`. It is a
+  stack like the other decks: a move into it names the top or the bottom,
+  and still never a facedown face (R6). `OperationPipeline.boxed` no
+  longer counts a move into it as leaving play.
+- **Hand.** `CurrentGameState.legacyHands: Map[PlayerId, Vector[LegacyId]]`
+  beside `temporaryHands`, which keeps holding world cards only so Search
+  and its powers are untouched. Both are `Location.Hand(player)` and
+  `CardContainer.Player(player, PlayerCardArea.Hand)`, so a legacy in a
+  hand is private to its holder with no new projection rule (ruling 6).
+- **Draw.** `LegacyDraws`, beside `ReliquaryDraws`: a `Branch` that reads
+  the deck when reached, then a `Draw` of its top N into the drawer's
+  hand. `Draw` is a hidden outcome (`HiddenOutcomes`), so undo never takes
+  a draw back. An empty deck writes "The legacy deck was empty."
+- **Bottom.** Every move into the legacy deck names the bottom:
+  `LegacyKeep.returnLegacies`, `IronHand.inGameDiscard` and its Chronicle
+  discard, The Mouth's Iron Hand discard, and Resolve Legacies' returns.
 - **Ancient Writ.** An ACTION through the relic ACTION path: it buries the
-  relic through the existing bury operation, then `LegacyDraws(3)`, then a
-  keep decision. `SetupLegacyRules.keeper` is widened, or a sibling added,
-  so the keeper is Matchmaker's seated active holder during a game too.
-  `AncientWritCard` leaves `HoldingRelics`, and that file is deleted.
-- **Saved games.** Journals from before this slice replay their returns
-  into the deck, so such a game may draw a returned legacy again. This is
-  accepted for the alpha.
+  relic, then `LegacyDraws` of 3 into the keeper's hand, then a keep
+  decision that moves one legacy to the owner's lineage, dormant, and the
+  others to the bottom of the deck. The keeper is
+  `SetupLegacyRules.keeper`, which already reads Matchmaker's seated
+  active holder in any phase. Its power id is fixed to
+  `relic.ancient-writ`. `AncientWritCard` leaves `HoldingRelics`, and
+  that file is deleted.
+- **Saved games.** Journals from before this slice need not replay: their
+  moves into the legacy deck name no position.
 
 ### Slice 3: the keep in Foundation III
 
@@ -209,7 +220,11 @@ each player's pawn turn for a first game. `LegacyKeep.drawn` reads the
 lineage's baseline (R13) and needs no change. Secret Society and Seer now
 follow the keep. A Quest to Distant Lands holder who places no pawn keeps
 in Foundation III like everyone else. The plan checks that a game saved
-mid-Setup replays: answers are keyed by decision id.
+mid-Setup replays: answers are keyed by decision id. The slice also
+weighs drawing Setup's two legacies into the keeper's hand through
+`LegacyDraws`, as Ancient Writ does, which would retire
+`LegacyKeep.matchmade` and the projection's Matchmaker arm; its plan
+settles it with the owner.
 
 ### Slice 4: power order
 
@@ -228,9 +243,10 @@ asked.
 Both faces contribute to `SetupPawnPlaced` and `WhenExplored`, as Proving
 Grounds and Great Forge do. The Mouth's private activation is extracted to
 a shared `LegacyActivation` that both The Mouth and Amber Doors call.
-Amber Doors sets aside every held legacy, calls `LegacyDraws(2)`, then
-asks which to activate. Lost Doors calls `LegacyDraws(1)`, then asks which
-dormant legacy to set aside. `AmberDoorsCard` leaves `HoldingEdifices`.
+Amber Doors moves every held legacy to the bottom of the legacy deck,
+draws 2 through `LegacyDraws`, then asks which to activate. Lost Doors
+draws 1, then asks which dormant legacy to discard to the bottom.
+`AmberDoorsCard` leaves `HoldingEdifices`.
 
 ### Slice 6: Chronicle cards
 
@@ -250,10 +266,12 @@ dormant legacy to set aside. `AmberDoorsCard` leaves `HoldingEdifices`.
 
 ## Hidden information
 
-- A drawn legacy is dormant and facedown; only its owner sees it, and
-  Matchmaker's holder while they answer the keep (ruling 9).
-- Set-aside legacies are not projected for any viewer (ruling 6).
-- The draw's shuffle is a hidden outcome.
+- A drawn legacy is in the drawer's hand, which only the drawer sees:
+  the owner, or Matchmaker's holder while they choose for the owner
+  (rulings 6 and 9). A kept legacy is dormant and facedown on the owner's
+  lineage.
+- The legacy deck is not projected for any viewer (ruling 6).
+- The draw is a hidden outcome.
 - The power-order question lists the placer's own active legacies, which
   are faceup, and the edifice at their site, which is public.
 
@@ -262,8 +280,9 @@ dormant legacy to set aside. `AmberDoorsCard` leaves `HoldingEdifices`.
 Settled against existing shapes in each slice's plan:
 
 - "p2 took a relic from the Reliquary with Reliquary Raid"
-- "p2 drew 3 legacies with Ancient Writ", then "p2 kept a legacy" or
-  "p3 kept a legacy for p2 with Matchmaker"
+- "p2 drew 3 legacies with Ancient Writ", then "p2 kept a legacy"; with
+  Matchmaker, "p3 drew 3 legacies for p2 with Matchmaker", then "p3 kept
+  a legacy for p2 with Matchmaker"
 - "p2 discarded their legacies with Amber Doors", then "p2 activated Seer"
 - "p2 drew a legacy with Lost Doors", then "p2 discarded a dormant legacy"
 - "The legacy deck was empty."
@@ -278,18 +297,18 @@ discards. The power-order pick adds no line (ruling 4).
 
 - One suite per card: `ReliquaryRaidSuite`, `AncientWritSuite`,
   `AmberDoorsSuite`, `LostDoorsSuite`, `BathsSuite`, `RuinedTempleSuite`.
-- `LegacyDrawSuite`: the derived pile, a short pile, an empty pile, and no
-  set-aside legacy drawn again (a Quiet Ambitions return, an Iron Hand
-  discard, an Ancient Writ discard).
-- Matchmaker during a game: another holder chooses, sees the draw, and the
-  owner does not identify the legacies not kept.
+- `LegacyDeckSuite`: game start's deck, a draw from the top, a short
+  deck, an empty deck, and a discard at the bottom (a Quiet Ambitions
+  return, an Iron Hand discard, an Ancient Writ discard).
+- Matchmaker during a game: another holder draws into their hand and
+  chooses, and the owner does not identify the legacies not kept.
 - The keep's position: a first game after pawn placement, a later game in
   Foundation III, Matchmaker in both, and replay of a game saved mid-Setup.
 - `OrderedWindowSuite`: Wealthy before Amber Doors; Amber Doors first,
   discarding Wealthy so it does not resolve; a Standard Bearer that Amber
   Doors activated resolving in the same window; a single power asking
   nothing; a resume inside the window.
-- Projection: no viewer sees a set-aside zone.
+- Projection: only a hand's holder identifies a legacy in it.
 - Chronicle: Stone Baths at step 2, Ruined Baths at step 3, Ruined
   Temple's bandit sites before Crown Chancellor for an Exile and an
   Imperial winner, the doubled bonus with a gift.
@@ -316,5 +335,5 @@ Each slice updates, as it lands:
 
 - Ordering simultaneous effects on several players, and ordering any window
   but `SetupPawnPlaced`.
-- Any display of set-aside legacies.
+- Any display of the legacy deck.
 - Eras and the reset of lineage points.
