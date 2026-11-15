@@ -49,7 +49,7 @@ object ConspiratorReveal:
 
   /** The prediction names the round the game ended in and its winner, and
     * its holder still holds Conspirator active. */
-  def fulfilled(ready: ReadyGame, holder: PlayerId): Boolean =
+  private def fulfilled(ready: ReadyGame, holder: PlayerId): Boolean =
     val current = ready.game.current
     current.predictions.get(holder).exists(prediction =>
       prediction.round == current.tracks.round &&

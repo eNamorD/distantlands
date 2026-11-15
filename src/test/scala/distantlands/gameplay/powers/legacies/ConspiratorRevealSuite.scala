@@ -15,9 +15,10 @@ import distantlands.testkit.{Commands, MenuPlay, Outcomes, RoundEndChoices,
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.{accepted, present}
 
-/** Conspirator at the game's end: the prediction is compared with the
-  * round the game ended in and its final winner, after any Successor, and
-  * revealed either way (Legacy in-play powers ruling 27; R24, R27, R29).
+/** Conspirator in the Sun: the prediction is compared, right after the
+  * Sun's first window, with the round the game ended in and its final
+  * winner, after any Successor and any Royal Line choice, and revealed
+  * either way (Legacy in-play powers ruling 27; R24, R27, R29).
   * Played through the service on its round-end port. */
 class ConspiratorRevealSuite extends munit.FunSuite:
   private val gameId = "conspirator-reveal"
