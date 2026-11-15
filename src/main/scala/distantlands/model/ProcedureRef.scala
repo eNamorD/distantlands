@@ -90,6 +90,10 @@ enum TriggeredProcedureRef(val key: String) extends ProcedureRef:
   /** The winner's Start Chronicle decision (Chronicle steps design). The
     * driver starts it once the game has a result. */
   case ChronicleBegin extends TriggeredProcedureRef("chronicle-begin")
+  /** The final winner, settled before Start Chronicle: Royal Line's choice,
+    * then Conspirator's comparison (Legacy in-play powers R36). The driver
+    * starts it once the game has a result. */
+  case ChronicleWinner extends TriggeredProcedureRef("chronicle-winner")
   /** The Sun task: reveal relics, legacies, crown the winner, assign tasks. */
   case ChronicleSun extends TriggeredProcedureRef("chronicle-sun")
   /** The Throne task, resolved by its holder. */
@@ -159,7 +163,7 @@ object PhaseTransitionRef:
 
 object TriggeredProcedureRef:
   val all: Vector[TriggeredProcedureRef] = Vector(Oathkeeper, Setup,
-    ForcedWake, FollowUpOffer, WakeMenu, RestMenu, ActMenu, ChronicleBegin,
+    ForcedWake, FollowUpOffer, WakeMenu, RestMenu, ActMenu, ChronicleWinner, ChronicleBegin,
     ChronicleSun, ChronicleThrone, ChronicleWorld, ChronicleBeacon,
     ChronicleStars, ChronicleFinish, QuestFirstWake, Arbiter)
 

@@ -207,9 +207,14 @@ object PowerWindow:
   // One window per Chronicle task step, in step order (Chronicle steps
   // design, "Windows, not hardcoded actors"): legacy powers can change a
   // step's actor, add to it or skip it.
-  /** The Sun's first window, before Reveal Relics: Royal Line's step
-    * (Legacy Chronicle powers design, ruling 22; R40). Empty with no
-    * power. */
+  /** After the game's result is set and before Start Chronicle: Royal
+    * Line's step (Legacy Chronicle powers design, ruling 22, moved here by
+    * Legacy in-play powers R36). Empty with no power. */
+  case object ChronicleFinalWinner extends OtherWindow:
+    val key = "chronicle.final-winner"
+  /** The Sun's first window, before Reveal Relics. Royal Line's step was
+    * here (Legacy Chronicle powers R40) until Legacy in-play powers R36
+    * moved it before Start Chronicle; empty with no power. */
   case object ChronicleStartOfSun extends OtherWindow:
     val key = "chronicle.sun.start-of-sun"
   case object ChronicleRevealRelics extends OtherWindow:

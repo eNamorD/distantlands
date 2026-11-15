@@ -2,7 +2,7 @@ package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.chronicle.legacies.{ConspiratorReveal, IronHand,
+import distantlands.gameplay.chronicle.legacies.{IronHand,
   LegacyChroniclePowers}
 import distantlands.gameplay.walker.ProcedureStart
 import distantlands.model._
@@ -13,12 +13,13 @@ import distantlands.model._
   * (Legacies design, ruling 3). Two empty windows hold the legacies' added
   * steps: one before step 2, where Gatekeeper acts, and one after step 5,
   * where Chronicler does (Legacy Chronicle powers design, rulings 6 and
-  * 7); the first window, before Reveal Relics, is Royal Line's (ruling 22),
-  * and Conspirator's prediction is compared right after it (Legacy in-play
-  * powers R24).
+  * 7); the first window, before Reveal Relics, held Royal Line's step
+  * (ruling 22) until Legacy in-play powers R36 moved it, with
+  * Conspirator's comparison, before Start Chronicle
+  * (`ChronicleWinnerProcedure`); it stays, empty.
   *
   * Every step reads the winner from the game's result when it is reached,
-  * so Royal Line's choice reaches them all (ruling 23): Crown Chancellor and
+  * so Royal Line's choice and a Conspirator win reach them all (ruling 23): Crown Chancellor and
   * Assign Tasks here (`forWinner`); and, read the same way elsewhere,
   * Reformer's "if you won", Score Lineage Points and Iron Hand's scoring
   * after it, the Grand Scepter goal's "if none, win" (`LegacyGoals`), Swear
@@ -39,8 +40,7 @@ object ChronicleSunProcedure:
   def tookTask(task: ChronicleTask): NoteKey = tookKeys(task)
   def noteKeys: Vector[NoteKey] = notes.declared ++ ResolveLegacies.noteKeys ++
     LegacyChroniclePowers.sunNoteKeys ++
-    IronHand.noteKeys(TriggeredProcedureRef.ChronicleSun) ++
-    ConspiratorReveal.noteKeys
+    IronHand.noteKeys(TriggeredProcedureRef.ChronicleSun)
 
   private def name(task: ChronicleTask): String = task match
     case ChronicleTask.Throne => "Throne"
@@ -63,10 +63,7 @@ object ChronicleSunProcedure:
       violation => Vector(ChronicleTasks.failing(violation)), steps))
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
-    ChronicleWindows.step(PowerWindow.ChronicleStartOfSun, Vector.empty)) ++
-    // Conspirator's prediction, compared with the winner Royal Line leaves
-    // at the first window (Legacy in-play powers R24).
-    ConspiratorReveal.steps ++ Vector(
+    ChronicleWindows.step(PowerWindow.ChronicleStartOfSun, Vector.empty),
     // Iron Hand's first checkpoint opens the Sun (Legacy Chronicle powers
     // design, ruling 18; R30).
     ChronicleWindows.step(PowerWindow.ChronicleRevealRelics, Vector(

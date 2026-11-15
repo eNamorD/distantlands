@@ -111,22 +111,17 @@ class ConspiratorSecrecySuite extends munit.FunSuite:
     (service, accepted(service.handle(gameId, 0L,
       MenuPlay.starting(p3, PhaseTransitionRef.BeginRest))))
 
-  test("at the Start Chronicle park every other viewer's projection and log " +
-      "are the same whatever the prediction, with no reveal (R24, R28)"):
+  test("by the Start Chronicle park the prediction has been revealed to " +
+      "every viewer (R36)"):
     val (oneService, one) = endedAt(Prediction(5, p2))
-    val (otherService, other) = endedAt(Prediction(2, p1))
-    Vector(one, other).foreach(at => assertEquals(
-      Outcomes.ready(at.state).game.current.turn.phase, Phase.RoundEnd))
-    val viewsOf = (at: GameAccepted) =>
-      val loaded = LoadedGame(at.state, at.nextSequence)
-      Vector(projector.project(gameId, loaded, p1),
-        projector.project(gameId, loaded, p2),
-        projector.projectPublic(gameId, loaded))
-    assertEquals(viewsOf(one), viewsOf(other))
-    assertEquals(viewsOf(one).head.walkerWaiting.map(_.playerIds),
-      Some(Vector("p2")))
+    val (otherService, _) = endedAt(Prediction(2, p1))
+    assertEquals(Outcomes.ready(one.state).game.current.turn.phase,
+      Phase.RoundEnd)
     Vector(p1, p2).foreach { viewer =>
-      val seen = lines(oneService, viewer)
-      assertEquals(seen, lines(otherService, viewer))
-      assert(!seen.exists(_.contains("had written down")), seen)
+      assert(lines(oneService, viewer).contains(
+        "p3 had written down p2 to win in round 5 with Conspirator"),
+        lines(oneService, viewer))
+      assert(lines(otherService, viewer).contains(
+        "p3 had written down p1 to win in round 2 with Conspirator"),
+        lines(otherService, viewer))
     }

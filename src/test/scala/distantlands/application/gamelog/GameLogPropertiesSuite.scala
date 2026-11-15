@@ -249,7 +249,7 @@ class GameLogPropertiesSuite extends munit.FunSuite:
         "negotiation", "campaign", "peek-site-relics", "reveal-owned-relic",
         "move-warbands", "transfer-warbands", "self-exile", "finish-rest",
         "oathkeeper",
-        "setup", "chronicle-sun", "chronicle-throne", "chronicle-world",
+        "setup", "chronicle-winner", "chronicle-sun", "chronicle-throne", "chronicle-world",
         "chronicle-beacon", "chronicle-stars", "quest-first-wake",
         "round-end-arbiter"))
     // A procedure can be marked `Notes` while declaring none, and then its

@@ -1,6 +1,7 @@
 package distantlands.gameplay.walker
 
 import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
+  ChronicleWinnerProcedure,
   ChronicleBeaconProcedure, ChronicleFinishProcedure, ChronicleStarsProcedure,
   ChronicleSunProcedure, ChronicleThroneProcedure, ChronicleWorldProcedure}
 import distantlands.catalog.ExecutableCatalog
@@ -318,6 +319,8 @@ object WalkerProcedureRegistry:
     TriggeredProcedureRef.QuestFirstWake ->
       Entry.withoutStartGates(QuestFirstWakeProcedure.build),
     TriggeredProcedureRef.Arbiter -> Entry.withoutStartGates(ArbiterStep.build),
+    TriggeredProcedureRef.ChronicleWinner ->
+      Entry.withoutStartGates(ChronicleWinnerProcedure.build),
     TriggeredProcedureRef.ChronicleBegin -> Entry.withoutStartGates(ChronicleBeginProcedure.build),
     TriggeredProcedureRef.ChronicleSun -> Entry.withoutStartGates(ChronicleSunProcedure.build),
     TriggeredProcedureRef.ChronicleThrone ->

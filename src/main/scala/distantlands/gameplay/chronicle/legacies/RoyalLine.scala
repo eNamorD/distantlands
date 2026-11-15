@@ -19,8 +19,9 @@ object RoyalLineCard extends Legacy(LegacyId("L10"), "Royal Line",
 
 /** Royal Line (legacy L10): "If you are a Citizen: Chronicle (Sun): You may
   * choose which Imperial meets the Successor goal. Ignore the printed goal.
-  * You may choose no one." Its step is the Sun's first window (Legacy
-  * Chronicle powers design, ruling 22; R40). Only after a Chancellor's or a
+  * You may choose no one." Its step is the window before Start Chronicle
+  * (Legacy Chronicle powers design, ruling 22; R40, moved there from the
+  * Sun's first window by Legacy in-play powers R36). Only after a Chancellor's or a
   * Successor's win, a seated Citizen holding it active, read when reached,
   * may decline, which keeps the result, or choose any Imperial, the
   * Chancellor first (R38, re-ruled by the owner 2026-11-14). A
@@ -33,20 +34,20 @@ case object RoyalLine extends ContributingPower:
   val id: PowerId = RoyalLineCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
-    PowerWindow.ChronicleStartOfSun -> Vector(Transform(
+    PowerWindow.ChronicleFinalWinner -> Vector(Transform(
       (_, ops) => ops :+ step)))
 
   def decisionId(player: PlayerId): String =
     s"chronicle.sun.legacy.royal-line.${player.value}"
   val decline: DecisionOptionRef.Button = DecisionOptionRef.Button("decline")
 
-  private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleSun)
+  private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleWinner)
   private val notes = NoteSet(noteId)
   val named: NoteKey = notes.key("royal-line-named", Vector(NotePart.Arg(0),
     NotePart.Text(" named "), NotePart.Arg(1),
     NotePart.Text(" the winner with "), NotePart.Arg(2)))
-  /** The Sun lines this power writes, on the Sun's note id. */
-  def sunNoteKeys: Vector[NoteKey] = notes.declared
+  /** The lines this power writes, on the final winner step's note id. */
+  def winnerNoteKeys: Vector[NoteKey] = notes.declared
 
   /** The question and its answer. The result and the Chancellor it reads
     * do not change before the answer, so a resumed walk finds the same

@@ -1,24 +1,26 @@
 package distantlands.gameplay.powers.legacies
 
 import distantlands.application.{GameAccepted, GameApplicationService,
-  GameProjector, ParkedServiceFixture, TreeDecision}
+  GameProjector, LoadedGame, ParkedServiceFixture, TreeDecision}
 import distantlands.application.gamelog.LogScripts.{formatter, texts}
 import distantlands.gameplay.actions.negotiation.HighPriestCard
 import distantlands.gameplay.chronicle.ChronicleBeginProcedure
 import distantlands.gameplay.chronicle.legacies.{RoyalLine, RoyalLineCard}
 import distantlands.gameplay.operations.TheGrandScepterCard
+import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.legacies.TheStandardBearerCard
 import distantlands.model._
-import distantlands.testkit.{Commands, MenuPlay, Outcomes, RoundEndChoices,
-  Table}
+import distantlands.testkit.{Commands, MenuPlay, Outcomes, ParkedNode,
+  RoundEndChoices, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.{accepted, present}
 
-/** Conspirator in the Sun: the prediction is compared, right after the
-  * Sun's first window, with the round the game ended in and its final
-  * winner, after any Successor and any Royal Line choice, and revealed
-  * either way (Legacy in-play powers ruling 27; R24, R27, R29).
+/** Conspirator at the game's end: the prediction is compared, right after
+  * Royal Line's choice and before Start Chronicle, with the round the game
+  * ended in and its final winner, after any Successor and any Royal Line
+  * choice, and revealed either way; the final winner then starts the
+  * Chronicle (Legacy in-play powers ruling 27; R24, R27, R29, R36).
   * Played through the service on its round-end port. */
 class ConspiratorRevealSuite extends munit.FunSuite:
   private val gameId = "conspirator-reveal"
@@ -44,13 +46,27 @@ class ConspiratorRevealSuite extends munit.FunSuite:
       active))
 
   /** p3 rests from `table`; the end die rolls 6, p1's Stable Regime win
-    * goes to p2 as Successor, and p2 starts the Chronicle: the Sun opens,
-    * and with no Royal Line the prediction is compared at once. */
-  private def ended(table: Table)
+    * goes to p2 as Successor, and the walk parks at Royal Line's question
+    * or, with none, at Start Chronicle, after the comparison. */
+  private def rested(table: Table)
       : (GameApplicationService, GameAccepted) =
     val (service, _) = table.service(roundEnd = RoundEndChoices.endDie(6))
-    (service, started(service, accepted(service.handle(gameId, 0L,
-      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest)))))
+    (service, accepted(service.handle(gameId, 0L,
+      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest))))
+
+  /** `rested`, then the winner starts the Chronicle. */
+  private def ended(table: Table)
+      : (GameApplicationService, GameAccepted) =
+    val (service, at) = rested(table)
+    (service, started(service, at))
+
+  /** The decision `at` parks on, and the player it waits on. */
+  private def parkedOn(at: GameAccepted): (String, PlayerId) =
+    present(accepted(ParkedNode.of(at.state, catalog,
+      WalkerPowerCatalog.default(catalog))), "a park") match
+      case ParkedNode.Decision(_, decide, awaiting) =>
+        (decide.decisionId, awaiting)
+      case other => fail(s"expected a decision, parked on $other")
 
   /** The game's winner presses Start Chronicle. */
   private def started(service: GameApplicationService, at: GameAccepted)
@@ -61,8 +77,8 @@ class ConspiratorRevealSuite extends munit.FunSuite:
       winner, TreeDecision(ChronicleBeginProcedure.decisionId,
         DecisionAnswer.ChooseOneAnswer(ChronicleBeginProcedure.start)))))
 
-  /** p2, a Citizen holding Royal Line, names `named` at the Sun's first
-    * window. */
+  /** p2, a Citizen holding Royal Line, names `named` before Start
+    * Chronicle. */
   private def naming(service: GameApplicationService, at: GameAccepted,
       named: PlayerId): GameAccepted =
     accepted(service.handle(gameId, at.nextSequence, Commands.resolveWalker(
@@ -173,8 +189,8 @@ class ConspiratorRevealSuite extends munit.FunSuite:
 
   test("Royal Line's choice comes first: naming p1 the winner makes a " +
       "prediction of p1 hold (R24)"):
-    val (service, opened) = ended(withRoyalLine(Prediction(5, p1)))
-    val done = naming(service, opened, p1)
+    val (service, asked) = rested(withRoyalLine(Prediction(5, p1)))
+    val done = naming(service, asked, p1)
     assertEquals(Outcomes.ready(done.state).game.current.result,
       Some(GameResult(p3, VictoryKind.Conspirator)))
     val written = lines(service)
@@ -185,8 +201,8 @@ class ConspiratorRevealSuite extends munit.FunSuite:
 
   test("Royal Line's choice comes first: naming p1 the winner makes a " +
       "prediction of p2, the Successor, fail (R24)"):
-    val (service, opened) = ended(withRoyalLine(Prediction(5, p2)))
-    val done = naming(service, opened, p1)
+    val (service, asked) = rested(withRoyalLine(Prediction(5, p2)))
+    val done = naming(service, asked, p1)
     assertEquals(Outcomes.ready(done.state).game.current.result
       .map(_.winner), Some(p1))
     assert(lines(service).contains(revealLine(p2, 5)), lines(service))
@@ -205,8 +221,9 @@ class ConspiratorRevealSuite extends munit.FunSuite:
     val table = withRoyalLine(Prediction(5, p1))
     val (service, repository) =
       table.service(roundEnd = RoundEndChoices.endDie(6))
-    val opened = started(service, accepted(service.handle(gameId, 0L,
-      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest))))
+    val opened = accepted(service.handle(gameId, 0L,
+      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest)))
+    assertEquals(parkedOn(opened), (RoyalLine.decisionId(p2), p2))
     assertEquals(Outcomes.ready(opened.state).game.current.predictions,
       Map(p3 -> Prediction(5, p1)))
     val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
@@ -220,8 +237,8 @@ class ConspiratorRevealSuite extends munit.FunSuite:
 
   test("Royal Line declining leaves the Successor, and a prediction of the " +
       "Successor still wins"):
-    val (service, opened) = ended(withRoyalLine(Prediction(5, p2)))
-    val done = accepted(service.handle(gameId, opened.nextSequence,
+    val (service, asked) = rested(withRoyalLine(Prediction(5, p2)))
+    val done = accepted(service.handle(gameId, asked.nextSequence,
       Commands.resolveWalker(p2, TreeDecision(RoyalLine.decisionId(p2),
         DecisionAnswer.ChooseOneAnswer(RoyalLine.decline)))))
     assertEquals(Outcomes.ready(done.state).game.current.result,
@@ -256,3 +273,73 @@ class ConspiratorRevealSuite extends munit.FunSuite:
     assertEquals(written.count(_ == revealLine(p2, 5)), 1, written)
     assertEquals(written.count(_ == s"p3 won with ${ConspiratorCard.name}"),
       1, written)
+
+  test("Royal Line naming another Imperial gives them Start Chronicle (R36)"):
+    val (service, asked) = rested(withRoyalLine(Prediction(6, p2)))
+    assertEquals(parkedOn(asked), (RoyalLine.decisionId(p2), p2))
+    val named = naming(service, asked, p1)
+    assertEquals(parkedOn(named), (ChronicleBeginProcedure.decisionId, p1))
+
+  test("a correct prediction gives its holder Start Chronicle, and every " +
+      "other viewer sees the Conspirator win and the reveal there (R36)"):
+    val (service, at) = rested(lastAct(Prediction(5, p2)))
+    assertEquals(parkedOn(at), (ChronicleBeginProcedure.decisionId, p3))
+    val loaded = LoadedGame(at.state, at.nextSequence)
+    Vector(projector.project(gameId, loaded, p1),
+        projector.project(gameId, loaded, p2),
+        projector.projectPublic(gameId, loaded)).foreach { view =>
+      assertEquals(view.oathkeeper.flatMap(o => o.winnerPlayerId.zip(
+        o.winnerVictoryKind)), Some(("p3", "conspirator")))
+    }
+    Vector(p1, p2).foreach { viewer =>
+      val seen = texts(formatter.format(present(accepted(
+        service.history(gameId)), "a stored game").steps, Some(viewer)))
+      assert(seen.contains(revealLine(p2, 5)), seen)
+    }
+
+  test("with no Royal Line and no prediction the Successor starts the " +
+      "Chronicle, as before"):
+    val plain = Table.start.imperial(p1, p2)
+      .oathkeeperGoal(OathkeeperGoal.Devotion).oathkeeper(Some(p1))
+      .darkestSecret(Some(p1), secrets = 1).relic(p2, TheGrandScepterCard)
+      .turn(p3, Phase.Act)
+      .update(_.updateCurrent(c => c.copy(tracks =
+        c.tracks.copy(round = 5, usurperLimited = false))))
+    assertEquals(parkedOn(rested(plain)._2),
+      (ChronicleBeginProcedure.decisionId, p2))
+
+  test("a game parked at Start Chronicle reloads, and the final winner " +
+      "starts it, each reveal line once"):
+    val (service, repository) = lastAct(Prediction(5, p2))
+      .service(roundEnd = RoundEndChoices.endDie(6))
+    val at = accepted(service.handle(gameId, 0L,
+      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest)))
+    val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
+    val loaded = present(accepted(reloaded.load(gameId)), "a stored game")
+    assertEquals(loaded.state, at.state)
+    val begun = accepted(reloaded.handle(gameId, loaded.nextSequence,
+      Commands.resolveWalker(p3, TreeDecision(ChronicleBeginProcedure.decisionId,
+        DecisionAnswer.ChooseOneAnswer(ChronicleBeginProcedure.start)))))
+    assertEquals(Outcomes.ready(begun.state).game.current.turn.phase,
+      Phase.Chronicle)
+    val written = texts(formatter.format(present(accepted(
+      reloaded.history(gameId)), "a stored game").steps, Some(p1)))
+    assertEquals(written.count(_ == revealLine(p2, 5)), 1, written)
+
+  test("while Royal Line's question waits no other viewer can tell one " +
+      "prediction from another (R36)"):
+    val (oneService, one) = rested(withRoyalLine(Prediction(5, p2)))
+    val (otherService, other) = rested(withRoyalLine(Prediction(2, p1)))
+    val viewsOf = (at: GameAccepted) =>
+      val loaded = LoadedGame(at.state, at.nextSequence)
+      Vector(projector.project(gameId, loaded, p1),
+        projector.project(gameId, loaded, p2),
+        projector.projectPublic(gameId, loaded))
+    assertEquals(viewsOf(one), viewsOf(other))
+    Vector(p1, p2).foreach { viewer =>
+      def seen(service: GameApplicationService) = texts(formatter.format(
+        present(accepted(service.history(gameId)), "a stored game").steps,
+        Some(viewer)))
+      assertEquals(seen(oneService), seen(otherService))
+      assert(!seen(oneService).exists(_.contains("had written down")))
+    }

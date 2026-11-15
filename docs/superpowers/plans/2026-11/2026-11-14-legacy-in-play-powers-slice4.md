@@ -206,6 +206,17 @@ itself.
   the Sun's steps, right after the `ChronicleStartOfSun` window where
   Royal Line acts. Its lines are now the Sun's.
 
+- R36 moved Royal Line's step and the comparison again, into a new
+  triggered procedure, `ChronicleWinner` ("chronicle-winner"), which the
+  driver starts once the game has a result and before `ChronicleBegin`;
+  Royal Line hooks a new window, `ChronicleFinalWinner`
+  ("chronicle.final-winner"), and keeps its decision id
+  (`chronicle.sun.legacy.royal-line.<player>`); its line and the reveal's
+  are on the new procedure's note id. The Sun keeps its first window,
+  empty. Every Chronicle golden shifts its sequence numbers; only
+  `chronicle-royal-line` and `legacy-prediction` change order, their
+  Royal Line and reveal lines now before the Chronicle headline.
+
 ## Global Constraints
 
 - Scala 3 with `-Werror`. Every Scala file stays at or under 800 lines.

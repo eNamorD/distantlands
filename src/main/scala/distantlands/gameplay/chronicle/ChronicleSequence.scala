@@ -22,9 +22,14 @@ object ChronicleSequence:
       case at => order.lift(at + 1)
 
   /** The Chronicle opens once: the game has a result, the phase is not yet
-    * Chronicle, and no walk is pending. */
-  def opening(current: CurrentGameState): Option[TriggeredProcedureRef] =
+    * Chronicle, and no walk is pending. The final winner is settled first
+    * (Legacy in-play powers R36); once that walk has `finished`, Start
+    * Chronicle follows. */
+  def opening(current: CurrentGameState, finished: ProcedureRef)
+      : Option[TriggeredProcedureRef] =
     Option.when(current.result.nonEmpty &&
       current.turn.phase != Phase.Chronicle &&
       current.walkerPending.isEmpty && current.walkerProcedure.isEmpty)(
-      TriggeredProcedureRef.ChronicleBegin)
+      if finished == TriggeredProcedureRef.ChronicleWinner then
+        TriggeredProcedureRef.ChronicleBegin
+      else TriggeredProcedureRef.ChronicleWinner)

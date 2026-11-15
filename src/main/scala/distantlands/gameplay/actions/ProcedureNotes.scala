@@ -3,7 +3,7 @@ package distantlands.gameplay.actions
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.chronicle.{ChronicleSunProcedure,
   ChronicleThroneProcedure, ChronicleWorldProcedure,
-  ChronicleBeaconProcedure, ChronicleStarsProcedure}
+  ChronicleBeaconProcedure, ChronicleStarsProcedure, ChronicleWinnerProcedure}
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.challenge.{ChallengeProcedure,
   PlaceBannerResourceProcedure}
@@ -102,6 +102,8 @@ object ProcedureNotes:
       case TriggeredProcedureRef.QuestFirstWake =>
         QuestFirstWakeProcedure.noteKeys
       case TriggeredProcedureRef.Arbiter => ArbiterStep.noteKeys
+      case TriggeredProcedureRef.ChronicleWinner =>
+        ChronicleWinnerProcedure.noteKeys
       case TriggeredProcedureRef.ChronicleSun => ChronicleSunProcedure.noteKeys
       case TriggeredProcedureRef.ChronicleThrone =>
         ChronicleThroneProcedure.noteKeys

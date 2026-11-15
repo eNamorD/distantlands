@@ -6,9 +6,9 @@ import distantlands.gameplay.powers.legacies.ConspiratorCard
 import distantlands.model._
 
 /** Conspirator at the game's end (Legacy in-play powers design, ruling 27):
-  * the Sun's steps right after its first window, where Royal Line names
-  * the winner, so the prediction is compared with the winner Royal Line
-  * leaves (R24, as the owner re-ruled it).
+  * steps of `ChronicleWinnerProcedure` right after Royal Line's window, so
+  * the prediction is compared with the winner Royal Line leaves, before
+  * Start Chronicle (R24, R36).
   *
   * {{{
   * Note("p2 had written down p3 to win in round 6 with Conspirator"),
@@ -24,7 +24,7 @@ import distantlands.model._
   * The steps have one shape, prediction or none, and ask nothing.
   */
 object ConspiratorReveal:
-  private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleSun)
+  private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleWinner)
   private val notes = NoteSet(noteId)
   /** "{p2} had written down {p3} to win in round {6} with Conspirator".
     * The card is named in words: a Conspirator lost to the deck, or gone
@@ -37,7 +37,7 @@ object ConspiratorReveal:
   /** "{p2} won with {Conspirator}". */
   val won: NoteKey = notes.key("conspirator-won", Vector(NotePart.Arg(0),
     NotePart.Text(" won with "), NotePart.Arg(1)))
-  /** The Sun lines these steps write, on the Sun's note id. */
+  /** The lines these steps write, on the final winner step's note id. */
   def noteKeys: Vector[NoteKey] = notes.declared
 
   /** The stored prediction, if any, in seat order: Conspirator is one card,

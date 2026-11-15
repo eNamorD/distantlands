@@ -22,16 +22,23 @@ class RoyalLineSuite extends munit.FunSuite:
     walkerPowerCatalog = WalkerPowerCatalog.default(catalog),
     walkerDice = WalkerDiceFixture.reversingShuffle)
 
+  /** `table` at the game's end, before the Chronicle: Royal Line's step
+    * runs before Start Chronicle (Legacy in-play powers R36). */
+  private def atGameEnd(table: Table): Table = table.turn(p1, Phase.RoundEnd)
+
   /** The game ended in `result`, p3 holding Royal Line active. */
   private def ended(result: GameResult): Table =
-    ChronicleWalk.chronicleWonByP1.imperial(p1, p2, p3)
+    atGameEnd(ChronicleWalk.chronicleWonByP1.imperial(p1, p2, p3)
       .update(_.updateCurrent(_.copy(result = Some(result))))
-      .legacy(p3, RoyalLineCard)
+      .legacy(p3, RoyalLineCard))
 
+  /** From the game's end, through the final winner step and Start
+    * Chronicle, to the end of `procedure`. */
   private def through(table: Table, procedure: TriggeredProcedureRef,
       answers: PartialFunction[Decide, DecisionAnswer] = PartialFunction.empty)(
       using munit.Location): ChronicleWalk.Run =
-    ChronicleWalk.through(rules, table, procedure, answers)
+    ChronicleWalk.through(rules, atGameEnd(table), procedure, answers,
+      after = PhaseTransitionRef.FinishRest)
 
   private def naming(player: PlayerId): PartialFunction[Decide, DecisionAnswer] =
     case decide if decide.decisionId == RoyalLine.decisionId(p3) =>
@@ -46,8 +53,7 @@ class RoyalLineSuite extends munit.FunSuite:
       .filter(said => keys.exists(_.name == said.key)).map(_.text)
 
   private def sunLines(run: ChronicleWalk.Run): Vector[String] =
-    lines(run, TriggeredProcedureRef.ChronicleSun,
-      LegacyChroniclePowers.sunNoteKeys)
+    lines(run, TriggeredProcedureRef.ChronicleWinner, RoyalLine.winnerNoteKeys)
 
   private val stable = GameResult(p1, VictoryKind.StableRegime)
 
@@ -167,7 +173,7 @@ class RoyalLineSuite extends munit.FunSuite:
   test("a walk resumed at Royal Line's question applies the answer"):
     val table = ended(stable)
     val parked = ChronicleWalk.walkedTo(rules, ChronicleWalk.started(rules,
-      table, TriggeredProcedureRef.ChronicleBegin), RoyalLine.decisionId(p3))
+      table, PhaseTransitionRef.FinishRest), RoyalLine.decisionId(p3))
     val decide = ChronicleWalk.parked(parked.state).get
     val replayed = accepted(parked.events.foldLeft[
       Either[OathViolation, OathState]](Right(table.state))((state, event) =>

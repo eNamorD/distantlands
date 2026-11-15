@@ -64,7 +64,7 @@ object ChronicleWalk:
     * walk from the journaled state, so each is a resumed walk. */
   def through(rules: OathRules, table: Table, procedure: TriggeredProcedureRef,
       answers: PartialFunction[Decide, DecisionAnswer] = PartialFunction.empty,
-      after: TriggeredProcedureRef = TriggeredProcedureRef.ChronicleBegin)(
+      after: ProcedureRef = TriggeredProcedureRef.ChronicleBegin)(
       using munit.Location): Run =
     val done = distantlands.gameplay.walker.WalkerCompleted(procedure)
     var asked = Vector.empty[Decide]
@@ -86,7 +86,7 @@ object ChronicleWalk:
     * [[through]] starts it, for a suite outside `gameplay`, which cannot
     * reach the driver. */
   def started(rules: OathRules, table: Table,
-      after: TriggeredProcedureRef)(using munit.Location): OathTransition =
+      after: ProcedureRef)(using munit.Location): OathTransition =
     accepted(rules.next(OathTransition(table.state, Vector.empty), after))
 
   /** The decision `state` is parked on, if any. */

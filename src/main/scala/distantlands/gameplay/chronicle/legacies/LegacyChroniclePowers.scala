@@ -12,8 +12,7 @@ object LegacyChroniclePowers:
   /** The lines the powers write in the Sun, on the Sun's note id, which
     * `ChronicleSunProcedure.noteKeys` declares. */
   def sunNoteKeys: Vector[NoteKey] =
-    Gatekeeper.sunNoteKeys ++ Chronicler.sunNoteKeys ++
-      RoyalLine.sunNoteKeys
+    Gatekeeper.sunNoteKeys ++ Chronicler.sunNoteKeys
   /** The lines the powers write in the Throne, on the Throne's note id,
     * which `ChronicleThroneProcedure.noteKeys` declares. */
   def throneNoteKeys: Vector[NoteKey] =

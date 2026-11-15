@@ -52,7 +52,7 @@ private[gameplay] trait OathDriver:
 
   private[gameplay] def next(transition: OathTransition,
       finished: ProcedureRef): Either[OathViolation, OathTransition] =
-    driven(transition, finished).flatMap(openChronicle)
+    driven(transition, finished).flatMap(openChronicle(_, finished))
 
   private def driven(transition: OathTransition,
       finished: ProcedureRef): Either[OathViolation, OathTransition] = transition.state match
@@ -71,10 +71,11 @@ private[gameplay] trait OathDriver:
   /** Wherever a result was set -- by a walk, the Wake checks or the round's
     * end -- the winner's Start Chronicle decision parks once the driver is
     * done (Chronicle steps design, "Chaining"). */
-  private def openChronicle(transition: OathTransition) =
+  private def openChronicle(transition: OathTransition,
+      finished: ProcedureRef) =
     transition.state match
       case Ready(ready) =>
-        ChronicleSequence.opening(ready.game.current)
+        ChronicleSequence.opening(ready.game.current, finished)
           .fold(Right(transition))(startTriggered(transition, _))
       case _ => Right(transition)
 

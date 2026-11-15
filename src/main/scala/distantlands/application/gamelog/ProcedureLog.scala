@@ -356,6 +356,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         narrated = Vector(Told(ChronicleBeginProcedure.decisionId)),
         lines = ActionLineSource.Silent(
           "the Chronicle headline the phase change posts tells the answer"))
+    case TriggeredProcedureRef.ChronicleWinner => chronicleWinner
     case TriggeredProcedureRef.ChronicleSun => chronicleSun
     case TriggeredProcedureRef.ChronicleThrone => chronicleThrone
     case TriggeredProcedureRef.ChronicleWorld => ProcedureLog(tag = None,
@@ -416,6 +417,16 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     narratedPrefixes = Vector("round-end.legacy.arbiter."),
     isSection = false)
 
+  /** The final winner, before Start Chronicle (Legacy in-play powers
+    * R36): Royal Line's line and Conspirator's reveal and win. */
+  private lazy val chronicleWinner: ProcedureLog = ProcedureLog(tag = None,
+    lines = ActionLineSource.Notes(Map(
+      RoyalLine.named -> LogKind.Decision,
+      ConspiratorReveal.revealed -> LogKind.Decision,
+      ConspiratorReveal.won -> LogKind.Victory)),
+    narratedPrefixes = Vector("chronicle.sun.legacy.royal-line."),
+    isSection = false)
+
   private lazy val chronicleSun: ProcedureLog = ProcedureLog(tag = None,
     lines = ActionLineSource.Notes(Map(
       ChronicleSunProcedure.empireBroke -> LogKind.Delta,
@@ -428,12 +439,9 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       ResolveLegacies.capped -> LogKind.Decision,
       ResolveLegacies.reactivated -> LogKind.Delta,
       IronHand.discarded(TriggeredProcedureRef.ChronicleSun) -> LogKind.Delta,
-      ConspiratorReveal.revealed -> LogKind.Decision,
-      ConspiratorReveal.won -> LogKind.Victory,
       Gatekeeper.took -> LogKind.Decision,
       Chronicler.declared -> LogKind.Decision,
-      Chronicler.scored -> LogKind.Delta,
-      RoyalLine.named -> LogKind.Decision) ++
+      Chronicler.scored -> LogKind.Delta) ++
       ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
       ChronicleTask.all.map(task =>
         ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),

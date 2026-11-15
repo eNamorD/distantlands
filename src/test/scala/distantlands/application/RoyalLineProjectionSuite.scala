@@ -22,8 +22,11 @@ class RoyalLineProjectionSuite extends munit.FunSuite:
       .update(_.updateCurrent(_.copy(result =
         Some(GameResult(p1, VictoryKind.StableRegime)))))
       .legacy(p3, RoyalLineCard)
+      // At the game's end: Royal Line asks before Start Chronicle (Legacy
+      // in-play powers R36).
+      .turn(p1, Phase.RoundEnd)
     val parked = ChronicleWalk.walkedTo(rules, ChronicleWalk.started(rules,
-      table, TriggeredProcedureRef.ChronicleBegin), RoyalLine.decisionId(p3))
+      table, PhaseTransitionRef.FinishRest), RoyalLine.decisionId(p3))
     val named = accepted(rules.resolveWalker(parked.state, p3,
       RoyalLine.decisionId(p3), DecisionAnswer.ChooseOneAnswer(
         DecisionOptionRef.Player(p2))))

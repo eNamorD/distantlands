@@ -16,7 +16,7 @@ class EnumWireKeySuite extends munit.FunSuite:
   test("triggered procedure keys stay as journaled walker events spell them"):
     assertEquals(TriggeredProcedureRef.all.map(_.key),
       Vector("oathkeeper", "setup", "forced-wake", "follow-up-offer",
-        "wake-menu", "rest-menu", "act-menu", "chronicle-begin",
+        "wake-menu", "rest-menu", "act-menu", "chronicle-winner", "chronicle-begin",
         "chronicle-sun", "chronicle-throne", "chronicle-world",
         "chronicle-beacon", "chronicle-stars", "chronicle-finish",
         "quest-first-wake", "round-end-arbiter"))

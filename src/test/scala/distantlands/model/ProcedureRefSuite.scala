@@ -29,6 +29,7 @@ class ProcedureRefSuite extends munit.FunSuite:
         TriggeredProcedureRef.ForcedWake,
         TriggeredProcedureRef.FollowUpOffer, TriggeredProcedureRef.WakeMenu,
         TriggeredProcedureRef.RestMenu, TriggeredProcedureRef.ActMenu,
+        TriggeredProcedureRef.ChronicleWinner,
         TriggeredProcedureRef.ChronicleBegin,
         TriggeredProcedureRef.ChronicleSun,
         TriggeredProcedureRef.ChronicleThrone,
