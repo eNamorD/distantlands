@@ -1,4 +1,3 @@
-denizen.reliquary-raid
 edifice.e04.intact
 edifice.e04.ruined
 edifice.e05.intact

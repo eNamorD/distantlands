@@ -1,6 +1,7 @@
 package distantlands.application
 
 import distantlands.gameplay.powers.PowerImplementationStatus
+import distantlands.gameplay.powers.whenplayed.ReliquaryRaidCard
 import distantlands.gameplay.setup.{EmpireSetupRules, FirstGameRulesData,
   FirstGameSetupFixture, GameStartRules, LaterGameFixture, LegacyDeal}
 import distantlands.model._
@@ -126,8 +127,12 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
 
   test("under Teeming World the alpha shuffle's unimplemented denizens, " +
       "last in the stack, top no discard pile"):
-    val implemented = ImplementedCardCatalog.denizens(catalog,
-      PowerImplementationStatus.implemented)
+    // Every printed denizen power runs, so Reliquary Raid stands in as the
+    // denizen that does not.
+    val raid = ReliquaryRaidCard.power.id
+    val partial: PowerId => Boolean = id =>
+      id != raid && PowerImplementationStatus.implemented(id)
+    val implemented = ImplementedCardCatalog.denizens(catalog, partial)
     val unimplemented = present(catalog.denizens.map(definition =>
       DenizenId(definition.id.value)).find(id => !implemented(id)),
       "an unimplemented denizen")
@@ -137,7 +142,8 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
         unimplemented,
       foundations = Map(FoundationNumber.IV ->
         FoundationState(FoundationFace.Altered, Set.empty)))
-    val plan = accepted(factory.build(config, ChronicleChoice.Saved(saved)))
+    val plan = accepted(new GeneratedFirstGamePlanFactory(catalog,
+      implemented = partial).build(config, ChronicleChoice.Saved(saved)))
     val stack = plan.orders.denizenOrder
     assert(!implemented(stack.last), "the shuffle puts the unimplemented " +
       s"denizens last: $stack")

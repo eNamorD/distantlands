@@ -4,7 +4,9 @@ import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.setup.GreatForgeCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.powers.PowerImplementationStatus
-import distantlands.model.{CardId, Chronicle, DenizenId, EdificeId, Suit}
+import distantlands.gameplay.powers.whenplayed.ReliquaryRaidCard
+import distantlands.model.{CardId, Chronicle, DenizenId, EdificeId, PowerId,
+  Suit}
 import distantlands.testkit.Unwrap.{accepted, present}
 
 class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
@@ -80,13 +82,16 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
     val walkerOnly =
       present(greatForge.ruined.powers.headOption, "its ruined power").id
     assert(status(walkerOnly))
-    val unimplemented = catalog.denizens.flatMap(_.powers.map(_.id))
-      .find(id => !status(id))
-    assert(unimplemented.nonEmpty, "fixture expects an unimplemented denizen power")
-    val denizens = ImplementedCardCatalog.denizens(catalog, status)
-    catalog.denizens.filter(_.powers.exists(_.id == unimplemented.get)).foreach { d =>
+    // Every printed denizen power runs, so Reliquary Raid's stands in as
+    // the one that does not.
+    val unimplemented = ReliquaryRaidCard.power.id
+    val partial: PowerId => Boolean = id => id != unimplemented && status(id)
+    val denizens = ImplementedCardCatalog.denizens(catalog, partial)
+    val carriers = catalog.denizens.filter(_.powers.exists(_.id == unimplemented))
+    assert(carriers.nonEmpty, s"no denizen carries $unimplemented")
+    carriers.foreach { d =>
       assert(!denizens(DenizenId(d.id.value)),
-        s"${d.id.value} carries ${unimplemented.get}")
+        s"${d.id.value} carries $unimplemented")
     }
 
   test("every Homeland carries an implemented edifice when its suit has one"):

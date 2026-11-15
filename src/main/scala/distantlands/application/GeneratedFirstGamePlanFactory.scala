@@ -21,15 +21,17 @@ import distantlands.model._
  * `policy`, and the derived legacy deck by `random`, since a Chronicle's
  * own order is shown to players. The
  * shuffled orders are recorded in the plan, so replay stays RNG-free.
+ * `implemented` is production's `PowerImplementationStatus.implemented`
+ * unless a test stands one power in as unimplemented.
  */
 final class GeneratedFirstGamePlanFactory(
     catalog: ExecutableCatalog,
     random: ChronicleRandomPort = ChronicleRandomPort.random,
-    policy: ShufflePolicy = ShufflePolicy.implementedFirst
+    policy: ShufflePolicy = ShufflePolicy.implementedFirst,
+    implemented: PowerId => Boolean = PowerImplementationStatus.implemented
 ) extends FirstGamePlanFactory:
   override def build(config: FirstGameBootstrapConfig, choice: ChronicleChoice)
       : Either[BootstrapPlanFailure, FirstGamePlan] =
-    val implemented = PowerImplementationStatus.implemented
     val chronicle = choice match
       case ChronicleChoice.New(name) =>
         FirstGameChronicleGenerator.generate(catalog, name, implemented,

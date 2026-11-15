@@ -17,4 +17,4 @@ object WhenPlayedPowers:
       CallForHelp, TrueOath,
       LongLostHeir, Bewitch, AncientPact, RoyalAmbitions,
       Pilgrimage, AutumnWind, FavoredSon, SearchParty, FalseProphet,
-      TheGathering)
+      TheGathering, ReliquaryRaid)
