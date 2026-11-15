@@ -339,7 +339,6 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       narratedPrefixes = Vector("setup."), isSection = false)
     case TriggeredProcedureRef.QuestFirstWake => questFirstWake
     case TriggeredProcedureRef.Arbiter => arbiter
-    case TriggeredProcedureRef.ConspiratorReveal => conspiratorReveal
     // One decision id serves the Wake, Rest and Act menus, so all three
     // declare it.
     case TriggeredProcedureRef.WakeMenu | TriggeredProcedureRef.RestMenu |
@@ -408,14 +407,6 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         .map(_ -> LogKind.Decision)),
     narratedPrefixes = Vector("wake.legacy.quest."), isSection = false)
 
-  /** Conspirator's prediction revealed at the game's end, and its win
-    * (Legacy in-play powers ruling 27; R27). */
-  private lazy val conspiratorReveal: ProcedureLog = ProcedureLog(tag = None,
-    lines = ActionLineSource.Notes(Map(
-      ConspiratorReveal.revealed -> LogKind.Decision,
-      ConspiratorReveal.won -> LogKind.Victory)),
-    isSection = false)
-
   /** Arbiter's question before the end die (Legacy in-play powers R12): a
     * modifier posts as a decision; Decline writes nothing. */
   private lazy val arbiter: ProcedureLog = ProcedureLog(tag = None,
@@ -437,6 +428,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       ResolveLegacies.capped -> LogKind.Decision,
       ResolveLegacies.reactivated -> LogKind.Delta,
       IronHand.discarded(TriggeredProcedureRef.ChronicleSun) -> LogKind.Delta,
+      ConspiratorReveal.revealed -> LogKind.Decision,
+      ConspiratorReveal.won -> LogKind.Victory,
       Gatekeeper.took -> LogKind.Decision,
       Chronicler.declared -> LogKind.Decision,
       Chronicler.scored -> LogKind.Delta,

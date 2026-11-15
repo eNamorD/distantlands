@@ -18,7 +18,6 @@ import distantlands.gameplay.actions.search.SearchProcedure
 import distantlands.gameplay.actions.travel.TravelProcedure
 import distantlands.gameplay.oathkeeper.OathkeeperProcedure
 import distantlands.gameplay.phases.rest.{ArbiterStep, FinishRestProcedure}
-import distantlands.gameplay.chronicle.legacies.ConspiratorReveal
 import distantlands.gameplay.phases.wake.QuestFirstWakeProcedure
 import distantlands.gameplay.setup.SetupProcedure
 import distantlands.gameplay.phases.wake.TakeWealthProcedure
@@ -103,7 +102,6 @@ object ProcedureNotes:
       case TriggeredProcedureRef.QuestFirstWake =>
         QuestFirstWakeProcedure.noteKeys
       case TriggeredProcedureRef.Arbiter => ArbiterStep.noteKeys
-      case TriggeredProcedureRef.ConspiratorReveal => ConspiratorReveal.noteKeys
       case TriggeredProcedureRef.ChronicleSun => ChronicleSunProcedure.noteKeys
       case TriggeredProcedureRef.ChronicleThrone =>
         ChronicleThroneProcedure.noteKeys

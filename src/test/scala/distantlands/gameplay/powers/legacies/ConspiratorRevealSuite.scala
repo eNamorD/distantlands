@@ -4,6 +4,8 @@ import distantlands.application.{GameAccepted, GameApplicationService,
   ParkedServiceFixture, TreeDecision}
 import distantlands.application.gamelog.LogScripts.{formatter, texts}
 import distantlands.gameplay.actions.negotiation.HighPriestCard
+import distantlands.gameplay.chronicle.ChronicleBeginProcedure
+import distantlands.gameplay.chronicle.legacies.{RoyalLine, RoyalLineCard}
 import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.setup.legacies.TheStandardBearerCard
 import distantlands.model._
@@ -38,13 +40,31 @@ class ConspiratorRevealSuite extends munit.FunSuite:
     conspirator.fold(table)(active => table.legacy(p3, ConspiratorCard,
       active))
 
-  /** p3 rests from `table`; the end die rolls 6, and p1's Stable Regime
-    * win goes to p2 as Successor. */
+  /** p3 rests from `table`; the end die rolls 6, p1's Stable Regime win
+    * goes to p2 as Successor, and p2 starts the Chronicle: the Sun opens,
+    * and with no Royal Line the prediction is compared at once. */
   private def ended(table: Table)
       : (GameApplicationService, GameAccepted) =
     val (service, _) = table.service(roundEnd = RoundEndChoices.endDie(6))
-    (service, accepted(service.handle(gameId, 0L,
-      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest))))
+    (service, started(service, accepted(service.handle(gameId, 0L,
+      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest)))))
+
+  /** The game's winner presses Start Chronicle. */
+  private def started(service: GameApplicationService, at: GameAccepted)
+      : GameAccepted =
+    val winner = present(Outcomes.ready(at.state).game.current.result,
+      "a result").winner
+    accepted(service.handle(gameId, at.nextSequence, Commands.resolveWalker(
+      winner, TreeDecision(ChronicleBeginProcedure.decisionId,
+        DecisionAnswer.ChooseOneAnswer(ChronicleBeginProcedure.start)))))
+
+  /** p2, a Citizen holding Royal Line, names `named` at the Sun's first
+    * window. */
+  private def naming(service: GameApplicationService, at: GameAccepted,
+      named: PlayerId): GameAccepted =
+    accepted(service.handle(gameId, at.nextSequence, Commands.resolveWalker(
+      p2, TreeDecision(RoyalLine.decisionId(p2),
+        DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Player(named))))))
 
   private def lines(service: GameApplicationService): Vector[String] =
     texts(formatter.format(present(accepted(service.history(gameId)),
@@ -54,8 +74,8 @@ class ConspiratorRevealSuite extends munit.FunSuite:
     s"p3 had written down ${winner.value} to win in round $round with " +
       ConspiratorCard.name
 
-  test("a correct prediction beats a Successor win, and the Chronicle opens " +
-      "for its holder"):
+  test("a correct prediction beats a Successor win, and the Sun's later " +
+      "steps read its holder as the winner"):
     val (service, done) = ended(lastAct(Prediction(5, p2)))
     val current = Outcomes.ready(done.state).game.current
     assertEquals(current.result, Some(GameResult(p3, VictoryKind.Conspirator)))
@@ -134,9 +154,61 @@ class ConspiratorRevealSuite extends munit.FunSuite:
         DecisionAnswer.ChooseManyAnswer(Vector(
           DecisionOptionRef.Legacy(ConspiratorCard.id),
           DecisionOptionRef.Legacy(GoldenKeyCard.id)))))))
-    val done = accepted(service.handle(gameId, capped.nextSequence,
-      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest)))
+    val done = started(service, accepted(service.handle(gameId,
+      capped.nextSequence, MenuPlay.starting(p3,
+        PhaseTransitionRef.BeginRest))))
     val current = Outcomes.ready(done.state).game.current
     assertEquals(current.result, Some(successor))
     assertEquals(current.predictions, Map.empty)
     assert(lines(service).contains(revealLine(p2, 5)), lines(service))
+
+  /** `lastAct`, with p2, the Citizen, also holding Royal Line. */
+  private def withRoyalLine(prediction: Prediction): Table =
+    lastAct(prediction).legacy(p2, RoyalLineCard)
+
+  test("Royal Line's choice comes first: naming p1 the winner makes a " +
+      "prediction of p1 hold (R24)"):
+    val (service, opened) = ended(withRoyalLine(Prediction(5, p1)))
+    val done = naming(service, opened, p1)
+    assertEquals(Outcomes.ready(done.state).game.current.result,
+      Some(GameResult(p3, VictoryKind.Conspirator)))
+    val written = lines(service)
+    val named = written.indexWhere(_.contains("the winner with Royal Line"))
+    val reveal = written.indexOf(revealLine(p1, 5))
+    val won = written.indexOf(s"p3 won with ${ConspiratorCard.name}")
+    assert(named >= 0 && reveal > named && won > reveal, written)
+
+  test("Royal Line's choice comes first: naming p1 the winner makes a " +
+      "prediction of p2, the Successor, fail (R24)"):
+    val (service, opened) = ended(withRoyalLine(Prediction(5, p2)))
+    val done = naming(service, opened, p1)
+    assertEquals(Outcomes.ready(done.state).game.current.result
+      .map(_.winner), Some(p1))
+    assert(lines(service).contains(revealLine(p2, 5)), lines(service))
+    assert(!lines(service).exists(_.contains("won with")), lines(service))
+
+  test("the Sun's steps after the comparison read the Conspirator winner"):
+    val (service, _) = ended(lastAct(Prediction(5, p2)))
+    val written = lines(service)
+    val won = written.indexOf(s"p3 won with ${ConspiratorCard.name}")
+    val crowned = written.indexWhere(line => line.startsWith("p3 ") &&
+      line.contains("Chancellor"))
+    assert(won >= 0 && crowned > won, written)
+
+  test("a game parked at Royal Line's question reloads, and the comparison " +
+      "reads the answer"):
+    val table = withRoyalLine(Prediction(5, p1))
+    val (service, repository) =
+      table.service(roundEnd = RoundEndChoices.endDie(6))
+    val opened = started(service, accepted(service.handle(gameId, 0L,
+      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest))))
+    assertEquals(Outcomes.ready(opened.state).game.current.predictions,
+      Map(p3 -> Prediction(5, p1)))
+    val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
+    assertEquals(present(accepted(reloaded.load(gameId)), "a stored game")
+      .state, opened.state)
+    val done = naming(service, opened, p1)
+    assertEquals(Outcomes.ready(done.state).game.current.result,
+      Some(GameResult(p3, VictoryKind.Conspirator)))
+    assertEquals(present(accepted(ParkedServiceFixture.replayingSecond(
+      service, repository).load(gameId)), "a stored game").state, done.state)
