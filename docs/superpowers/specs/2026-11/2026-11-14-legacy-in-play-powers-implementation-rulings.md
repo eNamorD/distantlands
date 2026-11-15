@@ -233,3 +233,20 @@ Ruled by the owner on 2026-11-14, from the review of slice 4.
   exhaustiveness, with a comment and a test. *Reason:* the reveal step
   writes the victory line itself, and removing the case would make the
   match non-exhaustive. *Slice/files:* slice 4 fix; `GameLogFormatter`.
+
+Ruled by the owner on 2026-11-14, from the R24 change.
+
+- **R34. Who starts the Chronicle before the Sun compares the
+  prediction?** *Decision:* keep as is: Start Chronicle belongs to the
+  winner as it stands at the game's end, and the winner banner updates
+  once the Sun's comparison runs. *Reason:* the prediction stays secret
+  until the Sun reveals it, so a provisional winner before then is what
+  the table knows; no change is needed. *Slice/files:* slice 4, R24
+  change; `ChronicleBeginProcedure`, `ConspiratorReveal`.
+- **R35. May the R24 change withdraw the game-end key and rename the
+  reveal's lines?** *Decision:* yes: the `game-end-conspirator` procedure
+  key is withdrawn, and the reveal's note keys are the Sun's
+  `conspirator-revealed` and `conspirator-won`. *Reason:* no released
+  save uses them; only dev-database games saved after a game end during
+  this batch are affected. *Slice/files:* slice 4, R24 change;
+  `ProcedureRef`, `ConspiratorReveal`.
