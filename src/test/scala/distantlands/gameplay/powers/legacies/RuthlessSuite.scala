@@ -1,5 +1,6 @@
 package distantlands.gameplay.powers.legacies
 
+import distantlands.gameplay.VowOfKinshipCard
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.NoteText
 import distantlands.gameplay.powers.economy.DefameCard
@@ -59,6 +60,16 @@ class RuthlessSuite extends munit.FunSuite:
       Ruthless.decisionId, hall)
     assert(!Look(after(done.answered)).cardsAt(AncientCitySite)
       .contains(HallOfDebateCard.id))
+
+  test("it buries a locked denizen at the site (ruling 7)"):
+    // Vow of Kinship, a locked card, stands at Ancient City beside Defame;
+    // every locked denizen is adviser-only in play, so the table places it.
+    val ready = table().denizen(VowOfKinshipCard, AncientCitySite).ready
+    val kinship = DecisionOptionRef.Denizen(VowOfKinshipCard.id)
+    val done = useAndAnswer(ready, Ruthless, source, Ruthless.decisionId,
+      kinship)
+    assert(!Look(after(done.answered)).cardsAt(AncientCitySite)
+      .contains(VowOfKinshipCard.id))
 
   test("it is not offered at a site with no denizen (R4)"):
     val bare = Table.start.turn(actor, Phase.Act).pawn(actor, AncientCitySite)
