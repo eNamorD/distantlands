@@ -310,6 +310,31 @@ one.
 
 ### Powers-related deferred items
 
+- [ ] **Retire the unimplemented-card machinery across the stack.** Every
+  printed denizen power runs since Reliquary Raid (catalog batch 13, slice
+  1), so the denizen checks are gone from the tests. Ten powers remain in
+  `src/test/resources/powers/unimplemented.txt`: Stone Baths and Ruined
+  Baths (E04), Amber Doors and Lost Doors (E05) and Ruined Temple (E10
+  ruined), which
+  [catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)
+  plans, and the E07, E16 and E26 ruined faces, Ancient Grit and the
+  Ancient City's enduring power, which no design covers yet. Once the
+  snapshot is empty, remove the machinery that sorts, filters and marks
+  unimplemented cards:
+  - The implemented-first deal: `ShufflePolicy.implementedFirst`,
+    `ImplementedCardCatalog`, the implemented filler in
+    `FirstGameChronicleGenerator`'s pools, and the unimplemented denizens
+    `SetupDeal` keeps off the discard tops.
+  - `implemented` on `CardDetailsProjection` and its codec in
+    `WorldProjectionCodec`.
+  - The frontend's unimplemented class, accessible-name suffix and badge
+    in `CardFace` and `CardInspectionOverlay`.
+  - The tests of each, the `UnimplementedPowersSuite` snapshot, and
+    `CardCatalogSuite`'s holding rule, together with `catalog/holding/`.
+
+  Decide then whether `PowerImplementationStatus` stays as a check that
+  every printed power is wired in.
+
 - [ ] **Reasons on the remaining options.** Add hover reasons to the option
   builders that still lack them, as playtests find options people wonder
   about. Left by the

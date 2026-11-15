@@ -35,13 +35,6 @@ class GamePresentationProjectorImplementedSuite extends munit.FunSuite:
     assume(card.nonEmpty, "no denizen fits this case any more")
     DenizenId(card.get.id.value)
 
-  test("a denizen with a power no catalog builds reads as not implemented"):
-    val unbuiltCard = catalog.denizens.find(_.powers.exists(power =>
-      unbuilt(power.id)))
-    assume(unbuiltCard.nonEmpty, "every denizen power ships")
-    val card = DenizenId(unbuiltCard.get.id.value)
-    assert(!projector.cardDetails(card, None, hidden = false).implemented)
-
   test("a denizen whose power runs only through the walker or phase catalog reads as implemented"):
     val card = denizenWhosePowers(builtInWalkerOrPhase)
     assert(projector.cardDetails(card, None, hidden = false).implemented)
