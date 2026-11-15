@@ -3,10 +3,12 @@ package distantlands.application
 import distantlands.application.gamelog.LogScripts.{formatter, texts}
 import distantlands.gameplay.powers.legacies.{ConspiratorCard,
   ConspiratorPrediction}
+import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.protocol.projection.GameProjection
-import distantlands.testkit.{Commands, MenuPlay, Table}
+import distantlands.testkit.{Commands, MenuPlay, Outcomes, RoundEndChoices,
+  Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.{accepted, present}
 
@@ -89,3 +91,42 @@ class ConspiratorSecrecySuite extends munit.FunSuite:
     assert(own.contains(public) && own.contains(secret), own)
     assert(!own.exists(_.contains("chose")), own)
 
+
+  /** Round 5's last Act, p3's, at the end of which the end die rolls 6 and
+    * p2 wins as the Successor: p1, the Chancellor, holds the Oathkeeper
+    * title of Devotion and the Darkest Secret; p2, a Citizen, holds the
+    * Grand Scepter; p3, an Exile, holds Conspirator and has written down
+    * `prediction`. */
+  private def endedAt(prediction: Prediction)
+      : (GameApplicationService, GameAccepted) =
+    val table = Table.start.imperial(p1, p2)
+      .oathkeeperGoal(OathkeeperGoal.Devotion).oathkeeper(Some(p1))
+      .darkestSecret(Some(p1), secrets = 1).relic(p2, TheGrandScepterCard)
+      .legacy(p3, ConspiratorCard).turn(p3, Phase.Act)
+      // No Table step sets the round or a prediction.
+      .update(_.updateCurrent(c => c.copy(
+        tracks = c.tracks.copy(round = 5, usurperLimited = false),
+        predictions = Map(p3 -> prediction))))
+    val (service, _) = table.service(roundEnd = RoundEndChoices.endDie(6))
+    (service, accepted(service.handle(gameId, 0L,
+      MenuPlay.starting(p3, PhaseTransitionRef.BeginRest))))
+
+  test("at the Start Chronicle park every other viewer's projection and log " +
+      "are the same whatever the prediction, with no reveal (R24, R28)"):
+    val (oneService, one) = endedAt(Prediction(5, p2))
+    val (otherService, other) = endedAt(Prediction(2, p1))
+    Vector(one, other).foreach(at => assertEquals(
+      Outcomes.ready(at.state).game.current.turn.phase, Phase.RoundEnd))
+    val viewsOf = (at: GameAccepted) =>
+      val loaded = LoadedGame(at.state, at.nextSequence)
+      Vector(projector.project(gameId, loaded, p1),
+        projector.project(gameId, loaded, p2),
+        projector.projectPublic(gameId, loaded))
+    assertEquals(viewsOf(one), viewsOf(other))
+    assertEquals(viewsOf(one).head.walkerWaiting.map(_.playerIds),
+      Some(Vector("p2")))
+    Vector(p1, p2).foreach { viewer =>
+      val seen = lines(oneService, viewer)
+      assertEquals(seen, lines(otherService, viewer))
+      assert(!seen.exists(_.contains("had written down")), seen)
+    }
