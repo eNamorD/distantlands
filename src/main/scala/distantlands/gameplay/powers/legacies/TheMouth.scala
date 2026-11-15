@@ -158,7 +158,7 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
     val ironHand = Option.when(legacy == IronHandCard.id &&
       Imperials.isImperial(ready, player))(Move(Piece.Card(legacy),
         PositionedLocation(into),
-        PositionedLocation(Location.Deck(CardDeck.Legacy))))
+        PositionedLocation.legacyDeckBottom))
     Vector[CoreOperation](activate) ++ alteration.toVector ++
       ironHand.toVector
 

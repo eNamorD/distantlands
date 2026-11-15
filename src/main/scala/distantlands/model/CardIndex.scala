@@ -135,8 +135,7 @@ object CardIndex:
     addIds(common.worldDeck, CardContainer.Deck(CardDeck.World))
     addIds(common.relicDeck, CardContainer.Deck(CardDeck.Relic))
     addIds(common.edificeDeck, CardContainer.Deck(CardDeck.Edifice))
-    // The legacy deck is derived (Legacies design, ruling 3): no card is
-    // indexed there.
+    addIds(common.legacyDeck, CardContainer.Deck(CardDeck.Legacy))
     addIds(common.publicLegacies, CardContainer.PublicLegacies)
 
     Region.all.foreach { region =>

@@ -75,8 +75,12 @@ class LegacySetupSuite extends munit.FunSuite:
       val Vector(kept, returned) = drawn(seat.playerId)
       assertEquals(ready.game.campaign.lineages(seat.lineageId).legacies,
         Vector(LegacyState(kept, active = false)), seat.playerId.value)
-      assertEquals(ready.game.cardIndex.toOption.get.get(returned), None)
+      assertEquals(ready.game.cardIndex.toOption.get.get(returned)
+        .map(_.location.container), Some(CardContainer.Deck(CardDeck.Legacy)))
     }
+    // Each returned legacy went to the bottom, below the deal's rest.
+    assertEquals(ready.game.current.commonCards.legacyDeck
+      .takeRight(seats.size).toSet, seats.map(seat => drawn(seat.playerId)(1)).toSet)
 
   test("each player is asked to keep one of exactly the two legacies they " +
       "drew, and keeps the one chosen"):

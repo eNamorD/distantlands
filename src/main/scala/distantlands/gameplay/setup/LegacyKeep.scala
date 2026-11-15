@@ -24,8 +24,8 @@ object LegacyKeep:
   def noteKeys: Vector[NoteKey] = notes.declared
 
   /** Quiet Ambitions: keep one of the two legacies game start drew,
-    * facedown, and return the other to the deck (CR "Set Up Players";
-    * Legacies design, slice 2). The drawn legacies are the dormant ones the
+    * facedown, and return the other to the bottom of the legacy deck (CR
+    * "Set Up Players"; Legacies design, slice 2). The drawn legacies are the dormant ones the
     * lineage holds that its baseline record does not, read when the
     * question is reached (implementation ruling R13). A short deck's single
     * legacy is kept without a question, and a player who drew none is asked
@@ -95,7 +95,7 @@ object LegacyKeep:
             DecisionOptionRef.Legacy(kept))) if drawn.contains(kept) =>
           Right(drawn.filterNot(_ == kept).map(id => Move(Piece.Card(id),
             PositionedLocation(Location.Legacies(lineage)),
-            PositionedLocation(Location.Deck(CardDeck.Legacy)))))
+            PositionedLocation.legacyDeckBottom)))
         case _ => Left(InvalidEventOrder(
           s"no legacy answer is recorded for $decisionId"))
 

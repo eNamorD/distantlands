@@ -43,7 +43,8 @@ object GameStartRules:
         .collect { case id: EdificeId => id }.toSet
       commonCards = material.commonCards.copy(edificeDeck =
         material.commonCards.edificeDeck.filterNot(storedEdifices),
-        publicLegacies = legacyDeal.publicRow(orders.legacyOrder))
+        publicLegacies = legacyDeal.publicRow(orders.legacyOrder),
+        legacyDeck = legacyDeal.rest(orders.legacyOrder))
       // A seated lineage the Chronicle lists starts from its record, its
       // legacies with their stored faces; `LaterGameSetup` hands its
       // starting relics to its player. Foundation III's draw joins it

@@ -28,6 +28,12 @@ final case class LegacyDeal(face: FoundationFace, seats: Vector[PlayerId]):
   def publicRow(order: Vector[LegacyId]): Vector[LegacyId] =
     if public then order.take(LegacyDeal.PublicRow) else Vector.empty
 
+  /** What the deal leaves of `order`, top first: the game's legacy deck
+    * (catalog batch 13, ruling 1). */
+  def rest(order: Vector[LegacyId]): Vector[LegacyId] =
+    order.drop(if public then LegacyDeal.PublicRow
+      else LegacyDeal.QuietDraw * seats.size)
+
 object LegacyDeal:
   val QuietDraw: Int = 2
   val PublicRow: Int = 4
@@ -40,7 +46,8 @@ object LegacyDeal:
     LegacyDeal(StartingFoundations.of(chronicle)(FoundationNumber.III).face,
       participants.map(_.playerId))
 
-  /** The derived legacy deck (ruling 3): every catalog legacy no lineage
+  /** The legacy deck a game derives from `chronicle` (ruling 3), which
+    * game start shuffles and deals from: every catalog legacy no lineage
     * of `chronicle` holds, seated or in the box, in catalog order. A
     * Chronicle stores no public row. */
   def deck(catalog: ExecutableCatalog, chronicle: Chronicle)

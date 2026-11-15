@@ -61,11 +61,8 @@ private[operations] object CardMovementOperations:
       "non-stack destination cannot specify top or bottom"
     ))
 
-  /** The legacy deck is derived and keeps no order (Legacies design, ruling
-    * 3), so a move into it names no top or bottom. */
   private def isStack(location: Location): Boolean = location match
-    case Location.Deck(deck) => deck != CardDeck.Legacy
-    case _: Location.RegionalDiscard => true
+    case _: Location.Deck | _: Location.RegionalDiscard => true
     case _ => false
 
   private final case class ResolvedTransfer(
@@ -180,7 +177,7 @@ private[operations] object CardMovementOperations:
       ))
       case _ => Some(InvalidDestination(transfer.piece, destination))
 
-  /** The public row is faceup and the derived deck keeps no face, so a move
+  /** The public row is faceup and the legacy deck keeps no face, so a move
     * there may turn a legacy faceup or name no face, never facedown (R6). */
   private def facedownLegacy(id: CardId, transfer: CardTransfer)
       : Option[OperationError] =
@@ -216,6 +213,8 @@ private[operations] object CardMovementOperations:
       Some(ready.game.current.commonCards.relicDeck)
     case CardContainer.Deck(CardDeck.Edifice) =>
       Some(ready.game.current.commonCards.edificeDeck)
+    case CardContainer.Deck(CardDeck.Legacy) =>
+      Some(ready.game.current.commonCards.legacyDeck)
     case CardContainer.RegionalDiscard(region) =>
       Some(ready.game.current.commonCards.discard(region).reverse)
     case _ => None
@@ -251,9 +250,7 @@ private[operations] object CardMovementOperations:
       case CardDeck.World => cards.copy(worldDeck = cards.worldDeck.filterNot(_ == located.id))
       case CardDeck.Relic => cards.copy(relicDeck = cards.relicDeck.filterNot(_ == located.id))
       case CardDeck.Edifice => cards.copy(edificeDeck = cards.edificeDeck.filterNot(_ == located.id))
-      // Unreachable: nothing is indexed in the derived legacy deck, so no
-      // card is ever removed from it.
-      case CardDeck.Legacy => cards
+      case CardDeck.Legacy => cards.copy(legacyDeck = cards.legacyDeck.filterNot(_ == located.id))
     }}
     case CardContainer.RegionalDiscard(region) => updateCommonCards(ready) { cards =>
       cards.copy(regionalDiscards = cards.regionalDiscards.updated(region,
@@ -481,8 +478,8 @@ private[operations] object CardMovementOperations:
           cards.relicDeck, id.asInstanceOf[RelicId], position, topAtHead = true))
         case CardDeck.Edifice => cards.copy(edificeDeck = insertStack(
           cards.edificeDeck, id.asInstanceOf[EdificeId], position, topAtHead = true))
-        // A legacy returned to the deck leaves play: the deck is derived.
-        case CardDeck.Legacy => cards
+        case CardDeck.Legacy => cards.copy(legacyDeck = insertStack(
+          cards.legacyDeck, id.asInstanceOf[LegacyId], position, topAtHead = true))
       }
       current.copy(commonCards = updated)
     })
