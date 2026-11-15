@@ -1,19 +1,27 @@
 package distantlands.gameplay.powers.banner
 
-import distantlands.gameplay.{CampaignFixture, OathRules, WalkerDiceFixture}
+import distantlands.gameplay.{CampaignFixture, OathRules, PlacementFixture,
+  SearchPlay, WalkerDiceFixture}
+import distantlands.gameplay.actions.VisionRules
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
+import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.campaign.{GlamorCard, PlanDriver}
 import distantlands.gameplay.powers.search.DisciplesCard
-import distantlands.gameplay.powers.whenplayed.{WhenPlayedHarness,
+import distantlands.gameplay.powers.whenplayed.{ConspiracyWhenPlayed,
+  FavoredSon, FavoredSonCard, WhenPlayedHarness,
   WizardsConclave, WizardsConclaveCard}
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
   SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
+import distantlands.gameplay.setup.legacies.{TheStandardBearer,
+  TheStandardBearerCard}
 import distantlands.gameplay.walker.{ParkedDecisionAssertions,
   ProcedureWalker}
 import distantlands.model._
 import distantlands.model.OathState.Ready
-import distantlands.testkit.{Journal, Outcomes, ParkedNode, Table}
+import distantlands.testkit.{Answers, Journal, Outcomes, ParkedNode,
+  PlacementPicks, Situation, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.{accepted, present}
 
@@ -207,3 +215,67 @@ class TheNeedleSuite extends munit.FunSuite:
       .filter(_.startsWith("power.the-needle")), Vector.empty)
     assertEquals(walked.ready.game.current.banners.peoplesFavor.active,
       PeoplesFavorFace.Mob)
+
+  test("after Favored Son takes the People's Favor, its holder flips it, " +
+      "and the flip's line comes before the take's (R22)"):
+    // p1 plays Favored Son and holds The Needle; p2 holds the People's
+    // Favor with 3 favor.
+    val ready = Table.start.adviser(p1, FavoredSonCard)
+      .legacy(p1, TheNeedleCard).peoplesFavor(Some(p2), favor = 3).ready
+    val beside = WhenPlayedHarness.powersBeside(FavoredSon, TheNeedle)
+    val hook = WhenPlayedHarness.hook(FavoredSonCard.id)
+    val parked = Outcomes.parked(ProcedureWalker.advance(ready, hook, None,
+      beside))
+    val at = WhenPlayedHarness.replayed(ready, parked.events)
+    val done = Outcomes.finished(ProcedureWalker.resolve(at, hook,
+      parked.tree, Answered(TheNeedle.decisionId(Banner.PeoplesFavor),
+        DecisionAnswer.ChooseOneAnswer(TheNeedle.flip), p1), beside))
+    val banner = done.treeless.game.current.banners.peoplesFavor
+    assertEquals((banner.holder, banner.active),
+      (Some(p1), PeoplesFavorFace.GrandCouncil))
+    assertEquals(lines(done.events).map(_.key), Vector("flipped"))
+    assertEquals(WhenPlayedHarness.said(FavoredSon, done.events).map(_.key),
+      Vector("took"))
+
+  test("after the Conspiracy seizes the People's Favor, its holder flips it"):
+    // p1 at Ancient City searches with the Conspiracy on top, keeps it
+    // faceup and holds The Needle; p2, at Ancient City, holds the
+    // People's Favor with 1 favor.
+    val board = Table.start.pawn(p1, at = AncientCitySite)
+      .pawn(p2, at = AncientCitySite).legacy(p1, TheNeedleCard)
+      .peoplesFavor(Some(p2), favor = 1).darkestSecret(None, secrets = 1)
+      .worldDeckTop(VisionRules.Conspiracy).ready
+    val started = accepted(SearchPlay.searched(rules, Ready(board), p1))
+    val placed = accepted(rules.resolveWalker(started.state, p1,
+      PlacementFixture.cardPlayDecisionId(VisionRules.Conspiracy, "place"),
+      PlacementPicks.parkedAnswer(started.state, PlayedAs.Faceup, powers)))
+    val seized = answer(placed.state, p1, ConspiracyWhenPlayed.decisionId,
+      DecisionOptionRef.Banner(Banner.PeoplesFavor))
+    assert(asked(seized.state, Banner.PeoplesFavor))
+    val done = answer(seized.state, p1,
+      TheNeedle.decisionId(Banner.PeoplesFavor), TheNeedle.flip)
+    val banner = Outcomes.ready(done.state).game.current.banners.peoplesFavor
+    assertEquals((banner.holder, banner.active),
+      (Some(p1), PeoplesFavorFace.GrandCouncil))
+
+  test("after The Standard Bearer takes a banner at Setup, its holder flips " +
+      "it"):
+    // l2, a Citizen, holds The Standard Bearer and The Needle; p2 takes
+    // the People's Favor from the shared bank after their pawn.
+    val (l1, l2) = (LineageId("l1"), LineageId("l2"))
+    val record = SetupLegacyFixture.holding(LaterGameFixture.chronicle(l1, l2),
+      l2, Role.Citizen, TheStandardBearerCard.id -> true,
+      TheNeedleCard.id -> true)
+    val answers: Answers =
+      case park if park.decisionId == TheStandardBearer.decisionId(p2) =>
+        DecisionAnswer.ChooseOneAnswer(
+          DecisionOptionRef.Banner(Banner.PeoplesFavor))
+      case park if park.decisionId ==
+          TheNeedle.decisionId(Banner.PeoplesFavor) =>
+        DecisionAnswer.ChooseOneAnswer(TheNeedle.flip)
+    val woken = Situation.wake(Situation.productionRules(catalog)
+      .withAnswers(answers), record, LaterGameFixture.orders(record, p1))
+    val banner = woken.ready.game.current.banners.peoplesFavor
+    assertEquals((banner.holder, banner.active),
+      (Some(p2), PeoplesFavorFace.GrandCouncil))
+    assertEquals(lines(woken.events).map(_.key), Vector("flipped"))
