@@ -34,10 +34,12 @@ import distantlands.model.OathViolation._
  *     BuildOps(place the pawn)                           // window = SetupPawnPlaced
  *     Branch(Decide(secret-society discard, participant)) // over the limit,
  *                                                        // with a pawn
- *     Branch(                                            // Quiet Ambitions, with
- *       Decide(legacy-choice, participant),              // two drawn legacies
- *       BuildOps(return the other to the deck),
- *       Note(kept a legacy))
+ *     Sequence(                                          // LegacyKeep.step
+ *       Branch(Draw(2 into the keeper's hand)),          // Quiet Ambitions
+ *       Branch(                                          // two in the hand; one
+ *         Decide(legacy-choice, keeper),                 // is kept unasked
+ *         BuildOps(keep one, the other to the bottom),
+ *         Note(kept a legacy)))
  *     QuestToDistantLands.swapStep(participant)          // no pawn, a card to
  *                                                        // give (R31, R37)
  *     Branch(                                            // with a pawn; a player
