@@ -2,12 +2,13 @@ package distantlands.gameplay.powers.action
 
 import distantlands.gameplay.chronicle.legacies.RivalCard
 import distantlands.gameplay.powers.{LegacyDraws, NoteText}
-import distantlands.gameplay.setup.legacies.{PopulistCard, SeerCard,
-  WorldCrafterCard}
+import distantlands.gameplay.setup.legacies.{MatchmakerCard, PopulistCard,
+  SeerCard, WorldCrafterCard}
 import distantlands.model._
+import distantlands.protocol.projection.DecisionQueryProjection
 import distantlands.testkit.{Look, Outcomes, PhasePowerHarness, Table}
 import distantlands.testkit.CardRefs.LegacyRef
-import distantlands.testkit.Table.p1
+import distantlands.testkit.Table.{p1, p3}
 import distantlands.testkit.Unwrap.accepted
 
 /** Ancient Writ (relic R22), ACTION: bury it, draw 3 legacies, keep 1
@@ -96,6 +97,68 @@ class AncientWritSuite extends munit.FunSuite:
     val used = accepted(use(start, AncientWrit, source))
     val kept = accepted(answer(used, p1, AncientWrit.decisionId,
       pick(DecisionOptionRef.Legacy(crafter))))
+    assertEquals(
+      Outcomes.ready(accepted(PhasePowerHarness.replayed(start,
+        used.events ++ kept.events))),
+      after(kept))
+  /** The parked decision's id and who it waits on. */
+  private def waiting(used: OathTransition): Option[(String, PlayerId)] =
+    PhasePowerHarness.parked.parkedDecision(used.state)
+      .map(facts => facts.decision -> facts.awaiting)
+
+  test("another player's active Matchmaker draws into their own hand and " +
+      "chooses for the holder"):
+    val used = accepted(use(holding(SeerCard, PopulistCard, WorldCrafterCard)
+      .legacy(p3, MatchmakerCard).ready, AncientWrit, source))
+    assertEquals(waiting(used), Some(AncientWrit.decisionId -> p3))
+    assertEquals(LegacyDraws.hand(after(used), p3), Vector(seer, populist,
+      crafter))
+    assertEquals(handOf(after(used)), Vector.empty)
+    val kept = after(accepted(answer(used, p3, AncientWrit.decisionId,
+      pick(DecisionOptionRef.Legacy(crafter)))))
+    assertEquals(legaciesOf(kept), Vector(LegacyState(crafter, active = false)))
+    assertEquals(LegacyDraws.hand(kept, p3), Vector.empty)
+    assertEquals(kept.game.current.commonCards.legacyDeck.takeRight(2),
+      Vector(seer, populist))
+
+  test("Matchmaker's lines name both players"):
+    val used = accepted(use(holding(SeerCard, PopulistCard)
+      .legacy(p3, MatchmakerCard).ready, AncientWrit, source))
+    val kept = accepted(answer(used, p3, AncientWrit.decisionId,
+      pick(DecisionOptionRef.Legacy(seer))))
+    assertEquals(NoteText.said(AncientWrit, used.events ++ kept.events)
+      .map(_.text), Vector(
+        s"p3 drew 2 legacies for p1 with ${MatchmakerCard.id.value}.",
+        s"p3 kept a legacy for p1 with ${MatchmakerCard.id.value}."))
+
+  test("Matchmaker's question names the player it keeps for"):
+    val used = accepted(use(holding(SeerCard, PopulistCard)
+      .legacy(p3, MatchmakerCard).ready, AncientWrit, source))
+    assertEquals(PhasePowerHarness.queryOf(used, p3).collect {
+      case one: DecisionQueryProjection.ChooseOne => one.heading }.flatten,
+      Some("Matchmaker: keep a legacy for p1"))
+
+  test("a dormant Matchmaker chooses for nobody"):
+    val used = accepted(use(holding(SeerCard, PopulistCard)
+      .legacy(p3, MatchmakerCard, active = false).ready, AncientWrit, source))
+    assertEquals(waiting(used), Some(AncientWrit.decisionId -> p1))
+    assertEquals(handOf(after(used)), Vector(seer, populist))
+
+  test("Matchmaker's own holder using Ancient Writ chooses for themself"):
+    val used = accepted(use(holding(SeerCard, PopulistCard)
+      .legacy(p1, MatchmakerCard).ready, AncientWrit, source))
+    assertEquals(waiting(used), Some(AncientWrit.decisionId -> p1))
+    val kept = accepted(answer(used, p1, AncientWrit.decisionId,
+      pick(DecisionOptionRef.Legacy(seer))))
+    assertEquals(NoteText.said(AncientWrit, used.events ++ kept.events)
+      .map(_.text), Vector("p1 drew 2 legacies.", "p1 kept a legacy."))
+
+  test("Matchmaker's keep replays to the same state"):
+    val start = holding(SeerCard, PopulistCard, WorldCrafterCard)
+      .legacy(p3, MatchmakerCard).ready
+    val used = accepted(use(start, AncientWrit, source))
+    val kept = accepted(answer(used, p3, AncientWrit.decisionId,
+      pick(DecisionOptionRef.Legacy(seer))))
     assertEquals(
       Outcomes.ready(accepted(PhasePowerHarness.replayed(start,
         used.events ++ kept.events))),

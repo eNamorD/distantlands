@@ -18,8 +18,11 @@ object MatchmakerCard extends Legacy(LegacyId("L14"), "Matchmaker",
   * ruling 13). In Quiet Ambitions' keep its holder answers every other
   * player's keep, under the keep's own id; the holder sees both drawn
   * legacies while that keep is open, and the owner only the one kept for
-  * them (`LegacyKeep.matchmade`, R16). Draws during a game (Amber Doors,
-  * Lost Doors, Ancient Writ) wait for their batch. This power hooks no
+  * them (`LegacyKeep.matchmade`, R16). During a game its holder draws
+  * Ancient Writ's legacies into their own hand and keeps one for the Writ's
+  * holder (catalog batch 13, ruling 9; `AncientWrit`); Amber Doors does not
+  * trigger it, and Lost Doors' discard is the owner's (ruling 10). This
+  * power hooks no
   * window. Line: "p3 kept a legacy for p2 with Matchmaker". */
 case object Matchmaker extends ContributingPower:
   val id: PowerId = MatchmakerCard.power.id

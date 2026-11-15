@@ -2,6 +2,7 @@ package distantlands.gameplay.powers.action
 
 import distantlands.catalog.{ExecutableCatalog, PrintedPower, Relic}
 import distantlands.gameplay.powers.{LegacyDraws, PlayerFacts, PowerAnswers}
+import distantlands.gameplay.setup.legacies.{MatchmakerCard, SetupLegacyRules}
 import distantlands.model._
 
 object AncientWritCard extends Relic(RelicId("R22"), "Ancient Writ", value = 81, defense = 1):
@@ -19,7 +20,12 @@ object AncientWritCard extends Relic(RelicId("R22"), "Ancient Writ", value = 81,
   * where each step is reached, not when it is built: a walk resumed at the
   * question rebuilds the tree from a state where the relic is already
   * buried. The draw takes the top 3 of the legacy deck into
-  * the keeper's hand (`LegacyDraws`); a short deck draws what remains. The
+  * the keeper's hand (`LegacyDraws`); a short deck draws what remains.
+  * The keeper is the owner, or another seated player who holds Matchmaker
+  * active and draws and chooses for them off turn (ruling 9). A hand is
+  * private to its holder, so the owner never sees the legacies drawn for
+  * them, only the kept one once it is on their lineage. A heading names a
+  * player by its id, as the log lines do. The
   * keep is its own `Branch`, after the draw's, so a walk resumed at the
   * question reads the same hand. With two or three drawn the keeper chooses
   * one; with one it is kept unasked; with none nothing is asked. The kept
@@ -41,6 +47,16 @@ case object AncientWrit extends PaidAction(AncientWritCard.power):
   /** "p1 kept a legacy." */
   val kept: NoteKey = notes.key("kept", Vector(NotePart.Arg(0),
     NotePart.Text(" kept a legacy.")))
+  /** "p3 drew 3 legacies for p1 with Matchmaker." */
+  val drewFor: NoteKey = notes.key(s"${NoteKey.Used}.matchmaker", Vector(
+    NotePart.Arg(0), NotePart.Text(" drew "), NotePart.Arg(1),
+    NotePart.Plural(1, " legacy", " legacies"), NotePart.Text(" for "),
+    NotePart.Arg(2), NotePart.Text(" with "), NotePart.Arg(3),
+    NotePart.Text(".")))
+  /** "p3 kept a legacy for p1 with Matchmaker." */
+  val keptFor: NoteKey = notes.key("kept-for", Vector(NotePart.Arg(0),
+    NotePart.Text(" kept a legacy for "), NotePart.Arg(1),
+    NotePart.Text(" with "), NotePart.Arg(2), NotePart.Text(".")))
   notes.borrow(LegacyDraws.empty)
   override def noteKeys: Vector[NoteKey] = notes.declared
   /** The kept line is the keep's narration: no "Chose" line names the
@@ -69,26 +85,37 @@ case object AncientWrit extends PaidAction(AncientWritCard.power):
     PositionedLocation(Location.PlayArea(player)), None, 0,
     relic.tokens.secrets, player)
 
-  /** Who draws and chooses for `owner`. */
-  private def keeper(state: ReadyGame, owner: PlayerId): PlayerId = owner
+  /** Who draws and chooses for `owner`: another seated player holding
+    * Matchmaker active, else `owner` (ruling 9). Read where each step is
+    * reached; nothing between the draw and the keep changes who holds
+    * Matchmaker. */
+  private def keeper(state: ReadyGame, owner: PlayerId): PlayerId =
+    SetupLegacyRules.keeper(state, owner)
 
   private def draw(owner: PlayerId): Operation = Branch((live, _) =>
     val drawer = keeper(live, owner)
     LegacyDraws.steps(id, drawer, Drawn, card, count =>
-      drew(card, NoteArg.Player(drawer), NoteArg.Number(count))))
+      if drawer == owner then
+        drew(card, NoteArg.Player(drawer), NoteArg.Number(count))
+      else drewFor(card, NoteArg.Player(drawer), NoteArg.Number(count),
+        NoteArg.Player(owner), NoteArg.Card(MatchmakerCard.id))))
 
   private def keep(owner: PlayerId): Operation =
     Branch((live, _) =>
       val chooser = keeper(live, owner)
-      val line = Note(id, _ => Some(kept(card, NoteArg.Player(chooser))))
+      val line = Note(id, _ => Some(
+        if chooser == owner then kept(card, NoteArg.Player(chooser))
+        else keptFor(card, NoteArg.Player(chooser), NoteArg.Player(owner),
+          NoteArg.Card(MatchmakerCard.id))))
       live.game.current.player(owner).map(_.lineage) match
         case None => Vector.empty
-        case Some(lineage) => keepOf(LegacyDraws.hand(live, chooser), chooser,
-          lineage, line))
+        case Some(lineage) => keepOf(LegacyDraws.hand(live, chooser), owner,
+          chooser, lineage, line))
 
   /** The keep of `drawn`, waiting in `chooser`'s hand, for `lineage`. */
-  private def keepOf(drawn: Vector[LegacyId], chooser: PlayerId,
-      lineage: LineageId, line: Operation): Vector[Operation] =
+  private def keepOf(drawn: Vector[LegacyId], owner: PlayerId,
+      chooser: PlayerId, lineage: LineageId, line: Operation)
+      : Vector[Operation] =
     drawn match
       case Vector() => Vector.empty
       case Vector(only) => Vector(BuildOps((_, _) =>
@@ -98,7 +125,9 @@ case object AncientWrit extends PaidAction(AncientWritCard.power):
         Decide(decisionId, chooser, DecisionQuery.ChooseOne(
           drawn.map(legacy =>
             DecisionOption.Legacy(DecisionOptionRef.Legacy(legacy))),
-          heading = Some("Ancient Writ: keep a legacy"),
+          heading = Some(
+            if chooser == owner then "Ancient Writ: keep a legacy"
+            else s"Matchmaker: keep a legacy for ${owner.value}"),
           confirmVerb = Some("Keep"))),
         BuildOps((_, pending) =>
           settled(pending, drawn, chooser, lineage), required = true),
