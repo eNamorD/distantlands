@@ -168,16 +168,16 @@ The [slice 4 plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice4.m
 open questions, ruled on 2026-11-14.
 
 - **R24. Is Conspirator's prediction compared before or after Royal
-  Line?** *Decision:* after Royal Line's CHRONICLE (SUN) choice has been
-  made, against the winner that results from it: after the Successor
-  substitution and any Royal Line choice. The comparison runs right after the
-  Sun's first window, where Royal Line's step is, so a Conspirator win then
-  overrides the result, and every later Chronicle step reads it.
-  *Reason:* the owner's ruling, overriding the first one ("Conspirator
-  should check after Royal Line power is activated"). This supersedes the
-  earlier decision to compare at the game's end, before the Chronicle
-  opens. *Slice/files:* slice 4, Task 4, re-ruled; `ConspiratorReveal`,
-  `ChronicleSunProcedure`.
+  Line?** *Decision:* right after Royal Line's choice, against the winner
+  that results from it (after the Successor substitution and any Royal
+  Line choice); both run in the step R36 adds after the game's result is
+  set and before Start Chronicle, so a Conspirator win overrides the
+  result before the Chronicle opens and every Chronicle step reads it.
+  *Reason:* the owner's ruling ("Conspirator should check after Royal Line
+  power is activated"), placed by R36. This supersedes the first decision,
+  to compare at the game's end before Royal Line, and the second, to
+  compare in the Sun right after its first window. *Slice/files:* slice 4,
+  re-ruled twice; `ConspiratorReveal`, `ChronicleWinnerProcedure`.
 - **R25. May The Mouth activate Iron Hand for an Imperial holder?**
   *Decision:* yes; the same batch then discards it, with Iron Hand's
   discard line. *Reason:* "If you are Imperial, discard Iron Hand" is a
@@ -238,7 +238,7 @@ Ruled by the owner on 2026-11-14, from the review of slice 4.
 Ruled by the owner on 2026-11-14, from the R24 change.
 
 - **R34. Who starts the Chronicle before the Sun compares the
-  prediction?** *Decision:* keep as is: Start Chronicle belongs to the
+  prediction?** *Superseded by R36.* *Decision:* keep as is: Start Chronicle belongs to the
   winner as it stands at the game's end, and the winner banner updates
   once the Sun's comparison runs. *Reason:* the prediction stays secret
   until the Sun reveals it, so a provisional winner before then is what
@@ -251,3 +251,19 @@ Ruled by the owner on 2026-11-14, from the R24 change.
   save uses them; only dev-database games saved after a game end during
   this batch are affected. *Slice/files:* slice 4, R24 change;
   `ProcedureRef`, `ConspiratorReveal`.
+
+Ruled by the owner on 2026-11-14.
+
+- **R36. When do Royal Line and Conspirator's comparison run?**
+  *Decision:* Royal Line's choice and then Conspirator's comparison run in
+  a new step after the game's result is set and before the Start
+  Chronicle decision. Start Chronicle then belongs to the final winner
+  (after the Successor, Royal Line and any Conspirator win), and the
+  winner banner shows that winner throughout. Supersedes R34 and amends
+  R24; it also moves the Legacy Chronicle powers batch's Royal Line out of
+  the Sun's first window (its design ruling 22 and R40). *Reason:* the
+  owner's ruling; nothing in the rules happens between the game's end and
+  the Sun's first window, so only the digital Start Chronicle pause moves
+  relative to them. *Slice/files:* slice 4, R36 change;
+  `ChronicleWinnerProcedure`, `ChronicleSequence`, `RoyalLine`,
+  `ConspiratorReveal`, `ChronicleSunProcedure`.

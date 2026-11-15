@@ -5,10 +5,12 @@ import distantlands.gameplay.walker.ProcedureStart
 import distantlands.model._
 
 /** The winner's Start Chronicle decision (Chronicle steps design, "Explicit
-  * start"). The driver starts it once the game has a result, so the winner
-  * can look at the final board before the Chronicle changes it. Only the
-  * winner owns the decision; everyone else waits on it. Answering it enters
-  * the Chronicle phase.
+  * start"). The driver starts it once the game has a result and the final
+  * winner is settled: after Royal Line's choice and Conspirator's
+  * comparison, which run before it (Legacy in-play powers R36). So the
+  * final winner can look at the final board before the Chronicle changes
+  * it. Only that winner owns the decision; everyone else waits on it.
+  * Answering it enters the Chronicle phase.
   */
 object ChronicleBeginProcedure:
   val decisionId: String = "chronicle.begin"

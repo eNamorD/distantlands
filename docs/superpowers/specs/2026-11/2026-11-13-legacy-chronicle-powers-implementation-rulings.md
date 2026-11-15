@@ -431,6 +431,10 @@ the Sun's first window, before Reveal Relics and Iron Hand's Sun
 checkpoint.
 Reason: the plan's proposal.
 Slice/files: 5; `PowerWindow`, `ChronicleWindows`, `ChronicleSunProcedure`.
+Amended by Legacy in-play powers implementation ruling R36: Royal Line's
+step now runs in `PowerWindow.ChronicleFinalWinner`, after the game's
+result is set and before Start Chronicle; the Sun's first window stays,
+empty.
 
 **R41. The lines and the display.**
 Decision: "p3 named p2 the winner with Royal Line" (a decision line), only

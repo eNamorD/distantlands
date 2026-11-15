@@ -41,7 +41,7 @@ reason.
 
 The winner makes most of this task's choices; each step names its actor.
 
-Digital: the Sun opens with a window before step 1. When the game ended in a Chancellor's or a Successor's win, a seated Citizen holding Royal Line active may decline, or choose the winner from every Imperial player, the Chancellor first. A Citizen chosen wins as the Successor; the Chancellor chosen wins by the Empire win that ended the game. A changed winner is journaled, "p3 named p2 the winner with Royal Line", and declining or choosing the current winner changes nothing. Every later step, the result display and the Game Log read the winner from the game's result ([Legacy Chronicle powers rulings](ambiguities.md#legacy-chronicle-powers-rulings), items 53 to 59).
+Digital: before Start Chronicle, a window runs once the game has a result (it opened the Sun until Legacy in-play powers R36). When the game ended in a Chancellor's or a Successor's win, a seated Citizen holding Royal Line active may decline, or choose the winner from every Imperial player, the Chancellor first. A Citizen chosen wins as the Successor; the Chancellor chosen wins by the Empire win that ended the game. A changed winner is journaled, "p3 named p2 the winner with Royal Line", and declining or choosing the current winner changes nothing. Every later step, the result display and the Game Log read the winner from the game's result ([Legacy Chronicle powers rulings](ambiguities.md#legacy-chronicle-powers-rulings), items 53 to 59).
 
 **Resolve Legacies**
 

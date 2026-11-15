@@ -198,14 +198,15 @@ rulings then continue.
     writes.
 26. **Conspirator: secrecy.** The prediction is stored as hidden
     information. The projection and the log redact it from every other
-    viewer until the Sun reveals it, after Royal Line's choice ("p2 wrote
-    down a prediction with Conspirator"; as implementation ruling R24
-    amends it); the holder sees it.
+    viewer until it is revealed, right after Royal Line's choice and
+    before Start Chronicle ("p2 wrote down a prediction with
+    Conspirator"; as implementation rulings R24 and R36 amend it); the
+    holder sees it.
 27. **Conspirator: resolution.** When the game ends, the round it ends in
     and the final winner, after any Successor substitution and any Royal
-    Line choice, are compared with the prediction, right after the Sun's
-    first window, where Royal Line's step is (as implementation ruling R24
-    amends it). If both match and the holder still holds
+    Line choice, are compared with the prediction, right after Royal
+    Line's choice, in the step before Start Chronicle (as implementation
+    rulings R24 and R36 amend it). If both match and the holder still holds
     Conspirator active, the holder wins instead, under a new victory kind
     `Conspirator`. The prediction is revealed in the log either way. A
     Conspirator lost during the game, as to The Mouth's cap, voids it.

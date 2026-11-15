@@ -174,7 +174,8 @@ rulings then continue.
 22. **Royal Line chooses the winner of an Empire win.** It applies only when
     the recorded result is a Chancellor win or a Successor win, and the
     holder was a Citizen holding it active when the game ended. In a new
-    window before Reveal Relics, the holder chooses the winner from every
+    window before Reveal Relics (moved before Start Chronicle by Legacy
+    in-play powers implementation ruling R36), the holder chooses the winner from every
     Imperial player, the Chancellor included. Choosing the Chancellor is
     choosing no one. The owner's shape: the question offers Decline first,
     then every Imperial player, the Chancellor first; declining or
