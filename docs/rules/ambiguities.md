@@ -302,7 +302,7 @@ Rulings for the legacies' SETUP powers ([Legacy Setup powers design](../superpow
 33. **`ChooseAmounts` is answered as a distribution is,** one amount per slot, with no new answer form (R18).
 34. **Secret Society's reshuffle is a journaled shuffle of its own pile,** `ShufflePile.VisionPackets` (R19).
 35. **Secret Society shows the holder which Visions exist, not where they lie;** Seer's holder peeks at the Visions and keeps that knowledge (R20).
-36. **Secret Society's excess discard** comes after the holder's pawn and before their keep, one choose-many of exactly the excess with no Decline, the cards going where Setup's rejected advisers go, with a line naming them by the log's knowledge rule, since regional discard piles are hidden (R21).
+36. **Secret Society's excess discard** comes right after the holder's pawn, and before their keep in a first game (a later game keeps in Foundation III, [Catalog batch 13 rulings](#catalog-batch-13-rulings), item 8), one choose-many of exactly the excess with no Decline, the cards going where Setup's rejected advisers go, with a line naming them by the log's knowledge rule, since regional discard piles are hidden (R21).
 37. **Secret Society offers the Visions in catalog order,** after Decline (R22).
 38. **Seer's question** has one slot per Vision, 1 to the deck's size, distinct, no Decline, and is skipped only with no Vision or a deck of one card (R23).
 39. **Secret Society comes before Seer in one window,** `SetupWorldDeck` (R24).
@@ -398,7 +398,7 @@ Rulings for the powers legacies use during a game ([Legacy in-play powers design
 
 ## Catalog batch 13 rulings
 
-Rulings for the cards that act on legacies ([Catalog batch 13 design](../superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)). Items are the design's rulings, taken with the owner on 2026-11-14, added as each slice lands: item 1 is ruling 7; items 2 to 7 are rulings 1, 2, 6, 8, 9 and 10, as amended by the owner on 2026-11-15.
+Rulings for the cards that act on legacies ([Catalog batch 13 design](../superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)). Items are the design's rulings, taken with the owner on 2026-11-14, added as each slice lands: item 1 is ruling 7; items 2 to 7 are rulings 1, 2, 6, 8, 9 and 10, as amended by the owner on 2026-11-15; item 8 is ruling 3, with the exile-only game ruled by the owner on 2026-11-15.
 
 1. **Reliquary Raid** takes a random relic from the Reliquary, facedown, as Bewitch, Ancient Pact and Royal Ambitions do. An empty Reliquary takes nothing and writes "The Reliquary was empty." (R22), and so does a Reliquary Setup With No Empire set aside ([Foundations rulings](#foundations-rulings), item 3). Otherwise the line is "Took a relic from the Reliquary.", which never names the relic.
 2. **The game stores the legacy deck.** Game start keeps what Foundation III's deal leaves of the shuffled deck. A draw during a game takes the top legacies into the drawer's hand; a short deck draws what remains, and an empty deck draws nothing and writes "The legacy deck was empty." The deck is not shuffled during a game. A draw is a hidden outcome, so undo never takes it back.
@@ -407,6 +407,7 @@ Rulings for the cards that act on legacies ([Catalog batch 13 design](../superpo
 5. **Ancient Writ.** ACTION: bury it, draw 3 legacies, keep 1 dormant and discard the others to the bottom of the legacy deck. A single drawn legacy is kept without a question, and an empty deck asks nothing. Lines: "p1 drew 3 legacies." and "p1 kept a legacy.", never naming the legacy. A legacy draw posts no other line, in Setup or during a game.
 6. **Matchmaker during a game.** When another seated player holds Matchmaker active, they draw Ancient Writ's legacies into their own hand and keep one for the Writ's holder, off turn; the question names that player, "Matchmaker: keep a legacy for p1". The owner never identifies the legacies not kept. A holder using Ancient Writ themself chooses for themself. Lines: "p3 drew 3 legacies for p1 with Matchmaker." and "p3 kept a legacy for p1 with Matchmaker."
 7. **Only Ancient Writ triggers Matchmaker** during a game: Amber Doors is excluded by Matchmaker's printed text, and Lost Doors' discard is the owner's choice.
+8. **The keep moves to Foundation III in later games.** The Quiet Ambitions keep runs while Foundation III resolves, after the banks and before the world deck, for every seated player in turn order from the first player, before any pawn is placed. Matchmaker's holder answers every other player's keep, as before. A first game's keep stays right after each player's pawn (CR p. 7). An exile-only game resolves its stored foundations, so it keeps in Foundation III, unless stored legacies were its only history: once they are wiped it keeps after each pawn, as it places its pawns, as a first game does ([Legacy Setup powers rulings](#legacy-setup-powers-rulings), item 61). Secret Society and Seer then follow the keep, and a Quest to Distant Lands holder who places no pawn keeps with everyone else.
 
 ## Source relationship cautions
 

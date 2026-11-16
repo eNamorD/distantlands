@@ -145,7 +145,8 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   Visions", and the holder chose their positions. *Slice/files:* slice 3;
   `SecretSociety`, `Seer`, `GamePresentationProjector.identifiesCard`.
 - **R21. Secret Society's excess discard.** After the holder's own
-  `SetupPawnPlaced` window and before their keep, only when they are over
+  `SetupPawnPlaced` window, and before their keep in a first game (a later
+  game keeps in Foundation III: catalog batch 13, ruling 3), only when they are over
   the adviser limit: one choose-many of exactly the excess, over the
   advisers by slot, `setup.legacy.secret-society.<player>.discard`, with no
   Decline. The cards go where Setup's rejected advisers go. Setup writes no
