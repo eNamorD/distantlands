@@ -60,6 +60,32 @@ architecture check enforces the hard limit and dependency boundaries:
 python3 scripts/check-architecture.py
 ```
 
+## Change, don't preserve
+
+Before the first public release nothing in this repository is outdated code
+that callers must keep working. A change to a signature, a field, a file or a
+name moves every caller with it. It does not add a forwarding overload, an
+optional field with a fallback, an adapter, or a second code path so that the
+shape from an earlier commit still works. "Make it safe" means the protected
+list below, not the previous shape. The
+[no compatibility shims decision](../superpowers/specs/2026-11/2026-11-15-no-compatibility-shims-decision.md)
+records the scope of this rule and when it ends.
+
+Protected: the rules as the game plays them, and the frontend and server at
+the same commit understanding each other. Not protected: an earlier commit's
+signatures, names, file layout, wire fields, or saved journals.
+
+Before adding a helper, wrapper, trait or default argument, delete it in your
+head. If its callers read no worse without it, do not add it. A method whose
+body is one call with the same arguments is a pass-through: remove it.
+
+At the end of a slice, list the public symbols the branch adds and decide, per
+name, whether it is inlined, replaced by an existing name, or kept:
+
+```sh
+scripts/new-symbols.sh
+```
+
 ## Sources of truth
 
 - Domain events are durable game history; commands are transient.
