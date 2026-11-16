@@ -97,10 +97,10 @@ object WalkerPowerCatalog:
       CardPlayTriggers.all ++
       BannerFacePowers.contributions ++
       Vector(Dazzle, GreatMarket, BanditMarket, GreatForge, BrokenForge,
-        ProvingGrounds, EmptyGrounds, HallOfMockery, LostGuardians,
-        RuinedSchool, BrokenHorn, BrokenClock, FallenSpire, TakeWealthLimit,
-        TakeWealthPawnGate, LightFingers, Beloved, TheNeedle, Arbiter,
-        ConspiracyWhenPlayed) ++
+        ProvingGrounds, EmptyGrounds, LostDoors, AmberDoors, HallOfMockery,
+        LostGuardians, RuinedSchool, BrokenHorn, BrokenClock, FallenSpire,
+        TakeWealthLimit, TakeWealthPawnGate, LightFingers, Beloved, TheNeedle,
+        Arbiter, ConspiracyWhenPlayed) ++
       LegacyChroniclePowers.all ++
       LegacySetupPowers.all
 

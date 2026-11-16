@@ -5,7 +5,7 @@ The [Legacy in-play powers](2026-11-14-legacy-in-play-powers-design.md)
 batch has landed, slice 4 (The Mouth) included: slice 5 here reuses The
 Mouth's activation, and slice 2 changes where The Mouth's Iron Hand discard
 sends the card. Each slice is planned when the one before it lands. Slice 1
-landed 2026-11-14; with it every printed denizen power is implemented. Slice 2 landed 2026-11-15. Slice 3 landed 2026-11-15. Slice 4 landed 2026-11-15.
+landed 2026-11-14; with it every printed denizen power is implemented. Slice 2 landed 2026-11-15. Slice 3 landed 2026-11-15. Slice 4 landed 2026-11-15. Slice 5 landed 2026-11-15.
 Amended 2026-11-15 by the owner while slice 2 was planned: the legacy deck
 is stored and ordered, discarded legacies go to its bottom in place of a
 set-aside zone, and drawn legacies wait in the drawer's hand, Setup's
@@ -264,6 +264,8 @@ a shared `LegacyActivation` that both The Mouth and Amber Doors call.
 Amber Doors moves every held legacy to the bottom of the legacy deck,
 draws 2 through `LegacyDraws`, then asks which to activate. Lost Doors
 draws 1, then asks which dormant legacy to discard to the bottom.
+At Setup their decision ids name the placer, since several players may
+place at the site in one walk.
 `AmberDoorsCard` leaves `HoldingEdifices`.
 
 ### Slice 6: Chronicle cards

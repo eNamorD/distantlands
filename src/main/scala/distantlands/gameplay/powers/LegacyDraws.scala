@@ -3,8 +3,8 @@ package distantlands.gameplay.powers
 import distantlands.model._
 
 /** A draw from the top of the legacy deck into the drawer's hand (catalog
-  * batch 13, rulings 1 and 6): Ancient Writ's 3, and later the Doors'. The
-  * deck is not shuffled during a game, so a discard at its bottom comes
+  * batch 13, rulings 1 and 6): Ancient Writ's 3, Amber Doors' 2 and Lost
+  * Doors' 1. The deck is not shuffled during a game, so a discard at its bottom comes
   * back only once every legacy above it is drawn. The draw is a `Draw`, a
   * hidden outcome, so the legality search stops at it and undo never takes
   * it back. A short deck draws what remains. An empty deck draws nothing,

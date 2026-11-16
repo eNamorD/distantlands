@@ -19,18 +19,3 @@ object StoneBathsCard extends Edifice(EdificeId("E04"), Suit.Discord):
       text = "CHRONICLE (SUN): Exiles at this site don't need to meet the " +
         "goals of their active legacies to keep them active.")
     val powers: Vector[PrintedPower] = Vector(power)
-
-object AmberDoorsCard extends Edifice(EdificeId("E05"), Suit.Discord):
-  object intact extends EdificeFace("Amber Doors") with Locked:
-    val power = PrintedPower(PowerId("edifice.e05.intact"),
-      persistent = false, cost = Cost.free,
-      text = "SETUP / **WHEN EXPLORED:** If you place your pawn here, you " +
-        "may discard all of your legacies (even dormant) to draw 2 " +
-        "dormant legacies and activate one.")
-    val powers: Vector[PrintedPower] = Vector(power)
-  object ruined extends EdificeFace("Lost Doors"):
-    val power = PrintedPower(PowerId("edifice.e05.ruined"),
-      persistent = false, cost = Cost.free,
-      text = "SETUP / **WHEN EXPLORED:** If you place your pawn here, " +
-        "draw a dormant legacy, then discard one you hold.")
-    val powers: Vector[PrintedPower] = Vector(power)

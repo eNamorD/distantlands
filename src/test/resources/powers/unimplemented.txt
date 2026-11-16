@@ -1,7 +1,5 @@
 edifice.e04.intact
 edifice.e04.ruined
-edifice.e05.intact
-edifice.e05.ruined
 edifice.e07.ruined
 edifice.e10.ruined
 edifice.e16.ruined
