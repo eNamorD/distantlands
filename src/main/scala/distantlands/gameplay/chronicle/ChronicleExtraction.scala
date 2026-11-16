@@ -19,13 +19,11 @@ object ChronicleExtraction:
     * holder's in their place, the Empire's then archived as rivals (Legacy
     * Chronicle powers design, ruling 21; R35). */
   def layout(ready: ReadyGame): Either[OathViolation, SiteLayout] =
-    ready.game.current.result.map(_.winner).toRight(OathViolation
-      .InvalidEventOrder("the Chronicle stores a game with no winner")).map(
-      winner =>
-        val kept = ChronicleLegacyRules.ironHand(ready).getOrElse(winner)
-        val (empire, rivals) = ready.game.current.map.hinterward
-          .partition(ChronicleTasks.rules(ready, kept, _))
-        SiteLayout(empire, rivals))
+    ChronicleTasks.winner(ready).map(winner =>
+      val kept = ChronicleLegacyRules.ironHand(ready).getOrElse(winner)
+      val (empire, rivals) = ready.game.current.map.hinterward
+        .partition(ChronicleTasks.rules(ready, kept, _))
+      SiteLayout(empire, rivals))
 
   def storedSite(site: SiteId, items: Vector[CardId])
       : Either[OathViolation, StoredSite] =
