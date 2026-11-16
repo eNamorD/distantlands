@@ -32,8 +32,6 @@ private[application] final class GamePresentationProjector(
     catalog.site(id).fold(safeLabel(id.value))(_.name)
   def denizenLabel(id: DenizenId): String =
     catalog.denizen(id).fold(safeLabel(id.value))(_.name)
-  def relicLabel(id: RelicId): String =
-    catalog.relic(id).fold(safeLabel(id.value))(_.name)
   def edificeLabel(id: EdificeId, side: EdificeSide): String =
     catalog.edifice(id).fold(safeLabel(id.value)): edifice =>
       side match

@@ -169,10 +169,10 @@ class WalkerDecisionProjectionSuite extends munit.FunSuite:
     * marker instead of reading live site state would yield a one-element
     * vector and fail the equality check. */
   private val relicQuery = DecisionQueryProjection.ChooseOne(
-    Vector(StickyFireCard.id, CursedCauldronCard.id)
-      .map(relic => DecisionOptionProjection("relic", relic.value,
-        presentation.relicLabel(relic),
-        Some(presentation.cardDetails(relic, Some(Orientation.FaceDown),
+    Vector(StickyFireCard, CursedCauldronCard)
+      .map(relic => DecisionOptionProjection("relic", relic.id.value,
+        relic.name,
+        Some(presentation.cardDetails(relic.id, Some(Orientation.FaceDown),
           hidden = false)))),
     heading = Some("Take a relic"), confirmVerb = Some("Take"))
 
