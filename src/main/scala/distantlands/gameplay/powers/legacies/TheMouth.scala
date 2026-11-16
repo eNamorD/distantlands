@@ -1,7 +1,7 @@
 package distantlands.gameplay.powers.legacies
 
-import distantlands.catalog.{ExecutableCatalog, FoundationCards, Legacy,
-  LegacyGoal, PrintedPower}
+import distantlands.catalog.{ExecutableCatalog, Legacy, LegacyGoal,
+  PrintedPower}
 import distantlands.gameplay.chronicle.{ChronicleTasks, LegacyGoals,
   ResolveLegacies}
 import distantlands.gameplay.chronicle.legacies.{IronHand, IronHandCard}
@@ -35,7 +35,7 @@ object TheMouthCard extends Legacy(LegacyId("L34"), "The Mouth",
   * which reveals it; a public one moves faceup into the lineage. The same
   * batch alters the foundation the legacy names, unless it already lists
   * that legacy, and discards an Iron Hand its Imperial holder activated,
-  * whose standing rule says to (R25). Then a holder above three active
+  * whose standing rule says to (R25; `LegacyActivation`). Then a holder above three active
   * legacies discards to three, flipping no foundation back
   * (`ResolveLegacies.cap`).
   *
@@ -57,6 +57,7 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
   val capDecisionId: String = "power.the-mouth.cap"
 
   private val notes = NoteSet(id)
+  notes.include(LegacyActivation.notes)
   /** "{p1} activated {Arbiter} with {The Mouth}". */
   val activated: NoteKey = notes.key(NoteKey.Used, Vector(NotePart.Arg(0),
     NotePart.Text(" activated "), NotePart.Arg(1), NotePart.Text(" with "),
@@ -75,13 +76,6 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
   val tookIronHand: NoteKey = notes.key(s"${NoteKey.Used}.public-iron-hand",
     Vector(NotePart.Arg(0), NotePart.Text(s" took ${IronHandCard.name} " +
       "from the Public Ambitions with "), NotePart.Arg(1)))
-  /** "{Beloved} set Foundation {IV} to {Teeming World}", one key per
-    * foundation, as the Sun's are. */
-  val altered: Map[FoundationNumber, NoteKey] = FoundationNumber.all.map(
-    number => number -> notes.key(
-      s"altered-foundation-${number.toString.toLowerCase}", Vector(
-      NotePart.Arg(0), NotePart.Text(s" set Foundation $number to " +
-        FoundationCards.face(number, FoundationFace.Altered).name)))).toMap
   /** "{p1} discarded {Seer} with The Mouth": a discard over the cap. */
   val capped: NoteKey = notes.key("capped", Vector(NotePart.Arg(0),
     NotePart.Text(" discarded "), NotePart.Arg(1),
@@ -119,8 +113,10 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
     BuildOps((live, pending) => activation(catalog, live, player, pending),
       required = true),
     Note(id, states => activationNote(states, player)),
-    Note(id, alterationNote),
-    Note(IronHand.id, states => ironHandNote(states, player)),
+    Note(id, states =>
+      LegacyActivation.alterationNote(states, chosen(states.answered))),
+    Note(IronHand.id, states => LegacyActivation.ironHandNote(states,
+      player, chosen(states.answered))),
     ResolveLegacies.cap(player, capDecisionId, id, capped))))
 
   private def chosen(answered: Vector[Answered]): Option[LegacyId] =
@@ -133,8 +129,8 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
     val live = targets(catalog, ready, player)
     live ++ chosen(pending.answered).filterNot(live.contains)
 
-  /** The chosen legacy faceup in the holder's lineage, the foundation it
-    * names altered, and an Imperial's Iron Hand discarded (R25). */
+  /** The chosen legacy activated in the holder's lineage
+    * (`LegacyActivation`). */
   private def activation(catalog: ExecutableCatalog, ready: ReadyGame,
       player: PlayerId, pending: PendingTree)
       : Either[OathViolation, Vector[CoreOperation]] = for
@@ -144,23 +140,11 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
     lineage <- ChronicleTasks.lineageOf(ready, player).toRight(
       OathViolation.InvalidEventOrder(s"${player.value} has no lineage"))
   yield
-    val into = Location.Legacies(lineage)
-    val activate: CoreOperation =
+    val from =
       if ready.game.current.commonCards.publicLegacies.contains(legacy) then
-        Move(Piece.Card(legacy), PositionedLocation(Location.PublicLegacies),
-          PositionedLocation(into),
-          resultingOrientation = Some(Orientation.FaceUp))
-      else Flip(legacy, into, Orientation.FaceUp)
-    val alteration = catalog.legacy(legacy).flatMap(_.alters).filterNot(
-      number => ready.game.campaign.foundations.get(number)
-        .exists(_.alterationSources(legacy)))
-      .map(number => FoundationAltered(number, legacy))
-    val ironHand = Option.when(legacy == IronHandCard.id &&
-      Imperials.isImperial(ready, player))(Move(Piece.Card(legacy),
-        PositionedLocation(into),
-        PositionedLocation.legacyDeckBottom))
-    Vector[CoreOperation](activate) ++ alteration.toVector ++
-      ironHand.toVector
+        Location.PublicLegacies
+      else Location.Legacies(lineage)
+    LegacyActivation.operations(catalog, ready, player, lineage, legacy, from)
 
   private def activationNote(states: NoteStates, player: PlayerId)
       : Option[LogNote] = for
@@ -170,36 +154,11 @@ case object TheMouth extends PaidAction(TheMouthCard.power):
     val public =
       before.game.current.commonCards.publicLegacies.contains(legacy)
     val discarded = legacy == IronHandCard.id &&
-      ChronicleTasks.lineageOf(after, player).forall(!holdsIronHand(after, _))
+      ChronicleTasks.lineageOf(after, player)
+        .forall(!LegacyActivation.holdsIronHand(after, _))
     val mouth = NoteArg.Card(TheMouthCard.id)
     if discarded then
       (if public then tookIronHand else activatedIronHand).sourceless(
         NoteArg.Player(player), mouth)
     else (if public then tookPublic else activated).sourceless(
       NoteArg.Player(player), NoteArg.Card(legacy), mouth)
-
-  /** The foundation the activation altered, and the legacy that did. */
-  private def alterationNote(states: NoteStates): Option[LogNote] = for
-    (before, after) <- states.previous
-    legacy <- chosen(states.answered)
-    number <- FoundationNumber.all.find(number =>
-      after.game.campaign.foundations.get(number)
-        .exists(_.alterationSources(legacy)) &&
-        !before.game.campaign.foundations.get(number)
-          .exists(_.alterationSources(legacy)))
-  yield altered(number).sourceless(NoteArg.Card(legacy))
-
-  /** "p1 discarded Iron Hand", when the activation sent it back. */
-  private def ironHandNote(states: NoteStates, player: PlayerId)
-      : Option[LogNote] = for
-    (before, after) <- states.previous
-    if chosen(states.answered).contains(IronHandCard.id)
-    lineage <- ChronicleTasks.lineageOf(after, player)
-    if !holdsIronHand(after, lineage) && (holdsIronHand(before, lineage) ||
-      before.game.current.commonCards.publicLegacies
-        .contains(IronHandCard.id))
-  yield IronHand.discardedNow.sourceless(NoteArg.Player(player))
-
-  private def holdsIronHand(ready: ReadyGame, lineage: LineageId): Boolean =
-    ready.game.campaign.lineages.get(lineage)
-      .exists(_.legacies.exists(_.id == IronHandCard.id))
