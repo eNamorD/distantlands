@@ -1,7 +1,7 @@
 package distantlands.gameplay.walker
 
 import distantlands.gameplay.operations.OperationResolution
-import distantlands.model.{Answered, AutomaticUse, Branch, Burn, BuildOps, CoreOperation, Decide, DieFace, EndWalk, Note, NoteStates, OathState, OathViolation, Operation, PayCost, PendingTree, PlayerId, PoolKey, PowerId, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Repeat, Reroll, Roll, RollMode, Shuffle, Simultaneous, TakeDeferred, WalkerEvent}
+import distantlands.model.{Answered, AutomaticUse, Branch, Burn, BuildOps, CoreOperation, Decide, DecisionAnswer, DieFace, EndWalk, Note, NoteStates, OathState, OathViolation, Operation, PayCost, PendingTree, PlayerId, PoolKey, PowerId, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Repeat, Reroll, Roll, RollMode, Shuffle, Simultaneous, TakeDeferred, WalkerEvent}
 
 /** Auto-walk engine over an [[distantlands.model.Operation]] action tree (Tasks 3-5).
   *
@@ -552,6 +552,16 @@ object ProcedureWalker extends DecideNarrowing:
             case reroll: Reroll if reroll.faces.isEmpty =>
               WalkerRerolls.filled(reroll, ctx.state, ctx.dice).flatMap(
                 WalkerSteps.record(_, ctx, path, contributions, strict)).map(Done(_))
+            // A question answered alone records its one choosable option
+            // for its owner and walks on (catalog batch 13, ruling 4).
+            case decide: Decide if decide.answersAlone &&
+                WalkerSearch.choosable(decide).sizeIs == 1 =>
+              WalkerSteps.answerDecide(decide, ctx, path, Answered(
+                  decide.decisionId, DecisionAnswer.ChooseOneAnswer(
+                    WalkerSearch.choosable(decide).head), decide.owner),
+                  contributions)
+                .map(next => Done(next.copy(
+                  powers = next.powers.withAnswers(next.answered))))
             case _: Decide | _: Roll => Right(Park(path, ctx))
             // A batch a power asks about is walked as its questions, then
             // the answered batch ([[BatchQuestions]]); a search walks it as
