@@ -301,28 +301,23 @@ private[frontend] object WalkerPanelSupport:
       panel.appendChild(text("p", "walker-roll-totals", parts.mkString(" · ")))
     }
 
-  /** What a parked decision's panel calls itself, and what the control that
-    * submits a partition is called.
+  /** What a parked decision's panel calls itself.
     *
-    * Both come off the query. They used to branch on
+    * It comes off the query. They used to branch on
     * `decision.action` to produce Forge's copy, which was the last
     * action-shaped string in a panel whose interaction had already stopped
     * being Forge-specific -- so the panel recognised the decisions it had
     * been written for and had nothing to say about any other. Now the
-    * action that declares the question declares what to call it, and these
-    * two read it the same way every other projected field is read.
+    * action that declares the question declares what to call it, and this
+    * reads it the same way every other projected field is read.
     *
-    * The fallbacks are the whole of what this layer still authors: generic
+    * The fallback is the whole of what this layer still authors: generic
     * copy for a query that declares none, so a panel is untitled rather
     * than unusable. Never action-specific copy, and never a lookup table
     * that would grow one entry per action.
     */
   private[frontend] def decisionHeading(query: DecisionQueryState): String =
     query.heading.getOrElse("Resolve decision")
-
-  private[frontend] def partitionConfirmLabel(
-      query: DecisionQueryState.Partition): String =
-    query.confirmLabel.getOrElse("Confirm")
 
   /** What a choose-many's confirm button says with `picked` options chosen:
     * the query's counted label, "Reveal 2 cards", with the locked options
@@ -350,7 +345,7 @@ private[frontend] object WalkerPanelSupport:
       .flatMap(section => draft.optionsIn(section.key) match {
         case Vector(only) => Some(s"${section.label} ${only.label}")
         case _ => None
-      }).headOption.getOrElse(partitionConfirmLabel(query))
+      }).headOption.getOrElse(query.confirmLabel.getOrElse("Confirm"))
 
   /** Whether a zone's order is part of the answer the player should be told
     * about: the zone that takes whatever is left over, with no minimum to
