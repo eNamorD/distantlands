@@ -232,8 +232,7 @@ and the powers used during a game with the
 [Legacy in-play powers design](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md).
 
 - [ ] **Cards that act on legacies.** The non-legacy cards whose powers
-  name legacies, still in holding: Amber Doors and Lost Doors (E05, draw
-  legacies when explored or at setup), Ruined Temple (E10, double the
+  name legacies, still in holding: Ruined Temple (E10, double the
   legacy points), and Stone Baths and Ruined Baths (E04, change Resolve
   Legacies).
   [Catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)
@@ -341,10 +340,9 @@ one.
 
 - [ ] **Retire the unimplemented-card machinery across the stack.** Every
   printed denizen power runs since Reliquary Raid (catalog batch 13, slice
-  1), so the denizen checks are gone from the tests. Nine powers remain in
+  1), so the denizen checks are gone from the tests. Seven powers remain in
   `src/test/resources/powers/unimplemented.txt`: Stone Baths and Ruined
-  Baths (E04), Amber Doors and Lost Doors (E05) and Ruined Temple (E10
-  ruined), which
+  Baths (E04) and Ruined Temple (E10 ruined), which
   [catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)
   plans, and the E07, E16 and E26 ruined faces and the Ancient City's
   enduring power, which no design covers yet. Once the

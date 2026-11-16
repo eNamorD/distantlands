@@ -33,6 +33,17 @@ answers and state that nothing has changed since the park: the hand or the
 lineage the question lists. The draw's `Branch` reads the deck, but it is
 before the cursor and is never selected again.
 
+**Changes made while executing.** Amber Doors' discards reach the bottom
+of the deck before its draw, so a short deck draws them back (rulings 2 and
+12). The plan's "deck of one" and "empty deck" tests held legacies, so they
+drew those back; they now start with none, and a new test pins the
+redraw. `DoorsPowerOrderSuite`'s fixture seats three players, so its deck
+gained Beloved and Pathfinder for p3's keep. Review A found no bug; its
+gap, two players at Lost Doors in one Setup walk, is a new test there,
+which fails when the Setup ids drop the placer. `PhasePowerHarness.awaits`
+reads the park with its own powers, so the Explore test proves the park by
+answering it. The ROADMAP keeps no note that the Doors landed.
+
 **Tech Stack:** Scala 3.9.0, munit, `./sbtw` (sbt wrapper), compiler flags
 `-deprecation -feature -unchecked -Wunused:imports,privates,locals,implicits,nowarn -Werror`.
 
