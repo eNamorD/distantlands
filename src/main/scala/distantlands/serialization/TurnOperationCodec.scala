@@ -68,6 +68,8 @@ private[serialization] trait TurnOperationCodec extends CampaignResultCodec
       case ResolvePrediction(holder, fulfilled) => ujson.Obj(
         "kind" -> "resolve-prediction", "holder" -> holder.value,
         "fulfilled" -> fulfilled)
+      case PledgeTemple(player) => ujson.Obj("kind" -> "pledge-temple",
+        "player" -> player.value)
       case SetEndDieModifier(amount) => ujson.Obj(
         "kind" -> "set-end-die-modifier", "amount" -> amount)
       case OpenPick(decisionId, option, label) => ujson.Obj(
@@ -137,6 +139,7 @@ private[serialization] trait TurnOperationCodec extends CampaignResultCodec
     case "resolve-prediction" =>
       Right(ResolvePrediction(PlayerId(value("holder").str),
         value("fulfilled").bool))
+    case "pledge-temple" => Right(PledgeTemple(PlayerId(value("player").str)))
     case "set-end-die-modifier" =>
       decodeSignedInt(value("amount"), s"$path.amount").flatMap(amount =>
         if amount >= -1 && amount <= 3 then Right(SetEndDieModifier(amount))

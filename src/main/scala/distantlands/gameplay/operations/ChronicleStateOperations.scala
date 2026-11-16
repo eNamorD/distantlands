@@ -165,6 +165,19 @@ private[operations] object ChronicleStateOperations:
       case None => Right(ready.updateCurrent(current => current.copy(
         scoredLegacies = current.scoredLegacies ++ legacies)))
 
+  /** `legacies` join the kept-dormant set (Stone Baths); one already in it,
+    * or named twice, is a doubled keep. */
+  def legaciesKeptDormant(ready: ReadyGame, legacies: Vector[LegacyId])
+      : Either[OperationError, ReadyGame] =
+    val kept = ready.game.current.keptDormant
+    legacies.find(kept) match
+      case Some(legacy) => Left(InvalidDescription(
+        s"${legacy.value} is already kept dormant"))
+      case None if legacies.distinct.size != legacies.size =>
+        Left(InvalidDescription("a keep names each legacy once"))
+      case None => Right(ready.updateCurrent(current => current.copy(
+        keptDormant = current.keptDormant ++ legacies)))
+
   /** `relics` turn facedown in their holders' play areas, and every
     * viewer's record of them is forgotten (R28). The Grand Scepter and a
     * relic no player holds are refused. */

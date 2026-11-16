@@ -345,7 +345,16 @@ final case class CurrentGameState(
     // batch 13, ruling 6). The same `Location.Hand` as `temporaryHands`,
     // which holds world cards only, so a hand is private to its holder
     // whatever it holds. A draw's walk empties it.
-    legacyHands: Map[PlayerId, Vector[LegacyId]] = Map.empty
+    legacyHands: Map[PlayerId, Vector[LegacyId]] = Map.empty,
+    // The players who burned a secret at Ruined Temple this game (catalog
+    // batch 13, ruling 17), read at the win and by the scoring that
+    // doubles. Public, as the burn was made openly. Not walker scratch: it
+    // lasts the game, and a new game starts without it. Never projected.
+    templePledges: Set[PlayerId] = Set.empty,
+    // The dormant legacies Stone Baths kept at Sun step 2 (ruling 14):
+    // not newly dormant, so Crown Chancellor and Offer Citizenship leave
+    // them dormant. Public. Never projected.
+    keptDormant: Set[LegacyId] = Set.empty
 ):
   /** The warbands of `kind` on `card`. */
   def warbandsOn(card: CardId, kind: ForceKind): Int =

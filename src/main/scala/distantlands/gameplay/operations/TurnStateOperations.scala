@@ -131,6 +131,18 @@ private[operations] object TurnStateOperations:
         Some(GameResult(holder, VictoryKind.Conspirator))
         else current.result)))
 
+  /** Records `player`'s Ruined Temple pledge: a seated player, once a
+    * game. */
+  def pledgeTemple(ready: ReadyGame, player: PlayerId)
+      : Either[OperationError, ReadyGame] =
+    val current = ready.game.current
+    if current.player(player).isEmpty then Left(InvalidDescription(
+      s"${player.value} must be seated to pledge"))
+    else if current.templePledges(player) then Left(InvalidDescription(
+      s"${player.value} has already pledged at Ruined Temple"))
+    else Right(ready.updateCurrent(_.copy(
+      templePledges = current.templePledges + player)))
+
   def setEndDieModifier(ready: ReadyGame, amount: Int): ReadyGame =
     ready.updateCurrent(_.copy(endDieModifier = amount))
 
