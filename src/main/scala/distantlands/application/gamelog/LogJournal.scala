@@ -28,8 +28,7 @@ private[gamelog] final case class Run(procedure: ProcedureRef, actor: PlayerId,
   */
 private[gamelog] final class LogJournal(
     steps: Vector[ReplayStep[OathState, OathEvent]],
-    applied: ReplayStep[OathState, OathEvent] => Vector[OpStep] =
-      LogJournal.opSteps):
+    applied: ReplayStep[OathState, OathEvent] => Vector[OpStep]):
   private val closings: Vector[Option[Int]] =
     steps.indices.foldRight(List.empty[Option[Int]]) { (index, later) =>
       val next = later.headOption.flatten
