@@ -58,7 +58,8 @@ class RivalSetupSuite extends munit.FunSuite:
     assertEquals(woken.game.current.map.inPlay.take(5),
       (record.world ++ rivalSites).map(_.site))
 
-  test("Imperial Maps asks nothing when Rival leaves one Atlas site (R6)"):
+  test("Imperial Maps asks nothing when Rival leaves one Atlas site (R6): " +
+      "the first question is the keep"):
     val short = SetupLegacyFixture.holding(
       LaterGameFixture.chronicle(l1, Vector(l2), 4), l3, Role.Exile,
       RivalCard.id -> true)
@@ -67,7 +68,7 @@ class RivalSetupSuite extends munit.FunSuite:
       GameCommand.Begin(short, LaterGameFixture.orders(short, p1)))
     present(accepted(ParkedNode.of(begun.state, catalog)), "a park") match
       case ParkedNode.Decision(_, decide, _) => assertEquals(
-        decide.decisionId, SetupProcedure.pawnDecisionId(p1))
+        decide.decisionId, SetupProcedure.legacyDecisionId(p1))
       case other => fail(s"expected a decision, parked on $other")
     assertEquals(begun.ready.game.current.map.inPlay,
       (short.world ++ short.atlasBox).map(_.site))

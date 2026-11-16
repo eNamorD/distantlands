@@ -323,13 +323,16 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
       LaterGameFixture.orders(chronicle, p1))
     asked
 
-  test("under Teeming World Setup asks each player for a pawn site, a kept " +
-      "legacy and a reveal, and no one to choose an adviser"):
+  test("under Teeming World Setup asks every player to keep a legacy in " +
+      "Foundation III, then each for a pawn site and a reveal, and no one " +
+      "to choose an adviser"):
+    // Teeming World is history, so this is not a first game: the keeps
+    // run in Foundation III (catalog batch 13, ruling 3).
     val asked = decisionsAskedDuringSetup(teemingWorldChronicle)
-    assertEquals(asked, Vector(p1, p2, p3).flatMap(player => Vector(
-      SetupProcedure.pawnDecisionId(player),
-      SetupProcedure.legacyDecisionId(player),
-      SetupProcedure.revealDecisionId(player))))
+    assertEquals(asked, Vector(p1, p2, p3).map(
+      SetupProcedure.legacyDecisionId) ++ Vector(p1, p2, p3).flatMap(player =>
+      Vector(SetupProcedure.pawnDecisionId(player),
+        SetupProcedure.revealDecisionId(player))))
 
   test("under Teeming World Reveal Cards offers a player's three facedown " +
       "advisers, and Setup ends with each player holding three"):

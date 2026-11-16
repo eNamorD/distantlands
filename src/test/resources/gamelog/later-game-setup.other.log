@@ -7,14 +7,14 @@
 17.0 action 1 | [player:p1|p1] placed [site:site:dunes|Dunes] on the map
 19.0 action 1 | [player:p1|p1] placed [site:site:fair-isle|Fair Isle] on the map
 21.0 action 1 | [player:p1|p1] placed [site:site:golden-valley|Golden Valley] on the map
-26.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
-32.0 decision 1 | [player:p1|p1] kept a legacy
-37.0 decision 1 | [player:p1|p1] kept a Denizen
-45.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
-51.0 decision 1 | [player:p2|p2] kept a legacy
-56.0 decision 1 | [player:p2|p2] kept [card:175|Nature Worship]
-64.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
-70.0 decision 1 | [player:p3|p3] kept a legacy
+27.0 decision 1 | [player:p1|p1] kept a legacy
+33.0 decision 1 | [player:p2|p2] kept a legacy
+39.0 decision 1 | [player:p3|p3] kept a legacy
+44.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
+49.0 decision 1 | [player:p1|p1] kept a Denizen
+57.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+62.0 decision 1 | [player:p2|p2] kept [card:175|Nature Worship]
+70.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
 75.0 decision 1 | [player:p3|p3] kept a Denizen
 76.0 round 0 | Round 1
 76.1 turn 0 | [player:p1|p1]'s turn

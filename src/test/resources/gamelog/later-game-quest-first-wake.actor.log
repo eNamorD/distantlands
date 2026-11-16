@@ -6,16 +6,16 @@
 12.0 action 1 | [player:p1|p1] placed [site:site:dunes|Dunes] on the map
 14.0 action 1 | [player:p1|p1] placed [site:site:fair-isle|Fair Isle] on the map
 16.0 action 1 | [player:p1|p1] placed [site:site:golden-valley|Golden Valley] on the map
-21.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
-27.0 decision 1 | [player:p1|p1] kept a legacy
-32.0 decision 1 | [player:p1|p1] kept a Denizen
-39.0 action 1 | [player:p2|p2] placed no pawn with [card:L30|Quest to Distant Lands]
-44.0 action 1 | [player:p2|p2] took the People's Favor with [card:L18|The Standard Bearer]
-49.0 action 1 | [player:p2|p2] took 3 favor from the shared bank with [card:L31|Wealthy]
-55.0 decision 1 | [player:p2|p2] kept a legacy
-65.0 action 1 | [player:p2|p2] swapped a card with the Dispossessed with [card:L30|Quest to Distant Lands]
-70.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
-76.0 decision 1 | [player:p3|p3] kept a legacy
+22.0 decision 1 | [player:p1|p1] kept a legacy
+28.0 decision 1 | [player:p2|p2] kept a legacy
+34.0 decision 1 | [player:p3|p3] kept a legacy
+39.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
+44.0 decision 1 | [player:p1|p1] kept a Denizen
+51.0 action 1 | [player:p2|p2] placed no pawn with [card:L30|Quest to Distant Lands]
+56.0 action 1 | [player:p2|p2] took the People's Favor with [card:L18|The Standard Bearer]
+61.0 action 1 | [player:p2|p2] took 3 favor from the shared bank with [card:L31|Wealthy]
+71.0 action 1 | [player:p2|p2] swapped a card with the Dispossessed with [card:L30|Quest to Distant Lands]
+76.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
 81.0 decision 1 | [player:p3|p3] kept a Denizen
 85.0 round 0 | Round 1
 85.1 turn 0 | [player:p1|p1]'s turn

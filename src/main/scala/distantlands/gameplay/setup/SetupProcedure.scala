@@ -27,6 +27,10 @@ import distantlands.model.OathViolation._
  *   ImperialMaps.step(chancellor)                        // with a Chancellor and
  *                                                        // Foundation I normal
  *   Sequence(Vector.empty)                               // window = SetupBanks
+ *   Sequence(                                            // a later game's
+ *     Branch(Draw(2 into the keeper's hand)),            // LegacyKeep.step, per
+ *     Branch(Decide(legacy-choice, keeper), ...))        // seat in turn order
+ *   ...                                                  // (Foundation III)
  *   Sequence(Vector.empty)                               // window = SetupWorldDeck
  *   Sequence(                                            // per participant
  *     Branch(Decide(pawn-placement, participant)),       // legal sites, and
@@ -34,8 +38,8 @@ import distantlands.model.OathViolation._
  *     BuildOps(place the pawn)                           // window = SetupPawnPlaced
  *     Branch(Decide(secret-society discard, participant)) // over the limit,
  *                                                        // with a pawn
- *     Sequence(                                          // LegacyKeep.step
- *       Branch(Draw(2 into the keeper's hand)),          // Quiet Ambitions
+ *     Sequence(                                          // a first game's
+ *       Branch(Draw(2 into the keeper's hand)),          // LegacyKeep.step
  *       Branch(                                          // two in the hand; one
  *         Decide(legacy-choice, keeper),                 // is kept unasked
  *         BuildOps(keep one, the other to the bottom),
@@ -112,7 +116,19 @@ object SetupProcedure:
 
   private def tree(catalog: ExecutableCatalog, ready: ReadyGame): Operation =
     val participants = turnOrder(ready)
-    val steps = participants.map(playerStep(catalog, ready, _))
+    // A first game keeps in each player's turn, after their pawn (CR p. 7);
+    // a later game keeps while Foundation III resolves, every seat before
+    // any pawn (CR "Later games", step 5; catalog batch 13, ruling 3). An
+    // exile-only game resolves its stored foundations, so it keeps in
+    // Foundation III, unless its wiped baseline carries no history: then
+    // it keeps after each pawn, as it places its pawns, as a first game
+    // does (R41). The baseline never changes in Setup, so a resume
+    // rebuilds the same tree.
+    val firstGame = EmpireSetupRules.isFirstGame(catalog,
+      ready.game.campaign.baseline)
+    val keeps =
+      if firstGame then Vector.empty else participants.map(LegacyKeep.step)
+    val steps = participants.map(playerStep(catalog, ready, _, firstGame))
     val setupEnd = Sequence(Vector.empty, Some(PowerWindow.SetupEnd))
     val chancellor = Imperials.chancellor(ready)
     val imperialMaps = chancellor.filter(_ => ImperialMaps.applies(ready))
@@ -120,13 +136,14 @@ object SetupProcedure:
     // The banks are set up after Imperial Maps, or where it would run:
     // Populist hooks here (Legacy Setup powers ruling 12).
     val banks = Sequence(Vector.empty, Some(PowerWindow.SetupBanks))
-    // The world deck game start built is changed here: Secret Society and
-    // then Seer hook it (Legacy Setup powers rulings 14 and 15).
+    // The world deck game start built is changed here, after a later
+    // game's keeps: Secret Society and then Seer hook it (Legacy Setup
+    // powers rulings 14 and 15).
     val worldDeck = Sequence(Vector.empty, Some(PowerWindow.SetupWorldDeck))
     Sequence(LegacySetupPowers.startNotes ++ teemingBurials ++
       publicRow(ready) ++
       chancellor.map(reliquaryPick).toVector ++
-      imperialMaps ++ Vector(banks, worldDeck) ++ steps :+ setupEnd :+
+      imperialMaps ++ (banks +: keeps :+ worldDeck) ++ steps :+ setupEnd :+
       BeginTurn(participants.head.playerId, Phase.Wake))
 
   /** One line per card an Oaths of Loyalty holder drew and buried under
@@ -200,7 +217,7 @@ object SetupProcedure:
     }
 
   private def playerStep(catalog: ExecutableCatalog, ready: ReadyGame,
-      participant: FirstGameParticipant): Operation =
+      participant: FirstGameParticipant, firstGame: Boolean): Operation =
     val pawnId = pawnDecisionId(participant.playerId)
     val adviserId = adviserDecisionId(participant.playerId)
     val hand = ready.game.current.temporaryHands
@@ -236,8 +253,9 @@ object SetupProcedure:
       // pawn (Legacy Setup powers ruling 14; R21).
       SecretSociety.excessStep(catalog, participant.playerId,
         SecretSociety.discardDecisionId(participant.playerId),
-        TriggeredProcedureRef.Setup),
-      LegacyKeep.step(participant),
+        TriggeredProcedureRef.Setup)) ++
+      // A first game's keep; a later game's ran in Foundation III.
+      Option.when(firstGame)(LegacyKeep.step(participant)) ++ Vector(
       QuestToDistantLands.swapStep(participant.playerId),
       // A player with no pawn chooses and reveals at their first Wake,
       // keyed on the missing pawn (Legacy Setup powers rulings 18, 20).

@@ -44,6 +44,15 @@ class MatchmakerSuite extends munit.FunSuite:
   test("the holder keeps their own draw"):
     assertEquals(owner(parkedAt(LegacyKeep.decisionId(p3))), p3)
 
+  test("the holder answers every keep in Foundation III, before any pawn " +
+      "(catalog batch 13, ruling 3)"):
+    val at = parkedAt(LegacyKeep.decisionId(p2))
+    assertEquals(owner(at), p3)
+    Vector(p1, p2, p3).foreach(player =>
+      assertEquals(at.ready.game.current.pawnSite(player), None, player))
+    assert(at.ready.game.campaign.lineages(l1).legacies.exists(!_.active),
+      "p1's keep came first")
+
   test("a walk resumed at the keep keeps the holder's choice for its owner"):
     val kept = drawn(p2).last
     val done = parkedAt(LegacyKeep.decisionId(p2)).withAnswers {
