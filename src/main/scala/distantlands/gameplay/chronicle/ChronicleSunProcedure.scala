@@ -95,9 +95,11 @@ object ChronicleSunProcedure:
         Note(noteId, _ => Some(crowned.sourceless(NoteArg.Player(winner)))),
         // An Exile's win: their newly dormant legacies become active (CR
         // "If an Exile won, the Empire breaks"), then the cap if need be.
-        // An Imperial winner holds no dormant legacy after step 3 (ruling
-        // 2), so this asks nothing of them. Iron Hand's second checkpoint
-        // sits between the reactivation and the cap (R30).
+        // An Imperial winner holds no newly dormant legacy after step 3
+        // (ruling 2), so this asks nothing of them; a legacy Stone Baths
+        // kept is not newly dormant (catalog batch 13, ruling 14). Iron
+        // Hand's second checkpoint sits between the reactivation and the
+        // cap (R30).
         ResolveLegacies.reactivation(winner, noteId,
           ResolveLegacies.reactivated),
         IronHand.discard(TriggeredProcedureRef.ChronicleSun),
