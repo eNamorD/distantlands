@@ -46,8 +46,11 @@ case object RuinedTemple extends PlacedPawnEdificeRule:
   protected def steps(catalog: ExecutableCatalog, actor: PlayerId,
       placer: Option[PlayerId]): Vector[Operation] =
     val ask = pledgeDecisionId(placer)
+    // A pledged player is offered the Temple only so the offer stands
+    // while their burn resolves; they are never asked again.
     Vector(Branch((live, _) =>
-      if secretsOf(live, actor) == 0 then Vector.empty
+      if secretsOf(live, actor) == 0 ||
+          live.game.current.templePledges(actor) then Vector.empty
       else Vector(
         Decide(ask, actor, DecisionQuery.ChooseOne(Vector(
           DecisionOption.Button(keep, "Keep your secrets"),

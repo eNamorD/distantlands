@@ -94,6 +94,22 @@ class RuinedTempleWinSuite extends munit.FunSuite:
     assertEquals(RecordedOps.all(run.events).collect {
       case WarbandsAdded(kind, count) => kind -> count },
       Vector(kindOf(run.ready, p1) -> (sites.size - 1)))
+    assertEquals(forcesAt(run.ready, sites), sites.map(_ =>
+      SiteForces.Occupied(kindOf(run.ready, p1), 1)))
+
+  test("with no bandit site a pledged winner takes nothing and writes " +
+      "nothing"):
+    val cleared = won.pledgedAtRuinedTemple(p1).update(_.updateCurrent(
+      current => current.copy(map = current.map.copy(sites =
+        current.map.sites.view.mapValues(site =>
+          if site.forces.count(ForceKind.Bandit) > 0 then
+            site.copy(forces = SiteForces.Empty)
+          else site).toMap))))
+    val run = ChronicleWalk.through(rules, cleared.turn(p1, Phase.RoundEnd),
+      TriggeredProcedureRef.ChronicleWinner, PartialFunction.empty,
+      after = PhaseTransitionRef.FinishRest)
+    assertEquals(lines(run), Vector.empty)
+    assert(!RecordedOps.all(run.events).exists(_.isInstanceOf[WarbandsAdded]))
 
   test("the final winner Royal Line names is the one who takes the sites"):
     val table = won.imperial(p1, p2, p3)
