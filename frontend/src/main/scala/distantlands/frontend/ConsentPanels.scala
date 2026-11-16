@@ -2,7 +2,7 @@ package distantlands.frontend
 
 import distantlands.protocol.{GameIntent => GameCommand}
 import org.scalajs.dom
-import ServerUiSupport.{button, element, text}
+import ServerUiSupport.{button, element, playerDisplayName, text}
 
 /** The asked ruler's prompt and the requester's waiting line (consent
   * design, user story steps 3 to 6). */
@@ -20,7 +20,7 @@ private[frontend] object ConsentPanels:
     * automatic power, "Use City Wall to deactivate Blue's Tyrant?"
     * (item 10b). */
   def prompt(value: GameProjection, asked: ConsentPromptState): String =
-    val requester = ConsentAsking.name(value, asked.requesterPlayerId)
+    val requester = playerDisplayName(value, asked.requesterPlayerId)
     val powers = ConsentAsking.listed(asked.powers)
     asked.use.fold(asking(asked, requester, powers))(card =>
       s"Use $powers to deactivate $requester's $card?")
@@ -39,7 +39,7 @@ private[frontend] object ConsentPanels:
     * 10b). */
   def waiting(value: GameProjection, wait: ConsentWaitingState): String =
     val names = wait.granterPlayerIds.map(id =>
-      s"${ConsentAsking.name(value, id)}'s")
+      s"${playerDisplayName(value, id)}'s")
     val awaited = wait.use.fold(" consent…")(card => s" decision on $card…")
     s"Waiting for ${names.mkString(if wait.either then " or " else " and ")}" +
       awaited
