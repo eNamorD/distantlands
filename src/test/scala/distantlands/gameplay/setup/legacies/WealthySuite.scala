@@ -5,7 +5,7 @@ import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
   WalkerPowerCatalog}
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
-  LegacyKeep, SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
+  SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.WalkerPowers
 import distantlands.model._
@@ -78,7 +78,10 @@ class WealthySuite extends munit.FunSuite:
           .map(DecisionOptionRef.Player(_)))
       case other => fail(s"expected a choose-many, got $other")
     val before = at.ready
-    val after = at.parkedAt(LegacyKeep.decisionId(p3))().ready
+    // p3's adviser question is the step after their pawn window.
+    val next = at.parkedAt(SetupProcedure.adviserDecisionId(p3))()
+    assertEquals(decide(next).decisionId, SetupProcedure.adviserDecisionId(p3))
+    val after = next.ready
     assertEquals(Vector(p1, p2, p3, p4).map(favor(after, _)), Vector(
       favor(before, p1) - 1, favor(before, p2) - 1, favor(before, p3) + 2,
       favor(before, p4)))

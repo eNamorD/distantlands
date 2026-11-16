@@ -1,6 +1,7 @@
 package distantlands.gameplay.setup
 
-import distantlands.gameplay.setup.legacies.SeerCard
+import distantlands.gameplay.setup.legacies.{Populist, PopulistCard, Seer,
+  SeerCard}
 import distantlands.gameplay.walker.{LogNoted, WalkerPowers}
 import distantlands.model._
 import distantlands.testkit.{Answers, Outcomes, Situation}
@@ -153,3 +154,74 @@ class LegacySetupSuite extends munit.FunSuite:
     assertEquals(kept.map(_.args).toSet,
       seats.map(seat => Vector[NoteArg](NoteArg.Player(seat.playerId))).toSet)
     assertEquals(kept.size, seats.size)
+
+  /** `seats` from `first` round the table. */
+  private def inTurnOrder(first: PlayerId): Vector[PlayerId] =
+    val ids = seats.map(_.playerId)
+    val at = ids.indexOf(first)
+    ids.drop(at) ++ ids.take(at)
+
+  /** The keep and pawn questions `setup` asked, in order. */
+  private def keepsAndPawns(setup: SetupWalkDriver.SetupWalked)
+      : Vector[String] =
+    setup.asked.map(_.decisionId).filter(id => seats.exists(seat =>
+      id == SetupProcedure.legacyDecisionId(seat.playerId) ||
+        id == SetupProcedure.pawnDecisionId(seat.playerId)))
+
+  test("in a first game each player keeps right after placing their pawn " +
+      "(CR p. 7)"):
+    val ready = accepted(GameStartRules.evolve(catalog, chronicle, orders))
+    assertEquals(keepsAndPawns(walked(ready)),
+      inTurnOrder(orders.firstPlayer).flatMap(player => Vector(
+        SetupProcedure.pawnDecisionId(player),
+        SetupProcedure.legacyDecisionId(player))))
+
+  test("in a later game every seat keeps while Foundation III resolves, " +
+      "in turn order, before any pawn (catalog batch 13, ruling 3)"):
+    // With an Empire the Chancellor, on l1, goes first; with none seated,
+    // Setup With No Empire lets the second seat go first, so the keeps
+    // start there.
+    val noEmpire = later.copy(lineages = Vector.empty)
+    Vector(later -> seats.head.playerId, noEmpire -> seats(1).playerId)
+      .foreach { (record, first) =>
+        val ready = accepted(GameStartRules.evolve(catalog, record,
+          LaterGameFixture.orders(record, first)))
+        val order = inTurnOrder(first)
+        assertEquals(keepsAndPawns(walked(ready)),
+          order.map(SetupProcedure.legacyDecisionId) ++
+            order.map(SetupProcedure.pawnDecisionId), first)
+      }
+
+  test("an exile-only game whose only history was stored legacies keeps " +
+      "after each pawn, as a first game does (R41)"):
+    // The wipe leaves a baseline with no history, so pawn placement and
+    // the keep both read a first game.
+    val legacyOnly = chronicle.copy(lineages = Vector(LineageState(
+      seats.head.lineageId, None, Role.Exile,
+      Vector(LegacyState(catalog.legacies.head.id, active = true)),
+      Vector.empty)))
+    val first = orders.firstPlayer
+    val ready = accepted(GameStartRules.evolve(catalog, legacyOnly,
+      LaterGameFixture.orders(legacyOnly, first)))
+    assertEquals(keepsAndPawns(walked(ready)),
+      inTurnOrder(first).flatMap(player => Vector(
+        SetupProcedure.pawnDecisionId(player),
+        SetupProcedure.legacyDecisionId(player))))
+
+  test("in a later game the keeps follow the banks and come before the " +
+      "world deck: Populist asks first and Seer after"):
+    val holder = seats.last
+    val record = SetupLegacyFixture.holding(later, holder.lineageId,
+      Role.Exile, PopulistCard.id -> true, SeerCard.id -> true)
+    var asked = Vector.empty[String]
+    val recording: Answers =
+      case park if { asked :+= park.decisionId; false } => ???
+    Situation.wake(Situation.productionRules(catalog).withAnswers(recording),
+      record, LaterGameFixture.orders(record, seats.head.playerId))
+    val keeps = seats.map(seat => asked.indexOf(
+      SetupProcedure.legacyDecisionId(seat.playerId)))
+    assert(keeps.forall(_ >= 0), asked)
+    val populist = asked.indexOf(Populist.decisionId(holder.playerId))
+    val seer = asked.indexOf(Seer.decisionId(holder.playerId))
+    assert(populist >= 0 && populist < keeps.min, asked)
+    assert(seer > keeps.max, asked)

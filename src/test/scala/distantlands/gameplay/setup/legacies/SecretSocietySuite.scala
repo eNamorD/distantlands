@@ -4,8 +4,8 @@ import distantlands.application.GameCommand
 import distantlands.gameplay.actions.{ProcedureNotes, VisionRules}
 import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
   WalkerPowerCatalog}
-import distantlands.gameplay.setup.{LaterGameFixture, LegacyKeep,
-  SetupLegacyFixture, SetupProcedure}
+import distantlands.gameplay.setup.{LaterGameFixture, SetupLegacyFixture,
+  SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
@@ -127,7 +127,10 @@ class SecretSocietySuite extends munit.FunSuite:
         val excess = held.advisers.size - 3
         assertEquals((many.min, many.max), (excess, excess))
       case other => fail(s"expected a choose-many, got $other")
-    val resumed = at.parkedAt(LegacyKeep.decisionId(p2))()
+    // Teeming World asks no adviser: p2's reveal is the next question.
+    val resumed = at.parkedAt(SetupProcedure.revealDecisionId(p2))()
+    assertEquals(decide(resumed).decisionId,
+      SetupProcedure.revealDecisionId(p2))
     val after = resumed.ready
     assertEquals(after.game.current.player(p2).get.advisers.size, 3)
     // The line names the card by the knowledge rule; the holder knows it

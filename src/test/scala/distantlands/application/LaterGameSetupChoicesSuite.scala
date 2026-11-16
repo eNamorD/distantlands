@@ -144,6 +144,19 @@ class LaterGameSetupChoicesSuite extends munit.FunSuite:
     assertEquals(projector.project(ScopedProjectionContext(parked, Some(p2))),
       None)
 
+  test("a later game saved mid-Foundation III, between two keeps, " +
+      "replays its journal to the same game (catalog batch 13, ruling 3)"):
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository)
+    val keeping = Situation.start(Situation.journaled(service, catalog,
+        repository, "keeping")).parkedAt(SetupProcedure.legacyDecisionId(p2))(
+      GameCommand.Begin(record, LaterGameFixture.orders(record, p1)))
+    assert(keeping.ready.game.campaign.lineages(l1).legacies.nonEmpty,
+      "p1 kept before p2's keep")
+    assertEquals(keeping.ready.game.current.pawnSite(p1), None)
+    val loaded = present(accepted(service.load("keeping")), "the game")
+    assertEquals(loaded.state, keeping.state)
+
   test("a Setup filled from Forgotten Sites replays its journal to the " +
       "same game, and the projected map has no empty slot"):
     val repository = new InMemoryEventStreamRepository

@@ -10,8 +10,10 @@ import distantlands.model.OathViolation.InvalidEventOrder
 /** Foundation III's Quiet Ambitions keep in Setup's walk: each player draws
   * two legacies from the legacy deck, keeps one facedown and returns the
   * other to the bottom (Legacies design, slice 2; catalog batch 13, ruling
-  * 6). Split from `SetupProcedure`, which calls `step` in
-  * each player's turn. Matchmaker's holder answers every other player's
+  * 6). Split from `SetupProcedure`, which calls `step` for every seat
+  * while Foundation III resolves in a later game, and in each player's
+  * turn, after their pawn, in a first game (catalog batch 13, ruling 3).
+  * Matchmaker's holder answers every other player's
   * keep (Legacy Setup powers ruling 13; R16). */
 object LegacyKeep:
   def decisionId(player: PlayerId): String =

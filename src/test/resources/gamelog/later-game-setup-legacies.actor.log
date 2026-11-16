@@ -11,14 +11,14 @@
 18.0 action 1 | [player:p1|p1] placed [site:site:dunes|Dunes] on the map
 20.0 action 1 | [player:p1|p1] placed [site:site:fair-isle|Fair Isle] on the map
 22.0 action 1 | [player:p1|p1] placed [site:site:golden-valley|Golden Valley] on the map
-27.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
-33.0 decision 1 | [player:p1|p1] kept a legacy
-38.0 decision 1 | [player:p1|p1] kept [card:207|Glamor]
-46.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
-52.0 decision 1 | [player:p2|p2] kept a legacy
-57.0 decision 1 | [player:p2|p2] kept a Denizen
-65.0 action 1 | [player:p3|p3] placed their pawn at [site:site:ancient-city|Ancient City]
-71.0 decision 1 | [player:p3|p3] kept a legacy
+28.0 decision 1 | [player:p1|p1] kept a legacy
+34.0 decision 1 | [player:p2|p2] kept a legacy
+40.0 decision 1 | [player:p3|p3] kept a legacy
+45.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
+50.0 decision 1 | [player:p1|p1] kept [card:207|Glamor]
+58.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+63.0 decision 1 | [player:p2|p2] kept a Denizen
+71.0 action 1 | [player:p3|p3] placed their pawn at [site:site:ancient-city|Ancient City]
 76.0 decision 1 | [player:p3|p3] kept a Denizen
 77.0 round 0 | Round 1
 77.1 turn 0 | [player:p1|p1]'s turn

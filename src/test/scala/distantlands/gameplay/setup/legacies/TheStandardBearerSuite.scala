@@ -5,7 +5,7 @@ import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
   WalkerPowerCatalog}
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
-  LegacyKeep, SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
+  SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
 import distantlands.gameplay.powers.setup.{GreatForge, GreatForgeCard}
 import distantlands.gameplay.walker.{ChoicePayload, LogNoted, WalkerPowers,
   WalkerStepRecorded}
@@ -51,6 +51,13 @@ class TheStandardBearerSuite extends munit.FunSuite:
     NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
       SetupProcedure.noteKeys, situation.events).map(_.text)
 
+  /** `situation` walked on to p2's adviser question, the step after their
+    * pawn window, and checked to stop there. */
+  private def pastWindow(situation: Situation): Situation =
+    val next = situation.parkedAt(SetupProcedure.adviserDecisionId(p2))()
+    assertEquals(decide(next).decisionId, SetupProcedure.adviserDecisionId(p2))
+    next
+
   private val taking: Answers =
     case park if park.decisionId == TheStandardBearer.decisionId(p2) =>
       ChooseOneAnswer(DecisionOptionRef.Banner(Banner.PeoplesFavor))
@@ -68,7 +75,7 @@ class TheStandardBearerSuite extends munit.FunSuite:
       "its resource on it"):
     val at = parkedAt(TheStandardBearer.decisionId(p2))
     val favor = at.ready.game.current.banners.peoplesFavor.favor
-    val after = at.withAnswers(taking).parkedAt(LegacyKeep.decisionId(p2))()
+    val after = pastWindow(at.withAnswers(taking))
       .ready.game.current.banners.peoplesFavor
     assertEquals(after.holder, Some(p2))
     assertEquals(after.favor, favor + 2)
@@ -76,10 +83,10 @@ class TheStandardBearerSuite extends munit.FunSuite:
   test("the Darkest Secret takes two secrets"):
     val at = parkedAt(TheStandardBearer.decisionId(p2))
     val secrets = at.ready.game.current.banners.darkestSecret.secrets
-    val after = at.withAnswers {
+    val after = pastWindow(at.withAnswers {
       case park if park.decisionId == TheStandardBearer.decisionId(p2) =>
         ChooseOneAnswer(DecisionOptionRef.Banner(Banner.DarkestSecret))
-    }.parkedAt(LegacyKeep.decisionId(p2))().ready.game.current.banners
+    }).ready.game.current.banners
       .darkestSecret
     assertEquals(after.holder, Some(p2))
     assertEquals(after.secrets, secrets + 2)
@@ -91,7 +98,7 @@ class TheStandardBearerSuite extends munit.FunSuite:
 
   test("declining changes nothing and writes no line"):
     val at = parkedAt(TheStandardBearer.decisionId(p2))
-    val after = at.parkedAt(LegacyKeep.decisionId(p2))()
+    val after = pastWindow(at)
     assertEquals(after.ready.game.current.banners,
       at.ready.game.current.banners)
     assert(!lines(after).exists(_.contains(TheStandardBearerCard.id.value)))
