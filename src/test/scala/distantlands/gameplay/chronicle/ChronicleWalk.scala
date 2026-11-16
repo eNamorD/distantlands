@@ -17,7 +17,8 @@ object ChronicleWalk:
     */
   def chronicleWonByP1: Table = Table.start
     .turn(p1, Phase.Chronicle)
-    .update(_.updateCurrent(_.copy(result = Some(GameResult(p1)))))
+    .update(_.updateCurrent(_.copy(
+      result = Some(GameResult(p1, VictoryKind.Usurper)))))
 
   /** p1's won game after the Sun: p1 is Chancellor and holds the Throne,
     * p2 the World and p3 the Beacon, and the Empire has a supply of 24
