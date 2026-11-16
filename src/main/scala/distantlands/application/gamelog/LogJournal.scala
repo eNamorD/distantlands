@@ -88,7 +88,7 @@ private[gamelog] final class LogJournal(
   /** Every answer `run` recorded from its first event through `at`. */
   def answers(run: Run, at: Int): Vector[Answered] =
     (run.first to at).toVector.map(event).collect {
-      case WalkerStepRecorded(_, ChoicePayload(id, answer, by), _) =>
+      case WalkerStepRecorded(_, ChoicePayload(id, answer, by, _), _) =>
         Answered(id, answer, by)
     }
 

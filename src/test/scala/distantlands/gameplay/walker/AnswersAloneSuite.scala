@@ -3,7 +3,7 @@ package distantlands.gameplay.walker
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.testkit.{Look, Table}
-import distantlands.testkit.Outcomes.{finished, parked}
+import distantlands.testkit.Outcomes.{assertWireRoundTrips, finished, parked}
 import distantlands.testkit.Table.p1
 import distantlands.testkit.Unwrap.{accepted, present}
 
@@ -27,9 +27,19 @@ class AnswersAloneSuite extends munit.FunSuite:
 
   private def choices(events: Vector[OathEvent])
       : Vector[(String, DecisionAnswer, PlayerId)] = events.collect {
-    case WalkerStepRecorded(_, ChoicePayload(decision, answer, by), _) =>
+    case WalkerStepRecorded(_, ChoicePayload(decision, answer, by, _), _) =>
       (decision, answer, by)
   }
+
+  /** `events` applied as replay applies them, from `ready`. */
+  private def replayed(ready: ReadyGame, events: Vector[OathEvent])
+      : Either[OathViolation, OathState] =
+    events.foldLeft[Either[OathViolation, OathState]](
+        Right(OathState.Ready(ready))) {
+      case (state, event: WalkerEvent) =>
+        state.flatMap(ProcedureWalker.applyRecorded(_, event))
+      case (state, _) => state
+    }
 
   test("with one option the walker answers for the owner, records the " +
       "answer and walks on"):
@@ -61,3 +71,27 @@ class AnswersAloneSuite extends munit.FunSuite:
     accepted(ProcedureWalker.resolve(start, tree, pending.tree,
       Answered(id, ChooseOneAnswer(DecisionOptionRef.Button("only")), p1),
       powers))
+
+  test("the answer is marked alone and survives the wire"):
+    val done = finished(ProcedureWalker.advance(start,
+      asking(Vector(button("only")), alone = true), None, powers))
+    assertEquals(done.events.collect {
+      case WalkerStepRecorded(_, ChoicePayload(_, _, _, alone), _) => alone
+    }, Vector(true))
+    assertWireRoundTrips(done.events)
+
+  test("replay takes an answer given alone before the walk's first park, " +
+      "and the park carries it"):
+    val tree = Sequence(Vector(
+      asking(Vector(button("only")), alone = true),
+      Decide("test.after", p1, DecisionQuery.ChooseOne(Vector(button("a"),
+        button("b"))))))
+    val pending = parked(ProcedureWalker.advance(start, tree, None, powers))
+    val park = WalkerParked(TriggeredProcedureRef.Setup, pending.tree.at,
+      pending.tree.answered, Vector.empty, Vector.empty)
+    val state = accepted(replayed(start, pending.events :+ park))
+    state match
+      case OathState.Ready(ready) =>
+        assertEquals(ready.game.current.walkerPending, Some(pending.tree))
+        assertEquals(pending.tree.answered.map(_.decisionId), Vector(id))
+      case other => fail(s"expected a ready game, got $other")

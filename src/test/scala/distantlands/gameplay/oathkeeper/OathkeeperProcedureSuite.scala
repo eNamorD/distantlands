@@ -83,7 +83,7 @@ class OathkeeperProcedureSuite extends munit.FunSuite:
     // p2 gives the title to p3, a tied leader.
     val chosen = accepted(answer(holder, p3))
     assert(chosen.events.exists {
-      case WalkerStepRecorded(_, ChoicePayload(_, _, by), _) => by == holder
+      case WalkerStepRecorded(_, ChoicePayload(_, _, by, _), _) => by == holder
       case _ => false
     })
     walkerParked.assertResumed(chosen.state, Phase.Act, active)

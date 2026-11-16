@@ -45,7 +45,7 @@ class OrderedWindowSuite extends munit.FunSuite
 
   private def choices(events: Vector[OathEvent])
       : Vector[(String, DecisionAnswer)] = events.collect {
-    case WalkerStepRecorded(_, ChoicePayload(id, answer, _), _) => id -> answer
+    case WalkerStepRecorded(_, ChoicePayload(id, answer, _, _), _) => id -> answer
   }
 
   test("two standing offers ask the placer which resolves first, in " +

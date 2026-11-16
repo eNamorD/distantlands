@@ -54,7 +54,7 @@ object FollowUpOffer:
   /** Whether `event` records the Skip answer. */
   def skips(event: OathEvent): Boolean = event match
     case WalkerStepRecorded(_, ChoicePayload(`decisionId`,
-        DecisionAnswer.ChooseOneAnswer(`skip`), _), _) => true
+        DecisionAnswer.ChooseOneAnswer(`skip`), _, _), _) => true
     case _ => false
 
   private def picked(pending: PendingTree, ref: DecisionOptionRef): Boolean =

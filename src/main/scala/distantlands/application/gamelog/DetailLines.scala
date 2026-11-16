@@ -46,7 +46,7 @@ private[gamelog] final class DetailLines(words: LogWords,
   private def decision(journal: LogJournal, run: Run, at: Int,
       viewer: Option[PlayerId], log: ProcedureLog): Vector[Posted] =
     journal.event(at) match
-    case WalkerStepRecorded(_, ChoicePayload(id, answer, by), _)
+    case WalkerStepRecorded(_, ChoicePayload(id, answer, by, _), _)
         if !log.narrates(id) && !DetailLines.crossCutting(id) &&
           !narratedByPowers(id) =>
       val refs = answer match

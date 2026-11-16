@@ -559,7 +559,7 @@ object ProcedureWalker extends DecideNarrowing:
               WalkerSteps.answerDecide(decide, ctx, path, Answered(
                   decide.decisionId, DecisionAnswer.ChooseOneAnswer(
                     WalkerSearch.choosable(decide).head), decide.owner),
-                  contributions)
+                  contributions, alone = true)
                 .map(next => Done(next.copy(
                   powers = next.powers.withAnswers(next.answered))))
             case _: Decide | _: Roll => Right(Park(path, ctx))
