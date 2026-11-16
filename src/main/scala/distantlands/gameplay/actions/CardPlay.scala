@@ -243,6 +243,8 @@ object CardPlay:
       case Some(at) =>
         val held = ready.game.current.map.sites.get(at)
           .fold(Vector.empty[SiteDenizenState])(_.denizens)
+        // Not OathViolation.traverse: each id is checked against the cards
+        // already found, which is how a card named twice is refused.
         ids.foldLeft[Either[OathViolation, Vector[Removed]]](
             Right(Vector.empty)) { (found, id) =>
           found.flatMap(cards => held.find(_.id == id)

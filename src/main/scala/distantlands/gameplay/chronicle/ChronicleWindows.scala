@@ -24,5 +24,9 @@ object ChronicleWindows:
   val stars: Vector[PowerWindow] = Vector(ChronicleWriteInTheStars,
     ChronicleArchiveRivalSites, ChronicleCleanUp, ChronicleStore)
 
+  /** `ops` run in `window`. Kept rather than inlined as
+    * `Sequence(ops, Some(window))`: at each call site the window reads
+    * first, where inlining would leave it trailing a long operation block
+    * (hygiene pass, 2026-11-15). */
   def step(window: PowerWindow, ops: Vector[Operation]): Operation =
     Sequence(ops, Some(window))
