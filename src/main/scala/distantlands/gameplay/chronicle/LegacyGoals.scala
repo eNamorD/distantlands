@@ -13,6 +13,11 @@ import distantlands.model._
   * includes any Exile is unfriendly, and nobody meets it (Chronicle ruling
   * 4). */
 object LegacyGoals:
+  /** Who meets `legacy`'s goal. The Chronicle, where every card is
+    * revealed, reads every card. The Mouth reads during the game with
+    * `faceupOnly`: only faceup advisers and faceup relics count, for every
+    * player, since a facedown card has no suit (CR p. 17) and reading it
+    * would reveal it (Legacy in-play powers R31). */
   def meeting(ready: ReadyGame, catalog: ExecutableCatalog, legacy: Legacy,
       faceupOnly: Boolean = false): Set[PlayerId] = legacy.goal match
     case LegacyGoal.PeoplesFavor =>
@@ -22,15 +27,6 @@ object LegacyGoals:
     case LegacyGoal.GrandScepter => scepter(ready)
     case goal => leaders(ready, ChronicleTasks.seated(ready).map(player =>
       player -> score(ready, catalog, goal, legacy.suit, player, faceupOnly)))
-
-  /** Who meets `legacy`'s goal during the game, as The Mouth reads it: only
-    * faceup advisers and faceup relics count, for every player, since a
-    * facedown card has no suit (CR p. 17) and reading it would reveal it
-    * (Legacy in-play powers R31). The Chronicle, where every card is
-    * revealed, reads `meeting`. */
-  def meetingInPlay(ready: ReadyGame, catalog: ExecutableCatalog,
-      legacy: Legacy): Set[PlayerId] =
-    meeting(ready, catalog, legacy, faceupOnly = true)
 
   /** A seated player's score toward a counted goal: the sites their side
     * rules, the cards of `suit` there and among their own advisers (R23),
