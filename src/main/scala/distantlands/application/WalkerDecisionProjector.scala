@@ -146,11 +146,7 @@ private[application] final class WalkerDecisionProjector(
         found.decisionId, withRoll = true)).distinct)
 
   private def rebuild(ready: ReadyGame, procedure: ProcedureRef,
-      actor: PlayerId, args: Vector[DecisionOptionRef]) =
-    tree(procedure, ready, actor, args)
-
-  private def tree(procedure: ProcedureRef, ready: ReadyGame, actor: PlayerId,
-      args: Vector[DecisionOptionRef]) = procedure match
+      actor: PlayerId, args: Vector[DecisionOptionRef]) = procedure match
     case _: ActionRef.UsePower | TriggeredProcedureRef.ForcedWake |
         TriggeredProcedureRef.FollowUpOffer |
         TriggeredProcedureRef.WakeMenu | TriggeredProcedureRef.RestMenu |
