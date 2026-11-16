@@ -86,12 +86,9 @@ object BuildEdifice:
     val cards = candidates(catalog, state, holder, suit)
     if cards.isEmpty then Vector.empty
     else Vector(
-      Decide(id, holder, DecisionQuery.ChooseMany(0, 1, cards.map {
-        case (_, card: DenizenState) =>
-          DecisionOption.Denizen(DecisionOptionRef.Denizen(card.id))
-        case (_, card: EdificeState) =>
-          DecisionOption.Edifice(DecisionOptionRef.Edifice(card.id))
-      }, heading = Some(s"Bury a card to build ${name(catalog, edifice)}"),
+      Decide(id, holder, DecisionQuery.ChooseMany(0, 1,
+        cards.map((_, card) => ShapeEmpire.option(card)),
+        heading = Some(s"Bury a card to build ${name(catalog, edifice)}"),
         confirm = Some(CountedConfirm("Bury", "card", "cards",
           Some("Build nothing"))))),
       BuildOps((_, pending) => Right(chosen(pending, id, cards).toVector
@@ -109,10 +106,7 @@ object BuildEdifice:
       cards: Vector[(SiteId, SiteDenizenState)])
       : Option[(SiteId, SiteDenizenState)] =
     PowerAnswers.many(pending, id).flatMap(_.headOption).flatMap(ref =>
-      cards.find {
-        case (_, card: DenizenState) => ref == DecisionOptionRef.Denizen(card.id)
-        case (_, card: EdificeState) => ref == DecisionOptionRef.Edifice(card.id)
-      })
+      cards.find((_, card) => ShapeEmpire.option(card).ref == ref))
 
   private def bury(site: SiteId, card: SiteDenizenState, suit: Option[Suit],
       holder: PlayerId): Vector[CoreOperation] =
