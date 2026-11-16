@@ -5,10 +5,6 @@ import org.scalajs.dom
 import ServerUiSupport._
 
 private[frontend] object WorldBoardRenderer:
-  def players(value: GameProjection, playerId: String,
-      options: BoardOptions = BoardOptions.none): dom.Element =
-    playerBoards(value, playerId, options)
-
   /** A resource as its glyph and its count, with the sentence the words used
     * to carry kept as the accessible name.
     */
@@ -264,8 +260,7 @@ private[frontend] object WorldBoardRenderer:
           // initial are for the eye; the name stays the pawn's name.
           val marker = element("span", "pawn")
           val player = playerReference(value, pawn.playerId)
-          val colour = PlayerColorCss.of(
-            value.players.find(_.playerId == pawn.playerId).map(_.color))
+          val colour = playerColorClass(value, pawn.playerId)
           val dot = text("span", s"pawn-dot $colour", "●")
           dot.setAttribute("aria-hidden", "true")
           marker.appendChild(dot)
@@ -434,21 +429,21 @@ private[frontend] object WorldBoardRenderer:
       s"Visions Drawn ${track.visionsDrawn}; " +
       lock.fold("")(words => s"$words; ") +
       s"first player ${first.textContent}")
-    val svg = dom.document.createElementNS("http://www.w3.org/2000/svg", "svg")
+    val svg = svgElement("svg")
       .asInstanceOf[dom.svg.SVG]
     svg.setAttribute("viewBox", "0 0 200 200")
     svg.setAttribute("role", "img")
     svg.setAttribute("aria-label", s"Eight-segment round tracker, current round ${track.round}")
     (1 to 8).foreach { round =>
       val segment = roundSegment(round)
-      val group = dom.document.createElementNS("http://www.w3.org/2000/svg", "g")
+      val group = svgElement("g")
       group.setAttribute("data-round", round.toString)
-      val path = dom.document.createElementNS("http://www.w3.org/2000/svg", "path")
+      val path = svgElement("path")
       path.setAttribute("d", segment.path)
       // The wheel as printed, every segment in one fill (ruling R8); the
       // current round is a wedge of its own laid over its segment.
       path.setAttribute("class", "round-segment printed")
-      val label = dom.document.createElementNS("http://www.w3.org/2000/svg", "text")
+      val label = svgElement("text")
       label.setAttribute("x", segment.labelX.toString)
       label.setAttribute("y", segment.labelY.toString)
       label.setAttribute("text-anchor", "middle"); label.setAttribute("dominant-baseline", "middle")
@@ -456,13 +451,13 @@ private[frontend] object WorldBoardRenderer:
       label.textContent = round.toString
       group.appendChild(path)
       if round == track.round then
-        val current = dom.document.createElementNS("http://www.w3.org/2000/svg", "path")
+        val current = svgElement("path")
         current.setAttribute("d", segment.path)
         current.setAttribute("class", "round-current")
         group.appendChild(current)
       group.appendChild(label)
       if track.usurperLimited && round == track.limiterRound then
-        val marker = dom.document.createElementNS("http://www.w3.org/2000/svg", "text")
+        val marker = svgElement("text")
         marker.setAttribute("x", segment.markerX.toString)
         marker.setAttribute("y", segment.markerY.toString)
         marker.setAttribute("text-anchor", "middle"); marker.setAttribute("class", "limiter-marker")

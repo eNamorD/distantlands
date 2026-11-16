@@ -75,9 +75,9 @@ class ServerUiSupportSuite extends FunSuite:
     assert(markerRadius > labelRadius)
 
   test("winner banner class resolves the winner's stable color token"):
-    assertEquals(ServerUiSupport.winnerColorClass(
+    assertEquals(ServerUiSupport.playerColorClass(
       twoSeatProjection(), "red-exile"), "player-red")
-    assertEquals(ServerUiSupport.winnerColorClass(
+    assertEquals(ServerUiSupport.playerColorClass(
       twoSeatProjection(), "missing"), "player-neutral")
 
   test("peeked site relics replace opaque slots only for the scoped viewer"):

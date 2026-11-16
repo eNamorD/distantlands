@@ -315,13 +315,13 @@ private[frontend] object ServerUiSupport:
     case "darkest-secret" => "Darkest Secret"
     case other => other
 
-  private[frontend] def winnerColorClass(value: GameProjection,
+  private[frontend] def playerColorClass(value: GameProjection,
       playerId: String): String =
     PlayerColorCss.of(value.players.find(_.playerId == playerId).map(_.color))
 
   private[frontend] def winnerBanner(value: GameProjection,
       winner: String, victory: String): dom.Element =
-    val banner = element("div", s"victory-banner ${winnerColorClass(value, winner)}")
+    val banner = element("div", s"victory-banner ${playerColorClass(value, winner)}")
     banner.setAttribute("role", "status")
     banner.appendChild(playerReference(value, winner))
     banner.appendChild(dom.document.createTextNode(s" wins — $victory"))
@@ -419,6 +419,9 @@ private[frontend] object ServerUiSupport:
     val node = element(tag, className)
     node.textContent = value
     node
+
+  private[frontend] def svgElement(tag: String): dom.Element =
+    dom.document.createElementNS("http://www.w3.org/2000/svg", tag)
 
   private[frontend] def element(tag: String, className: String): dom.Element =
     val node = dom.document.createElement(tag)

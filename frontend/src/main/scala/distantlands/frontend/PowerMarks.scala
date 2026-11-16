@@ -22,7 +22,6 @@ import distantlands.protocol.projection.ModifierMarkProjection
   * the emblem its colour from `currentColor`, as the token glyphs do.
   */
 private[frontend] object PowerMarks:
-  private val Svg = "http://www.w3.org/2000/svg"
 
   /** Emblems, each on a 24-unit square, filled even-odd so the cut lines
     * (a boot's cuff, a pack's pocket, a scroll's lines) are holes. */
@@ -93,15 +92,15 @@ private[frontend] object PowerMarks:
   /** Appends the hidden emblem sprite, and the either-side gradient, once. */
   def mount(root: dom.Element): Unit =
     if root.querySelector("svg.mark-sprite") == null then
-      val sprite = dom.document.createElementNS(Svg, "svg")
+      val sprite = ServerUiSupport.svgElement("svg")
       sprite.setAttribute("class", "mark-sprite")
       sprite.setAttribute("aria-hidden", "true")
-      val defs = dom.document.createElementNS(Svg, "defs")
-      val gradient = dom.document.createElementNS(Svg, "linearGradient")
+      val defs = ServerUiSupport.svgElement("defs")
+      val gradient = ServerUiSupport.svgElement("linearGradient")
       gradient.setAttribute("id", EitherSideGradient)
       Vector("0" -> "var(--suit-discord)", "1" -> "var(--suit-order)")
         .foreach { (offset, colour) =>
-          val stop = dom.document.createElementNS(Svg, "stop")
+          val stop = ServerUiSupport.svgElement("stop")
           stop.setAttribute("offset", offset)
           stop.setAttribute("style", s"stop-color: $colour")
           gradient.appendChild(stop)
@@ -109,10 +108,10 @@ private[frontend] object PowerMarks:
       defs.appendChild(gradient)
       sprite.appendChild(defs)
       emblems.foreach { (id, path) =>
-        val symbol = dom.document.createElementNS(Svg, "symbol")
+        val symbol = ServerUiSupport.svgElement("symbol")
         symbol.setAttribute("id", s"mark-$id")
         symbol.setAttribute("viewBox", "0 0 24 24")
-        val shape = dom.document.createElementNS(Svg, "path")
+        val shape = ServerUiSupport.svgElement("path")
         shape.setAttribute("d", path)
         shape.setAttribute("fill", "currentColor")
         shape.setAttribute("fill-rule", "evenodd")
@@ -188,7 +187,7 @@ private[frontend] object PowerMarks:
         if edifice.nonEmpty then
           mark.appendChild(this.emblem(id, 6, 4.2, 12))
         else
-          val disc = dom.document.createElementNS(Svg, "circle")
+          val disc = ServerUiSupport.svgElement("circle")
           disc.setAttribute("class", "restriction-mark-disc")
           disc.setAttribute("cx", "12")
           disc.setAttribute("cy", "10.2")
@@ -204,7 +203,7 @@ private[frontend] object PowerMarks:
     }
 
   private def frame(classes: String, label: String): dom.Element =
-    val node = dom.document.createElementNS(Svg, "svg")
+    val node = ServerUiSupport.svgElement("svg")
     node.setAttribute("class", classes)
     node.setAttribute("viewBox", "0 0 24 24")
     node.setAttribute("role", "img")
@@ -212,14 +211,14 @@ private[frontend] object PowerMarks:
     node
 
   private def path(d: String, classes: String): dom.Element =
-    val node = dom.document.createElementNS(Svg, "path")
+    val node = ServerUiSupport.svgElement("path")
     node.setAttribute("d", d)
     node.setAttribute("class", classes)
     node
 
   private def emblem(id: String, x: Double, y: Double, size: Double)
       : dom.Element =
-    val node = dom.document.createElementNS(Svg, "use")
+    val node = ServerUiSupport.svgElement("use")
     node.setAttribute("href", s"#mark-$id")
     node.setAttribute("class", s"power-mark-emblem mark-emblem-$id")
     node.setAttribute("x", x.toString)
