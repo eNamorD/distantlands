@@ -50,8 +50,7 @@ object LineageScoring:
   def bonus(ready: ReadyGame, catalog: ExecutableCatalog, player: PlayerId)
       : Vector[(Suit, Int)] =
     val current = ready.game.current
-    val cards = current.map.inPlay
-      .filter(ChronicleTasks.rules(ready, player, _))
+    val cards = ChronicleTasks.ruled(ready, player)
       .flatMap(site => current.map.sites.get(site).toVector.flatMap(_.denizens))
       .flatMap(card => catalog.suitOf(card.id))
     val legacies = unscored(ready, player).flatMap(catalog.legacy)

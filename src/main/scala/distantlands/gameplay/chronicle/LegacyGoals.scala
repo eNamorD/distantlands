@@ -41,10 +41,10 @@ object LegacyGoals:
     def counts(orientation: Orientation): Boolean =
       !faceupOnly || orientation == Orientation.FaceUp
     goal match
-      case LegacyGoal.MostSites => ruled(ready, player).size
+      case LegacyGoal.MostSites => ChronicleTasks.ruled(ready, player).size
       case LegacyGoal.MostOfSuit =>
         val current = ready.game.current
-        val atSites = ruled(ready, player).flatMap(site =>
+        val atSites = ChronicleTasks.ruled(ready, player).flatMap(site =>
           current.map.sites.get(site).toVector.flatMap(_.denizens)).count {
             case DenizenState(id, orientation, _) => counts(orientation) &&
               catalog.denizen(id).exists(_.suit == suit)
@@ -70,10 +70,6 @@ object LegacyGoals:
     val seats = ChronicleTasks.seated(ready)
     val start = seats.indexOf(ready.game.current.tracks.roundStarter)
     seats.drop(start) ++ seats.take(start)
-
-  /** The sites in play `player`'s side rules (Chronicle ruling 11). */
-  private def ruled(ready: ReadyGame, player: PlayerId): Vector[SiteId] =
-    ready.game.current.map.inPlay.filter(ChronicleTasks.rules(ready, player, _))
 
   /** The highest positive score's players, unless an Exile is among
     * several. */

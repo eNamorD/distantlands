@@ -77,10 +77,6 @@ case object Reformer extends ContributingPower:
                   "with a card"))))),
           Branch((live, pending) => applied(live, holder, pending)))))))
 
-  /** The sites in play the holder's side rules. */
-  private def ruled(state: ReadyGame, holder: PlayerId): Vector[SiteId] =
-    state.game.current.map.inPlay.filter(ChronicleTasks.rules(state, holder, _))
-
   private def row(state: ReadyGame, site: SiteId): Vector[SiteDenizenState] =
     state.game.current.map.sites.get(site).toVector.flatMap(_.denizens)
 
@@ -92,7 +88,7 @@ case object Reformer extends ContributingPower:
   private def destinations(catalog: ExecutableCatalog, state: ReadyGame,
       holder: PlayerId, card: CardId): Vector[DecisionOption] =
     val from = siteOf(state, card)
-    ruled(state, holder).filterNot(from.contains).flatMap(site =>
+    ChronicleTasks.ruled(state, holder).filterNot(from.contains).flatMap(site =>
       Option.when(SiteRoom.hasRoom(catalog, state, site))(
         DecisionOption.Site(DecisionOptionRef.Site(site))).toVector ++
         row(state, site).map(ShapeEmpire.option))
@@ -100,7 +96,7 @@ case object Reformer extends ContributingPower:
   /** The cards at ruled sites that have a destination. */
   private def movable(catalog: ExecutableCatalog, state: ReadyGame,
       holder: PlayerId): Vector[DecisionOption] =
-    ruled(state, holder).flatMap(row(state, _)).filter(card =>
+    ChronicleTasks.ruled(state, holder).flatMap(row(state, _)).filter(card =>
       destinations(catalog, state, holder, card.id).nonEmpty)
       .map(ShapeEmpire.option)
 

@@ -40,6 +40,10 @@ object ChronicleTasks:
       steps: PlayerId => Vector[Operation]): Vector[Operation] =
     holder(ready, task).fold(violation => Vector(failing(violation)), steps)
 
+  /** The sites in play `player`'s side rules (Chronicle ruling 11). */
+  def ruled(ready: ReadyGame, player: PlayerId): Vector[SiteId] =
+    ready.game.current.map.inPlay.filter(rules(ready, player, _))
+
   /** Whether `player`'s side rules `site`: the Empire's sites for an
     * Imperial, the player's own for an Exile (Chronicle ruling 11). */
   def rules(ready: ReadyGame, player: PlayerId, site: SiteId): Boolean =

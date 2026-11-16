@@ -76,7 +76,7 @@ object BuildEdifice:
       holder: PlayerId, suit: Suit): Vector[(SiteId, SiteDenizenState)] =
     val map = state.game.current.map
     val anySuit = ChronicleLegacyRules.anyEdifice(state, holder)
-    map.inPlay.filter(ChronicleTasks.rules(state, holder, _)).flatMap(site =>
+    ChronicleTasks.ruled(state, holder).flatMap(site =>
       map.sites(site).denizens.filter(card =>
         anySuit || catalog.suitOf(card.id).contains(suit)).map(site -> _))
 
