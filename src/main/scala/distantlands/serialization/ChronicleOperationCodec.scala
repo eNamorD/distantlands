@@ -45,6 +45,9 @@ private[serialization] trait ChronicleOperationCodec extends CampaignResultCodec
         "relic" -> relic.value)
       case LegaciesScored(legacies) => ujson.Obj("kind" -> "legacies-scored",
         "legacies" -> legacies.map(legacy => ujson.Str(legacy.value)))
+      case LegaciesKeptDormant(legacies) => ujson.Obj(
+        "kind" -> "legacies-kept-dormant",
+        "legacies" -> legacies.map(legacy => ujson.Str(legacy.value)))
       case SuitedReserveFromBox(suit, cards) => ujson.Obj(
         "kind" -> "suited-reserve-from-box", "suit" -> suit.key,
         "cards" -> cards.map(card => ujson.Str(card.value)))
@@ -98,6 +101,10 @@ private[serialization] trait ChronicleOperationCodec extends CampaignResultCodec
       val legacies = value("legacies").arr.toVector.map(id => LegacyId(id.str))
       Either.cond(legacies.nonEmpty, LegaciesScored(legacies),
         InvalidValue(s"$path.legacies", "scores at least one legacy"))
+    case "legacies-kept-dormant" =>
+      val legacies = value("legacies").arr.toVector.map(id => LegacyId(id.str))
+      Either.cond(legacies.nonEmpty, LegaciesKeptDormant(legacies),
+        InvalidValue(s"$path.legacies", "keeps at least one legacy"))
     case "suited-reserve-from-box" => for
       suit <- decodeSuit(value("suit").str, s"$path.suit")
       cards = value("cards").arr.toVector.map(card => DenizenId(card.str))

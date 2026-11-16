@@ -9,7 +9,8 @@ import distantlands.model._
 /** Score Lineage Points, the Throne's sixth step (CR p. 37, Chronicle ruling
   * 13). The winner scores 3 lineage points plus their legacy bonus
   * (`bonus`). Any number of times, they may spend 2 of the points they are
-  * scoring to let another seated player score 1. */
+  * scoring to let another seated player score 1. A winner who pledged at
+  * Ruined Temple scores double the bonus (`scoredBonus`). */
 object LineageScoring:
   val giftsDecisionId: String = "chronicle.score-lineage.gifts"
   val basePoints: Int = 3
@@ -34,6 +35,13 @@ object LineageScoring:
     NotePart.Arg(0), NotePart.Text(" scored "), NotePart.Arg(1),
     NotePart.Text(" ("), NotePart.Arg(2), NotePart.Text(" base, "),
     NotePart.Arg(3), NotePart.Text(")")))
+  /** "p1 scored 9 lineage points (3 base, 6 from Beast, doubled by Ruined
+    * Temple)". */
+  val scoredDoubled: NoteKey = notes.key("scored-doubled", Vector(
+    NotePart.Arg(0), NotePart.Text(" scored "), NotePart.Arg(1),
+    NotePart.Text(" ("), NotePart.Arg(2), NotePart.Text(" base, "),
+    NotePart.Arg(3),
+    NotePart.Text(s", doubled by ${RuinedTempleWin.name})")))
   def noteKeys: Vector[NoteKey] = notes.declared
 
   /** `player`'s legacy bonus by suit (CR, Score Lineage Points; Legacies
@@ -58,6 +66,17 @@ object LineageScoring:
       legacies.count(_.suit == suit) * cards.count(_ == suit))
       .filter(_._2 > 0)
 
+  /** `player`'s legacy bonus as they score it, at Score Lineage Points or
+    * at Chronicler: `bonus`, each share doubled for a winner who pledged
+    * at Ruined Temple (catalog batch 13, ruling 19). Iron Hand's holder is
+    * never the winner, so its scoring reads `bonus`. */
+  def scoredBonus(ready: ReadyGame, catalog: ExecutableCatalog,
+      player: PlayerId): Vector[(Suit, Int)] =
+    val shares = bonus(ready, catalog, player)
+    if RuinedTempleWin.doubles(ready, player) then
+      shares.map((suit, points) => suit -> 2 * points)
+    else shares
+
   /** `player`'s active legacies that no scoring has counted yet this game
     * (Legacy Chronicle powers design, ruling 8). A dormant legacy does not
     * score, and is not recorded, so it may score later this game (R1, R2,
@@ -72,7 +91,7 @@ object LineageScoring:
     Vector(Branch((state, _) =>
       ChronicleTasks.winner(state).fold(violation =>
         Vector(ChronicleTasks.failing(violation)),
-        winner => score(state, winner, bonus(state, catalog, winner)))),
+        winner => score(state, winner, scoredBonus(state, catalog, winner)))),
       // Iron Hand's Exile holder then scores their legacies' bonus, with no
       // base and no gifts, recording them (Legacy Chronicle powers design,
       // ruling 20; R33).
@@ -91,10 +110,13 @@ object LineageScoring:
     val others = ChronicleTasks.seated(state).filterNot(_ == winner)
     val total = basePoints + shares.map(_._2).sum
     val giftable = total / 2
+    val withBonus =
+      if RuinedTempleWin.doubles(state, winner) then scoredDoubled
+      else scoredWithBonus
     val earned = Note(noteId, _ => Some(
       if shares.isEmpty then
         scored.sourceless(NoteArg.Player(winner), points(total))
-      else scoredWithBonus.sourceless(NoteArg.Player(winner), points(total),
+      else withBonus.sourceless(NoteArg.Player(winner), points(total),
         NoteArg.Number(basePoints), NoteArg.SuitShares(
           shares.map((suit, share) => share -> suit)))))
     if giftable == 0 || others.isEmpty then

@@ -240,6 +240,11 @@ final case class Table private (private val game: ReadyGame,
     update(_.updateCurrent(current => current.copy(
       trackedPawns = current.trackedPawns.updated(holder, target))))
 
+  /** `player` burned a secret at Ruined Temple this game. */
+  def pledgedAtRuinedTemple(player: PlayerId): Table =
+    update(_.updateCurrent(current => current.copy(
+      templePledges = current.templePledges + player)))
+
   /** `chancellor` and `citizens` play Imperial, with the purple bank of
     * `MaterialBankState.ImperialWarbands` on the table. Their board warbands
     * become purple ones, since a board's kind follows its role. Seat them

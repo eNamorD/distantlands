@@ -391,6 +391,8 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     WritePrediction(player, 6, other),
     ResolvePrediction(player, fulfilled = true),
     ResolvePrediction(player, fulfilled = false),
+    PledgeTemple(player),
+    LegaciesKeptDormant(Vector(legacy)),
     QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
         Vector.empty,
         Some(PowerSourceRef.Card(KnightsErrantCard.id)),
