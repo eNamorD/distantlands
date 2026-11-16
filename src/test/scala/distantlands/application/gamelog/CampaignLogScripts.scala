@@ -62,7 +62,7 @@ object CampaignLogScripts:
       .banditsRefilled, Dice.raid)
     val answers: Answers = {
       case Park(Decide(CampaignIds.force, _,
-          amount: DecisionQuery.ChooseAmount, _, _, _, _), _, _, _) =>
+          amount: DecisionQuery.ChooseAmount, _, _, _, _, _), _, _, _) =>
         ChooseAmountAnswer(amount.max)
       case park if park.decisionId == CampaignIds.sacrifice =>
         ChooseAmountAnswer(0)
@@ -106,7 +106,7 @@ object CampaignLogScripts:
       .banditsRefilled, Dice.raid)
     val answers: Answers = {
       case Park(Decide(CampaignIds.force, _,
-          amount: DecisionQuery.ChooseAmount, _, _, _, _), _, _, _) =>
+          amount: DecisionQuery.ChooseAmount, _, _, _, _, _), _, _, _) =>
         ChooseAmountAnswer(amount.max)
       case park if park.decisionId == CampaignIds.sacrifice ||
           park.decisionId == CampaignIds.placement =>
@@ -202,7 +202,7 @@ object CampaignLogScripts:
       .banditsRefilled, Dice.raid)
     val answers: Answers = {
       case Park(Decide(CampaignIds.force, _,
-          amount: DecisionQuery.ChooseAmount, _, _, _, _), _, _, _) =>
+          amount: DecisionQuery.ChooseAmount, _, _, _, _, _), _, _, _) =>
         ChooseAmountAnswer(amount.max)
       case park if park.decisionId == CampaignIds.attackerPlan &&
           offers(park, DecisionOptionRef.Denizen(relicHunter)) =>

@@ -1,5 +1,6 @@
 package distantlands.application.gamelog
 
+import distantlands.gameplay.setup.OrderedWindow
 import distantlands.model._
 import distantlands.protocol.projection.{LogEntry, LogSpan}
 import distantlands.testkit.Outcomes
@@ -106,3 +107,8 @@ class GameLogSetupSuite extends munit.FunSuite:
     Vector(None, Some(script.actor), Some(PlayerId("p2"))).foreach(viewer =>
       assertEquals(texts(setupLines(script, viewer)).headOption,
         Some("p1 took a relic from the Reliquary")))
+
+  test("the power-order pick writes no line of its own (catalog batch 13, " +
+      "ruling 4)"):
+    assert(formatter.procedures.of(TriggeredProcedureRef.Setup).narrates(
+      OrderedWindow.decisionId(PlayerId("p2"), 0)))

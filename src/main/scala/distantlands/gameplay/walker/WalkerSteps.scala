@@ -99,7 +99,8 @@ private[walker] object WalkerSteps:
     */
   def answerDecide(decide: Decide, ctx: WalkCtx,
       path: Vector[String], answer: Answered,
-      contributions: Vector[PowerId]): Either[OathViolation, WalkCtx] =
+      contributions: Vector[PowerId], alone: Boolean = false)
+      : Either[OathViolation, WalkCtx] =
     for
       _ <- Either.cond(decide.owners.contains(answer.by), (),
         OathViolation.WrongPlayer(decide.owner, answer.by))
@@ -114,7 +115,8 @@ private[walker] object WalkerSteps:
         previous = Some((ctx.state, ctx.state)),
         events = ctx.events :+ WalkerStepRecorded(
           nodeId = nodeId,
-          payload = ChoicePayload(answer.decisionId, answer.answer, answer.by),
+          payload = ChoicePayload(answer.decisionId, answer.answer, answer.by,
+            alone),
           contributions = contributions))
 
   /** Records one roll step: the outcome is derived and validated by

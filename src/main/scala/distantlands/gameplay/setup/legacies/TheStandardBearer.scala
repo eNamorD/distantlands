@@ -3,7 +3,7 @@ package distantlands.gameplay.setup.legacies
 import distantlands.catalog.{Legacy, LegacyGoal, PrintedPower}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
-  Transform}
+  OfferResolution}
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.gameplay.setup.SetupPawnPlacement
 import distantlands.model._
@@ -18,8 +18,9 @@ object TheStandardBearerCard extends Legacy(LegacyId("L18"), "The Standard Beare
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** The Standard Bearer (legacy L18), its SETUP power (Legacy Setup powers
-  * design, ruling 16). In the holder's own `SetupPawnPlaced` window, after
-  * the pawn's line, the holder may take a banner from the shared bank and
+  * design, ruling 16). In the holder's own `SetupPawnPlaced` window, in the
+  * order the holder chooses among its powers (catalog batch 13, ruling 4),
+  * the holder may take a banner from the shared bank and
   * put two more of its own resource on it from the shared bank, which has
   * no count (R28). The banner is moved, not taken by its ribbon: it keeps
   * what it holds. Line: "p2 took the People's Favor with The Standard
@@ -33,11 +34,15 @@ case object TheStandardBearer extends ContributingPower:
   val id: PowerId = TheStandardBearerCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
-    PowerWindow.SetupPawnPlaced -> Vector(Transform((ctx, ops) =>
+    PowerWindow.SetupPawnPlaced -> Vector(OfferResolution(ctx =>
       SetupPawnPlacement.latest(ctx.answered).map(_._1)
         .filter(player => SetupLegacyRules.standardBearer(ctx.state)
           .contains(player))
-        .fold(ops)(holder => ops :+ step(holder)))))
+        .map(holder => ResolutionOffer(option, Vector(step(holder)))))))
+
+  /** This legacy in the placer's power-order question. */
+  val option: DecisionOption =
+    DecisionOption.Legacy(DecisionOptionRef.Legacy(TheStandardBearerCard.id))
 
   def decisionId(player: PlayerId): String =
     s"setup.legacy.the-standard-bearer.${player.value}"
@@ -71,8 +76,12 @@ case object TheStandardBearer extends ContributingPower:
     case Banner.PeoplesFavor => Piece.Favor(2)
     case Banner.DarkestSecret => Piece.Secrets(2)
 
+  // The holder is read again at the step, so a legacy lost earlier in the
+  // window does not resolve (catalog batch 13, ruling 5).
   private def step(holder: PlayerId): Operation = Branch((state, pending) =>
-    offered(state, pending, holder) match
+    if !SetupLegacyRules.standardBearer(state).contains(holder) then
+      Vector.empty
+    else offered(state, pending, holder) match
       case Vector() => Vector.empty
       case banners => Vector(
         Decide(decisionId(holder), holder, DecisionQuery.ChooseOne(

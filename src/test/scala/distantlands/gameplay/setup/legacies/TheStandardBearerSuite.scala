@@ -6,13 +6,11 @@ import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
   WalkerPowerCatalog}
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
   SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
-import distantlands.gameplay.powers.setup.{GreatForge, GreatForgeCard}
-import distantlands.gameplay.walker.{ChoicePayload, LogNoted, WalkerPowers,
-  WalkerStepRecorded}
+import distantlands.gameplay.walker.WalkerPowers
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
-import distantlands.testkit.{Answers, ParkedNode, Situation, Table}
+import distantlands.testkit.{Answers, ParkedNode, Situation}
 import distantlands.testkit.Unwrap.{accepted, present}
 
 /** The Standard Bearer: "After placing your pawn, you may take a banner
@@ -137,31 +135,6 @@ class TheStandardBearerSuite extends munit.FunSuite:
       "the-standard-bearer")), Vector.empty)
     assertEquals(walked.ready.game.current.banners.peoplesFavor.holder,
       Some(p1))
-
-  test("in the holder's pawn window Great Forge acts before The Standard " +
-      "Bearer (R27)"):
-    val started = accepted(GameStartRules.evolve(catalog, record,
-      LaterGameFixture.orders(record, p1)))
-    // The driver places every pawn at the first site in play.
-    val ready = Table.from(started).edifice(GreatForgeCard.id,
-      EdificeSide.Intact, at = started.game.current.map.inPlay.head).ready
-    val walked = SetupWalkDriver.driveWithEvents(ready, accepted(
-      SetupProcedure.build(catalog, ready, ready.game.current.turn
-        .activePlayer, Vector.empty)), TriggeredProcedureRef.Setup,
-      WalkerPowers.selected(WalkerPowerCatalog.default(catalog),
-        Vector.empty))
-    val forge = walked.events.indexWhere {
-      case LogNoted(GreatForge.id, note, _) =>
-        note.args.headOption.contains(NoteArg.Player(p2))
-      case _ => false
-    }
-    val bearer = walked.events.indexWhere {
-      case WalkerStepRecorded(_, ChoicePayload(id, _, _), _) =>
-        id == TheStandardBearer.decisionId(p2)
-      case _ => false
-    }
-    assert(forge >= 0 && bearer >= 0, s"forge $forge, bearer $bearer")
-    assert(forge < bearer, s"forge $forge, bearer $bearer")
 
   test("the card has left holding and its power is registered"):
     assert(LegacySetupPowers.all.contains(TheStandardBearer))

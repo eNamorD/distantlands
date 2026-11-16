@@ -1,7 +1,7 @@
 package distantlands.gameplay.powers.setup
 
 import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
-import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, OfferResolution, PowerCtx, Transform}
 import distantlands.gameplay.powers.RelicDraws
 import distantlands.model._
 
@@ -43,13 +43,20 @@ sealed abstract class ForgeRule extends ContributingPower:
   /** The line this face writes after its effect. */
   protected def note(actor: PlayerId, at: SiteId): Note
 
-  final def contributions: Map[PowerWindow, Vector[Contribution]] =
-    val effect = Vector(Transform((ctx, ops) => at(ctx) match {
-      case Some((actor, site)) => ops :+ BuildOps((ready, _) =>
-        build(ready, actor, site)) :+ note(actor, site)
-      case None => ops
-    }))
-    Map(PowerWindow.SetupPawnPlaced -> effect, PowerWindow.WhenExplored -> effect)
+  /** The face's effect, then its line. */
+  private def steps(actor: PlayerId, site: SiteId): Vector[Operation] =
+    Vector(BuildOps((ready, _) => build(ready, actor, site)),
+      note(actor, site))
+
+  /** Setup's pawn window orders its powers, so there the steps are offered
+    * to the placer (catalog batch 13, ruling 4). An Explore folds them in.
+    */
+  final def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.SetupPawnPlaced -> Vector(OfferResolution(ctx =>
+      at(ctx).map((actor, site) => ResolutionOffer(
+        EdificeSetupSupport.option(edifice), steps(actor, site))))),
+    PowerWindow.WhenExplored -> Vector(Transform((ctx, ops) =>
+      at(ctx).fold(ops)((actor, site) => ops ++ steps(actor, site)))))
 
 case object GreatForge extends ForgeRule:
   val id: PowerId = GreatForgeCard.intact.power.id

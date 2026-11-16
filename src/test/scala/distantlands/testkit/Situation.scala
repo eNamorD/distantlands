@@ -119,11 +119,11 @@ object Situation:
     * is not answered by default and fails the walk naming the decision.
     */
   val defaultAnswer: Answers =
-    case Park(Decide(_, _, one: DecisionQuery.ChooseOne, _, _, _, _),
+    case Park(Decide(_, _, one: DecisionQuery.ChooseOne, _, _, _, _, _),
         _, _, _) if one.options.exists(_.available) =>
       DecisionAnswer.ChooseOneAnswer(one.options.filter(_.available).head.ref)
     case Park(Decide(_, _, partition: DecisionQuery.Partition,
-        _, _, _, _), _, _, _)
+        _, _, _, _, _), _, _, _)
         if partition.sections.nonEmpty && partition.options.nonEmpty =>
       val (sections, options) = (partition.sections, partition.options)
       val keep = sections.find(_.minRequired > 0).getOrElse(sections.head)
@@ -131,18 +131,18 @@ object Situation:
       val refs = options.map(_.ref)
       DecisionAnswer.PartitionAnswer(DecisionPlacement(refs.head, keep.key) +:
         refs.tail.map(DecisionPlacement(_, discard.key)))
-    case Park(Decide(_, _, many: DecisionQuery.ChooseMany, _, _, _, _),
+    case Park(Decide(_, _, many: DecisionQuery.ChooseMany, _, _, _, _, _),
         _, _, _) if many.options.count(_.available) >= many.min =>
       DecisionAnswer.ChooseManyAnswer(
         many.options.filter(_.available).take(many.min).map(_.ref))
-    case Park(Decide(_, _, amount: DecisionQuery.ChooseAmount, _, _, _, _),
+    case Park(Decide(_, _, amount: DecisionQuery.ChooseAmount, _, _, _, _, _),
         _, _, _) =>
       DecisionAnswer.ChooseAmountAnswer(amount.min)
-    case Park(Decide(_, _, amounts: DecisionQuery.ChooseAmounts, _, _, _, _),
+    case Park(Decide(_, _, amounts: DecisionQuery.ChooseAmounts, _, _, _, _, _),
         _, _, _) if amounts.slots.forall(_.suggested.nonEmpty) =>
       DecisionAnswer.DistributeAnswer(amounts.slots.map(slot =>
         DistributeAmount(slot.ref, slot.suggested.get)))
-    case Park(Decide(_, _, spread: DecisionQuery.Distribute, _, _, _, _),
+    case Park(Decide(_, _, spread: DecisionQuery.Distribute, _, _, _, _, _),
         _, _, _) if spread.slots.map(_.minimum).sum >= spread.minTotal &&
           spread.slots.map(_.minimum).sum <= spread.maxTotal =>
       DecisionAnswer.DistributeAnswer(spread.slots.map(slot =>

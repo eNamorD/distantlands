@@ -1,9 +1,9 @@
 package distantlands.gameplay.walker
 
 import distantlands.gameplay.operations.PowerUseRules
-import distantlands.gameplay.powerresolver.{ContributingPower, ContributionCollector, OfferHost, OptionRestriction, PowerCtx, RerollHost, Restriction, Waiver}
+import distantlands.gameplay.powerresolver.{ContributingPower, ContributionCollector, OfferHost, OptionRestriction, PowerCtx, RerollHost, ResolutionHost, Restriction, Waiver}
 import distantlands.model.PowerResolution
-import distantlands.model.{Answered, AutomaticUse, Branch, BuildOps, ConsentAnswer, ConsentAsk, ConsentKey, ConsentTurn, Decide, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery, OathViolation, OfferedPlan, OfferedReroll, Operation, CoreOperation, OptionReason, PendingTree, PlayerId, PowerId, LogNote, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Simultaneous}
+import distantlands.model.{Answered, AutomaticUse, Branch, BuildOps, ConsentAnswer, ConsentAsk, ConsentKey, ConsentTurn, Decide, DecisionAnswer, DecisionOption, DecisionOptionRef, DecisionQuery, OathViolation, OfferedPlan, OfferedReroll, OfferedResolution, Operation, CoreOperation, OptionReason, PendingTree, PlayerId, PowerId, LogNote, PowerWindow, LeafOperation, ProcedureRef, ReadyGame, Simultaneous}
 
 /** Task 3's power-gather/fold mechanics for [[ProcedureWalker]], split into
   * their own file to keep `ProcedureWalker.scala` under the project's
@@ -48,6 +48,8 @@ private[walker] object WalkerPowerGather:
     * When the node is an [[OfferHost]], the offers the window gathered, with
     * its option restrictions run over them ([[restrictOffers]]), are turned
     * into its children after the transforms have run. When the node is a
+    * [[ResolutionHost]], the resolutions the window offered are turned into
+    * its children after the transforms have run. When the node is a
     * [[ModifierChoice]], its pass is expanded with these powers, and the
     * window's option restrictions apply to its decision.
     */
@@ -99,6 +101,15 @@ private[walker] object WalkerPowerGather:
               reroll.offer(ctxFor(byId(powerId))).map(offer =>
                 OfferedReroll(powerId, offer.withheld.fold(offer.copy(
                   withheld = refused(byId(powerId))))(_ => offer)))
+            }
+            (folded ++ host.expand(offered, OfferHost.Pass(state, answered,
+              resuming, WalkerSimulation.applies(_, state, powers, procedure))),
+              gathered.order)
+          case host: ResolutionHost =>
+            val offered = gathered.resolutions.flatMap {
+              case (powerId, resolution) =>
+                resolution.offer(ctxFor(byId(powerId))).map(
+                  OfferedResolution(powerId, _))
             }
             (folded ++ host.expand(offered, OfferHost.Pass(state, answered,
               resuming, WalkerSimulation.applies(_, state, powers, procedure))),

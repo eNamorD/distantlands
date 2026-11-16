@@ -89,10 +89,18 @@ private[walker] object WalkerReplay:
           outcome <- WalkerRolls.outcomeForRecorded(ready, pool, faces)
         yield WalkerRolls.write(ready, outcome)
 
+      // A choice the walker made alone was never parked on, so it is
+      // checked as an automatic roll is. Its answer joins the walk's
+      // answers all the same, under a pending position the walk's first
+      // park, if any, sets (catalog batch 13, ruling 4).
       case step @ WalkerStepRecorded(_,
-          ChoicePayload(decisionId, payload, by), _) =>
+          ChoicePayload(decisionId, payload, by, alone), _) =>
         for
-          pending <- validateParkedStep(step)
+          pending <-
+            if alone then validateStep(step).map(_ =>
+              ready.game.current.walkerPending.getOrElse(
+                PendingTree(Vector.empty, Vector.empty)))
+            else validateParkedStep(step)
           answered = pending.copy(answered = pending.answered :+
             Answered(decisionId, payload, by))
         yield ready.copy(game = ready.game.copy(current =

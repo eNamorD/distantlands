@@ -5,7 +5,7 @@ The [Legacy in-play powers](2026-11-14-legacy-in-play-powers-design.md)
 batch has landed, slice 4 (The Mouth) included: slice 5 here reuses The
 Mouth's activation, and slice 2 changes where The Mouth's Iron Hand discard
 sends the card. Each slice is planned when the one before it lands. Slice 1
-landed 2026-11-14; with it every printed denizen power is implemented. Slice 2 landed 2026-11-15. Slice 3 landed 2026-11-15.
+landed 2026-11-14; with it every printed denizen power is implemented. Slice 2 landed 2026-11-15. Slice 3 landed 2026-11-15. Slice 4 landed 2026-11-15.
 Amended 2026-11-15 by the owner while slice 2 was planned: the legacy deck
 is stored and ordered, discarded legacies go to its bottom in place of a
 set-aside zone, and drawn legacies wait in the drawer's hand, Setup's
@@ -240,12 +240,18 @@ keep draws its own legacies, so moving the keep moves the draw with it.
 
 ### Slice 4: power order
 
-A new `OfferHost`, `OrderedWindow`, wraps the `SetupPawnPlaced` fold. On
-every fold it gathers the powers that apply to the placer, reads which
-already resolved from the answers, and asks a `ChooseOne` headed "Choose a
-power to resolve" while two or more remain. Its shape is a pure function of
+A new host beside `OfferHost` and `RerollHost`, the `ResolutionHost`
+`OrderedWindow`, is the `SetupPawnPlaced` window, and its powers offer
+their steps through `OfferResolution`. On every fold it gathers the
+powers that apply to the placer, reads which already resolved from the
+answers, and asks a `ChooseOne` headed "Choose a power to resolve" while
+two or more remain. Its shape is a pure function of
 the offers and the answers, so a resumed walk folds it the same way (the
-`OfferHost` contract). The Standard Bearer and Wealthy move their holder
+`OfferHost` contract). A power that resolves alone is still recorded as its
+round's answer, through a choose-one the walker answers itself
+(`Decide.answersAlone`), so every round's pick is an answer. That answer's
+step is marked as made alone, as an automatic roll's is, so replay takes it
+without a park before it. The Standard Bearer and Wealthy move their holder
 check into a `Branch` at their step (ruling 5). The test that pins R27's
 registration order is replaced by one that pins it only when nothing is
 asked.

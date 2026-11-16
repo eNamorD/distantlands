@@ -273,8 +273,9 @@ one.
 ### Setup deferred items
 
 - [ ] **Simultaneous setup effects.** The Chancellor or first player should
-  resolve simultaneous setup effects; site order is used until then. Still to
-  add: player choices earlier in setup, which the setup legacy powers bring.
+  resolve simultaneous setup effects on several players; site order is used
+  until then. A player orders the powers of their own pawn window (catalog
+  batch 13, ruling 4).
 - [ ] **Keyboard focus on the Chronicle pages.** A redraw of the Chronicle
   page drops the focused control, and the table's save dialog does not trap
   focus. Do it with the next accessibility pass over the start pages.

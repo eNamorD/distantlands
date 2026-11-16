@@ -4,10 +4,11 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.action.DowsingSticksCard
 import distantlands.gameplay.powers.campaign.{CursedCauldronCard, StickyFireCard}
-import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure, SetupWalkDriver}
+import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupPawnPlacement,
+  SetupProcedure, SetupWalkDriver}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
-  Transform}
+  OfferResolution}
 import distantlands.gameplay.walker.{LogNoted, WalkerPowers}
 import distantlands.model._
 import distantlands.testkit.{Look, Table}
@@ -93,10 +94,8 @@ class GreatForgeRulesSuite extends munit.FunSuite:
         s"Discarded ${cradleRelics.map(_.value).mkString(", ")}.",
         covers = false)))
 
-  /** A power hooked at `SetupPawnPlaced` appends its leaves to the node the
-    * window hangs on, so the pawn's own line must be inside that node: a
-    * sibling after it would read second, and the rule this line replaced
-    * read first. */
+  /** The pawn's line is written in the node before the window, so it reads
+    * before any power's line, as the rule it replaced did. */
   test("the pawn's own line comes before the edifice's"):
     val staged = stagedAt(EdificeSide.Intact)
     val written = events(staged).collect {
@@ -106,20 +105,21 @@ class GreatForgeRulesSuite extends munit.FunSuite:
       s"${ProcedureNotes.id(TriggeredProcedureRef.Setup).value}/placed-pawn",
       s"${great.id.value}/${NoteKey.Used}"))
 
-  /** A power after Great Forge that asks twice inside the pawn window, so
-    * the walk resumes there after a window answer (R27). */
+  /** A power that asks twice inside the first player's pawn window, after
+    * Great Forge in power order, so the walk resumes there after a window
+    * answer (R27). */
   private case object AskInWindow extends ContributingPower:
     val id: PowerId = PowerId("test.setup.ask-in-window")
     val source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
     val contributions: Map[PowerWindow, Vector[Contribution]] = Map(
-      PowerWindow.SetupPawnPlaced -> Vector(Transform((ctx, ops) =>
-        if !ctx.answered.lastOption.exists(answer =>
-            SetupProcedure.pawnDecisionId(firstPlayer) == answer.decisionId ||
-              answer.decisionId.startsWith("test.window.ask")) then ops
-        else ops ++ Vector("test.window.ask", "test.window.ask2").map(id =>
-          Decide(id, firstPlayer, DecisionQuery.ChooseOne(Vector(
-            DecisionOption.Button(DecisionOptionRef.Button("a"), "A"),
-            DecisionOption.Button(DecisionOptionRef.Button("b"), "B"))))))))
+      PowerWindow.SetupPawnPlaced -> Vector(OfferResolution(ctx =>
+        Option.when(SetupPawnPlacement.latest(ctx.answered)
+            .exists(_._1 == firstPlayer))(ResolutionOffer(
+          DecisionOption.Button(DecisionOptionRef.Button("ask"), "Ask"),
+          Vector("test.window.ask", "test.window.ask2").map(id =>
+            Decide(id, firstPlayer, DecisionQuery.ChooseOne(Vector(
+              DecisionOption.Button(DecisionOptionRef.Button("a"), "A"),
+              DecisionOption.Button(DecisionOptionRef.Button("b"), "B"))))))))))
 
   test("a question asked in the pawn window keeps Great Forge's draw on " +
       "resume: the relic is drawn once (R27)"):
