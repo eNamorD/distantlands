@@ -42,7 +42,8 @@ private[walker] object WalkerReplay:
     * `ops`, in order, so the vector is as long as `ops`. Replay keeps only
     * the last; the game log reads them all, to judge a line about one
     * operation against the states around that operation. One fold serves
-    * both, so the two cannot drift.
+    * both, so the two cannot drift. It is not `OathViolation.traverse`:
+    * each operation applies to the state the one before it left.
     */
   def applyBatch(ready: ReadyGame, ops: Vector[CoreOperation])
       : Either[OathViolation, Vector[ReadyGame]] =
