@@ -67,7 +67,7 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
   /** The suit of every denizen on `ready`'s map, edifices included. */
   private def suitsOnMap(ready: ReadyGame): Vector[Suit] =
     ready.game.current.map.sites.values.flatMap(_.denizens)
-      .flatMap(AtlasPlacement.suitOf(catalog, _)).toVector
+      .flatMap(card => catalog.suitOf(card.id)).toVector
 
   private val atlasSites: Vector[SiteId] =
     chronicleWithGreatSlumAtForgottenEnd.atlasBox.map(_.site)

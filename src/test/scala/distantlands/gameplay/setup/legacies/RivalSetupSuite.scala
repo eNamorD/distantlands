@@ -4,8 +4,8 @@ import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.legacies.{IronHandCard, RivalCard}
 import distantlands.gameplay.powers.{NoteText, PlayerFacts}
 import distantlands.application.GameCommand
-import distantlands.gameplay.setup.{AtlasPlacement, GameStartRules,
-  ImperialMaps, LaterGameFixture, SetupLegacyFixture, SetupPawnSites,
+import distantlands.gameplay.setup.{GameStartRules, ImperialMaps,
+  LaterGameFixture, SetupLegacyFixture, SetupPawnSites,
   SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -80,7 +80,7 @@ class RivalSetupSuite extends munit.FunSuite:
     val ready = started(record)
     val cards = rivalSites.flatMap(stored =>
       ready.game.current.map.sites(stored.site).denizens)
-      .flatMap(AtlasPlacement.suitOf(catalog, _))
+      .flatMap(card => catalog.suitOf(card.id))
     assert(cards.nonEmpty, "the fixture's Rival sites store no card")
     assertEquals(ready.banks.favor.values.sum,
       without.banks.favor.values.sum + cards.size)
