@@ -183,6 +183,23 @@ class LineageScoringSuite extends munit.FunSuite:
       "p1 gave up 2 points to give p2 1 point.",
       "p1 keeps 4 points"))
 
+  test("a winner who pledged at Ruined Temple scores double the legacy " +
+      "bonus, never the base, and gives from the doubled total"):
+    // The Needle over the Empire's 3 Beast cards, doubled: 3 + 6.
+    val at = atGiftsOn(empireWithCards.legacy(p1, TheNeedleCard)
+      .pledgedAtRuinedTemple(p1))
+    assertEquals(giftCap(at), 4)
+    val kept = giftingOn(at, 0, 0)
+    assertEquals(scoreOf(Outcomes.ready(kept.state), p1) -
+      scoreOf(Outcomes.ready(at.state), p1), 9)
+    assertEquals(scoreLines(kept.events), Vector("p1 scored 9 lineage " +
+      "points (3 base, 6 from Beast, doubled by Ruined Temple)"))
+
+  test("a pledged winner with no bonus scores the base alone"):
+    val at = atGiftsOn(empireWithCards.pledgedAtRuinedTemple(p1))
+    assertEquals(scoreLines(giftingOn(at, 0, 0).events),
+      Vector("p1 scored 3 lineage points"))
+
   test("a winner who gives every point away records nothing and keeps 0 " +
       "points (R29)"):
     val at = holdingAtGifts(TheNeedleCard)

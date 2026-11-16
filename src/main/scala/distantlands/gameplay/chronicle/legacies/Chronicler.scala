@@ -4,7 +4,7 @@ import distantlands.catalog.{ExecutableCatalog, Legacy, LegacyGoal,
   PrintedPower}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.{ChronicleLegacyRules, ChronicleTasks,
-  LegacyGoals, LineageScoring}
+  LegacyGoals, LineageScoring, RuinedTempleWin}
 import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   Transform}
 import distantlands.gameplay.powers.PowerAnswers
@@ -30,7 +30,9 @@ object ChroniclerCard extends Legacy(LegacyId("L02"), "Chronicler",
   * scoring 0 included; a dormant legacy neither scores nor is recorded
   * (ruling 8; R1, R2, re-ruled by the owner 2026-11-14). Lines (R4): "p2
   * declared Chronicler", then "p1 scored 2 lineage points (2 from Beast)"
-  * for each player who scores a point. */
+  * for each player who scores a point. A winner who pledged at Ruined
+  * Temple scores double (`LineageScoring.scoredBonus`; catalog batch 13,
+  * ruling 19). */
 case object Chronicler extends ContributingPower:
   val id: PowerId = ChroniclerCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
@@ -50,6 +52,12 @@ case object Chronicler extends ContributingPower:
   val scored: NoteKey = notes.key("chronicler-scored", Vector(
     NotePart.Arg(0), NotePart.Text(" scored "), NotePart.Arg(1),
     NotePart.Text(" ("), NotePart.Arg(2), NotePart.Text(")")))
+  /** "p1 scored 4 lineage points (4 from Beast, doubled by Ruined
+    * Temple)", a pledged winner's share (catalog batch 13, ruling 19). */
+  val scoredDoubled: NoteKey = notes.key("chronicler-scored-doubled", Vector(
+    NotePart.Arg(0), NotePart.Text(" scored "), NotePart.Arg(1),
+    NotePart.Text(" ("), NotePart.Arg(2),
+    NotePart.Text(s", doubled by ${RuinedTempleWin.name})")))
   /** The Sun lines this power writes, on the Sun's note id. */
   def sunNoteKeys: Vector[NoteKey] = notes.declared
 
@@ -75,7 +83,7 @@ case object Chronicler extends ContributingPower:
       val players = LegacyGoals.turnOrder(state)
       val legacies = players.flatMap(LineageScoring.unscored(state, _))
       val shares = players.map(player =>
-        player -> LineageScoring.bonus(state, catalog, player))
+        player -> LineageScoring.scoredBonus(state, catalog, player))
         .filter(_._2.nonEmpty)
       val ops = Option.when(legacies.nonEmpty)(LegaciesScored(legacies))
         .toVector ++ shares.flatMap((player, share) =>
@@ -84,7 +92,8 @@ case object Chronicler extends ContributingPower:
       Option.when(ops.nonEmpty)(BuildOps((_, _) => Right(ops),
         required = true)).toVector ++
         shares.map((player, share) => Note(noteId, _ => Some(
-          scored.sourceless(NoteArg.Player(player),
+          (if RuinedTempleWin.doubles(state, player) then scoredDoubled
+            else scored).sourceless(NoteArg.Player(player),
             NoteArg.Amount(share.map(_._2).sum, NoteUnit.LineagePoint),
             NoteArg.SuitShares(share.map((suit, points) =>
               points -> suit)))))))

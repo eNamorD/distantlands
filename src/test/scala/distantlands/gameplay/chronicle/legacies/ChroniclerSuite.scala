@@ -83,6 +83,26 @@ class ChroniclerSuite extends munit.FunSuite:
     val run = through(chronicled, TriggeredProcedureRef.ChronicleThrone)
     assertEquals(scoreOf(run.ready, p1), 2 + LineageScoring.basePoints)
 
+  test("a winner who pledged at Ruined Temple scores double at Chronicler " +
+      "(catalog batch 13, ruling 19)"):
+    val run = through(chronicled.pledgedAtRuinedTemple(p1),
+      TriggeredProcedureRef.ChronicleSun)
+    assertEquals(scoreOf(run.ready, p1), 4)
+    assertEquals(sunLines(run), Vector(
+      s"p2 declared ${ChroniclerCard.id.value}",
+      "p1 scored 4 lineage points (4 from Beast, doubled by Ruined Temple)"))
+
+  test("a pledged winner's base is not doubled after Chronicler"):
+    val run = through(chronicled.pledgedAtRuinedTemple(p1),
+      TriggeredProcedureRef.ChronicleThrone)
+    assertEquals(scoreOf(run.ready, p1), 4 + LineageScoring.basePoints)
+
+  test("a pledged player who did not win scores no double"):
+    val run = through(empire.legacy(p2, ChroniclerCard)
+      .legacy(p2, TheNeedleCard).pledgedAtRuinedTemple(p2),
+      TriggeredProcedureRef.ChronicleSun)
+    assertEquals(scoreOf(run.ready, p2), 2)
+
   test("a Chronicler gone dormant in step 3 is not asked (ruling 1)"):
     // p3, an Exile, rules no site, so misses Chronicler's goal.
     val run = through(empire.legacy(p3, ChroniclerCard)
