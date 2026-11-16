@@ -159,15 +159,10 @@ case object SpinningBee extends SelectedModifier:
       SpinningBee.declared(pending.answered) match
         case Some(suit)
             if hand.nonEmpty && !hand.exists(matches(catalog, suit)) =>
-          hand.foldLeft[Either[OathViolation, Vector[CoreOperation]]](
-              Right(Vector.empty)) { (done, card) =>
-            for
-              previous <- done
-              operations <- CardPlay.operations(catalog, ready, actor, card,
-                SearchPlacement.Discard, CardPlay.Origin.TemporaryHand)
-                .map(DiscardCause.mark(_, DiscardCause(id)))
-            yield previous ++ operations
-          }
+          OathViolation.traverse(hand)(card =>
+            CardPlay.operations(catalog, ready, actor, card,
+              SearchPlacement.Discard, CardPlay.Origin.TemporaryHand)
+              .map(DiscardCause.mark(_, DiscardCause(id)))).map(_.flatten)
         case _ => Right(Vector.empty)
     })
 

@@ -117,24 +117,22 @@ case object EmptyGrounds extends ContributingPower:
     ready.game.current.map.regionOf(site).toRight(OathViolation.InvalidEventOrder(
       s"${site.value} is not in play")).flatMap { region =>
       val destination = CardPlay.nextRegion(region)
-      candidates(ready, site).foldLeft[Either[OathViolation, Vector[CoreOperation]]](Right(Vector.empty)):
-        case (acc, (siteId, card)) => for
-          operations <- acc
-          suit <- catalog.suitOf(card.id).toRight(card match {
-            case denizen: DenizenState => OathViolation.UnknownWorldCard(denizen.id)
-            case edifice: EdificeState => OathViolation.UnknownEdifice(edifice.id)
-          })
-        yield card match
-          case denizen: DenizenState => operations :+ Discard.Denizen(denizen.id,
+      OathViolation.traverse(candidates(ready, site)) { (siteId, card) =>
+        catalog.suitOf(card.id).toRight(card match {
+          case denizen: DenizenState => OathViolation.UnknownWorldCard(denizen.id)
+          case edifice: EdificeState => OathViolation.UnknownEdifice(edifice.id)
+        }).map(suit => card match
+          case denizen: DenizenState => Vector(Discard.Denizen(denizen.id,
             PositionedLocation(Location.Site(siteId)), destination, suit,
             denizen.tokens.favor, denizen.tokens.secrets, active,
-            actorless = true, cause = Some(DiscardCause(id)))
+            actorless = true, cause = Some(DiscardCause(id))))
           case edifice: EdificeState if edifice.side == EdificeSide.Ruined =>
-            operations :+ Discard.RuinedEdifice(edifice.id,
+            Vector(Discard.RuinedEdifice(edifice.id,
               PositionedLocation(Location.Site(siteId)), suit,
               edifice.tokens.favor, edifice.tokens.secrets, active,
-              actorless = true, cause = Some(DiscardCause(id)))
-          case _ => operations
+              actorless = true, cause = Some(DiscardCause(id))))
+          case _ => Vector.empty)
+      }.map(_.flatten)
     }
 
   def contributions: Map[PowerWindow, Vector[Contribution]] =

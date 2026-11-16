@@ -87,9 +87,7 @@ object NegotiationStartFacts:
       if refs.contains(DecisionOptionRef.Button(HighPriestMarker)) then refs
       else refs :+ DecisionOptionRef.Button(HighPriestMarker)
     sections(complete).toRight(malformed(refs)).flatMap(parts =>
-      parts.foldLeft[Either[OathViolation, Vector[Vector[PlayerId]]]](
-        Right(Vector.empty))((done, part) =>
-        done.flatMap(lists => players(part, refs).map(lists :+ _))))
+      OathViolation.traverse(parts)(players(_, refs)))
       .map(lists => NegotiationStartFacts(lists(0), lists(1), lists(2),
         lists(3), lists(4), lists(5)))
 

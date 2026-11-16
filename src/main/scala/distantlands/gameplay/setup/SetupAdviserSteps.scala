@@ -138,15 +138,12 @@ object SetupAdviserSteps:
       revealed(ready, player, decisionId, pending.answered)
         .toRight(InvalidEventOrder(
           s"no reveal answer is recorded for $decisionId"))
-        .flatMap(_.foldLeft[Either[OathViolation, Vector[CoreOperation]]](
-          Right(Vector.empty)) { (done, card) =>
-          done.flatMap(operations => (card match
-            case vision: VisionId => CardPlay.operations(catalog, ready,
-              player, vision, SearchPlacement.Adviser(Orientation.FaceUp, None),
-              CardPlay.Origin.FacedownAdviser)
-            case other => Right(Vector(Reveal(other,
-              Location.PlayArea(player))))).map(operations ++ _))
-        })
+        .flatMap(cards => OathViolation.traverse(cards) {
+          case vision: VisionId => CardPlay.operations(catalog, ready,
+            player, vision, SearchPlacement.Adviser(Orientation.FaceUp, None),
+            CardPlay.Origin.FacedownAdviser)
+          case other => Right(Vector(Reveal(other, Location.PlayArea(player))))
+        }.map(_.flatten))
 
   /** The kept card to the advisers facedown, or buried under Oaths of
     * Loyalty (Legacy Chronicle powers design, ruling 16; R24), and the rest

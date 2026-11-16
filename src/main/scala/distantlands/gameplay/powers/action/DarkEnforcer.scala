@@ -42,13 +42,11 @@ case object DarkEnforcer extends PaidAction(DarkEnforcerCard.power):
   private def discards(catalog: ExecutableCatalog,
       ready: ReadyGame, player: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
-    ready.game.current.pawnSite(player).toVector.flatMap(here =>
-      cards.at(catalog, ready, here).map((card, suit) =>
-        cards.discard(ready, here, card, suit, player, required = false,
-          cause = Some(DiscardCause(id)))))
-      .foldLeft[Either[OathViolation, Vector[CoreOperation]]](
-        Right(Vector.empty))((done, next) =>
-        done.flatMap(ops => next.map(ops :+ _)))
+    OathViolation.traverse(ready.game.current.pawnSite(player).toVector
+      .flatMap(here => cards.at(catalog, ready, here).map(here -> _))) {
+        case (here, (card, suit)) => cards.discard(ready, here, card, suit,
+          player, required = false, cause = Some(DiscardCause(id)))
+      }
 
   /** The cards at the site before the step that are gone after it. None
     * gone names the site. */

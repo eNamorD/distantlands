@@ -93,9 +93,8 @@ case object SqualidDistrict
     for
       region <- CardPlay.discardRegion(ready, player).toRight(
         OathViolation.PawnSiteMissing(player))
-      discards <- held.foldLeft[Either[OathViolation, Vector[CoreOperation]]](
-        Right(Vector.empty))((acc, adviser) => acc.flatMap(done =>
-          discard(catalog, adviser.card, player, region).map(done :+ _)))
+      discards <- OathViolation.traverse(held)(adviser =>
+        discard(catalog, adviser.card, player, region))
     yield discards ++ drawn(ready, player, held.size)
 
   private def discard(catalog: ExecutableCatalog,
