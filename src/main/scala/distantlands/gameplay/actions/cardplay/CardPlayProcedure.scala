@@ -316,10 +316,10 @@ object CardPlayProcedure:
     case CardPlayedFacedown(_, _, by) => by.nonEmpty
     case _ => false
 
-  private val placementPrefix = "cardplay.place."
-  private val discardPrefix = "cardplay.discard."
+  val placementPrefix = "cardplay.place."
+  val discardPrefix = "cardplay.discard."
   private val replacedPrefix = "cardplay.replaced."
-  private val buryPrefix = "cardplay.bury."
+  val buryPrefix = "cardplay.bury."
 
   /** `card`'s placement decision id, `cardplay.place.{kind}.{value}` -- the
     * one place that spells it, so every reader agrees with `childrenFor`.
@@ -346,28 +346,31 @@ object CardPlayProcedure:
   val discardReplaced: DecisionOptionRef.Button =
     DecisionOptionRef.Button("discard")
 
-  /** The card whose placement was answered in `pending`, inverting
-    * [[placementDecisionId]]. The parse splits the remainder at the first
-    * '.' after the prefix: safe because no card kind contains a '.', whereas
-    * the value that follows may contain anything, '.' and ':' included.
-    * Takes the first recorded placement answer, which is right because a
-    * single-card Search (the settle path this exists for) records exactly
-    * one. `None` when nothing has answered a placement decision yet.
+  /** The card whose placement was answered in `pending`. Takes the first
+    * recorded placement answer, which is right because a single-card Search
+    * (the settle path this exists for) records exactly one. `None` when
+    * nothing has answered a placement decision yet.
     */
   def placedCard(pending: PendingTree): Option[WorldCardId] =
-    pending.answered.flatMap(answered => cardFor(answered.decisionId))
-      .headOption
+    pending.answered.map(_.decisionId).filter(_.startsWith(placementPrefix))
+      .flatMap(cardOf).headOption
 
-  private def cardFor(decisionId: String): Option[WorldCardId] =
-    Option.when(decisionId.startsWith(placementPrefix))(
-      decisionId.stripPrefix(placementPrefix)).flatMap { rest =>
-      val dot = rest.indexOf('.')
-      Option.when(dot >= 0)(rest.take(dot) -> rest.drop(dot + 1))
-    }.flatMap {
-      case ("denizen", value) => Some(DenizenId(value))
-      case ("vision", value) => Some(VisionId(value))
-      case _ => None
-    }
+  /** The card a card-play decision id names, inverting the four ids above;
+    * `None` for any other id. The parse splits the remainder at the first
+    * '.' after the prefix: safe because no card kind contains a '.', whereas
+    * the value that follows may contain anything, '.' and ':' included.
+    */
+  def cardOf(decisionId: String): Option[WorldCardId] =
+    Vector(placementPrefix, discardPrefix, replacedPrefix, buryPrefix)
+      .find(decisionId.startsWith).flatMap { prefix =>
+        val rest = decisionId.stripPrefix(prefix)
+        val dot = rest.indexOf('.')
+        Option.when(dot >= 0)(rest.take(dot) -> rest.drop(dot + 1))
+      }.flatMap {
+        case ("denizen", value) => Some(DenizenId(value))
+        case ("vision", value) => Some(VisionId(value))
+        case _ => None
+      }
 
   private def cardPlayOrigin(origin: Origin): CardPlay.Origin = origin match
     case Origin.TemporaryHand => CardPlay.Origin.TemporaryHand

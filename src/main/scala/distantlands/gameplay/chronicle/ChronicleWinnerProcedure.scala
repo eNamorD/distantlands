@@ -24,7 +24,6 @@ object ChronicleWinnerProcedure:
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     for
       _ <- ProcedureStart.noSelection("the final winner", args)
-      _ <- ready.game.current.result.toRight(
-        OathViolation.InvalidEventOrder("the game has no result"))
+      _ <- ChronicleTasks.winner(ready)
     yield Sequence(ChronicleWindows.step(PowerWindow.ChronicleFinalWinner,
       Vector.empty) +: ConspiratorReveal.steps)

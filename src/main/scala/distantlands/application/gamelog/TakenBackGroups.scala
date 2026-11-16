@@ -32,10 +32,5 @@ private[gamelog] final class TakenBackGroups(words: LogWords):
   /** "p1 took back the following moves:", naming `players` as "p1 and p2"
     * or "p1, p2 and p3". */
   private def header(players: Vector[PlayerId]): Vector[LogSpan] =
-    val names = players.map(words.player)
-    val listed = names match
-      case Vector(only) => Vector(only)
-      case _ => names.init.zipWithIndex.flatMap { (name, index) =>
-        if index == 0 then Vector(name) else Vector(Text(", "), name)
-      } ++ Vector(Text(" and "), names.last)
-    listed :+ Text(" took back the following moves:")
+    LogWords.join(players.map(player => Vector(words.player(player)))) :+
+      Text(" took back the following moves:")

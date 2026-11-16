@@ -53,7 +53,6 @@ object PowerWindow:
   case object ChallengeActionEligibility extends ChallengeWindow { val key = "challenge.action-eligibility" }
   case object ChallengeModifierSelection extends ChallengeWindow { val key = "challenge.modifier-selection" }
   case object WakeTakeWealth extends OtherWindow { val key = "wake.take-wealth" }
-  case object WakeBoundary extends OtherWindow { val key = "wake.boundary" }
   /** A card played faceup, to a site or as a faceup adviser. The key is the
     * one the single played-card window always had, so reviewed data and
     * fingerprints do not change.
@@ -63,8 +62,6 @@ object PowerWindow:
   /** A card placed facedown as an adviser, a denizen or a Vision. */
   case object ActionCardPlayedFacedown extends OtherWindow:
     val key = "action.card-played-facedown"
-  case object ActionAfterMajorAction extends OtherWindow:
-    val key = "action.after-major-action"
   case object SearchCost extends SearchWindow { val key = "search.cost" }
   case object SearchBeforeDraw extends SearchWindow { val key = "search.before-draw" }
   case object SearchPlayAdviser extends SearchWindow:
@@ -287,7 +284,6 @@ object PowerWindow:
     * beside its Setup window, so one contribution serves both.
     */
   case object WhenExplored extends OtherWindow { val key = "explore.when-explored" }
-  case object NegotiationOffer extends OtherWindow { val key = "negotiation.offer" }
   case object NegotiationEligibility extends OtherWindow:
     val key = "negotiation.eligibility"
   case object NegotiationSettlement extends OtherWindow:

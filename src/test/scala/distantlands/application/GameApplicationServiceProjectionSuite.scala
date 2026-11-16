@@ -17,7 +17,7 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer,
   PartitionAnswer}
 import distantlands.server.GameHttpWire
-import distantlands.gameplay.setup.{SetupAdviserSteps, SetupLegacyFixture,
+import distantlands.gameplay.setup.{LegacyKeep, SetupAdviserSteps, SetupLegacyFixture,
   SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.model.OathState.Ready
@@ -333,7 +333,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
       placed: GameAccepted)(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, placed.nextSequence,
       Commands.resolveWalker(firstPlayer, TreeDecision(
-        SetupProcedure.legacyDecisionId(firstPlayer),
+        LegacyKeep.decisionId(firstPlayer),
         ChooseOneAnswer(DecisionOptionRef.Legacy(
           drawnLegacies(firstPlayer).head))))))
 

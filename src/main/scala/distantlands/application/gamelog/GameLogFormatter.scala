@@ -322,10 +322,10 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
   private def victory(player: PlayerId, rest: Vector[LogSpan]): Posted =
     Posted(LogKind.Victory, words.player(player) +: rest)
 
-  /** "The end die rolled 4. Stable Regime needed 5 or more." The die is
-    * rolled only at rounds 5 to 7, which all have a threshold. */
-  /** The roll, and with Arbiter's modifier the total (Legacy in-play
-    * powers R12), then what Stable Regime needed. */
+  /** "The end die rolled 4. Stable Regime needed 5 or more.": the roll,
+    * and with Arbiter's modifier the total (Legacy in-play powers R12),
+    * then what Stable Regime needed. The die is rolled only at rounds 5 to
+    * 7, which all have a threshold. */
   private def endDie(round: Int, face: Int, modifier: Int): String =
     val needed = EmpireEndings.threshold(round).fold("")(least =>
       s" Stable Regime needed $least${if least == 6 then "" else " or more"}.")

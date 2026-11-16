@@ -4,6 +4,12 @@ import distantlands.model._
 
 sealed trait OathViolation extends Product with Serializable
 object OathViolation:
+  /** `f` over `items` in order, stopping at the first refusal. */
+  def traverse[A, B](items: Iterable[A])(f: A => Either[OathViolation, B])
+      : Either[OathViolation, Vector[B]] =
+    items.foldLeft[Either[OathViolation, Vector[B]]](Right(Vector.empty))(
+      (done, item) => done.flatMap(values => f(item).map(values :+ _)))
+
   final case class CoreOperationRejected(code: String, detail: String)
       extends OathViolation
   /** A required operation a waivable restriction refused (consent design,

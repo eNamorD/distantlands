@@ -96,17 +96,13 @@ case object SaltTheEarth extends DenizenPlan(SaltTheEarthCard,
           case held: EdificeState => BuryableCard.Edifice(held.id) -> held.tokens
         } ++ state.relics.map(held =>
           BuryableCard.Relic(held.id) -> held.tokens))
-    cards.foldLeft[Either[OathViolation, Vector[CoreOperation]]](
-        Right(Vector.empty)) { case (done, (card, tokens)) =>
+    OathViolation.traverse(cards) { (card, tokens) =>
       val suit = catalog.suitOf(card.id)
-      for
-        earlier <- done
-        _ <- Either.cond(tokens.favor == 0 || suit.isDefined, (),
-          OathViolation.InvalidEventOrder(
-            s"no suit is known for ${card.id.value}"))
-      yield earlier ++ Bury.standard(card, from, suit, tokens.favor,
-        tokens.secrets, actor)
-    }
+      Either.cond(tokens.favor == 0 || suit.isDefined,
+        Bury.standard(card, from, suit, tokens.favor, tokens.secrets, actor),
+        OathViolation.InvalidEventOrder(
+          s"no suit is known for ${card.id.value}"))
+    }.map(_.flatten)
 
   /** The cards that left the salted site in the step before. */
   private def buriedNote(targets: Vector[SiteId])(states: NoteStates)

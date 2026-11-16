@@ -2,15 +2,12 @@ package distantlands.frontend
 
 import distantlands.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
 import org.scalajs.dom
+import ServerUiSupport.playerDisplayName
 
 /** Asking for consent from the table (consent design, user story steps 1
   * and 2). The projection names players by id; this words their display
   * names. */
 private[frontend] object ConsentAsking:
-  def name(value: GameProjection, playerId: String): String =
-    value.players.find(_.playerId == playerId).map(_.displayName)
-      .getOrElse(playerId)
-
   /** "A", "A and B", "A, B and C". */
   def listed(words: Vector[String]): String = words match
     case Vector() => ""
@@ -24,9 +21,9 @@ private[frontend] object ConsentAsking:
     * then the alternatives. */
   def question(value: GameProjection, ask: ConsentAskState): String =
     val ignoring = Option.when(ask.granterPlayerIds.nonEmpty)(
-      s"${listed(ask.granterPlayerIds.map(name(value, _)))} for consent " +
+      s"${listed(ask.granterPlayerIds.map(playerDisplayName(value, _)))} for consent " +
         s"to ignore ${listed(ask.powers)}")
-    val payers = ask.payers.map(payer => name(value, payer.granterPlayerId))
+    val payers = ask.payers.map(payer => playerDisplayName(value, payer.granterPlayerId))
     val paying = Option.when(payers.nonEmpty)(s"${listed(payers)} to pay " +
       s"for ${listed(ask.payers.flatMap(_.powers).distinct)}")
     val either = Option.when(ask.alternatives.nonEmpty)(
@@ -44,7 +41,7 @@ private[frontend] object ConsentAsking:
           else listed(alt.powers)
         val verb = if alt.paying then s"to pay for $powers"
           else s"to waive $powers"
-        (parts :+ s"${name(value, alt.granterPlayerId)} $verb",
+        (parts :+ s"${playerDisplayName(value, alt.granterPlayerId)} $verb",
           Some(alt.powers))
     }._1.mkString(" or ")
 
@@ -62,7 +59,7 @@ private[frontend] object ConsentAsking:
       val required = ask.granterPlayerIds ++
         ask.payers.map(_.granterPlayerId)
       val one = ask.alternatives.map(alt => AskChoice(
-        s"Ask ${listed((required :+ alt.granterPlayerId).map(name(value, _)))}",
+        s"Ask ${listed((required :+ alt.granterPlayerId).map(playerDisplayName(value, _)))}",
         Vector(alt.granterPlayerId)))
       val all = AskChoice(if required.isEmpty && ask.alternatives.size == 2
         then "Ask both" else "Ask all", Vector.empty)

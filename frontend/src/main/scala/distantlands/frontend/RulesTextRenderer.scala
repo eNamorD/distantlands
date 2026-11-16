@@ -9,7 +9,6 @@ import org.scalajs.dom
   * per-power blocks. Six cards in the catalog have more than one power.
   */
 private[frontend] object RulesTextRenderer:
-  private val Svg = "http://www.w3.org/2000/svg"
   private val Token = """\[([a-z0-9-]+)\]""".r
   // Lookbehind needs ES2018, which this build's JS target does not enable, so
   // the left word-boundary check for `_italic_` is done by hand below instead
@@ -19,11 +18,11 @@ private[frontend] object RulesTextRenderer:
   private def isWordChar(value: Char): Boolean = value.isLetterOrDigit || value == '_'
 
   def glyph(token: String): dom.Element =
-    val node = dom.document.createElementNS(Svg, "svg")
+    val node = ServerUiSupport.svgElement("svg")
     node.setAttribute("class", s"token-glyph token-$token")
     node.setAttribute("role", "img")
     node.setAttribute("aria-label", TokenSprite.label(token))
-    val use = dom.document.createElementNS(Svg, "use")
+    val use = ServerUiSupport.svgElement("use")
     use.setAttribute("href", s"#token-$token")
     node.appendChild(use)
     node

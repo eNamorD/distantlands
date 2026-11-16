@@ -67,11 +67,9 @@ object ForcedWakeProcedure:
     found = due(catalog, ready, player, powers)
     _ <- Either.cond(found.nonEmpty, (), OathViolation.InvalidEventOrder(
       "no forced Wake power is due"))
-    trees <- found.foldLeft[Either[OathViolation, Vector[Operation]]](
-      Right(Vector.empty)) { case (built, (power, source)) =>
-      built.flatMap(done => power.build(catalog, ready, player, source)
-        .map(tree => done :+ DecisionOptionRef.cardOf(source).fold(tree)(
-          card => AutomaticUse(player, power.id, card,
-            (_, _) => Vector(tree)))))
+    trees <- OathViolation.traverse(found) { (power, source) =>
+      power.build(catalog, ready, player, source).map(tree =>
+        DecisionOptionRef.cardOf(source).fold(tree)(card =>
+          AutomaticUse(player, power.id, card, (_, _) => Vector(tree))))
     }
   yield Sequence(trees)

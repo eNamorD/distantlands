@@ -137,34 +137,6 @@ Left behind by the
   only during Setup. Both are covered by tests only. The journaled
   arranged start would seed them.
 
-Left behind by the hygiene pass of 2026-11-15. Each item edits a file that
-catalog batch 13 slice 4 also edits, so it waits until that slice merges:
-
-- [ ] **Remove the Setup forwarders.** `SetupProcedure.keptLegacy` and
-  `SetupProcedure.legacyDecisionId` forward to `LegacyKeep` (20 references,
-  one in `ProcedureLog`, the rest in tests), and
-  `LegacySetupPowers.startNotes` forwards to `StartLines.operations` (one
-  caller). Callers name the owner directly.
-- [ ] **Read Setup's single answers through `PowerAnswers`.**
-  `SetupProcedure.takeRelic`, `SetupProcedure.siteAnswer` and
-  `LegacyKeep.settled` each find a `ChooseOneAnswer` by decision id and
-  word their own refusal. `PowerAnswers.one` and `PowerAnswers.missing`
-  already do this for the Chronicle.
-- [ ] **Delete the three unused power windows.** `PowerWindow.WakeBoundary`,
-  `ActionAfterMajorAction` and `NegotiationOffer` have no reference outside
-  `PowerWindow.scala`, and their keys appear in no code or journal.
-- [ ] **Parse card-play decision ids in one place.** `CardPlayProcedure`
-  spells the ids and keeps a private `cardFor`; `LogWords.subjectCard` and
-  `WalkerDecisionProjector.subjectCards` parse them again, and
-  `ProcedureLog` spells `"cardplay.discard."` three times. Make the owner's
-  prefixes and parser public and delete the copies.
-- [ ] **Drop `LogJournal`'s `applied` default.** Production passes it; only
-  `GameLogPropertiesSuite` relies on the default.
-- [ ] **One traverse for `OathViolation`.** Fifteen hand-written
-  `foldLeft[Either[OathViolation, Vector ...]]` folds across fourteen files,
-  plus the private copies `ChronicleExtraction.all` and `CardPlay.each`.
-  One shared function replaces them.
-
 ### Phase - Campaign battle summary
 
 Left out of the Game Log action sections

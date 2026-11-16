@@ -215,7 +215,7 @@ enum VictoryKind(val key: String):
 /** `visions` is a Visionary win's qualifying Visions, which Swear an Oath
   * reads (catalog batch 11, ruling 30); empty for every other win. */
 final case class GameResult(winner: PlayerId,
-    kind: VictoryKind = VictoryKind.Usurper,
+    kind: VictoryKind,
     visions: Vector[VisionId] = Vector.empty)
 
 /** One pick a pick-and-pay menu took in the current walk: a battle plan or a

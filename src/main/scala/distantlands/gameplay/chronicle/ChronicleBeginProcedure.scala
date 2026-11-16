@@ -22,10 +22,9 @@ object ChronicleBeginProcedure:
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
     for
       _ <- ProcedureStart.noSelection("Start Chronicle", args)
-      result <- ready.game.current.result.toRight(
-        OathViolation.InvalidEventOrder("the game has no result"))
+      winner <- ChronicleTasks.winner(ready)
     yield Sequence(Vector(
-      Decide(decisionId, result.winner, DecisionQuery.ChooseOne(
+      Decide(decisionId, winner, DecisionQuery.ChooseOne(
         Vector(DecisionOption.Button(start, heading)),
         heading = Some(heading)),
         presentation = DecisionPresentation.Panel),

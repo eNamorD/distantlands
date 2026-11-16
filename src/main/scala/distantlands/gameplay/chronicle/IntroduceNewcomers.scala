@@ -43,36 +43,34 @@ object IntroduceNewcomers:
         Decide(suitDecisionId(draws(at)), holder, DecisionQuery.ChooseOne(
           // Only the suits chosen before this one are gone: on a resume
           // every answer is already recorded, this one's included.
-          Suit.all.filterNot(chosen(pending).take(at).contains).map(suit =>
-            DecisionOption.FavorBank(DecisionOptionRef.FavorBank(suit))),
+          Suit.all.filterNot(chosen(pending.answered).take(at).contains)
+            .map(suit =>
+              DecisionOption.FavorBank(DecisionOptionRef.FavorBank(suit))),
           heading = Some(s"Choose the suit to draw ${draws(at)} from"))))))) ++
     Vector(
       Branch((state, pending) =>
         ChronicleTasks.forHolder(state, ChronicleTask.Beacon)(holder =>
-          Vector(Note(noteId, _ => chosen(pending) match
+          Vector(Note(noteId, _ => chosen(pending.answered) match
             case Vector(first, second, third) => Some(choseSuits.sourceless(
               NoteArg.Player(holder), NoteArg.SuitName(first),
               NoteArg.SuitName(second), NoteArg.SuitName(third)))
             case _ => None)))),
-      BuildOps((state, pending) => fromBox(catalog, state, chosen(pending)),
-        required = true),
+      BuildOps((state, pending) =>
+        fromBox(catalog, state, chosen(pending.answered)), required = true),
       Note(noteId, states => Option.when(
         short(states.now, chosen(states.answered)) &&
           returning(states.now).nonEmpty)(
         returned.sourceless(NoteArg.Cards(returning(states.now))))),
       BuildOps((state, pending) => Right(returnIfShort(catalog, state,
-        chosen(pending))), required = true),
+        chosen(pending.answered))), required = true),
       // One shuffle leaf per suit; the walker fills each order.
-      Branch((_, pending) => chosen(pending).map(suit =>
+      Branch((_, pending) => chosen(pending.answered).map(suit =>
         Shuffle(ShufflePile.SuitedReserve(suit)))),
       BuildOps((state, pending) =>
         ChronicleTasks.holder(state, ChronicleTask.Beacon).map(holder =>
-          draw(state, holder, chosen(pending))), required = true))
+          draw(state, holder, chosen(pending.answered))), required = true))
 
   /** The suits answered so far, in draw order. */
-  private def chosen(pending: PendingTree): Vector[Suit] =
-    chosen(pending.answered)
-
   private def chosen(answered: Vector[Answered]): Vector[Suit] =
     draws.flatMap(count => answered.collectFirst {
       case Answered(id, DecisionAnswer.ChooseOneAnswer(

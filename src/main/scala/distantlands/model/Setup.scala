@@ -26,7 +26,7 @@ final case class SetupOrders(
     denizenOrder: Vector[DenizenId],
     worldDeckOrder: Vector[WorldCardId],
     relicOrder: Vector[RelicId],
-    legacyOrder: Vector[LegacyId] = Vector.empty
+    legacyOrder: Vector[LegacyId]
 )
 
 /** `ignoreCitizenshipPowers` is the first-game option that ignores

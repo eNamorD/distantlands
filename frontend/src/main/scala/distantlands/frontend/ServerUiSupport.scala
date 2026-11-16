@@ -286,45 +286,28 @@ private[frontend] object ServerUiSupport:
       value: GameProjection,
       playerId: String
   ): ViewerPresentation =
-    // A finished game hides every control, except for a walk parked after
-    // it: the winner's Start Chronicle decision, and the Chronicle's own.
-    if value.oathkeeper.exists(_.winnerPlayerId.nonEmpty) &&
-        value.walkerDecision.isEmpty && value.walkerWaiting.isEmpty then
-      return ViewerPresentation(showGameplayControls = false,
-        waitingForPlayerIds = Vector.empty, waitingForDisplayNames = Vector.empty,
-        playerId = playerId)
-    // A parked walker `Decide`'s owner is projected `walkerDecision`
-    // regardless of whose turn it is, and everyone else is projected
-    // `walkerWaiting` naming every player who may answer (see
-    // WalkerDecisionProjector.project/waiting). Reading `activeParticipantId` below instead of these two
-    // fields would leave an off-turn owner with no panel -- and the active
-    // player waiting on them right back -- since neither side is the other's
-    // active participant.
-    if value.walkerDecision.nonEmpty then
-      return ViewerPresentation(showGameplayControls = true,
-        waitingForPlayerIds = Vector.empty, waitingForDisplayNames = Vector.empty,
-        playerId = playerId)
-    if value.walkerWaiting.nonEmpty then
-      return ViewerPresentation(showGameplayControls = false,
-        waitingForPlayerIds = value.walkerWaiting.fold(Vector.empty)(_.playerIds),
-        waitingForDisplayNames = value.walkerWaiting.fold(Vector.empty)(
-          _.playerIds.map(playerDisplayName(value, _))),
-        playerId = playerId)
-    val controllingPlayer = value.activeParticipantId
-    controllingPlayer match
-      case Some(activePlayerId) if activePlayerId != playerId =>
-        ViewerPresentation(
-          showGameplayControls = false,
-          waitingForPlayerIds = Vector(activePlayerId),
-          waitingForDisplayNames = Vector(playerDisplayName(value, activePlayerId)),
-          playerId = playerId
-        )
-      case _ => ViewerPresentation(
-        showGameplayControls = true,
-        waitingForPlayerIds = Vector.empty,
-        waitingForDisplayNames = Vector.empty,
-        playerId = playerId
-      )
+    val finished = value.oathkeeper.exists(_.winnerPlayerId.nonEmpty) &&
+      value.walkerDecision.isEmpty && value.walkerWaiting.isEmpty
+    val (showGameplayControls, waitingFor) =
+      // A finished game hides every control, except for a walk parked after
+      // it: the winner's Start Chronicle decision, and the Chronicle's own.
+      if finished then (false, Vector.empty[String])
+      // A parked walker `Decide`'s owner is projected `walkerDecision`
+      // regardless of whose turn it is, and everyone else is projected
+      // `walkerWaiting` naming every player who may answer (see
+      // WalkerDecisionProjector.project/waiting). Reading
+      // `activeParticipantId` instead of these two fields would leave an
+      // off-turn owner with no panel -- and the active player waiting on
+      // them right back -- since neither side is the other's active
+      // participant.
+      else if value.walkerDecision.nonEmpty then (true, Vector.empty[String])
+      else value.walkerWaiting match
+        case Some(waiting) => (false, waiting.playerIds)
+        case None => value.activeParticipantId match
+          case Some(active) if active != playerId => (false, Vector(active))
+          case _ => (true, Vector.empty[String])
+    ViewerPresentation(showGameplayControls, waitingFor,
+      waitingFor.map(playerDisplayName(value, _)), playerId)
 
   /** A banner's printed name from its key. */
   private[frontend] def bannerLabel(key: String): String = key match
@@ -332,13 +315,13 @@ private[frontend] object ServerUiSupport:
     case "darkest-secret" => "Darkest Secret"
     case other => other
 
-  private[frontend] def winnerColorClass(value: GameProjection,
+  private[frontend] def playerColorClass(value: GameProjection,
       playerId: String): String =
     PlayerColorCss.of(value.players.find(_.playerId == playerId).map(_.color))
 
   private[frontend] def winnerBanner(value: GameProjection,
       winner: String, victory: String): dom.Element =
-    val banner = element("div", s"victory-banner ${winnerColorClass(value, winner)}")
+    val banner = element("div", s"victory-banner ${playerColorClass(value, winner)}")
     banner.setAttribute("role", "status")
     banner.appendChild(playerReference(value, winner))
     banner.appendChild(dom.document.createTextNode(s" wins — $victory"))
@@ -436,6 +419,9 @@ private[frontend] object ServerUiSupport:
     val node = element(tag, className)
     node.textContent = value
     node
+
+  private[frontend] def svgElement(tag: String): dom.Element =
+    dom.document.createElementNS("http://www.w3.org/2000/svg", tag)
 
   private[frontend] def element(tag: String, className: String): dom.Element =
     val node = dom.document.createElement(tag)

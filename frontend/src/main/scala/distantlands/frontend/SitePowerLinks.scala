@@ -2,7 +2,7 @@ package distantlands.frontend
 
 import distantlands.protocol.{GameIntent => GameCommand}
 import org.scalajs.dom
-import ServerUiSupport.{button, element, text}
+import ServerUiSupport.{button, element, playerDisplayName, text}
 
 /** The viewer's consent preferences for one power they rule (ruling 16):
   * a row per other player, and what choosing a setting does. Without
@@ -31,7 +31,7 @@ private[frontend] final class SitePowerLinks(value: Option[GameProjection],
   private def gridOf(preferences: ConsentPreferencesState)
       : Option[ConsentGrid] =
     value.map(projection => ConsentGrid(preferences.rows.map(row =>
-        ConsentGridRow(row.playerId, ConsentAsking.name(projection,
+        ConsentGridRow(row.playerId, playerDisplayName(projection,
           row.playerId), row.setting)),
       submit.map(send => (requester, setting) =>
         send(GameCommand.SetConsentPreference(preferences.powerId, requester,

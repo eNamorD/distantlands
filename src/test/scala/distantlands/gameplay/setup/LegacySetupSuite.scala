@@ -64,7 +64,7 @@ class LegacySetupSuite extends munit.FunSuite:
 
   private def legacyQuestions(asked: Vector[Decide]): Vector[Decide] =
     asked.filter(decide =>
-      decide.decisionId == SetupProcedure.legacyDecisionId(decide.owner))
+      decide.decisionId == LegacyKeep.decisionId(decide.owner))
 
   test("in a first game each player keeps one dormant legacy and returns " +
       "the other to the deck"):
@@ -89,7 +89,7 @@ class LegacySetupSuite extends munit.FunSuite:
     var asked = Vector.empty[Decide]
     val keepSecond: Answers =
       case park if park.decisionId ==
-          SetupProcedure.legacyDecisionId(park.awaiting) =>
+          LegacyKeep.decisionId(park.awaiting) =>
         asked = asked :+ park.decide
         DecisionAnswer.ChooseOneAnswer(
           as[DecisionQuery.ChooseOne](park.decide.query).options(1).ref)
@@ -130,7 +130,7 @@ class LegacySetupSuite extends munit.FunSuite:
     assertEquals(holding(third), Vector(LegacyState(b, active = false)))
     assertEquals(setup.ready.game.current.commonCards.legacyDeck, Vector.empty)
     val kept = notes(setup.events).filter(_.key ==
-      SetupProcedure.keptLegacy.name).map(_.args)
+      LegacyKeep.keptLegacy.name).map(_.args)
     assertEquals(kept.toSet, seats.map(seat =>
       Vector[NoteArg](NoteArg.Player(seat.playerId))).toSet)
 
@@ -150,7 +150,7 @@ class LegacySetupSuite extends munit.FunSuite:
   test("each player's keep is logged naming the player and no card"):
     val setup = FirstGameSetupFixture.setupThroughWake()
     val kept = notes(setup.events).filter(_.key ==
-      SetupProcedure.keptLegacy.name)
+      LegacyKeep.keptLegacy.name)
     assertEquals(kept.map(_.args).toSet,
       seats.map(seat => Vector[NoteArg](NoteArg.Player(seat.playerId))).toSet)
     assertEquals(kept.size, seats.size)
@@ -165,7 +165,7 @@ class LegacySetupSuite extends munit.FunSuite:
   private def keepsAndPawns(setup: SetupWalkDriver.SetupWalked)
       : Vector[String] =
     setup.asked.map(_.decisionId).filter(id => seats.exists(seat =>
-      id == SetupProcedure.legacyDecisionId(seat.playerId) ||
+      id == LegacyKeep.decisionId(seat.playerId) ||
         id == SetupProcedure.pawnDecisionId(seat.playerId)))
 
   test("in a first game each player keeps right after placing their pawn " +
@@ -174,7 +174,7 @@ class LegacySetupSuite extends munit.FunSuite:
     assertEquals(keepsAndPawns(walked(ready)),
       inTurnOrder(orders.firstPlayer).flatMap(player => Vector(
         SetupProcedure.pawnDecisionId(player),
-        SetupProcedure.legacyDecisionId(player))))
+        LegacyKeep.decisionId(player))))
 
   test("in a later game every seat keeps while Foundation III resolves, " +
       "in turn order, before any pawn (catalog batch 13, ruling 3)"):
@@ -188,7 +188,7 @@ class LegacySetupSuite extends munit.FunSuite:
           LaterGameFixture.orders(record, first)))
         val order = inTurnOrder(first)
         assertEquals(keepsAndPawns(walked(ready)),
-          order.map(SetupProcedure.legacyDecisionId) ++
+          order.map(LegacyKeep.decisionId) ++
             order.map(SetupProcedure.pawnDecisionId), first)
       }
 
@@ -206,7 +206,7 @@ class LegacySetupSuite extends munit.FunSuite:
     assertEquals(keepsAndPawns(walked(ready)),
       inTurnOrder(first).flatMap(player => Vector(
         SetupProcedure.pawnDecisionId(player),
-        SetupProcedure.legacyDecisionId(player))))
+        LegacyKeep.decisionId(player))))
 
   test("in a later game the keeps follow the banks and come before the " +
       "world deck: Populist asks first and Seer after"):
@@ -219,7 +219,7 @@ class LegacySetupSuite extends munit.FunSuite:
     Situation.wake(Situation.productionRules(catalog).withAnswers(recording),
       record, LaterGameFixture.orders(record, seats.head.playerId))
     val keeps = seats.map(seat => asked.indexOf(
-      SetupProcedure.legacyDecisionId(seat.playerId)))
+      LegacyKeep.decisionId(seat.playerId)))
     assert(keeps.forall(_ >= 0), asked)
     val populist = asked.indexOf(Populist.decisionId(holder.playerId))
     val seer = asked.indexOf(Seer.decisionId(holder.playerId))

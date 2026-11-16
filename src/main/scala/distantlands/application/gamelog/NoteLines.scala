@@ -181,17 +181,12 @@ private[gamelog] final class NoteLines(words: LogWords,
       Text("set aside ") +: words.cards(ids.map(words.seen(_, seen, viewer)))
 
   /** The "Used {card}" fallback, for a power that writes no `used` note of
-    * its own. */
+    * its own: at the first step recording one of the power's own effects, a
+    * step that is not only the payment onto its card or to the bank, and
+    * not only the use record. At completion if it recorded none. */
   def usePowerLines(power: PowerId)(journal: LogJournal, run: Run, at: Int,
       viewer: Option[PlayerId]): Vector[Posted] =
-    usedPower(journal, run, at, power,
-      journal.event(at).isInstanceOf[WalkerCompleted], viewer)
-
-  /** "Used {card}" at the first step recording one of the power's own
-    * effects: a step that is not only the payment onto its card or to the
-    * bank, and not only the use record. At completion if it recorded none. */
-  private def usedPower(journal: LogJournal, run: Run, at: Int, power: PowerId,
-      completing: Boolean, viewer: Option[PlayerId]): Vector[Posted] =
+    val completing = journal.event(at).isInstanceOf[WalkerCompleted]
     val postedEarlier = (run.first until at).exists(effect(journal, run, _))
     if postedEarlier || !(effect(journal, run, at) || completing) ||
         journal.notedUse(run, power, at) then Vector.empty

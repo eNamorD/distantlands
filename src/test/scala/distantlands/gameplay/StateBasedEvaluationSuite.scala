@@ -157,7 +157,8 @@ class StateBasedEvaluationSuite extends munit.FunSuite:
     turnOrder.tail.foreach(finishTurn)
 
     val won = Outcomes.ready(state)
-    assertEquals(won.game.current.result, Some(GameResult(holder)))
+    assertEquals(won.game.current.result,
+      Some(GameResult(holder, VictoryKind.Usurper)))
     // The win is the last table event; the winner's Start Chronicle
     // decision parks after it.
     assertEquals(events.collect { case won: UsurperVictory => won }.lastOption,

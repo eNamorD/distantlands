@@ -330,7 +330,7 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
     // run in Foundation III (catalog batch 13, ruling 3).
     val asked = decisionsAskedDuringSetup(teemingWorldChronicle)
     assertEquals(asked, Vector(p1, p2, p3).map(
-      SetupProcedure.legacyDecisionId) ++ Vector(p1, p2, p3).flatMap(player =>
+      LegacyKeep.decisionId) ++ Vector(p1, p2, p3).flatMap(player =>
       Vector(SetupProcedure.pawnDecisionId(player),
         SetupProcedure.revealDecisionId(player))))
 

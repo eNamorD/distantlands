@@ -38,8 +38,8 @@ object ShapeEmpire:
       case None => Vector(ChronicleTasks.failing(OathViolation
         .InvalidEventOrder(s"${holder.value} has no warbands")))
       case Some(kind) =>
-        val ruled = current.map.inPlay.filter(ChronicleTasks.rules(state,
-          holder, _)).flatMap(site => current.map.sites(site).forces match
+        val ruled = ChronicleTasks.ruled(state, holder).flatMap(site =>
+          current.map.sites(site).forces match
             case SiteForces.Occupied(`kind`, count) => Some(site -> count)
             case _ => None)
         if ruled.isEmpty then fallback(state, holder, kind)

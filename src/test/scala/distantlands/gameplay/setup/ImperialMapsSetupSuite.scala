@@ -67,7 +67,7 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
   /** The suit of every denizen on `ready`'s map, edifices included. */
   private def suitsOnMap(ready: ReadyGame): Vector[Suit] =
     ready.game.current.map.sites.values.flatMap(_.denizens)
-      .flatMap(AtlasPlacement.suitOf(catalog, _)).toVector
+      .flatMap(card => catalog.suitOf(card.id)).toVector
 
   private val atlasSites: Vector[SiteId] =
     chronicleWithGreatSlumAtForgottenEnd.atlasBox.map(_.site)
@@ -268,7 +268,7 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
     val begun = Situation.start(Situation.rules(catalog))
       .parkedAfter(GameCommand.Begin(record, orders(record)))
     assertEquals(parkedDecide(begun).decisionId,
-      SetupProcedure.legacyDecisionId(p1))
+      LegacyKeep.decisionId(p1))
     assertEquals(begun.ready.game.current.map.hinterward,
       (record.world ++ record.atlasBox).map(_.site))
     assertEquals(begun.events.collect {
@@ -298,7 +298,7 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
     val begun = Situation.start(Situation.rules(catalog))
       .parkedAfter(GameCommand.Begin(record, orders(record)))
     assertEquals(parkedDecide(begun).decisionId,
-      SetupProcedure.legacyDecisionId(p1))
+      LegacyKeep.decisionId(p1))
     assert(!begun.events.exists {
       case LogNoted(_, note, _) => ImperialMaps.noteKeys.exists(
         _.name == note.key)
@@ -316,9 +316,9 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
     val firstGame = FirstGameSetupFixture.chronicle
     Vector(
       (wideHorizons, orders(wideHorizons), empireSites,
-        SetupProcedure.legacyDecisionId(p1)),
+        LegacyKeep.decisionId(p1)),
       (noEmpire, orders(noEmpire), empireSites,
-        SetupProcedure.legacyDecisionId(p1)),
+        LegacyKeep.decisionId(p1)),
       (firstGame, FirstGameSetupFixture.orders,
         firstGame.atlasBox.map(_.site),
         SetupProcedure.pawnDecisionId(FirstGameSetupFixture.firstPlayer)))

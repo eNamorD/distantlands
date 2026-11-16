@@ -113,17 +113,20 @@ final class GameApplicationService(
     rules.powerUseStep(state).nonEmpty)
   private val log = new gamelog.GameLogFormatter(catalog, presentation)
 
-  /** Derives a validated initial journal and state without accessing storage. */
+  /** Derives a validated initial journal and state without accessing
+    * storage. Begin's journal is built against the rules' initial state: it
+    * has no `CommandAccepted`. */
   def prepareBootstrap(
       gameId: String,
       chronicle: Chronicle,
       orders: SetupOrders
   ): Either[GameApplicationError, PreparedGameBootstrap] =
-    prepareTransition(gameId, rules.initialState,
-      GameCommand.Begin(chronicle, orders),
-      0L)
-      .map { case (transition, records) => PreparedGameBootstrap(
-        records, transition.state, transition.events) }
+    for
+      transition <- applyCommand(rules.initialState,
+        GameCommand.Begin(chronicle, orders), 0L)
+        .left.map(CommandRejected.apply)
+      records <- encode(gameId, 0L, transition.events)
+    yield PreparedGameBootstrap(records, transition.state, transition.events)
 
   /** Privileged development support. Never include this in a player projection. */
   def rawEventHistory(
@@ -239,7 +242,7 @@ final class GameApplicationService(
         val events = OathEvent.ConsentRequestWithdrawn(request.requester) +:
           chain.map(batch =>
             OathEvent.StepTakenBack(batch.from, batch.until, actor))
-        appendBatch(gameId, journal, events, events, expected, nextSequence)
+        appendBatch(gameId, journal, events, expected, nextSequence)
 
   /** A consent command's events, appended as one batch. Any batch opening
     * among them is left out of the reported events, as it is for every
@@ -249,8 +252,7 @@ final class GameApplicationService(
       expected: ExpectedStream, nextSequence: Long)
       : Either[GameApplicationError, GameAccepted] =
     events.left.map(CommandRejected.apply).flatMap(appended =>
-      appendBatch(gameId, journal, appended, appended.filterNot(
-        _.isInstanceOf[OathEvent.CommandAccepted]), expected, nextSequence))
+      appendBatch(gameId, journal, appended, expected, nextSequence))
 
   private def reconstruct(
       gameId: String,
@@ -333,10 +335,8 @@ final class GameApplicationService(
         .left.map(CommandRejected.apply)
       appended = issuer.map(OathEvent.CommandAccepted(_)).toVector ++
         transition.events ++ opened
-      accepted <- appendBatch(gameId, journal, appended,
-        transition.events ++ opened.filterNot(
-          _.isInstanceOf[OathEvent.CommandAccepted]),
-        expected, nextSequence)
+      accepted <- appendBatch(gameId, journal, appended, expected,
+        nextSequence)
     yield accepted
 
   /** Appends the markers that take back the latest live batches, and
@@ -355,7 +355,7 @@ final class GameApplicationService(
           OathViolation.UndoNotIssuer(actor, batch.issuer))))
       markers = chain.map(batch =>
         OathEvent.StepTakenBack(batch.from, batch.until, actor))
-      accepted <- appendBatch(gameId, journal, markers, markers, expected,
+      accepted <- appendBatch(gameId, journal, markers, expected,
         nextSequence)
     yield accepted
 
@@ -379,21 +379,19 @@ final class GameApplicationService(
       reopened <- consent.opened(restored.state, actor)
         .left.map(CommandRejected.apply)
       events = markers ++ reopened
-      accepted <- appendBatch(gameId, journal, events, events.filterNot(
-        _.isInstanceOf[OathEvent.CommandAccepted]), expected, nextSequence)
+      accepted <- appendBatch(gameId, journal, events, expected, nextSequence)
     yield accepted
 
   /** Appends `appended`, then any stale-preference clearing it leaves
     * (consent design, "Commands") and any stale Imperial Tactics offers'
-    * clearing, as one append, and reports `reported`
-    * plus the clearing. The state reported is the fold's, which an undo
+    * clearing, as one append, and reports `appended` without its batch
+    * opening (a `CommandAccepted` is never reported), plus the clearing. The state reported is the fold's, which an undo
     * or a redo has given the current consent ledger. The fold runs before
     * the append, so a batch it would reject is never written. */
   private def appendBatch(
       gameId: String,
       journal: FoldedJournal,
       appended: Vector[OathEvent],
-      reported: Vector[OathEvent],
       expected: ExpectedStream,
       nextSequence: Long
   ): Either[GameApplicationError, GameAccepted] =
@@ -407,7 +405,8 @@ final class GameApplicationService(
       accepted <- result match
         case Appended(first, count)
             if first == nextSequence && count == records.size =>
-          Right(GameAccepted(folded.state, reported ++ clearing,
+          Right(GameAccepted(folded.state, appended.filterNot(
+              _.isInstanceOf[OathEvent.CommandAccepted]) ++ clearing,
             nextSequence + count,
             undo = offeredUndo(folded),
             redo = offeredRedo(folded),
@@ -429,18 +428,6 @@ final class GameApplicationService(
     journalFold.extend(journal, events.zipWithIndex.map {
         case (event, offset) => RecordedEvent(from + offset, event) })
       .left.map(failure => ReplayFailure(failure.index, failure.violation))
-
-  /** Begin's journal, built against the rules' initial state: it has no
-    * `CommandAccepted`. */
-  private def prepareTransition(
-      gameId: String,
-      state: OathState,
-      command: GameCommand,
-      nextSequence: Long
-  ): Either[GameApplicationError, (OathTransition, Vector[String])] = for
-    transition <- applyCommand(state, command, nextSequence).left.map(CommandRejected.apply)
-    records <- encode(gameId, nextSequence, transition.events)
-  yield transition -> records
 
   private def applyCommand(
       state: OathState,

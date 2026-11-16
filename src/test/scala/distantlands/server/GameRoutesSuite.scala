@@ -10,7 +10,7 @@ import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.campaign.NatureWorshipCard
 import distantlands.gameplay.powers.search.ErrandBoyCard
 import distantlands.gameplay.powers.whenplayed.WizardsConclaveCard
-import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.{LegacyKeep, SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
   DecisionAnswerWire, GameIntent}
@@ -128,10 +128,10 @@ class GameRoutesSuite extends munit.FunSuite:
       // Quiet Ambitions asks p2 to keep one of its two drawn legacies.
       val legacyQuery = ujson.read(placed.body())("walkerDecision")
       assertEquals(legacyQuery("decisionId").str,
-        SetupProcedure.legacyDecisionId(p2))
+        LegacyKeep.decisionId(p2))
       val keptLegacy = server.post(p2Commands,
         ActorlessCommandCodec.encode(ActorlessCommandRequest(afterPlaced,
-          GameIntent.ResolveWalker(SetupProcedure.legacyDecisionId(p2),
+          GameIntent.ResolveWalker(LegacyKeep.decisionId(p2),
             DecisionAnswerWire.ChooseOneWire("legacy",
               legacyQuery("query")("options")(0)("id").str)))))
       assertEquals(keptLegacy.statusCode(), 200, keptLegacy.body())

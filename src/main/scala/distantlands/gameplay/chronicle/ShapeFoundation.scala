@@ -59,8 +59,8 @@ object ShapeFoundation:
               DecisionOption.Button(keep, keepLabel) +:
                 faces.map(option(catalog, state, _)),
               heading = Some(heading))),
-            BuildOps((live, pending) => restoring(live, chosen(pending)),
-              required = true),
+            BuildOps((live, pending) =>
+              restoring(live, chosen(pending.answered)), required = true),
             Note(noteId, states => Some(chosen(states.answered)
               .fold(keptAll)(restored).sourceless(NoteArg.Player(holder))))))))
 
@@ -90,9 +90,6 @@ object ShapeFoundation:
           catalog.legacy(legacy).fold(legacy.value)(_.name)).mkString(", ")))
 
   /** The foundation the answer restores; none for Keep. */
-  private def chosen(pending: PendingTree): Option[FoundationNumber] =
-    chosen(pending.answered)
-
   private def chosen(answered: Vector[Answered]): Option[FoundationNumber] =
     answered.collectFirst {
       case Answered(`decisionId`, DecisionAnswer.ChooseOneAnswer(ref), _) =>

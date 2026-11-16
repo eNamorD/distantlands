@@ -146,7 +146,7 @@ class GameLogPropertiesSuite extends munit.FunSuite:
     * in only widens the check. Answers that name no option post no line
     * either way, so they are left out. */
   private def asked(script: Script): Vector[(ProcedureRef, String, Long)] =
-    val journal = new LogJournal(script.history.steps)
+    val journal = new LogJournal(script.history.steps, LogJournal.opSteps)
     (0 until journal.size).foldLeft((Option.empty[ProcedureRef],
         Vector.empty[(ProcedureRef, String, Long)])) {
       case ((current, found), at) =>
