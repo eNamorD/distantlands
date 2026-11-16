@@ -29,6 +29,17 @@ like any other. Nothing is asked, as ruling 4 requires, and every pick is
 an answer. This is the walker's one new behavior. It works the way an
 automatic roll records its faces.
 
+**Changes made while executing.** A review found that replay refused the
+answer the walker gives alone: replay checks every choice step against the
+durable park, and none precedes that answer, so the live command failed too.
+`ChoicePayload` gained `alone: Boolean = false`, as `RollPayload` has
+`automatic`. Replay checks such a step's node id only and adds its answer
+to the pending answers, seeding them when the walk has not parked yet. The
+wire writes `alone` only when set. `AnswersAloneSuite` gained a replay test
+and `WalkerOperationWireSuite` a wire test. Supply caps at 7, so the gains
+in `OrderedWindowSuite` are 3, not 10. The replay test in
+`LaterGameSetupChoicesSuite` reads the park with the default powers.
+
 **Tech Stack:** Scala 3.9.0, munit, `./sbtw` (sbt wrapper), compiler flags
 `-deprecation -feature -unchecked -Wunused:imports,privates,locals,implicits,nowarn -Werror`.
 

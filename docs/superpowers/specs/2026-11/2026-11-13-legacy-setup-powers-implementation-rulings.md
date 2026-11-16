@@ -196,8 +196,11 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
 
 - **R27. Who placed, inside `SetupPawnPlaced`.** The placer is the latest
   `setup.pawn-placement.*` answer, and the site is none if the player
-  stayed off. Inside the window the edifice powers come first, then The
-  Standard Bearer, then Wealthy, by registration order, which a test pins.
+  stayed off. Inside the window the edifice powers, then The Standard
+  Bearer, then Wealthy, by registration order, are the order in which the
+  placer's power-order question lists them. The placer orders them
+  whenever two or more apply (catalog batch 13, ruling 4), and
+  `SetupPowerOrderSuite` pins the list.
   *Reason:* reading the last answer breaks as soon as a legacy asks inside
   the window. *Slice/files:* slice 4; `SetupPawnPlacement`,
   `EdificeSetupSupport`.
