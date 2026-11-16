@@ -76,4 +76,5 @@ uniqueness, non-blank text, the symbol vocabulary, non-negative printed numbers,
 the Forge requirements of three-slot sites, that every registered card power
 is printed in the catalog, and that a card sits in a `catalog/holding`
 package exactly while `PowerImplementationStatus` reports none of its powers
-implemented, which keeps an unimplemented card apart if one is ever added.
+implemented. No card does today, so the package does not exist; the rule
+keeps an unimplemented card apart if one is ever added.

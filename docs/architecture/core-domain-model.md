@@ -19,8 +19,8 @@ a gameplay-rules specification.
   rules live in `gameplay`.
 - The frontend consumes projections. Its presentation IDs and image
   references are not domain identities and never become authoritative state.
-- The Scala card catalog (`catalog/Cards.scala`, `catalog/holding/`, and the
-  list in `gameplay/cards/NewFoundations.scala`) is component definition
+- The Scala card catalog (`catalog/Cards.scala`, the card objects beside
+  their powers in `gameplay/powers/`, and the list in `gameplay/cards/NewFoundations.scala`) is component definition
   data. Runtime state refers to its printed component identities; card text
   and handlers remain catalog/application concerns.
 

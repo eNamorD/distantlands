@@ -200,9 +200,19 @@ the legacies' CHRONICLE powers with the
 [Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md),
 their SETUP powers with the
 [Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md),
-and the powers used during a game with the
-[Legacy in-play powers design](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md).
+the powers used during a game with the
+[Legacy in-play powers design](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md),
+and the cards that act on legacies with
+[catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md).
 
+- [ ] **The last Chronicle powers.** Four printed powers still do nothing:
+  Blasted Pastures (E07 ruined) buries the Nomad cards on the map at the
+  start of the Throne unless the winner rules it, Hall of Bandits (E16
+  ruined) keeps ruined edifices that bandits rule, Hiding Place (E26 ruined)
+  lets its ruler keep a facedown relic into the next game, and the Ancient
+  City's enduring power is unbuilt. With them
+  `src/test/resources/powers/unimplemented.txt` is empty, which unblocks
+  **Retire the unimplemented-card machinery across the stack**.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the
@@ -304,14 +314,11 @@ one.
 ### Powers-related deferred items
 
 - [ ] **Retire the unimplemented-card machinery across the stack.** Every
-  printed denizen power runs since Reliquary Raid (catalog batch 13, slice
-  1), so the denizen checks are gone from the tests. Seven powers remain in
-  `src/test/resources/powers/unimplemented.txt`: Stone Baths and Ruined
-  Baths (E04) and Ruined Temple (E10 ruined), which
+  printed denizen power runs since Reliquary Raid, and
   [catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)
-  plans, and the E07, E16 and E26 ruined faces and the Ancient City's
-  enduring power, which no design covers yet. Once the
-  snapshot is empty, remove the machinery that sorts, filters and marks
+  emptied `catalog/holding/`. Four powers remain in
+  `src/test/resources/powers/unimplemented.txt` (**The last Chronicle
+  powers**, under Chronicle steps). Once the snapshot is empty, remove the machinery that sorts, filters and marks
   unimplemented cards:
   - The implemented-first deal: `ShufflePolicy.implementedFirst`,
     `ImplementedCardCatalog`, the implemented filler in
@@ -322,7 +329,7 @@ one.
   - The frontend's unimplemented class, accessible-name suffix and badge
     in `CardFace` and `CardInspectionOverlay`.
   - The tests of each, the `UnimplementedPowersSuite` snapshot, and
-    `CardCatalogSuite`'s holding rule, together with `catalog/holding/`.
+    `CardCatalogSuite`'s holding rule.
 
   Decide then whether `PowerImplementationStatus` stays as a check that
   every printed power is wired in.
