@@ -35,7 +35,10 @@ import distantlands.model.OathViolation._
  *   Sequence(                                            // per participant
  *     Branch(Decide(pawn-placement, participant)),       // legal sites, and
  *                                                        // Quest's stay-off
- *     BuildOps(place the pawn)                           // window = SetupPawnPlaced
+ *     Sequence(BuildOps(place the pawn), Note(placed))
+ *     OrderedWindow(participant)                         // window =
+ *                                                        // SetupPawnPlaced; the
+ *                                                        // placer orders its powers
  *     Branch(Decide(secret-society discard, participant)) // over the limit,
  *                                                        // with a pawn
  *     Sequence(                                          // a first game's
@@ -236,19 +239,17 @@ object SetupProcedure:
             QuestToDistantLands.stayOff, QuestToDistantLands.stayOffLabel)),
           heading = Some("Choose your starting site"),
           confirmVerb = Some("Start at"))))),
-      // The window hangs on the pair, not on the placement alone: a power
-      // hooked at `SetupPawnPlaced` appends its leaves to the node the
-      // window names, so a note outside that node would read after them
-      // and the pawn's line would follow the edifice's, where the rule it
-      // replaced came first. The arrival is read off the live state rather
-      // than off the step before the note, because those appended leaves
-      // would reset `NoteStates.previous`; this player's pawn site is
-      // settled either way, since the next participant has not placed yet.
+      // The pawn's line is written before the window, so it reads before
+      // every power's. The arrival is read off the live state: this
+      // player's pawn site is settled, since the next participant has not
+      // placed yet.
       Sequence(Vector(
         BuildOps(placePawn(participant.playerId, pawnId)),
         Note(ProcedureNotes.id(TriggeredProcedureRef.Setup),
-          placedPawnNote(participant.playerId))),
-        Some(PowerWindow.SetupPawnPlaced)),
+          placedPawnNote(participant.playerId)))),
+      // The placer orders the powers that apply to them (catalog batch 13,
+      // ruling 4).
+      OrderedWindow(participant.playerId, Vector.empty),
       // Secret Society's holder discards excess advisers right after their
       // pawn (Legacy Setup powers ruling 14; R21).
       SecretSociety.excessStep(catalog, participant.playerId,

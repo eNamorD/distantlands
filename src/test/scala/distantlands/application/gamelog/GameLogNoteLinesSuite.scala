@@ -390,8 +390,8 @@ class GameLogNoteLinesSuite extends munit.FunSuite:
     assert(all.indexOf("Setup") < line && line < all.indexOf("Round 1"), all)
     // Setup's own lines are notes too. This note is inserted straight
     // behind the step that moved the pawn, which is earlier than any real
-    // power's note can land -- a power hooked at `SetupPawnPlaced` appends
-    // to the window's children, after the pawn's own note -- so it reads
+    // power's note can land -- a power hooked at `SetupPawnPlaced` runs in
+    // the window, after the pawn's own note -- so it reads
     // first among the setup lines here. What this test pins is the
     // headline it files under; `GreatForgeRulesSuite` pins the order a
     // real power's line takes against the pawn's.

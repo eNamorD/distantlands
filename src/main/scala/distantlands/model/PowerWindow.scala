@@ -197,8 +197,10 @@ object PowerWindow:
     * Secret Society and then Seer hook here. Empty with no power. */
   case object SetupWorldDeck extends OtherWindow { val key = "setup.world-deck" }
   /** Where the placing player's site is fixed for this player's Setup turn
-    * (2026-09-21 Chronicle design, "Setup powers"): Great Forge and Broken
-    * Forge hook here. */
+    * (2026-09-21 Chronicle design, "Setup powers"). Its node is an
+    * `OrderedWindow`: the edifice powers, The Standard Bearer and Wealthy
+    * offer their steps there, and the placer orders them (catalog batch
+    * 13, ruling 4). */
   case object SetupPawnPlaced extends OtherWindow { val key = "setup.pawn-placed" }
   /** Runs once, in site order, after every player has placed a pawn and
     * chosen an adviser: Great Market, Bandit Market and Empty Grounds hook

@@ -20,34 +20,34 @@
 61.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
 66.0 decision 1 | [player:p1|p1] kept a Denizen
 74.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
-79.0 action 1 | [player:p2|p2] took the People's Favor with [card:L18|The Standard Bearer]
-84.0 decision 1 | [player:p2|p2] kept a Denizen
-91.0 action 1 | [player:p3|p3] placed no pawn with [card:L30|Quest to Distant Lands]
-96.0 action 1 | [player:p3|p3] took 1 favor from [player:p1|p1] and [player:p2|p2] with [card:L31|Wealthy]
-106.0 action 1 | [player:p3|p3] swapped a card with the Dispossessed with [card:L30|Quest to Distant Lands]
-107.0 round 0 | Round 1
-107.1 turn 0 | [player:p1|p1]'s turn
-107.2 phase 0 | Wake
-109.0 action 1 | Nothing happened in Wake
-109.1 phase 0 | Act
-120.0 section 1 campaign@116 | Campaign[cost:2 Supply]
-120.1 action 1 campaign@116 | Conquest against [player:p3|p3]
-127.0 decision 1 campaign@116 | Targets: [site:site:ancient-city|Ancient City]
-128.0 delta 1 campaign@116 | Attack Pool: 0, Defense Pool: 2
-130.0 roll 1 campaign@116 | Rolled [dice:defense two-shields two-shields|two shields, two shields] for the defense
-132.0 roll 1 campaign@116 | Defense: 5
-134.0 action 1 campaign@116 | [player:p3|p3] wins!
-138.0 trigger 1 | Oathkeeper passed to [player:p3|p3]
-146.0 phase 0 | Rest
-149.0 delta 1 | Increased supply from 5 to 7
-150.0 turn 0 | [player:p2|p2]'s turn
-150.1 phase 0 | Wake
-152.0 action 1 | Nothing happened in Wake
-152.1 phase 0 | Act
-160.0 phase 0 | Rest
-162.0 turn 0 | [player:p3|p3]'s turn
-162.1 phase 0 | Wake
-168.0 action 1 | [player:p3|p3] placed their pawn at [site:site:ancient-city|Ancient City]
-173.0 decision 1 | [player:p3|p3] kept [card:181|Second Chance]
-178.0 trigger 1 | [player:p3|p3] became the Usurper
-179.0 phase 0 | Act
+80.0 action 1 | [player:p2|p2] took the People's Favor with [card:L18|The Standard Bearer]
+85.0 decision 1 | [player:p2|p2] kept a Denizen
+92.0 action 1 | [player:p3|p3] placed no pawn with [card:L30|Quest to Distant Lands]
+98.0 action 1 | [player:p3|p3] took 1 favor from [player:p1|p1] and [player:p2|p2] with [card:L31|Wealthy]
+108.0 action 1 | [player:p3|p3] swapped a card with the Dispossessed with [card:L30|Quest to Distant Lands]
+109.0 round 0 | Round 1
+109.1 turn 0 | [player:p1|p1]'s turn
+109.2 phase 0 | Wake
+111.0 action 1 | Nothing happened in Wake
+111.1 phase 0 | Act
+122.0 section 1 campaign@118 | Campaign[cost:2 Supply]
+122.1 action 1 campaign@118 | Conquest against [player:p3|p3]
+129.0 decision 1 campaign@118 | Targets: [site:site:ancient-city|Ancient City]
+130.0 delta 1 campaign@118 | Attack Pool: 0, Defense Pool: 2
+132.0 roll 1 campaign@118 | Rolled [dice:defense two-shields two-shields|two shields, two shields] for the defense
+134.0 roll 1 campaign@118 | Defense: 5
+136.0 action 1 campaign@118 | [player:p3|p3] wins!
+140.0 trigger 1 | Oathkeeper passed to [player:p3|p3]
+148.0 phase 0 | Rest
+151.0 delta 1 | Increased supply from 5 to 7
+152.0 turn 0 | [player:p2|p2]'s turn
+152.1 phase 0 | Wake
+154.0 action 1 | Nothing happened in Wake
+154.1 phase 0 | Act
+162.0 phase 0 | Rest
+164.0 turn 0 | [player:p3|p3]'s turn
+164.1 phase 0 | Wake
+170.0 action 1 | [player:p3|p3] placed their pawn at [site:site:ancient-city|Ancient City]
+175.0 decision 1 | [player:p3|p3] kept [card:181|Second Chance]
+180.0 trigger 1 | [player:p3|p3] became the Usurper
+181.0 phase 0 | Act

@@ -4,7 +4,7 @@ import distantlands.gameplay.WalkerRecordedOpsReducer
 import distantlands.gameplay.walker.{ProcedureWalker, WalkerDice, WalkerOutcome,
   WalkerPowers}
 import distantlands.model._
-import distantlands.testkit.{Park, Situation}
+import distantlands.testkit.{Answers, Park, Situation}
 import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Walks `tree` from scratch, answering every park with
@@ -27,10 +27,12 @@ object SetupWalkDriver extends WalkerRecordedOpsReducer with munit.Assertions:
     driveWithEvents(ready, tree, procedure, powers).ready
 
   /** `driveToCompletion`, also returning every event the walk journaled, in
-    * walk order, for the suites that read a rule's notes. */
+    * walk order, for the suites that read a rule's notes. `answers` answers
+    * a park first; the rest get `Situation.defaultAnswer`. */
   def driveWithEvents(ready: ReadyGame, tree: Operation,
       procedure: ProcedureRef, powers: WalkerPowers,
-      dice: WalkerDice = WalkerDice.unavailable)(
+      dice: WalkerDice = WalkerDice.unavailable,
+      answers: Answers = PartialFunction.empty)(
       using munit.Location): SetupWalked =
     @annotation.tailrec
     def walk(state: ReadyGame, outcome: WalkerOutcome,
@@ -45,7 +47,7 @@ object SetupWalkDriver extends WalkerRecordedOpsReducer with munit.Assertions:
             "the decision the walk parked on")
           val park = Park(decide, next, decide.owner, procedure)
           val answer = Answered(decide.decisionId,
-            Situation.defaultAnswer.applyOrElse(park,
+            answers.orElse(Situation.defaultAnswer).applyOrElse(park,
               _ => fail(s"SetupWalkDriver cannot auto-answer ${decide.query}")),
             decide.owner)
           val resolved = accepted(
