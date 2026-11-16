@@ -160,7 +160,10 @@ then continue.
 14. **Stone Baths.** CHRONICLE (SUN): in Sun step 2, a seated player whose
     pawn is at this site does not discard their dormant legacies. A dormant
     legacy whose goal they meet still activates; one whose goal they do not
-    meet stays dormant on their lineage.
+    meet stays dormant on their lineage. A legacy the Baths keep dormant is
+    not newly dormant, so Crown Chancellor and Offer Citizenship leave it
+    dormant; this amends Legacies ruling 2 (every dormant legacy after step
+    3 is newly dormant). Ruled by the owner on 2026-11-15.
 15. **Ruined Baths.** CHRONICLE (SUN): in Sun step 3, a seated Exile whose
     pawn is at this site keeps every active legacy, whether or not they
     meet its goal. Steadfast and the cap are unaffected.
@@ -173,13 +176,16 @@ then continue.
     players may place their pawns at this site in Setup, and each may
     pledge. A player with no secret is not asked.
 18. **Ruined Temple at the win.** If the winner pledged, then at the win,
-    before Crown Chancellor, every bandit site loses its bandits to the
+    once Royal Line and Conspirator have settled the final winner and
+    before the Sun (ruled by the owner on 2026-11-15), every bandit site loses its bandits to the
     bandit supply and takes one of the winner's warbands (Imperial for an
     Imperial winner), their bank topped up when short. Crown Chancellor,
     Shape Empire and the rest then treat those sites as the winner's.
 19. **Ruined Temple's double.** Score Lineage Points doubles the winner's
     legacy bonus. The 3 base points are not doubled. Gifts are spent from
-    the doubled total.
+    the doubled total. Chronicler's scoring doubles the pledged winner's
+    bonus too, so a declaration cannot strip the double (ruled by the
+    owner on 2026-11-15).
 
 ## Approach
 
@@ -274,15 +280,20 @@ place at the site in one walk.
   the players the Baths exempt, read through a new
   `BathsRules.exempt(ready, face)`: the site holding E04 with that face up,
   and the seated players whose pawns are there (Exiles only for Ruined
-  Baths). `StoneBathsCard` leaves `HoldingEdifices`, and that file is
-  deleted.
+  Baths). Step 2 records the legacies Stone Baths keeps dormant
+  (`CurrentGameState.keptDormant`), and `ResolveLegacies.reactivation`
+  skips them (ruling 14). `StoneBathsCard` leaves `HoldingEdifices`, and
+  that file is deleted.
 - **Pledge.** `templePledges: Set[PlayerId]` on the game, written by a
   recorded operation when a player burns. At Setup the burn is one of the
   powers slice 4's host orders.
-- **The win.** A step at the start of `ChronicleWinnerProcedure`, before
-  Crown Chancellor, rules the bandit sites for a pledged winner.
-- **The double.** `LineageScoring.bonus` doubles for a pledged winner, and
-  the scoring line names it.
+- **The win.** A step at the end of `ChronicleWinnerProcedure`, after
+  Royal Line and Conspirator, rules the bandit sites for a pledged winner
+  (ruling 18).
+- **The double.** A pledged winner's bonus doubles wherever it is scored,
+  Score Lineage Points and Chronicler alike, and the scoring line names it
+  (ruling 19). `LineageScoring.bonus` itself, which Iron Hand's scoring
+  also reads, is unchanged.
 
 ## Hidden information
 
