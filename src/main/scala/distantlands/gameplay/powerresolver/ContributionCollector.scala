@@ -14,7 +14,8 @@ final case class GatheredContributions(
     order: Vector[PowerId],
     optionRestrictions: Vector[(PowerId, OptionRestriction)] = Vector.empty,
     offers: Vector[(PowerId, Offer)] = Vector.empty,
-    rerolls: Vector[(PowerId, OfferReroll)] = Vector.empty
+    rerolls: Vector[(PowerId, OfferReroll)] = Vector.empty,
+    resolutions: Vector[(PowerId, OfferResolution)] = Vector.empty
 )
 
 /** Turns "which powers hook this window" into "which transforms, restrictions
@@ -81,6 +82,7 @@ object ContributionCollector:
     val optionRestrictions = Vector.newBuilder[(PowerId, OptionRestriction)]
     val offers = Vector.newBuilder[(PowerId, Offer)]
     val rerolls = Vector.newBuilder[(PowerId, OfferReroll)]
+    val resolutions = Vector.newBuilder[(PowerId, OfferResolution)]
 
     ordered.foreach { hooked =>
       val id = hooked.power.id
@@ -90,6 +92,7 @@ object ContributionCollector:
         case option: OptionRestriction => optionRestrictions += id -> option
         case offer: Offer => offers += id -> offer
         case reroll: OfferReroll => rerolls += id -> reroll
+        case resolution: OfferResolution => resolutions += id -> resolution
     }
 
     GatheredContributions(
@@ -99,7 +102,8 @@ object ContributionCollector:
       order = ordered.map(_.power.id),
       optionRestrictions = optionRestrictions.result(),
       offers = offers.result(),
-      rerolls = rerolls.result()
+      rerolls = rerolls.result(),
+      resolutions = resolutions.result()
     )
 
   /** The earliest phase of `hooked`'s transforms at the window, as its

@@ -1,7 +1,7 @@
 package distantlands.gameplay.powerresolver
 
 import distantlands.catalog.ExecutableCatalog
-import distantlands.model.{Answered, CampaignPlanOffer, CardId, CoreOperation, Decide, DecisionOptionRef, EdificeId, EdificeSide, NoteKey, OathViolation, OfferedPlan, OfferedReroll, Operation, OperationRestriction, OptionReason, PlayerId, PowerId, LogNote, PowerResolution, PowerSourceRef, PowerWindow, ProcedureRef, ReadyGame, RerollOffer, RuleSourceRef}
+import distantlands.model.{Answered, CampaignPlanOffer, CardId, CoreOperation, Decide, DecisionOptionRef, EdificeId, EdificeSide, NoteKey, OathViolation, OfferedPlan, OfferedReroll, OfferedResolution, Operation, OperationRestriction, OptionReason, PlayerId, PowerId, LogNote, PowerResolution, PowerSourceRef, PowerWindow, ProcedureRef, ReadyGame, RerollOffer, ResolutionOffer, RuleSourceRef}
 
 /** Everything a contribution may read at the node it hooks. Carries no
   * mutable state: `catalog` is the card catalog the walk runs, for a power
@@ -141,6 +141,15 @@ final case class OfferReroll(
     offer: PowerCtx => Option[RerollOffer]
 ) extends Contribution
 
+/** Offers one power's steps to the node its window hooks, when that node is
+  * a [[ResolutionHost]] (Setup's pawn window, catalog batch 13, ruling 4).
+  * Like [[Offer]], it is asked again at every fold, so it must be a pure
+  * function of state, and its offer must stand while its own steps run.
+  */
+final case class OfferResolution(
+    offer: PowerCtx => Option[ResolutionOffer]
+) extends Contribution
+
 /** A modifier's own verdict on its option in the modifier decision, given
   * the picks so far (modifier walker design, ruling 5): unavailable with a
   * reason, or available with a warning. */
@@ -178,6 +187,18 @@ object OfferHost:
   */
 trait RerollHost extends Operation:
   def expand(offers: Vector[OfferedReroll], pass: OfferHost.Pass)
+      : Vector[Operation]
+
+/** A windowed node that orders the powers its window offers: the walker
+  * gathers the window's [[OfferResolution]]s, asks each for its offer, and
+  * hands those that stand to `expand` in the deterministic power order,
+  * with the same contract as [[OfferHost]]. The window's transforms fold
+  * over the node's own children, which a host declares empty, so a power
+  * hooked at a host's window offers its steps and folds no `Transform`
+  * there.
+  */
+trait ResolutionHost extends Operation:
+  def expand(offers: Vector[OfferedResolution], pass: OfferHost.Pass)
       : Vector[Operation]
 
 /** One object per power (spec decision 8). No engine code lives in a power --
