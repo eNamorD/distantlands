@@ -20,8 +20,8 @@ model/engine -> no outer adapter packages
   `ReadyGame`/`OathState`, the `OathEvent` and `OathViolation` vocabularies,
   the operation algebra (`CoreOperation`, `Location`, `Piece`), power windows,
   and rule-source identities. It holds data only, never rules.
-- `distantlands.catalog` owns the typed card classes (`Cards.scala`) and the
-  not-yet-implemented card objects in `holding/`; the full list and the
+- `distantlands.catalog` owns the typed card classes (`Cards.scala`); the
+  card objects sit beside their powers, and the full list and the
   production `ExecutableCatalog` are in `gameplay/cards/NewFoundations.scala`.
 - `distantlands.engine` owns generic event evolution and replay machinery.
 - `distantlands.gameplay` owns legality, procedures, and deterministic
@@ -44,10 +44,10 @@ Group code by one reason to change. Keep a procedure and its legality/evolution
 together. Do not create one file per case class or event. Split orchestration,
 codecs, projection, or rendering when distinct responsibilities emerge.
 
-Most cards with an implemented power have their own file under
-`gameplay/powers/`, grouped by timing (`action`, `rest`, `wake`, `economy` and
-so on), with the typed card object and the power object side by side. Cards
-with no implemented power share the `catalog/holding/` files by kind. A power
+Most cards have their own file under `gameplay/powers/`, grouped by timing
+(`action`, `rest`, `wake`, `economy` and so on), with the typed card object
+and the power object side by side. A card with no implemented power would sit
+in a `catalog/holding/` file; none does today. A power
 owns only applicability and power-specific mechanics: the contributions it
 makes at power windows, or a phase power's `usable` check and `build` tree.
 The walker owns procedure lifecycle, window folding and recording.
@@ -151,7 +151,8 @@ gameplay.
 ### Power
 
 1. Verify the catalog handler ID and its `RuleSourceIndex` source.
-2. Move the card object out of `catalog/holding/` into the power's file. Keep
+2. Put the card object in the power's file, moving it out of
+   `catalog/holding/` if it sits there. Keep
    its `PrintedPower`, and keep the card listed in
    `gameplay/cards/NewFoundations.scala`. The 24 site objects are the
    exception: all of them live in `gameplay/cards` (`HomelandsAndPlains.scala`
