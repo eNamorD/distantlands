@@ -39,9 +39,9 @@ private[application] final class GamePresentationProjector(
       side match
         case EdificeSide.Intact => edifice.intact.name
         case EdificeSide.Ruined => edifice.ruined.name
-  /** A player's display name: the one label the Players strip and the game
-    * log both use, so the two never disagree. */
-  /** A player is shown by their ID exactly as the host typed it. */
+  /** A player's display name: their ID exactly as the host typed it. It is
+    * the one label the Players strip and the game log both use, so the two
+    * never disagree. */
   def playerLabel(id: PlayerId): String = id.value
 
   private[application] def edificeCardDetails(value: EdificeState): CardDetailsProjection =
@@ -498,7 +498,7 @@ private[application] final class GamePresentationProjector(
   def cardDetails(id: CardId, orientation: Option[Orientation],
       hidden: Boolean): CardDetailsProjection = id match
     case value: DenizenId => catalog.denizen(value).fold(
-      CardDetailsProjection(value.value, "denizen", worldCardLabel(value),
+      CardDetailsProjection(value.value, "denizen", safeLabel(value.value),
         orientation = orientation.map(orientationName), hidden = hidden)) { d =>
       CardDetailsProjection(value.value, "denizen", d.name, Some(d.suit.key),
         Some(restrictionName(d)), Some(d.rulesText),
@@ -555,9 +555,6 @@ private[application] final class GamePresentationProjector(
     case _ => "unrestricted"
   def safeLabel(id: String): String = id.split(":").lastOption.getOrElse(id)
     .split("-").map(_.capitalize).mkString(" ")
-  private def worldCardLabel(id: WorldCardId): String = id match
-    case value: DenizenId => denizenLabel(value)
-    case value: VisionId => safeLabel(value.value)
   private def sitePower(handler: PowerId): SitePowerProjection =
     val kind = SitePowerText.kindOf(handler.value)
     SitePowerText.of(kind).fold(SitePowerProjection(kind, safeLabel(kind), None,
