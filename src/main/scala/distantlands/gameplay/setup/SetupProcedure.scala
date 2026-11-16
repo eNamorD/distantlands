@@ -3,6 +3,7 @@ package distantlands.gameplay.setup
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.ChronicleLegacyRules
+import distantlands.gameplay.powers.PowerAnswers
 import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
 import distantlands.gameplay.setup.legacies.{LegacySetupPowers,
   QuestToDistantLands, SecretSociety, SetupLegacyRules, StartLines}
@@ -196,15 +197,12 @@ object SetupProcedure:
   private def takeRelic(chancellor: PlayerId)
       : (ReadyGame, PendingTree) => Either[OathViolation, Vector[CoreOperation]] =
     (_, pending) =>
-      pending.answered.find(_.decisionId == reliquaryDecisionId)
-        .map(_.answer) match
-        case Some(DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Relic(id))) =>
-          Right(Vector(Move(Piece.Card(id),
-            PositionedLocation(Location.Reliquary),
-            PositionedLocation(Location.PlayArea(chancellor)),
-            resultingOrientation = Some(Orientation.FaceDown))))
-        case _ => Left(InvalidEventOrder(
-          s"no relic answer is recorded for $reliquaryDecisionId"))
+      PowerAnswers.one(pending, reliquaryDecisionId).collect {
+        case DecisionOptionRef.Relic(id) => Vector(Move(Piece.Card(id),
+          PositionedLocation(Location.Reliquary),
+          PositionedLocation(Location.PlayArea(chancellor)),
+          resultingOrientation = Some(Orientation.FaceDown)))
+      }.toRight(PowerAnswers.missing(reliquaryDecisionId))
 
   private def turnOrder(ready: ReadyGame): Vector[FirstGameParticipant] =
     val order = ready.game.current.players.map(_.player)
@@ -288,8 +286,6 @@ object SetupProcedure:
 
   private def siteAnswer(pending: PendingTree, decisionId: String)
       : Either[OathViolation, SiteId] =
-    pending.answered.find(_.decisionId == decisionId).map(_.answer) match
-      case Some(DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Site(site))) =>
-        Right(site)
-      case _ => Left(InvalidEventOrder(
-        s"no pawn-placement answer is recorded for $decisionId"))
+    PowerAnswers.one(pending, decisionId).collect {
+      case DecisionOptionRef.Site(site) => site
+    }.toRight(PowerAnswers.missing(decisionId))

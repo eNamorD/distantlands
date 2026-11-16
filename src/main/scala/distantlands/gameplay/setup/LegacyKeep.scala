@@ -1,11 +1,10 @@
 package distantlands.gameplay.setup
 
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.powers.LegacyDraws
+import distantlands.gameplay.powers.{LegacyDraws, PowerAnswers}
 import distantlands.gameplay.setup.legacies.{Matchmaker, MatchmakerCard,
   SetupLegacyRules}
 import distantlands.model._
-import distantlands.model.OathViolation.InvalidEventOrder
 
 /** Foundation III's Quiet Ambitions keep in Setup's walk: each player draws
   * two legacies from the legacy deck, keeps one facedown and returns the
@@ -90,12 +89,10 @@ object LegacyKeep:
       drawn: Vector[LegacyId], decisionId: String)
       : (ReadyGame, PendingTree) => Either[OathViolation, Vector[CoreOperation]] =
     (_, pending) =>
-      pending.answered.find(_.decisionId == decisionId).map(_.answer) match
-        case Some(DecisionAnswer.ChooseOneAnswer(
-            DecisionOptionRef.Legacy(kept))) if drawn.contains(kept) =>
-          Right(keptMove(kept, keeper, lineage) +: drawn.filterNot(_ == kept)
+      PowerAnswers.one(pending, decisionId).collect {
+        case DecisionOptionRef.Legacy(kept) if drawn.contains(kept) =>
+          keptMove(kept, keeper, lineage) +: drawn.filterNot(_ == kept)
             .map(id => Move(Piece.Card(id),
               PositionedLocation(Location.Hand(keeper)),
-              PositionedLocation.legacyDeckBottom)))
-        case _ => Left(InvalidEventOrder(
-          s"no legacy answer is recorded for $decisionId"))
+              PositionedLocation.legacyDeckBottom))
+      }.toRight(PowerAnswers.missing(decisionId))
