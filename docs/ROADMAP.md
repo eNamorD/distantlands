@@ -203,13 +203,6 @@ their SETUP powers with the
 and the powers used during a game with the
 [Legacy in-play powers design](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md).
 
-- [ ] **Cards that act on legacies.** The non-legacy cards whose powers
-  name legacies, still in holding: Ruined Temple (E10, double the
-  legacy points), and Stone Baths and Ruined Baths (E04, change Resolve
-  Legacies).
-  [Catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)
-  plans them; Ancient Writ and Matchmaker's draw during a game landed in its
-  slice 2.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the

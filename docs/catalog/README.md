@@ -1,9 +1,8 @@
 # Component catalog
 
 The component catalog is Scala. Card types live in
-`src/main/scala/distantlands/catalog/Cards.scala`. Cards that are not yet
-implemented live in `src/main/scala/distantlands/catalog/holding/`; an
-implemented card sits beside its power, except the 24 sites, which all live in
+`src/main/scala/distantlands/catalog/Cards.scala`. Every card sits beside its
+power, except the 24 sites, which all live in
 `src/main/scala/distantlands/gameplay/cards/` (`HomelandsAndPlains.scala` and
 `PoweredSites.scala`). The full list of components and the
 production `ExecutableCatalog` are in
@@ -75,5 +74,6 @@ component counts, so a forgotten card fails a test. It also checks the printed
 ID ranges, globally unique card identities, power-ID and site-handler
 uniqueness, non-blank text, the symbol vocabulary, non-negative printed numbers,
 the Forge requirements of three-slot sites, that every registered card power
-is printed in the catalog, and that a card sits in `catalog/holding/` exactly
-while `PowerImplementationStatus` reports none of its powers implemented.
+is printed in the catalog, and that a card sits in a `catalog/holding`
+package exactly while `PowerImplementationStatus` reports none of its powers
+implemented, which keeps an unimplemented card apart if one is ever added.
