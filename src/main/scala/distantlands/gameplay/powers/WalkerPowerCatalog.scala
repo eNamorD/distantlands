@@ -100,9 +100,10 @@ object WalkerPowerCatalog:
       BannerFacePowers.contributions ++
       Vector(Dazzle, GreatMarket, BanditMarket, GreatForge, BrokenForge,
         ProvingGrounds, EmptyGrounds, LostDoors, AmberDoors, StoneBaths,
-        RuinedBaths, HallOfMockery, LostGuardians, RuinedSchool, BrokenHorn,
-        BrokenClock, FallenSpire, TakeWealthLimit, TakeWealthPawnGate,
-        LightFingers, Beloved, TheNeedle, Arbiter, ConspiracyWhenPlayed) ++
+        RuinedBaths, RuinedTemple, HallOfMockery, LostGuardians, RuinedSchool,
+        BrokenHorn, BrokenClock, FallenSpire, TakeWealthLimit,
+        TakeWealthPawnGate, LightFingers, Beloved, TheNeedle, Arbiter,
+        ConspiracyWhenPlayed) ++
       LegacyChroniclePowers.all ++
       LegacySetupPowers.all
 
