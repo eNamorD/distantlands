@@ -2,6 +2,7 @@ package distantlands.application
 
 import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.setup.{AtlasPlacement, FirstGameSetupFixture,
+  LegacyKeep,
   GameStartRules, ImperialMaps, LaterGameFixture, OrderedWindow,
   SetupLegacyFixture, SetupPawnSites, SetupProcedure}
 import distantlands.gameplay.setup.legacies.{TheStandardBearerCard, Wealthy,
@@ -152,7 +153,7 @@ class LaterGameSetupChoicesSuite extends munit.FunSuite:
     val repository = new InMemoryEventStreamRepository
     val service = new GameApplicationService(catalog, repository)
     val keeping = Situation.start(Situation.journaled(service, catalog,
-        repository, "keeping")).parkedAt(SetupProcedure.legacyDecisionId(p2))(
+        repository, "keeping")).parkedAt(LegacyKeep.decisionId(p2))(
       GameCommand.Begin(record, LaterGameFixture.orders(record, p1)))
     assert(keeping.ready.game.campaign.lineages(l1).legacies.nonEmpty,
       "p1 kept before p2's keep")

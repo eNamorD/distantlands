@@ -4,7 +4,7 @@ import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.legacies.{IronHandCard, RivalCard}
 import distantlands.gameplay.powers.{NoteText, PlayerFacts}
 import distantlands.application.GameCommand
-import distantlands.gameplay.setup.{GameStartRules, ImperialMaps,
+import distantlands.gameplay.setup.{GameStartRules, ImperialMaps, LegacyKeep,
   LaterGameFixture, SetupLegacyFixture, SetupPawnSites,
   SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -68,7 +68,7 @@ class RivalSetupSuite extends munit.FunSuite:
       GameCommand.Begin(short, LaterGameFixture.orders(short, p1)))
     present(accepted(ParkedNode.of(begun.state, catalog)), "a park") match
       case ParkedNode.Decision(_, decide, _) => assertEquals(
-        decide.decisionId, SetupProcedure.legacyDecisionId(p1))
+        decide.decisionId, LegacyKeep.decisionId(p1))
       case other => fail(s"expected a decision, parked on $other")
     assertEquals(begun.ready.game.current.map.inPlay,
       (short.world ++ short.atlasBox).map(_.site))

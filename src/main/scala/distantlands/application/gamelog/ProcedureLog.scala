@@ -25,7 +25,7 @@ import distantlands.gameplay.phases.rest.{ArbiterStep, FinishRestProcedure}
 import distantlands.gameplay.chronicle.legacies.ConspiratorReveal
 import distantlands.gameplay.phases.PhaseMenu
 import distantlands.gameplay.phases.wake.QuestFirstWakeProcedure
-import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.{LegacyKeep, SetupProcedure}
 import distantlands.gameplay.setup.legacies.{Matchmaker, SecretSociety}
 import distantlands.gameplay.walker.FollowUpOffer
 import distantlands.model._
@@ -330,7 +330,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     case TriggeredProcedureRef.Setup => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
         SetupProcedure.keptAdviser -> LogKind.Decision,
-        SetupProcedure.keptLegacy -> LogKind.Decision,
+        LegacyKeep.keptLegacy -> LogKind.Decision,
         Matchmaker.keptFor -> LogKind.Decision,
         SecretSociety.discarded -> LogKind.Decision,
         SetupProcedure.revealedCard -> LogKind.Decision) ++

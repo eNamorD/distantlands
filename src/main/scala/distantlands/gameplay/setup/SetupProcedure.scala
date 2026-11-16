@@ -5,7 +5,7 @@ import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.ChronicleLegacyRules
 import distantlands.gameplay.chronicle.legacies.OathsOfLoyalty
 import distantlands.gameplay.setup.legacies.{LegacySetupPowers,
-  QuestToDistantLands, SecretSociety, SetupLegacyRules}
+  QuestToDistantLands, SecretSociety, SetupLegacyRules, StartLines}
 import distantlands.model._
 import distantlands.model.OathViolation._
 
@@ -92,8 +92,6 @@ object SetupProcedure:
   /** "p1 took a relic from the Reliquary" (Empire ruling R29). */
   val tookRelic: NoteKey = notes.key("took-relic", Vector(
     NotePart.Arg(0), NotePart.Text(" took a relic from the Reliquary")))
-  /** "p2 kept a legacy" (`LegacyKeep`). */
-  val keptLegacy: NoteKey = LegacyKeep.keptLegacy
   /** "Public Ambitions dealt Rival, Seer, Arbiter and Wealthy". */
   val dealtPublicLegacies: NoteKey = notes.key("dealt-public-legacies",
     Vector(NotePart.Text("Public Ambitions dealt "), NotePart.Arg(0)))
@@ -109,8 +107,6 @@ object SetupProcedure:
     s"setup.adviser-choice.${player.value}"
   def revealDecisionId(player: PlayerId): String =
     s"setup.reveal.${player.value}"
-  def legacyDecisionId(player: PlayerId): String =
-    LegacyKeep.decisionId(player)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
@@ -143,7 +139,7 @@ object SetupProcedure:
     // game's keeps: Secret Society and then Seer hook it (Legacy Setup
     // powers rulings 14 and 15).
     val worldDeck = Sequence(Vector.empty, Some(PowerWindow.SetupWorldDeck))
-    Sequence(LegacySetupPowers.startNotes ++ teemingBurials ++
+    Sequence(StartLines.operations ++ teemingBurials ++
       publicRow(ready) ++
       chancellor.map(reliquaryPick).toVector ++
       imperialMaps ++ (banks +: keeps :+ worldDeck) ++ steps :+ setupEnd :+
