@@ -2,6 +2,7 @@ package distantlands.application.gamelog
 
 import distantlands.gameplay.powers.economy.HallowedSpringCard
 import distantlands.catalog.Denizen
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import distantlands.application._
 import distantlands.gameplay.ModifierPlay
@@ -66,7 +67,7 @@ object ActionLogScripts:
     val (service, acted) = atTable(name, tableWithOnePawnPerSite
       .adviser(p1, conclave, facedown = true).banditsRefilled)
     val act = placement.fold(acted)(way => acted.withAnswers {
-      case park if park.decisionId.startsWith(LogWords.PlacePrefix) =>
+      case park if park.decisionId.startsWith(CardPlayProcedure.placementPrefix) =>
         ChooseOneAnswer(PlacementPicks.pick(park.decide, way))
     })
     start(act, ActionRef.PlayFacedownAdviser)

@@ -1,6 +1,7 @@
 package distantlands.application
 
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.chronicle.ResolveLegacies
 import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import distantlands.gameplay.powerresolver.PhasePowers
@@ -350,8 +351,9 @@ private[application] final class WalkerDecisionProjector(
     * not among its options: `cardplay.place.*` offers card slots and
     * `cardplay.discard.*` site cards, and both name the card played only in
     * the id they were built with. The id is the tree's own
-    * spelling of `WorldCardId` (`kind` then `value`), so this parses what the
-    * procedure wrote rather than reaching into the tree for it.
+    * spelling of `WorldCardId` (`kind` then `value`), and
+    * `CardPlayProcedure.cardOf` parses what the procedure wrote rather than
+    * reaching into the tree for it.
     *
     * Not a field of the decision projection: `GameProjector` draws the
     * subject with the cards in the viewer's hand (`temporaryHandPreview`),
@@ -372,20 +374,13 @@ private[application] final class WalkerDecisionProjector(
       viewer: Option[PlayerId], decisionId: String)
       : Vector[CardDetailsProjection] =
     val index = ready.game.cardIndex.toOption
-    val prefixes = Vector("cardplay.place.", "cardplay.discard.",
-      "cardplay.replaced.", "cardplay.bury.")
     // The Chancellor's tie-break for a public legacy names that legacy,
     // faceup in the row (Legacies design, slice 5).
     val publicLegacy = ResolveLegacies.publicDecisionPrefix
     val cards =
       if decisionId.startsWith(publicLegacy) then
         Vector(LegacyId(decisionId.stripPrefix(publicLegacy)): CardId)
-      else prefixes.find(decisionId.startsWith).toVector.flatMap { prefix =>
-        decisionId.stripPrefix(prefix).split("\\.", 2).toVector match
-          case Vector("denizen", value) => Vector(DenizenId(value): CardId)
-          case Vector("vision", value) => Vector(VisionId(value): CardId)
-          case _ => Vector.empty[CardId]
-      }
+      else CardPlayProcedure.cardOf(decisionId).toVector
     cards.map(rows.shown(ready, viewer, index, _))
 
   /** A card play's heading names its card or its site, and its Replace
@@ -397,17 +392,17 @@ private[application] final class WalkerDecisionProjector(
       decisionId: String, projected: DecisionQueryProjection)
       : DecisionQueryProjection =
     val played =
-      if decisionId.startsWith("cardplay.place.") then
+      if decisionId.startsWith(CardPlayProcedure.placementPrefix) then
         subjectCards(ready, viewer, decisionId).headOption.filterNot(_.hidden)
       else None
     val query = played.fold(projected)(replacing(projected, _))
     val heading =
-      if decisionId.startsWith("cardplay.place.") then
+      if decisionId.startsWith(CardPlayProcedure.placementPrefix) then
         played.map(card => s"Play ${card.name}")
-      else if decisionId.startsWith("cardplay.discard.") then
+      else if decisionId.startsWith(CardPlayProcedure.discardPrefix) then
         followUpSite(ready, projected).map(site =>
           s"Discard more cards from ${presentation.siteLabel(site)}")
-      else if decisionId.startsWith("cardplay.bury.") then
+      else if decisionId.startsWith(CardPlayProcedure.buryPrefix) then
         followUpSite(ready, projected).map(site =>
           s"Bury a card at ${presentation.siteLabel(site)}")
       else None

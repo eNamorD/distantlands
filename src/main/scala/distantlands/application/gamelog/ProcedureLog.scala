@@ -164,8 +164,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       narrated = Vector(Told(SearchProcedure.sourceDecisionId),
         Told(SearchProcedure.cardDecisionId,
           Some(SearchProcedure.keptCards))),
-      narratedPrefixes = Vector(LogWords.PlacePrefix,
-        "cardplay.discard."))
+      narratedPrefixes = Vector(CardPlayProcedure.placementPrefix,
+        CardPlayProcedure.discardPrefix))
     // The played card's line names the facedown pick. Five keys word it —
     // a discard with or without a pile, a play to a site, a revealed
     // Vision, an adviser — so no single key tells the decision.
@@ -174,8 +174,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         lines = ActionLineSource.Notes(),
         anchor = starts.adviserPicked,
         narrated = Vector(Told(CardPlayProcedure.facedownAdviserDecisionId)),
-        narratedPrefixes = Vector(LogWords.PlacePrefix,
-          "cardplay.discard."))
+        narratedPrefixes = Vector(CardPlayProcedure.placementPrefix,
+          CardPlayProcedure.discardPrefix))
     // The relic pick is told by the recovered line, which names the relic.
     // The continue-or-stop answer is told by the band's own "Continued"
     // line and, for a stop, by the failed line, so no single key tells it.
@@ -301,8 +301,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     // went, as a Search does, and tells the same card-play decisions.
     case ActionRef.UsePower(power) => ProcedureLog(tag = None,
       lines = ActionLineSource.Rule(notes.usePowerLines(power)),
-      narratedPrefixes = Vector(LogWords.PlacePrefix,
-        "cardplay.discard."))
+      narratedPrefixes = Vector(CardPlayProcedure.placementPrefix,
+        CardPlayProcedure.discardPrefix))
     case PhaseTransitionRef.EndWake | PhaseTransitionRef.BeginRest =>
       ProcedureLog(tag = None, isSection = false,
         lines = ActionLineSource.Silent(

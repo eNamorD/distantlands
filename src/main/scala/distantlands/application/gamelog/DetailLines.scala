@@ -200,9 +200,9 @@ private[gamelog] final class DetailLines(words: LogWords,
       : Option[CardId] =
     journal.answers(run, at).reverse.collectFirst {
       case Answered(id, ChooseOneAnswer(ref), _)
-          if id.startsWith(LogWords.PlacePrefix) &&
+          if id.startsWith(CardPlayProcedure.placementPrefix) &&
             CardPlayProcedure.playedAs(ref).contains(way) =>
-        LogWords.subjectCard(id.stripPrefix(LogWords.PlacePrefix))
+        CardPlayProcedure.cardOf(id)
     }.flatten
 
 private[gamelog] object DetailLines:

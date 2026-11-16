@@ -168,7 +168,7 @@ class GameLogActionLineSuite extends munit.FunSuite:
       case park
           if park.decisionId == CardPlayProcedure.facedownAdviserDecisionId =>
         ChooseOneAnswer(DecisionOptionRef.Denizen(beast))
-      case park if park.decisionId.startsWith(LogWords.PlacePrefix) =>
+      case park if park.decisionId.startsWith(CardPlayProcedure.placementPrefix) =>
         ChooseOneAnswer(woods)
     }
     acted.withAnswers(ModifierPlay.answers(
