@@ -17,8 +17,7 @@ object LegacyChroniclePowers:
     * which `ChronicleThroneProcedure.noteKeys` declares. */
   def throneNoteKeys: Vector[NoteKey] =
     Rival.throneNoteKeys ++ Revolutionary.throneNoteKeys ++
-      Reformer.throneNoteKeys ++ Heirloom.throneNoteKeys ++
-      TheEar.throneNoteKeys
+      Reformer.throneNoteKeys ++ TheEar.throneNoteKeys
   /** The lines the powers write in the Beacon, on the Beacon's note id,
     * which `ChronicleBeaconProcedure.noteKeys` declares. */
   def beaconNoteKeys: Vector[NoteKey] = TheBrightBeacon.beaconNoteKeys

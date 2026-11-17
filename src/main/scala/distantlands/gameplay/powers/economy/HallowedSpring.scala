@@ -32,8 +32,8 @@ object HallowedSpringCard extends Edifice(EdificeId("E26"), Suit.Beast):
   * site's ruler included, and asks nothing. A Trade for favor pays a
   * secret and is left alone, as is a Trade with a card elsewhere. It
   * writes no line: the payment's generic line shows the 2 favor placed.
-  * The ruined face, Hiding Place, is a Chronicle step and is not
-  * implemented.
+  * The ruined face, Hiding Place, is a Throne step: `HidingPlace` in
+  * `gameplay/chronicle`.
   */
 case object HallowedSpring extends ContributingPower:
   val edifice: EdificeId = HallowedSpringCard.id

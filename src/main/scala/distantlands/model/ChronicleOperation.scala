@@ -86,19 +86,22 @@ final case class WinnerNamed(winner: PlayerId, kind: VictoryKind)
     extends ChronicleOperation, LeafOperation
 
 /** Turns `relics`, each held by a player, facedown and clears every
-  * viewer's record of them, at the start of Stock Reliquary (Legacy
-  * Chronicle powers R28, re-ruled by the owner 2026-11-14): the Sun's reveal
-  * made them public, and no seat but the holder may know them afterwards.
+  * viewer's record of them, at the start of the Throne (Last Chronicle
+  * powers design, ruling 3; Legacy Chronicle powers R28, re-ruled by the
+  * owner 2026-11-14): the Sun's reveal made them public, and no seat but
+  * the holder may know them afterwards.
   * Their owners still see their own. The Grand Scepter and a relic no
   * player holds are refused. */
 final case class RelicsHidden(relics: Vector[RelicId])
     extends ChronicleOperation, LeafOperation
 
-/** Keeps a held relic for the next game (Heirloom; Legacy Chronicle powers
-  * design, ruling 13; R20): it leaves the player's relics for their
-  * lineage's `startingRelics`, outside play and the card index (Legacies
-  * R2), and game start hands it back facedown. The Grand Scepter, a relic
-  * the player does not hold and a relic with tokens are refused. */
+/** Keeps a held relic for the next game (Heirloom, Legacy Chronicle powers
+  * design, ruling 13, R20; Hiding Place, Last Chronicle powers design,
+  * ruling 4): it leaves the player's relics for their lineage's
+  * `startingRelics`, outside play and the card index (Legacies R2), and
+  * game start hands it back facedown. The Grand Scepter, a relic the
+  * player does not hold and a relic with tokens or warbands on it are
+  * refused. */
 final case class StartingRelicKept(player: PlayerId, relic: RelicId)
     extends ChronicleOperation, LeafOperation
 

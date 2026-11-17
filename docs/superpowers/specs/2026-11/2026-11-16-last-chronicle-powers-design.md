@@ -1,7 +1,7 @@
 # The Last Chronicle Powers
 
 **Status:** designed 2026-11-16, approved section by section by the owner.
-Each slice is planned when the one before it lands. Slice 1 landed 2026-11-16.
+Each slice is planned when the one before it lands. Slice 1 landed 2026-11-16. Slice 2 landed 2026-11-16.
 
 **Builds on** the [Legacy Chronicle powers design](2026-11-13-legacy-chronicle-powers-design.md)
 (the Throne's windows, Reformer at the start of the Throne, Heirloom's keep,
@@ -71,9 +71,11 @@ rulings" section in `docs/rules/ambiguities.md`, numbered as here.
      ruler may keep any relic they hold but the Grand Scepter, which then
      stays facedown with them for the next game. They choose one or
      Decline, even with a single relic, since the text says "may".
-   - The relic's secrets and any warbands on it return to the ruler, then
-     `StartingRelicKept` adds it to their lineage's starting relics, as
-     Heirloom's keep does.
+   - The relic's secrets return to the ruler, facedown. Any warbands on
+     it go back to their supply, as Stock Reliquary returns warbands on
+     cards (owner, 2026-11-03; confirmed for Hiding Place 2026-11-16).
+     Then `StartingRelicKept` adds it to their lineage's starting relics,
+     as Heirloom's keep does.
    - Lines: "p2 kept a relic with Hiding Place" for every viewer, and
      "p2 kept Cup of Plenty with Hiding Place" for the ruler alone.
 5. **Blasted Pastures.** At the start of the Throne, unless the Throne
