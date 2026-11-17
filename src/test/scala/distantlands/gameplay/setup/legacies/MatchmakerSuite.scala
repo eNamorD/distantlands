@@ -2,7 +2,7 @@ package distantlands.gameplay.setup.legacies
 
 import distantlands.application.GameCommand
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus}
+import distantlands.gameplay.powers.NoteText
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
   LegacyDeal, LegacyKeep, SetupLegacyFixture, SetupProcedure,
   SetupWalkDriver}
@@ -116,6 +116,5 @@ class MatchmakerSuite extends munit.FunSuite:
         public, LaterGameFixture.orders(public, p1)).events).map(_.text)
     assert(!said.exists(_.contains(MatchmakerCard.id.value)), said)
 
-  test("the card has left holding and its power is registered"):
+  test("Matchmaker is registered among the setup legacies"):
     assert(LegacySetupPowers.all.contains(Matchmaker))
-    assert(PowerImplementationStatus.implemented(MatchmakerCard.power.id))

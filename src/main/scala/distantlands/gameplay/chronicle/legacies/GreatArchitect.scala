@@ -22,8 +22,7 @@ object GreatArchitectCard extends Legacy(LegacyId("L07"), "Great Architect",
   * any card at a site they rule may be buried for each available edifice.
   * "Even if the Iron Hand is in play": an Imperial holder builds in place
   * of Iron Hand's holder too, who then does not build (ruling 19; R32,
-  * re-ruled by the owner 2026-11-14). This power hooks no window; it is
-  * registered so the card counts as implemented. */
+  * re-ruled by the owner 2026-11-14). This power hooks no window. */
 case object GreatArchitect extends ContributingPower:
   val id: PowerId = GreatArchitectCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)

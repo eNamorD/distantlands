@@ -32,9 +32,8 @@ object OathsOfLoyaltyCard extends Legacy(LegacyId("L25"), "Oaths of Loyalty",
   * (R24); under Teeming World the holder draws until they would hold
   * three, counting the advisers Oaths kept, and buries every card drawn
   * (`SetupDeal.of`; R24 re-ruled), below the Visions (R49). The
-  * power hooks no window; it is registered so the card counts as
-  * implemented. Lines: "p2 kept Birdsong and Golem Legions with Oaths of
-  * Loyalty", "p2 buried Fae Merchant with Oaths of Loyalty". */
+  * power hooks no window. Lines: "p2 kept Birdsong and Golem Legions with Oaths
+  * of Loyalty", "p2 buried Fae Merchant with Oaths of Loyalty". */
 case object OathsOfLoyalty extends ContributingPower:
   val id: PowerId = OathsOfLoyaltyCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)

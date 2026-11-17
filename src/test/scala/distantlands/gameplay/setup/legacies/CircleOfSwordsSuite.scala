@@ -1,6 +1,6 @@
 package distantlands.gameplay.setup.legacies
 
-import distantlands.gameplay.powers.{PlayerFacts, PowerImplementationStatus}
+import distantlands.gameplay.powers.PlayerFacts
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
   SetupLegacyFixture, StartingLegacies}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -95,6 +95,5 @@ class CircleOfSwordsSuite extends munit.FunSuite:
     assertEquals(Vector("p1", "p2", "p3").map(board(ready, _)),
       Vector(3, 3, 3))
 
-  test("the card has left holding and its power is registered"):
+  test("Circle of Swords is registered among the setup legacies"):
     assert(LegacySetupPowers.all.contains(CircleOfSwords))
-    assert(PowerImplementationStatus.implemented(CircleOfSwordsCard.power.id))

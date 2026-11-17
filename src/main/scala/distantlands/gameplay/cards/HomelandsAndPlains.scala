@@ -3,20 +3,11 @@ package distantlands.gameplay.cards
 import distantlands.catalog.Site
 import distantlands.model.{PowerId, Suit, SiteId, Tokens}
 
-/** The eleven sites whose power no power object runs. The six Homelands'
-  * `homeland-<suit>` handlers are card play's Homeland rule,
-  * `CardPlayRules.homeland`, which writes its line as
-  * `RuleNotes.homelandDiscard`; the five Plains' `plains` handlers print
-  * "This site has no power". Both play correctly with nothing registered,
-  * so `PowerImplementationStatus` counts `handlers` implemented from this
-  * list.
-  */
-object HomelandsAndPlains:
-  val homelands: Vector[Site] = Vector(DeepWoodsSite, GoldenValleySite,
-    GreatSlumSite, PaintedTowersSite, StandingStonesSite, SteppeSite)
-  val plains: Vector[Site] = Vector(BuriedGiantSite, DunesSite,
-    SaltFlatsSite, ShroudedWoodsSite, SolitaryPillarSite)
-  val handlers: Set[PowerId] = (homelands ++ plains).flatMap(_.handlers).toSet
+// The eleven sites whose power no power object runs. The six Homelands'
+// `homeland-<suit>` handlers are card play's Homeland rule,
+// `CardPlayRules.homeland`, which writes its line as
+// `RuleNotes.homelandDiscard`; the five Plains' `plains` handlers print
+// "This site has no power".
 
 object BuriedGiantSite extends Site(SiteId("site:buried-giant"), "Buried Giant",
     defense = 1, capacity = 1, relicSlots = 2,

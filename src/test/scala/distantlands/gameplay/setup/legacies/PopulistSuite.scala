@@ -1,8 +1,7 @@
 package distantlands.gameplay.setup.legacies
 
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.{LaterGameFixture, SetupLegacyFixture,
   SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -126,6 +125,5 @@ class PopulistSuite extends munit.FunSuite:
       .updated(Suit.all.head, 4)), (3, 1))
     assertEquals(Populist.shares(Map.empty), (0, 0))
 
-  test("the card has left holding and its power is registered"):
+  test("Populist is registered among the setup legacies"):
     assert(LegacySetupPowers.all.contains(Populist))
-    assert(PowerImplementationStatus.implemented(PopulistCard.power.id))

@@ -3,8 +3,7 @@ package distantlands.gameplay.setup.legacies
 import distantlands.application.GameCommand
 import distantlands.gameplay.OathRules
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
   SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
 import distantlands.gameplay.walker.WalkerPowers
@@ -141,11 +140,10 @@ class SeerSuite extends munit.FunSuite:
       SetupProcedure.noteKeys, woken.events).map(_.text).contains(
       s"p2 placed the Visions with ${SeerCard.id.value}"))
 
-  test("the card has left holding and its power is registered"):
+  test("Seer is registered among the setup legacies"):
     assert(LegacySetupPowers.all.contains(Seer))
     assert(LegacySetupPowers.all.indexOf(SecretSociety) <
       LegacySetupPowers.all.indexOf(Seer))
-    assert(PowerImplementationStatus.implemented(SeerCard.power.id))
 
   test("placed inserts in ascending position so each lands where chosen"):
     val (v1, v2) = (VisionId("vision:1"), VisionId("vision:2"))

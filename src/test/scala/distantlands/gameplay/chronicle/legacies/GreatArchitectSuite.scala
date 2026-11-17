@@ -3,8 +3,7 @@ package distantlands.gameplay.chronicle.legacies
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
 import distantlands.gameplay.chronicle.{BuildEdifice, ChronicleWalk}
-import distantlands.gameplay.powers.{PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.powers.economy.WildPasturesCard
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -47,9 +46,6 @@ class GreatArchitectSuite extends munit.FunSuite:
   private def edificesAt(ready: ReadyGame): Vector[EdificeId] =
     ready.game.current.map.sites(AncientCitySite.id).denizens.collect {
       case EdificeState(id, _, _) => id }
-
-  test("Great Architect is implemented"):
-    assert(PowerImplementationStatus.implemented(GreatArchitectCard.power.id))
 
   test("a Citizen holder performs Build Edifice in place of the Chancellor " +
       "and builds an off-suit edifice (ruling 10)"):

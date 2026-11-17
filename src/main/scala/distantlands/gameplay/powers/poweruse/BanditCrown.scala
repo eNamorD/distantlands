@@ -9,8 +9,7 @@ import distantlands.model._
   *
   * The rule is `BanditCrownRule`, which `PowerAccess`, `PlanContext`,
   * `SiteRulers`' consent granters and `PayOrAsk.letOffBy` read. This power
-  * hooks no window. It is registered so the card counts as implemented.
-  * It writes no line.
+  * hooks no window. It writes no line.
   */
 case object BanditCrown extends ContributingPower:
   val id: PowerId = BanditCrownCard.power.id

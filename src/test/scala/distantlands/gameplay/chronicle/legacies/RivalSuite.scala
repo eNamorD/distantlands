@@ -7,8 +7,7 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
 import distantlands.gameplay.chronicle.ChronicleWalk
 import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
 import distantlands.gameplay.powers.action.FaeMerchantCard
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -49,9 +48,6 @@ class RivalSuite extends munit.FunSuite:
     NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone),
       keys, run.events).filter(said => keys.exists(_.name == said.key))
       .map(_.text)
-
-  test("Rival is implemented"):
-    assert(PowerImplementationStatus.implemented(RivalCard.power.id))
 
   test("the holder is offered every card Shape Empire would discard"):
     // Ancient City is Enduring, so its ruined edifice stays anyway.

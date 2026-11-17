@@ -17,8 +17,7 @@ object YewStaffCard extends Relic(RelicId("R40"), "Yew Staff", value = 60, defen
   * While its holder has it faceup, every card power they use that asks
   * whether they hold the Darkest Secret finds that they do
   * (`CardPowerBanners.holdsDarkestSecret`). It applies automatically and
-  * writes no line. This power hooks no window. It is registered so the
-  * card counts as implemented.
+  * writes no line. This power hooks no window.
   */
 case object YewStaff extends ContributingPower
     with CardPowerBanners.DarkestSecretOverride:

@@ -5,8 +5,7 @@ import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.ChronicleWalk
 import distantlands.gameplay.powers.action.FaeMerchantCard
 import distantlands.gameplay.powers.economy.{BirdsongCard, GolemLegionsCard}
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -51,10 +50,6 @@ class OathsOfLoyaltySuite extends munit.FunSuite:
       : Vector[String] =
     NoteText.said(ProcedureNotes.id(procedure),
       OathsOfLoyalty.noteKeys(procedure), run.events).map(_.text)
-
-  test("Oaths of Loyalty is implemented"):
-    assert(PowerImplementationStatus.implemented(
-      OathsOfLoyaltyCard.power.id))
 
   test("the holder keeps three of five faceup advisers as facedown " +
       "starting advisers, and the rest are gathered (ruling 15; R23)"):

@@ -46,8 +46,8 @@ object OperationRestrictions:
     new OperationRestrictions(Some(catalog))
 
   /** The printed powers an operation restriction enforces, with no walker
-    * power: the one list `printed`, `PowerImplementationStatus`,
-    * `ConsentPowers` and `RuleNotes` read. An [[AsIfLocked]] rule joins
+    * power: the one list `printed`, `ConsentPowers` and
+    * `RuleNotes` read. An [[AsIfLocked]] rule joins
     * [[LockedCards]]; a rule that is a restriction itself stands alone. */
   val printedRules: Vector[PrintedRule] =
     Vector(AncientBloodline, HallOfMinisters, GrandScepter,

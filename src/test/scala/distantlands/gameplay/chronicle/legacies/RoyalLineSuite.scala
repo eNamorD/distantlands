@@ -4,8 +4,7 @@ import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.chronicle.{ChronicleWalk, LineageScoring}
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.economy.VillageIdiotCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -56,9 +55,6 @@ class RoyalLineSuite extends munit.FunSuite:
     lines(run, TriggeredProcedureRef.ChronicleWinner, RoyalLine.winnerNoteKeys)
 
   private val stable = GameResult(p1, VictoryKind.StableRegime)
-
-  test("Royal Line is implemented"):
-    assert(PowerImplementationStatus.implemented(RoyalLineCard.power.id))
 
   test("the holder may decline, or choose from every Imperial, the " +
       "Chancellor first (ruling 22; R38)"):

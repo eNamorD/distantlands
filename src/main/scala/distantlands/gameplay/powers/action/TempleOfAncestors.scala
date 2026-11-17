@@ -40,7 +40,7 @@ object TempleOfAncestorsCard extends Edifice(EdificeId("E10"), Suit.Nomad):
   * site slot shows "Temple of Ancestors: the card goes to your advisers"
   * (owner question 6). A Search Party it draws still plays its own card as
   * if searched, site included. An empty deck draws nothing and asks
-  * nothing. The ruined face is a Chronicle step and is not implemented.
+  * nothing. The ruined face is a Chronicle step, `RuinedTempleWin`.
   */
 case object TempleOfAncestors
     extends PaidAction(TempleOfAncestorsCard.intact.power)

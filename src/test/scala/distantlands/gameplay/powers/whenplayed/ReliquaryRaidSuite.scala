@@ -1,7 +1,7 @@
 package distantlands.gameplay.powers.whenplayed
 
 import distantlands.gameplay.WalkerDiceFixture
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus}
+import distantlands.gameplay.powers.NoteText
 import distantlands.model._
 import distantlands.testkit.Look
 import distantlands.testkit.Table.p1
@@ -57,6 +57,3 @@ class ReliquaryRaidSuite extends munit.FunSuite:
       Vector(line("reliquary-empty", "The Reliquary was empty.")))
     // Only the line is written: no operation runs, so the game is as it was.
     assertEquals(walked.end, start)
-
-  test("its power counts as implemented"):
-    assert(PowerImplementationStatus.implemented(ReliquaryRaidCard.power.id))

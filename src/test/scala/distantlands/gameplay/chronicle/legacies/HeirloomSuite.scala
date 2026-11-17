@@ -3,8 +3,7 @@ package distantlands.gameplay.chronicle.legacies
 import distantlands.gameplay.{GrandMaskCard, OathRules, WalkerDiceFixture}
 import distantlands.gameplay.chronicle.ChronicleWalk
 import distantlands.gameplay.operations.TheGrandScepterCard
-import distantlands.gameplay.powers.{PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.powers.economy.CupOfPlentyCard
 import distantlands.gameplay.setup.{ChronicleAccounting, GameStartRules,
   LaterGameFixture}
@@ -37,9 +36,6 @@ class HeirloomSuite extends munit.FunSuite:
 
   private def lineage(ready: ReadyGame, player: PlayerId): LineageState =
     ready.game.campaign.lineages(ready.game.current.player(player).get.lineage)
-
-  test("Heirloom is implemented"):
-    assert(PowerImplementationStatus.implemented(HeirloomCard.power.id))
 
   test("the holder keeps one relic of their choice, never the Grand " +
       "Scepter, before Scatter Relics (ruling 13; R18)"):

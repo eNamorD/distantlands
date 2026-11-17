@@ -8,8 +8,7 @@ import distantlands.model._
   * except battle plans at Imperial sites, and Imperial players do not."
   *
   * The rule is `GrandMaskRule`, which `CardRule` and `PowerAccess` read.
-  * This power hooks no window. It is registered so the card counts as
-  * implemented. It writes no line.
+  * This power hooks no window. It writes no line.
   */
 case object GrandMask extends ContributingPower:
   val id: PowerId = GrandMaskCard.power.id

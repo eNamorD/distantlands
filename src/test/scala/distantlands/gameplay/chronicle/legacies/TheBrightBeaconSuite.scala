@@ -4,8 +4,7 @@ import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.{ChronicleWalk, IntroduceNewcomers,
   WelcomeStranger}
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Table
@@ -58,10 +57,6 @@ class TheBrightBeaconSuite extends munit.FunSuite:
 
   private def lineage(ready: ReadyGame, player: PlayerId): LineageState =
     ready.game.campaign.lineages(ready.game.current.player(player).get.lineage)
-
-  test("The Bright Beacon is implemented"):
-    assert(PowerImplementationStatus.implemented(
-      TheBrightBeaconCard.power.id))
 
   test("the holder first chooses the source, the box first (ruling 17)"):
     val run = beacon(beaconTable(5, 3))

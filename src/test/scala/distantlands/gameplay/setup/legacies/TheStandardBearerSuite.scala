@@ -2,8 +2,7 @@ package distantlands.gameplay.setup.legacies
 
 import distantlands.application.GameCommand
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
   SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
 import distantlands.gameplay.walker.WalkerPowers
@@ -136,7 +135,5 @@ class TheStandardBearerSuite extends munit.FunSuite:
     assertEquals(walked.ready.game.current.banners.peoplesFavor.holder,
       Some(p1))
 
-  test("the card has left holding and its power is registered"):
+  test("The Standard Bearer is registered among the setup legacies"):
     assert(LegacySetupPowers.all.contains(TheStandardBearer))
-    assert(PowerImplementationStatus.implemented(
-      TheStandardBearerCard.power.id))

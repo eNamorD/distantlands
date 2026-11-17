@@ -2,7 +2,7 @@ package distantlands.gameplay.setup.legacies
 
 import distantlands.application.GameCommand
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus}
+import distantlands.gameplay.powers.NoteText
 import distantlands.gameplay.setup.{AtlasPlacement, GameStartRules,
   ImperialMaps, LaterGameFixture, SetupLegacyFixture, SetupProcedure,
   SetupWalkDriver}
@@ -133,6 +133,5 @@ class WorldCrafterSetupSuite extends munit.FunSuite:
       LaterGameFixture.orders(dormant, p1))
     assert(lines(situation).contains("p1 filled the map from Recent Sites"))
 
-  test("the card has left holding and its power is registered"):
+  test("World Crafter is registered among the setup legacies"):
     assert(LegacySetupPowers.all.contains(WorldCrafter))
-    assert(PowerImplementationStatus.implemented(WorldCrafterCard.power.id))

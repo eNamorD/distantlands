@@ -7,8 +7,7 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
 import distantlands.gameplay.chronicle.legacies.{IronHandCard, Rival,
   RivalCard}
 import distantlands.gameplay.operations.HallOfMinistersCard
-import distantlands.gameplay.powers.{PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.powers.action.FaeMerchantCard
 import distantlands.gameplay.powers.economy.VillageIdiotCard
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
@@ -36,8 +35,7 @@ class ShapeEmpireExemptionsSuite extends munit.FunSuite:
   private def onMap(ready: ReadyGame, card: CardId): Boolean =
     ready.game.current.map.sites.values.exists(_.denizens.exists(_.id == card))
 
-  test("Ancient City's Enduring is implemented"):
-    assert(PowerImplementationStatus.implemented(AncientCitySite.enduring))
+  test("Ancient City's Enduring is registered under its printed id"):
     assertEquals(AncientCityEnduring.id, AncientCitySite.enduring)
 
   test("a card at Ancient City stays when Iron Hand's Exile shapes the " +
@@ -60,9 +58,7 @@ class ShapeEmpireExemptionsSuite extends munit.FunSuite:
     sites.foldLeft(ChronicleWalk.throneHeldByChancellorP1)((table, site) =>
       table.warbandsAt(site, p1, 1))
 
-  test("Hall of Bandits is implemented"):
-    assert(PowerImplementationStatus.implemented(
-      HallOfMinistersCard.ruined.power.id))
+  test("Hall of Bandits is registered under its printed id"):
     assertEquals(HallOfBandits.id, HallOfMinistersCard.ruined.power.id)
 
   test("with Hall of Bandits on the map, the ruined edifices at bandit " +

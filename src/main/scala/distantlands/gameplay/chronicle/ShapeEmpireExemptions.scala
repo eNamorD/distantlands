@@ -31,16 +31,14 @@ object ShapeEmpireExemptions:
     case _ => false
 
 /** Ancient City's Enduring: Shape Empire reads it
-  * (`ShapeEmpireExemptions.enduring`). It hooks no window; it is
-  * registered so the power counts as implemented, as the Baths are. */
+  * (`ShapeEmpireExemptions.enduring`). It hooks no window. */
 case object AncientCityEnduring extends ContributingPower:
   val id: PowerId = AncientCitySite.enduring
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
 
 /** Hall of Bandits (E16 ruined): Shape Empire reads it
-  * (`ShapeEmpireExemptions.banditRuin`). It hooks no window; it is
-  * registered so the face counts as implemented. */
+  * (`ShapeEmpireExemptions.banditRuin`). It hooks no window. */
 case object HallOfBandits extends ContributingPower:
   val id: PowerId = HallOfMinistersCard.ruined.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)

@@ -17,7 +17,7 @@ object CircleOfSwordsCard extends Legacy(LegacyId("L06"), "Circle of Swords",
   * design, ruling 5). Game start reads it (`StartingLegacies.of`): the
   * holder's board starts with 8 warbands, an Imperial's from the purple
   * supply after every other Imperial board's 3 (R3). This power hooks no
-  * window; it is registered so the card counts as implemented. */
+  * window. */
 case object CircleOfSwords extends ContributingPower:
   val id: PowerId = CircleOfSwordsCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)

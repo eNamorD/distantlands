@@ -2,8 +2,7 @@ package distantlands.gameplay.setup.legacies
 
 import distantlands.application.GameCommand
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
   SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -140,10 +139,9 @@ class WealthySuite extends munit.FunSuite:
     assertEquals(asked, Vector(TheStandardBearer.decisionId(p3),
       Wealthy.decisionId(p3)))
 
-  test("the card has left holding, its power is registered, and it still " +
-      "alters Foundation II"):
+  test("Wealthy is registered among the setup legacies and alters " +
+      "Foundation II"):
     assert(LegacySetupPowers.all.contains(Wealthy))
     assert(LegacySetupPowers.all.indexOf(TheStandardBearer) <
       LegacySetupPowers.all.indexOf(Wealthy))
-    assert(PowerImplementationStatus.implemented(WealthyCard.power.id))
     assertEquals(WealthyCard.alters, Some(FoundationNumber.II))

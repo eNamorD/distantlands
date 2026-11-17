@@ -25,9 +25,8 @@ object TheBrightBeaconCard extends Legacy(LegacyId("L24"), "The Bright Beacon",
   * they peek every Dispossessed denizen, the older then the newly
   * Dispossessed (R22), and choose exactly six, or take all six when exactly
   * six remain; the six go to their temporary hand, and Welcome a Stranger
-  * runs on them. This power hooks no window; it is registered so the card
-  * counts as implemented. Line: "p3 took six newcomers from the
-  * Dispossessed with The Bright Beacon". */
+  * runs on them. This power hooks no window. Line: "p3 took six newcomers from
+  * the Dispossessed with The Bright Beacon". */
 case object TheBrightBeacon extends ContributingPower:
   val id: PowerId = TheBrightBeaconCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
