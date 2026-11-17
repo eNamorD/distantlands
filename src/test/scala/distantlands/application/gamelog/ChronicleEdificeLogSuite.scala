@@ -30,7 +30,7 @@ class ChronicleEdificeLogSuite extends munit.FunSuite:
       "lay on, to every viewer (ruling 5)"):
     val script = ChronicleLogScripts.throneBlastedPastures
     val name = WildPasturesCard.ruined.name
-    Vector(Some(p1), Some(p2), None).foreach { viewer =>
+    Vector(Some(p1), Some(p2), Some(p3), None).foreach { viewer =>
       val lines = format(script, viewer).map(text)
       val buried = lines.filter(_.startsWith(s"$name buried "))
       assertEquals(buried.size, 1, lines)
