@@ -4,8 +4,8 @@ import distantlands.gameplay.powers.banner.TheNeedleCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
-import distantlands.gameplay.chronicle.{BuildEdifice, LineageScoring,
-  OfferCitizenship, ShapeFoundation}
+import distantlands.gameplay.chronicle.{BuildEdifice, HidingPlace,
+  LineageScoring, OfferCitizenship, ShapeFoundation}
 import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
   Gatekeeper, GatekeeperCard, GreatArchitectCard, Heirloom, HeirloomCard,
   IronHandCard, OathsOfLoyalty, OathsOfLoyaltyCard, Reformer, ReformerCard,
@@ -13,7 +13,8 @@ import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
   RoyalLineCard, TheBrightBeacon, TheBrightBeaconCard, TheEarCard}
 import distantlands.gameplay.{BanditCrownCard, GrandMaskCard}
 import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
-  DowntroddenCard, GolemLegionsCard, MapLibraryCard, VillageIdiotCard}
+  DowntroddenCard, GolemLegionsCard, HallowedSpringCard, MapLibraryCard,
+  VillageIdiotCard}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
@@ -117,6 +118,24 @@ object ChronicleLogScripts:
         ChooseOneAnswer(DecisionOptionRef.Relic(CupOfPlentyCard.id))
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("throne-heirloom", service, p1)
+
+  /** The game of [[chronicleStarted]] with Hiding Place: p2 rules Broken
+    * Peaks, where Hiding Place stands, and holds Cup of Plenty and Grand
+    * Mask; at the start of the Throne p2 keeps Cup of Plenty (Last
+    * Chronicle powers, slice 2). */
+  def throneHidingPlace(using munit.Location): Script =
+    val (service, acting) = atTable("throne-hiding-place", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .edifice(HallowedSpringCard, EdificeSide.Ruined, at = BrokenPeaksSite)
+      .warbandsAt(BrokenPeaksSite, p2, 1)
+      .relic(p2, CupOfPlentyCard).relic(p2, GrandMaskCard)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.withAnswers {
+      case park if park.decisionId == HidingPlace.decisionId(p2) =>
+        ChooseOneAnswer(DecisionOptionRef.Relic(CupOfPlentyCard.id))
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("throne-hiding-place", service, p1)
 
   /** The game of [[chronicleStarted]] with Oaths of Loyalty and Heirloom:
     * p2 holds the Darkest Secret, Cup of Plenty (the highest relic) and
@@ -277,6 +296,7 @@ object ChronicleLogScripts:
       "throne-gifted" -> (() => throneGifted),
       "sun-gatekeeper-chronicler" -> (() => sunGatekeeperChronicler),
       "throne-heirloom" -> (() => throneHeirloom),
+      "throne-hiding-place" -> (() => throneHidingPlace),
       "chronicle-oaths-heirloom" -> (() => chronicleOathsHeirloom),
       "chronicle-iron-hand" -> (() => chronicleIronHand),
       "chronicle-royal-line" -> (() => chronicleRoyalLine),

@@ -479,5 +479,5 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       "chronicle.throne.citizenship.", "chronicle.shape-empire.",
       "chronicle.build-edifice.", "chronicle.stock-reliquary.",
       "chronicle.score-lineage.", "chronicle.swear-oath.",
-      "chronicle.throne.legacy."),
+      "chronicle.throne.legacy.", "chronicle.throne.hiding-place."),
     isSection = false)
