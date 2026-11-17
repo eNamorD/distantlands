@@ -1,8 +1,8 @@
 package distantlands.gameplay.powers
 
 import distantlands.catalog.ExecutableCatalog
-import distantlands.gameplay.chronicle.{AncientCityEnduring, RuinedBaths,
-  StoneBaths}
+import distantlands.gameplay.chronicle.{AncientCityEnduring, HallOfBandits,
+  RuinedBaths, StoneBaths}
 import distantlands.gameplay.chronicle.legacies.LegacyChroniclePowers
 import distantlands.gameplay.operations.OperationRestrictions
 import distantlands.gameplay.phases.rest.Arbiter
@@ -62,7 +62,8 @@ import distantlands.model.{CardId, PowerId}
   * The legacies' Chronicle powers (`LegacyChroniclePowers`) are inert until
   * a Chronicle walks their windows; Steadfast hooks none, as Sun step 3
   * reads it. The Baths hook none either, as Sun steps 2 and 3 read them,
-  * nor does Ancient City's Enduring, which Shape Empire reads.
+  * nor do Ancient City's Enduring and Hall of Bandits, which Shape Empire
+  * reads.
   * The legacies' SETUP powers (`LegacySetupPowers`) hook no
   * window: game start and Setup's steps read them.
   * `restrictionSet` gives every walker step the catalog's global operation
@@ -102,8 +103,8 @@ object WalkerPowerCatalog:
       BannerFacePowers.contributions ++
       Vector(Dazzle, GreatMarket, BanditMarket, GreatForge, BrokenForge,
         ProvingGrounds, EmptyGrounds, LostDoors, AmberDoors, StoneBaths,
-        RuinedBaths, AncientCityEnduring, RuinedTemple, HallOfMockery,
-        LostGuardians, RuinedSchool,
+        RuinedBaths, AncientCityEnduring, HallOfBandits, RuinedTemple,
+        HallOfMockery, LostGuardians, RuinedSchool,
         BrokenHorn, BrokenClock, FallenSpire, TakeWealthLimit,
         TakeWealthPawnGate, LightFingers, Beloved, TheNeedle, Arbiter,
         ConspiracyWhenPlayed) ++

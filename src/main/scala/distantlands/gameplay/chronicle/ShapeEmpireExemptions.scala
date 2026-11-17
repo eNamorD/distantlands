@@ -2,6 +2,7 @@ package distantlands.gameplay.chronicle
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.operations.HallOfMinistersCard
 import distantlands.gameplay.powerresolver.{Contribution, ContributingPower}
 import distantlands.model._
 
@@ -17,10 +18,30 @@ object ShapeEmpireExemptions:
   def enduring(catalog: ExecutableCatalog, site: SiteId): Boolean =
     catalog.site(site).exists(_.handlers.contains(AncientCityEnduring.id))
 
+  /** A ruined edifice at a site bandits rule, while Hall of Bandits (E16
+    * ruined) is on the map, is not discarded in the Chronicle (ruling 2).
+    * Shape Empire is the only Chronicle discard that reaches a bandit
+    * site. The Hall keeps itself when bandits rule its site. */
+  def banditRuin(ready: ReadyGame, site: SiteId, card: SiteDenizenState)
+      : Boolean = card match
+    case EdificeState(_, EdificeSide.Ruined, _) =>
+      ready.game.current.edificeSite(HallOfMinistersCard.id,
+        EdificeSide.Ruined).nonEmpty &&
+        SiteRule.rulingPlayer(ready, site).contains(SiteRuler.Bandits)
+    case _ => false
+
 /** Ancient City's Enduring: Shape Empire reads it
   * (`ShapeEmpireExemptions.enduring`). It hooks no window; it is
   * registered so the power counts as implemented, as the Baths are. */
 case object AncientCityEnduring extends ContributingPower:
   val id: PowerId = AncientCitySite.enduring
+  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
+  def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
+
+/** Hall of Bandits (E16 ruined): Shape Empire reads it
+  * (`ShapeEmpireExemptions.banditRuin`). It hooks no window; it is
+  * registered so the face counts as implemented. */
+case object HallOfBandits extends ContributingPower:
+  val id: PowerId = HallOfMinistersCard.ruined.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty

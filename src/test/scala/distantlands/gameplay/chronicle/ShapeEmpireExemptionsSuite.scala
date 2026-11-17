@@ -1,9 +1,12 @@
 package distantlands.gameplay.chronicle
 
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
+import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
-import distantlands.gameplay.chronicle.legacies.IronHandCard
+import distantlands.gameplay.chronicle.legacies.{IronHandCard, Rival,
+  RivalCard}
+import distantlands.gameplay.operations.HallOfMinistersCard
 import distantlands.gameplay.powers.{PowerImplementationStatus,
   WalkerPowerCatalog}
 import distantlands.gameplay.powers.action.FaeMerchantCard
@@ -48,3 +51,57 @@ class ShapeEmpireExemptionsSuite extends munit.FunSuite:
     val run = throne(table)
     assert(onMap(run.ready, ThreateningRoarCard.id))
     assert(!onMap(run.ready, FaeMerchantCard.id))
+
+  private def empireAt(sites: distantlands.catalog.Site*): Table =
+    sites.foldLeft(ChronicleWalk.throneHeldByChancellorP1)((table, site) =>
+      table.warbandsAt(site, p1, 1))
+
+  test("Hall of Bandits is implemented"):
+    assert(PowerImplementationStatus.implemented(
+      HallOfMinistersCard.ruined.power.id))
+    assertEquals(HallOfBandits.id, HallOfMinistersCard.ruined.power.id)
+
+  test("with Hall of Bandits on the map, the ruined edifices at bandit " +
+      "sites stay, the Hall included (ruling 2)"):
+    val table = empireAt(BrokenPeaksSite)
+      .bandits(BuriedGiantSite, 2).bandits(DeepWoodsSite, 1)
+      .edifice(HallOfMinistersCard, EdificeSide.Ruined, at = BuriedGiantSite)
+      .edifice(SchoolOfVinesCard, EdificeSide.Ruined, at = DeepWoodsSite)
+    val run = throne(table)
+    assert(onMap(run.ready, HallOfMinistersCard.id))
+    assert(onMap(run.ready, SchoolOfVinesCard.id))
+
+  test("Hall of Bandits keeps no ruin at a site bandits do not rule, nor " +
+      "a denizen at a bandit site"):
+    // Deep Woods has no warbands, so nobody rules it.
+    val table = empireAt(BrokenPeaksSite)
+      .bandits(BuriedGiantSite, 2)
+      .edifice(HallOfMinistersCard, EdificeSide.Ruined, at = BuriedGiantSite)
+      .denizen(FaeMerchantCard, at = BuriedGiantSite)
+      .edifice(SchoolOfVinesCard, EdificeSide.Ruined, at = DeepWoodsSite)
+    val run = throne(table)
+    assert(onMap(run.ready, HallOfMinistersCard.id))
+    assert(!onMap(run.ready, FaeMerchantCard.id))
+    assert(!onMap(run.ready, SchoolOfVinesCard.id))
+
+  test("the Hall of Ministers, its intact face, keeps no ruin at a bandit " +
+      "site"):
+    val table = empireAt(BrokenPeaksSite)
+      .edifice(HallOfMinistersCard, EdificeSide.Intact, at = BrokenPeaksSite)
+      .bandits(BuriedGiantSite, 2)
+      .edifice(SchoolOfVinesCard, EdificeSide.Ruined, at = BuriedGiantSite)
+    val run = throne(table)
+    assert(onMap(run.ready, HallOfMinistersCard.id))
+    assert(!onMap(run.ready, SchoolOfVinesCard.id))
+
+  test("a ruin Hall of Bandits keeps is not among Rival's options"):
+    val table = empireAt(BrokenPeaksSite)
+      .bandits(BuriedGiantSite, 2)
+      .edifice(HallOfMinistersCard, EdificeSide.Ruined, at = BuriedGiantSite)
+      .denizen(FaeMerchantCard, at = BuriedGiantSite)
+      .legacy(p3, RivalCard)
+    val run = throne(table)
+    val asked = run.asked.find(_.decisionId == Rival.decisionId(p3)).get
+    assertEquals(asked.query.asInstanceOf[DecisionQuery.ChooseMany].options
+      .map(_.ref), Vector[DecisionOptionRef](
+        DecisionOptionRef.Denizen(FaeMerchantCard.id)))

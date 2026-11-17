@@ -1,3 +1,2 @@
 edifice.e07.ruined
-edifice.e16.ruined
 edifice.e26.ruined

@@ -10,10 +10,11 @@ import distantlands.model._
   * 11 and 14). The Throne holder may remove any of their warbands from
   * sites but the last one on the map; with no site, they clear their pawn's
   * site and place one there. Then every denizen at a site they do not rule
-  * is discarded, except intact edifices and cards at Enduring sites. Iron
-  * Hand's Exile holder, read when the step is reached, performs it in the
-  * Throne holder's place, over the sites they rule (Legacy Chronicle
-  * powers design, ruling 19; R31). */
+  * is discarded, except intact edifices, cards at Enduring sites and,
+  * while Hall of Bandits is on the map, ruined edifices at bandit sites
+  * (`ShapeEmpireExemptions`). Iron Hand's Exile holder, read when the step
+  * is reached, performs it in the Throne holder's place, over the sites
+  * they rule (Legacy Chronicle powers design, ruling 19; R31). */
 object ShapeEmpire:
   val removeDecisionId: String = "chronicle.shape-empire.remove"
 
@@ -80,11 +81,12 @@ object ShapeEmpire:
           PositionedLocation(Location.WarbandBank(kind)))
       }), required = true))
 
-  /** The cards at sites the holder does not rule, but Enduring ones, are
-    * discarded. Rival's holder, read when the discard is reached, first keeps
-    * any of them, ruined edifices included (Legacy Chronicle powers design,
-    * ruling 9; R8): the question's options are the cards this Branch read,
-    * so a walk resumed there finds the same ones. */
+  /** The cards at sites the holder does not rule, but those
+    * `ShapeEmpireExemptions` keeps, are discarded. Rival's holder, read when
+    * the discard is reached, first keeps any of them, ruined edifices
+    * included (Legacy Chronicle powers design, ruling 9; R8): the
+    * question's options are the cards this Branch read, so a walk resumed
+    * there finds the same ones. */
   private def discards(catalog: ExecutableCatalog, state: ReadyGame,
       holder: PlayerId): Vector[Operation] =
     val current = state.game.current
@@ -92,8 +94,9 @@ object ShapeEmpire:
       ChronicleTasks.rules(state, holder, site) ||
         ShapeEmpireExemptions.enduring(catalog, site))
       .flatMap(site => current.map.regionOf(site).toVector.flatMap(region =>
-        current.map.sites(site).denizens.flatMap(card =>
-          discardOf(catalog, site, region, card, holder)
+        current.map.sites(site).denizens
+          .filterNot(ShapeEmpireExemptions.banditRuin(state, site, _))
+          .flatMap(card => discardOf(catalog, site, region, card, holder)
             .map(op => (site, card, op)))))
     if cards.isEmpty then Vector.empty
     else ChronicleLegacyRules.protector(state) match
