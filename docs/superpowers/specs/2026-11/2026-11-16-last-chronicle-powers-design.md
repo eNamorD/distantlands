@@ -85,8 +85,9 @@ rulings" section in `docs/rules/ambiguities.md`, numbered as here.
      Crown Chancellor the Empire's sites count as the winner's (Chronicle
      rulings 11 and 14).
    - Denizens go to the bottom of the world deck facedown and edifices to
-     the edifice deck, through `Bury.standard`; tokens on them return as a
-     bury returns them.
+     the edifice deck, through `Bury.standard`. Favor on them returns to
+     its suit's bank, and secrets go to the Throne holder, facedown, as
+     Shape Empire's discards return them (owner, 2026-11-16).
    - Advisers and relics are not on the map and stay. Rival keeps cards from
      a discard, not a bury, so it is not asked.
    - One line: "Blasted Pastures buried {cards}". Up to five cards are
@@ -146,9 +147,15 @@ live in `gameplay/chronicle`, beside the steps that read or run them.
 - `BlastedPastures` contributes a `Transform` to `ChronicleStartOfThrone`,
   registered after Hiding Place. Its `Branch` reads the board when the step
   is reached: the site of E07's ruined face, and whether the Throne holder
-  rules it. Unless they do, one required batch buries every Nomad card at
-  every site with `Bury.standard`, then writes the line with
-  `NoteArg.Cards`.
+  rules it. Unless they do, it writes the line with `NoteArg.Cards`, then
+  one required batch buries every Nomad card at every site with
+  `Bury.standard`. The line comes first because the log names a card by
+  the state after its note: once buried, an edifice lies in the edifice
+  deck with no side, and would read as its intact face.
+- The log names a buried or listed edifice by the face it lay on: the
+  generic "Buried" line judges it as it lay, as a set-aside edifice is
+  judged, and a card list shows an edifice's face from its last state on
+  the map.
 - No new operation.
 
 ### Slice 4: retire the machinery
