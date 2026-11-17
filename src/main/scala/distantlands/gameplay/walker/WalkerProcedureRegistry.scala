@@ -232,8 +232,8 @@ object WalkerProcedureRegistry:
       rebuild = withoutStartArgs(ActionRef.Explore, ExploreProcedure.rebuild),
       rollFeedback = ExploreProcedure.rollFeedback),
 
-    /** Place Banner Resource is not a major action: it has no fallback kind
-      * and, like Take Wealth, no modifier window.
+    /** Place Banner Resource is not a major action: like Take Wealth, it has
+      * no modifier window.
       */
     ActionRef.PlaceBannerResource -> Entry(
       build = PlaceBannerResourceProcedure.build,
@@ -259,7 +259,7 @@ object WalkerProcedureRegistry:
 
     /** The legacy minor actions (walker-driven game loop design, slice 3).
       * They are actions, so the boundary follows each, but like the legacy
-      * handler they take no modifiers and record no fallback diagnostics.
+      * handler they take no modifiers.
       */
     ActionRef.PeekSiteRelics -> Entry(
       build = MinorActionProcedures.buildPeek,
@@ -303,15 +303,14 @@ object WalkerProcedureRegistry:
 
     PhaseTransitionRef.BeginRest -> Entry.withoutStartGates(BeginRestProcedure.build),
 
-    /** Begin Rest already recorded the Rest diagnostics, so this declares no
-      * fallback kind. Any off-turn decision a power parks inside it is a
-      * generic Rest decision, so this entry names no concrete power.
+    /** Any off-turn decision a power parks inside Finish Rest is a generic
+      * Rest decision, so this entry names no concrete power.
       */
     PhaseTransitionRef.FinishRest -> Entry.withoutStartGates(FinishRestProcedure.build),
 
     /** The first triggered procedure. It is started by the action boundary,
-      * never by a client, so it has no fallback kind (the boundary recorded
-      * its diagnostics), no modifier window and no start selection.
+      * never by a client, so it has no modifier window and no start
+      * selection.
       */
     TriggeredProcedureRef.Oathkeeper -> Entry.withoutStartGates(OathkeeperProcedure.build),
     TriggeredProcedureRef.Setup ->
@@ -395,8 +394,8 @@ object WalkerProcedureRegistry:
     rebuild = PhasePowerProcedure.rebuild(id, powers, walkerPowers))
 
   /** The forced Wake step reads the phase powers, as `UsePower` does. It is
-    * started by the turn boundary, so it has no fallback kind, no modifier
-    * window and no start selection. */
+    * started by the turn boundary, so it has no modifier window and no
+    * start selection. */
   private def forcedWakeEntry(powers: PhasePowers): Entry =
     Entry.withoutStartGates(ForcedWakeProcedure.build(powers))
 
@@ -413,14 +412,14 @@ object WalkerProcedureRegistry:
 
   /** The follow-up offer prices its action by a dry run of the action's
     * start, which needs the walk's powers. It is started by the driver, so
-    * it has no fallback kind, no modifier window and no start selection. */
+    * it has no modifier window and no start selection. */
   private def followUpOfferEntry(phasePowers: PhasePowers,
       powers: WalkerPowers): Entry =
     Entry.withoutStartGates(FollowUpOffer.build(phasePowers, powers))
 
   /** A phase menu lists the phase powers and checks each option's start,
     * which needs the walk's powers. The driver starts it, so it has no
-    * fallback kind, no modifier window and no start selection. */
+    * modifier window and no start selection. */
   private def menuEntry(menu: PhaseMenu.Menu, phasePowers: PhasePowers,
       powers: WalkerPowers): Entry =
     Entry.withoutStartGates(PhaseMenu.build(menu, phasePowers, powers))
