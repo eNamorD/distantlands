@@ -103,8 +103,8 @@ class BlastedPasturesSuite extends munit.FunSuite:
       game.game.current.player(p1).get.board.faceDownSecrets
     assertEquals(hidden(ready), hidden(before) + 1)
 
-  test("the Throne holder ruling its site keeps every card; after Crown " +
-      "Chancellor the Empire's sites are theirs (ruling 5)"):
+  test("the Throne holder ruling its site keeps every card; an Imperial " +
+      "holder rules the Empire's sites (ruling 5)"):
     // p1 is the Chancellor, so their warband at Broken Peaks is Imperial.
     val table = pasturesAtBrokenPeaks.warbandsAt(BrokenPeaksSite, p1, 1)
       .denizen(EldersCard, at = DeepWoodsSite)
@@ -113,6 +113,28 @@ class BlastedPasturesSuite extends munit.FunSuite:
     assert(onMap(ready, WildPasturesCard.id))
     assert(onMap(ready, EldersCard.id))
     assertEquals(buriedLines(events), Vector.empty)
+
+  /** `pasturesAtBrokenPeaks` with the Throne held by p2, an Exile. */
+  private def throneHeldByExileP2: Table = pasturesAtBrokenPeaks.update(
+    state => state.updateCurrent(_.copy(chronicleTasks = Map(
+      ChronicleTask.Throne -> p2, ChronicleTask.World -> p1,
+      ChronicleTask.Beacon -> Table.p3))))
+
+  test("an Exile holder rules only their own sites (ruling 5)"):
+    val exile = throneHeldByExileP2.denizen(EldersCard, at = DeepWoodsSite)
+    val own = exile.warbandsAt(BrokenPeaksSite, p2, 1)
+    assert(ChronicleTasks.rules(own.ready, p2, BrokenPeaksSite.id))
+    val (kept, keptEvents) = atOffer(own)
+    assert(onMap(kept, WildPasturesCard.id))
+    assert(onMap(kept, EldersCard.id))
+    assertEquals(buriedLines(keptEvents), Vector.empty)
+    // The Empire's site is not an Exile's.
+    val imperial = exile.warbandsAt(BrokenPeaksSite, p1, 1)
+    assert(!ChronicleTasks.rules(imperial.ready, p2, BrokenPeaksSite.id))
+    val (buried, buriedEvents) = atOffer(imperial)
+    assert(!onMap(buried, WildPasturesCard.id))
+    assert(!onMap(buried, EldersCard.id))
+    assertEquals(buriedLines(buriedEvents).size, 1)
 
   test("a site another player, bandits or nobody rules still buries"):
     val withElders = pasturesAtBrokenPeaks

@@ -46,7 +46,7 @@ case object BlastedPastures extends ContributingPower:
   def step(catalog: ExecutableCatalog): Operation = Branch((state, _) =>
     val current = state.game.current
     current.edificeSite(WildPasturesCard.id, EdificeSide.Ruined)
-      .filter(current.map.inPlay.contains).toVector.flatMap(site =>
+      .toVector.flatMap(site =>
         ChronicleTasks.forHolder(state, ChronicleTask.Throne)(holder =>
           if ChronicleTasks.rules(state, holder, site) then Vector.empty
           else burying(burials(catalog, state, holder)))))
