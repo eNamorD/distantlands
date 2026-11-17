@@ -216,9 +216,16 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .add-player-limit { color: var(--brass); }
 .seat-link-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin: 1rem 0; }
 .seat-link { flex: 1 1 20rem; }
-/* Chronicle page (Chronicle browsing design, "Chronicle page"). */
-.chronicle-import, .chronicle-export, .chronicle-saved, .chronicle-loaded {
-  max-width: 40rem; margin: 1.5rem 0; display: grid; gap: 0.75rem; }
+/* Chronicle page (Chronicle browsing design, "Chronicle page"): one centered
+   column, each button on a line of its own and all of one width. */
+.chronicle-page { max-width: 40rem; margin: 0 auto; display: grid;
+  justify-items: center; gap: 0.75rem; text-align: center; }
+.chronicle-page > button { width: min(100%, 18rem); padding: 0.4rem 0.75rem; }
+.chronicle-saved, .chronicle-loaded { width: 100%; margin: 0.75rem 0;
+  display: grid; gap: 0.75rem; }
+.chronicle-saved .chronicle-row { text-align: left; }
+.chronicle-import, .chronicle-export { display: grid; gap: 0.75rem; }
+.chronicle-export > button { justify-self: start; }
 .import-chronicle-tts { font: inherit; min-height: 5rem; padding: 0.5rem;
   overflow-wrap: anywhere; }
 .import-chronicle-name, .import-new-name { font: inherit; padding: 0.5rem; }
@@ -230,13 +237,15 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .chronicle-export-controls .status { flex: 1 0 100%; margin: 0; }
 .export-tts-text { flex: 1 0 100%; font: inherit; min-height: 4rem;
   overflow-wrap: anywhere; }
+.chronicle-export .export-tts-text { min-height: 8rem; padding: 0.5rem; }
+.chronicle-export .status:empty { display: none; }
 .chronicle-loaded-heading { display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: center;
   gap: 0.75rem; }
 .chronicle-loaded-name { margin: 0; font-family: Georgia, serif; font-size: 1.6rem;
   color: var(--cream); }
 .chronicle-rename { font: inherit; padding: 0.5rem; flex: 1 1 14rem; min-width: 0; }
 .chronicle-summary-line { margin: 0; color: var(--brass); }
-.continue-chronicle, .new-chronicle, .edit-chronicle { margin: 0.5rem 0.75rem 0.5rem 0; }
 .chronicle-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
 .chronicle-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
 .chronicle-row-name { font-weight: 700; }
@@ -249,12 +258,23 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .game-table .table-chronicle { margin: 0 0 12px; display: grid; gap: 6px; }
 .game-table .table-chronicle p { margin: 0; }
 .table-chronicle-note { color: var(--brass); }
-.chronicle-save-prompt { position: fixed; inset: 0; z-index: 60; display: grid;
-  place-items: center; padding: 16px; background: #000a; }
+.chronicle-save-prompt, .chronicle-dialog { position: fixed; inset: 0;
+  z-index: 60; display: grid; place-items: center; padding: 16px;
+  background: #000a; }
 .chronicle-save-panel { width: min(30rem, 100%); display: grid; gap: 0.75rem;
   padding: 18px; background: var(--panel); border: 1px solid var(--brass);
   border-radius: 12px; }
 .chronicle-save-name { font: inherit; padding: 0.5rem; }
+/* The Chronicle page's Import and Export dialogs. */
+.chronicle-dialog-panel { width: min(34rem, 100%); max-height: 100%;
+  overflow: auto; display: grid; gap: 1rem; padding: 18px; text-align: left;
+  background: var(--panel); border: 1px solid var(--brass);
+  border-radius: 12px; }
+.chronicle-dialog-header { display: flex; align-items: center;
+  justify-content: space-between; gap: 0.75rem; }
+.chronicle-dialog-heading { margin: 0; font-size: 1.15rem; }
+.chronicle-dialog-divider { width: 100%; margin: 0.25rem 0; border: 0;
+  border-top: 1px solid var(--brass-line); }
 
 #app {
   max-width: 1280px;

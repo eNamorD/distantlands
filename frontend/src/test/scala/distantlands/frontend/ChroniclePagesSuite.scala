@@ -239,10 +239,12 @@ class ChroniclePagesSuite extends munit.FunSuite:
       Main.start(browser.mount, "/", trustedAlpha = true,
         ScriptedTransport((_, _, _) => pending.future),
         devices = ChronicleFixtures.devices(Some(storage)))
+      browser.click("import-chronicle")
       as[dom.html.TextArea](browser.byClass("import-chronicle-tts").head)
         .value = "abc"
       browser.input("Name for the TTS import").value = "Iron Vow"
       browser.click("import-tts")
+      browser.click("chronicle-dialog-close")
       browser.click("new-chronicle")
       pending.success(Right(ChronicleFixtures.converted(entry("Iron Vow"))))
       browser.settle.map { _ =>
