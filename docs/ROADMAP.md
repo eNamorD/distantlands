@@ -305,27 +305,6 @@ one.
 
 ### Powers-related deferred items
 
-- [ ] **Retire the unimplemented-card machinery across the stack.** Every
-  printed denizen power runs since Reliquary Raid, and
-  [catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)
-  emptied `catalog/holding/`. The
-  [last Chronicle powers](superpowers/specs/2026-11/2026-11-16-last-chronicle-powers-design.md)
-  emptied `src/test/resources/powers/unimplemented.txt`. Remove the
-  machinery that sorts, filters and marks unimplemented cards (slice 4):
-  - The implemented-first deal: `ShufflePolicy.implementedFirst`,
-    `ImplementedCardCatalog`, the implemented filler in
-    `FirstGameChronicleGenerator`'s pools, and the unimplemented denizens
-    `SetupDeal` keeps off the discard tops.
-  - `implemented` on `CardDetailsProjection` and its codec in
-    `WorldProjectionCodec`.
-  - The frontend's unimplemented class, accessible-name suffix and badge
-    in `CardFace` and `CardInspectionOverlay`.
-  - The tests of each, the `UnimplementedPowersSuite` snapshot, and
-    `CardCatalogSuite`'s holding rule.
-
-  Decide then whether `PowerImplementationStatus` stays as a check that
-  every printed power is wired in.
-
 - [ ] **Reasons on the remaining options.** Add hover reasons to the option
   builders that still lack them, as playtests find options people wonder
   about. Left by the

@@ -9,8 +9,7 @@ import distantlands.model._
   *
   * The rule is `EffectiveSuit.weight`, which every count of a player's
   * advisers by suit reads, and the limit counts every adviser once. This
-  * power hooks no window. It is registered so the card counts as
-  * implemented. It writes no line.
+  * power hooks no window. It writes no line.
   */
 case object Marriage extends ContributingPower:
   val id: PowerId = MarriageCard.power.id

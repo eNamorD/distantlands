@@ -43,7 +43,6 @@ colors:
   facedown: "#2a2333"
   facedown-letter: "#cbb7dd"
   pile-back: "#493751"
-  unimplemented: "#a15c4a"
   error-line: "#e27f79"
   error-text: "#ffd0cd"
   replay: "#9ed59e"
@@ -308,10 +307,9 @@ reused for UI meaning.
   still clears 4.5:1 on the Pane fill; Ink Separator is for drawn marks, not
   words.
 - **States**: `facedown` and `facedown-letter` for a card back; `pile-back`
-  for a stacked pile; `unimplemented` for a card the engine does not run yet;
-  `error-line` and `error-text`; `replay` green; `limiter` coral; `dev-panel`
-  and `dev-line` for the developer aside, deliberately off-palette purple so
-  it never reads as game.
+  for a stacked pile; `error-line` and `error-text`; `replay` green; `limiter`
+  coral; `dev-panel` and `dev-line` for the developer aside, deliberately
+  off-palette purple so it never reads as game.
 
 ### Log action bands
 UI colors, used only in the Game Log (The Action Band Rule). The aggressive
@@ -722,11 +720,6 @@ controls are 30px.
     its crown before its side chip, a modifier at its action's modifier
     decision with its arch, so the two never read alike in one list.
     Offered on the board instead, the card face shows its own marks.
-- **Unimplemented badge**: a band across the card's foot, out to its dashed
-  border, in the Unimplemented fill: Cream mixed case at `max(0.62em,
-  0.7rem)`, centered. The card keeps the band's height free at its foot, so
-  the power marks sit above it. Mixed case and the full width are what let
-  the word clear the Eleven-Pixel Floor on the smallest card in a pane.
 
 ### Cards
 The signature component. A card is a bordered box in Base with the physical
@@ -734,8 +727,8 @@ ratio, sized in `ex` from `--card-h: 18.2ex`, its width read from the ratio
 table.
 - **Corner:** 0.35em.
 - **Border:** 1px, transparent at rest so states never reflow; Line for a
-  denizen, `#7a6a4c` for a relic, dashed Unimplemented for a card the engine
-  does not run, dashed Line-mid with transparent fill for an empty slot.
+  denizen, `#7a6a4c` for a relic, dashed Line-mid with transparent fill for
+  an empty slot.
 - **Face:** header row of suit glyph (1.5em) and name (700, 0.95em) with
   defense dice pushed right; a restricted card hangs its restriction banner
   (1.5em, no words) under the suit glyph, as the printed card does, the two
@@ -744,9 +737,9 @@ table.
   single word too long for the box is hyphenated at a syllable; token row
   and defense row at 1em. Each power's modifier tab or battle-plan crown
   stands in the lower-left corner at 1.5em, a row of them for a card with
-  several, lifted above the unimplemented band or a Replace badge: a first
-  step toward a face that shows its powers, whose text and cost are read in
-  the overlay. Footer sinks to the bottom.
+  several, lifted above a Replace badge: a first step toward a face that
+  shows its powers, whose text and cost are read in the overlay. Footer
+  sinks to the bottom.
 - **Compact (zoomed-out map only):** the box and ratio are unchanged; the
   suit glyph moves to the top-left corner at 1.5em, with the face padded
   1.7em at the top so the name starts under it, and the name sits centered
@@ -770,8 +763,8 @@ table.
   The restriction banner leaves the glyph's column for the top-right corner
   at 1.5em, in the room the top padding keeps, since under the glyph it
   would run into the centred name, and is hidden on a card under 3.6em wide (a
-  container query), where it would cover the suit glyph. Defense, the power
-  marks and the unimplemented badge are hidden; tokens stay.
+  container query), where it would cover the suit glyph. Defense and the power
+  marks are hidden; tokens stay.
 - **Face-down:** Facedown fill, centered Facedown Letter at 1.9em 700; a
   knowable card adds a Secret pip top-right and reveals a summary on hover or
   focus (pointer devices only, CSS only, no client state).

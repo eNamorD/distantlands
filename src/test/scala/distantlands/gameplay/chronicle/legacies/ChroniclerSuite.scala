@@ -7,8 +7,7 @@ import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   DeepWoodsSite}
 import distantlands.gameplay.chronicle.{ChronicleWalk, LineageScoring}
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.economy.TheOldOakCard
 import distantlands.gameplay.powers.poweruse.ForestCouncilCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -51,9 +50,6 @@ class ChroniclerSuite extends munit.FunSuite:
   /** p2 holds Chronicler; p1 holds The Needle (Beast). */
   private def chronicled: Table =
     empire.legacy(p2, ChroniclerCard).legacy(p1, TheNeedleCard)
-
-  test("Chronicler is implemented"):
-    assert(PowerImplementationStatus.implemented(ChroniclerCard.power.id))
 
   test("the holder is asked, Decline first, and declining scores nothing"):
     val run = through(chronicled, TriggeredProcedureRef.ChronicleSun,

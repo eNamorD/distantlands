@@ -1,10 +1,10 @@
 package distantlands.gameplay
 
 import distantlands.gameplay.cards.AncientCitySite
-import distantlands.gameplay.operations.{GrandScepter, HallOfMinisters,
-  HallOfMinistersCard, LockedCards, OperationConsent, OperationPipeline,
-  OperationPolicy, OperationRestrictions, RestrictionIcons,
-  StillBoilingLake}
+import distantlands.gameplay.operations.{AncientBloodline, GrandScepter,
+  GrandScepterNegotiation, HallOfMinisters, HallOfMinistersCard, LockedCards,
+  OperationConsent, OperationPipeline, OperationPolicy, OperationRestrictions,
+  RestrictionIcons, StillBoilingLake}
 import distantlands.gameplay.powers.campaign.{SealingWardCard, WrestlersCard}
 import distantlands.gameplay.powers.cardplay.WildCryCard
 import distantlands.gameplay.powers.economy.MountedLibraryCard
@@ -324,3 +324,10 @@ class OperationRestrictionsSuite extends munit.FunSuite:
     assertEquals(OperationConsent.refusals(granted,
       Vector(byEnemy(plainCard), byEnemy(wrestlers)), restrictions),
       Vector.empty)
+
+  test("the printed rules are Ancient Bloodline, the Hall of Ministers, the " +
+      "Grand Scepter's restriction and negotiation term and Still Boiling " +
+      "Lake"):
+    assertEquals(OperationRestrictions.printedRules.map(_.id),
+      Vector(AncientBloodline.id, HallOfMinisters.id, GrandScepter.id,
+        GrandScepterNegotiation.id, StillBoilingLake.id))

@@ -6,8 +6,7 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
 import distantlands.gameplay.chronicle.{BuildEdifice, ChronicleWalk,
   OfferCitizenship, ShapeEmpire}
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.action.FaeMerchantCard
 import distantlands.gameplay.powers.economy.VillageIdiotCard
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
@@ -46,9 +45,6 @@ class IronHandSuite extends munit.FunSuite:
       .filter(said => keys.exists(_.name == said.key)).map(_.text)
 
   private val discardLine = s"p3 discarded ${IronHandCard.id.value}"
-
-  test("Iron Hand is implemented"):
-    assert(PowerImplementationStatus.implemented(IronHandCard.power.id))
 
   test("an Imperial holding Iron Hand active discards it at the start of " +
       "the Sun (ruling 18)"):

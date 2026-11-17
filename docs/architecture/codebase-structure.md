@@ -46,10 +46,9 @@ codecs, projection, or rendering when distinct responsibilities emerge.
 
 Most cards have their own file under `gameplay/powers/`, grouped by timing
 (`action`, `rest`, `wake`, `economy` and so on), with the typed card object
-and the power object side by side. A card with no implemented power would sit
-in a `catalog/holding/` file; none does today. A power
-owns only applicability and power-specific mechanics: the contributions it
-makes at power windows, or a phase power's `usable` check and `build` tree.
+and the power object side by side. A power owns only applicability and
+power-specific mechanics: the contributions it makes at power windows, or a
+phase power's `usable` check and `build` tree.
 The walker owns procedure lifecycle, window folding and recording.
 
 Production Scala files must remain at or below 800 lines. Around 500 meaningful
@@ -151,9 +150,8 @@ gameplay.
 ### Power
 
 1. Verify the catalog handler ID and its `RuleSourceIndex` source.
-2. Put the card object in the power's file, moving it out of
-   `catalog/holding/` if it sits there. Keep
-   its `PrintedPower`, and keep the card listed in
+2. Put the card object in the power's file. Keep its `PrintedPower`, and
+   keep the card listed in
    `gameplay/cards/NewFoundations.scala`. The 24 site objects are the
    exception: all of them live in `gameplay/cards` (`HomelandsAndPlains.scala`
    and `PoweredSites.scala`), and a site power imports its site from there.
@@ -172,7 +170,6 @@ gameplay.
    refuses a `catalog: ExecutableCatalog` constructor parameter and a
    `forCatalog` constructor under `gameplay/powers`.
 4. Register it in `WalkerPowerCatalog` or `PhasePowerCatalog`, or both.
-   Registration marks the handler implemented (`PowerImplementationStatus`).
 5. Declare its Game Log keys as `noteKeys`. `DeclaredNotes` refuses a note
    no power declared.
 6. Never infer mechanics from labels or rules text. An applicable handler

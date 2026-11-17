@@ -9,8 +9,8 @@ import distantlands.model._
   * revealed Vision. They can have any number!"
   *
   * The rule is `DesecratedGroundRule`, which `CardSlots` and `CardPlay`
-  * read. This power hooks no window. It is registered so the card counts
-  * as implemented, and it declares the kept line the card play writes.
+  * read. This power hooks no window. It declares the kept line the card play
+  * writes.
   */
 case object DesecratedGround extends ContributingPower:
   val id: PowerId = DesecratedGroundRule.power

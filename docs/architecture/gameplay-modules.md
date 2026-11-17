@@ -77,8 +77,8 @@ command would accept.
 ## Powers
 
 Powers contribute at power windows. A power never imports the walker, and
-the walker never names a power. Unimplemented powers are ignored; they
-never fail or block a command, and nothing records them. See
+the walker never names a power. A power no catalog registers is ignored; it
+never fails or blocks a command, and nothing records it. See
 [power resolution](rule-resolution.md).
 
 ## One legality path

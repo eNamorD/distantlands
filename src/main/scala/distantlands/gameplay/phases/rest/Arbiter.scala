@@ -20,7 +20,7 @@ object ArbiterCard extends Legacy(LegacyId("L23"), "Arbiter",
 /** Arbiter (legacy L23): "End of round: Before the end die is rolled, you
   * may choose to modify the roll by −1 to +3" (Legacy in-play powers
   * design, ruling 21). Hooks no window: the driver starts [[ArbiterStep]]
-  * before the roll. Registered so the card counts as implemented. */
+  * before the roll. */
 case object Arbiter extends ContributingPower:
   val id: PowerId = ArbiterCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)

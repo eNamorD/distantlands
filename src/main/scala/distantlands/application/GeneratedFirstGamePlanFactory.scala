@@ -1,7 +1,6 @@
 package distantlands.application
 
 import distantlands.catalog.ExecutableCatalog
-import distantlands.gameplay.powers.PowerImplementationStatus
 import distantlands.gameplay.setup.{EmpireSetupRules, LegacyDeal, SetupDeal}
 import distantlands.model._
 
@@ -17,23 +16,19 @@ import distantlands.model._
  * Chancellor goes first, or a random seated Citizen when no Chancellor is
  * seated (Empire ruling R6); otherwise, in a first game and in a later game
  * with no Empire, the first seat does, which the shuffle makes a random
- * player. Both decks are shuffled into the deal by
- * `policy`, and the derived legacy deck by `random`, since a Chronicle's
- * own order is shown to players. The
+ * player. Both decks and the derived legacy deck are shuffled into the
+ * deal by `random`, since a Chronicle's own order is shown to players. The
  * shuffled orders are recorded in the plan, so replay stays RNG-free.
  */
 final class GeneratedFirstGamePlanFactory(
     catalog: ExecutableCatalog,
-    random: ChronicleRandomPort = ChronicleRandomPort.random,
-    policy: ShufflePolicy = ShufflePolicy.implementedFirst
+    random: ChronicleRandomPort = ChronicleRandomPort.random
 ) extends FirstGamePlanFactory:
   override def build(config: FirstGameBootstrapConfig, choice: ChronicleChoice)
       : Either[BootstrapPlanFailure, FirstGamePlan] =
-    val implemented = PowerImplementationStatus.implemented
     val chronicle = choice match
       case ChronicleChoice.New(name) =>
-        FirstGameChronicleGenerator.generate(catalog, name, implemented,
-            random, policy)
+        FirstGameChronicleGenerator.generate(catalog, name, random)
           .left.map {
             case ChronicleGeneratorFailure.InvalidName(reason) =>
               BootstrapPlanFailure(reason)
@@ -47,11 +42,8 @@ final class GeneratedFirstGamePlanFactory(
       val starting = EmpireSetupRules.startingChronicle(catalog, chronicle)
       FirstGamePlan(chronicle, seated, ChronicleFirstGamePlan.dealOrder(
         seated, SetupDeal.of(starting, seated.participants),
-        policy.order(chronicle.worldDeck,
-          ImplementedCardCatalog.denizens(catalog, implemented), random),
-        policy.order(chronicle.relicDeck,
-          ImplementedCardCatalog.ordinaryRelics(catalog, implemented),
-          random),
+        random.shuffle(chronicle.worldDeck),
+        random.shuffle(chronicle.relicDeck),
         random.shuffle(LegacyDeal.deck(catalog, starting)),
         random.shuffle))
     }

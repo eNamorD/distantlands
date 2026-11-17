@@ -3,10 +3,9 @@ package distantlands.gameplay.setup
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 
-/** `relicOrder` is implemented-first (`ShufflePolicy.implementedFirst`):
-  * site relic slots fill from its top, same as the drawable deck they are
-  * carved out of, so a Recover at a freshly-set-up site can turn up an
-  * implemented relic exactly as reliably as a draw from the deck would.
+/** `relicOrder` fills the site relic slots from its top, and the rest, in
+  * the same order, is the drawable deck: a slot takes the card a draw from
+  * the deck would have taken.
   */
 class FirstGameSetupMaterializerSuite extends munit.FunSuite:
   private val materializer = new FirstGameSetupMaterializer(catalog)

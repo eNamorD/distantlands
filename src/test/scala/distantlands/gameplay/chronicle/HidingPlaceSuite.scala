@@ -4,8 +4,7 @@ import distantlands.gameplay.{GrandMaskCard, OathRules, WalkerDiceFixture}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.chronicle.legacies.{Reformer, ReformerCard}
 import distantlands.gameplay.operations.TheGrandScepterCard
-import distantlands.gameplay.powers.{PlayerFacts, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{PlayerFacts, WalkerPowerCatalog}
 import distantlands.gameplay.powers.campaign.ObsidianCageCard
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.powers.economy.{CupOfPlentyCard,
@@ -59,9 +58,7 @@ class HidingPlaceSuite extends munit.FunSuite:
   private def options(decide: Decide): Vector[DecisionOptionRef] =
     decide.query.asInstanceOf[DecisionQuery.ChooseOne].options.map(_.ref)
 
-  test("Hiding Place is implemented"):
-    assert(PowerImplementationStatus.implemented(
-      HallowedSpringCard.ruined.power.id))
+  test("Hiding Place is registered under its printed id"):
     assertEquals(HidingPlace.id, HallowedSpringCard.ruined.power.id)
 
   test("its ruler keeps one relic of their choice, never the Grand " +

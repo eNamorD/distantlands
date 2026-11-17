@@ -37,16 +37,14 @@ object BathsRules:
       }.toSet)
 
 /** Stone Baths (E04 intact): Sun step 2 reads it
-  * (`ResolveLegacies.flip`). It hooks no window; it is registered so the
-  * card counts as implemented, as Steadfast is. */
+  * (`ResolveLegacies.flip`). It hooks no window. */
 case object StoneBaths extends ContributingPower:
   val id: PowerId = StoneBathsCard.intact.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
 
 /** Ruined Baths (E04 ruined): Sun step 3 reads it
-  * (`ResolveLegacies.dormancy`). It hooks no window; it is registered so
-  * the card counts as implemented. */
+  * (`ResolveLegacies.dormancy`). It hooks no window. */
 case object RuinedBaths extends ContributingPower:
   val id: PowerId = StoneBathsCard.ruined.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)

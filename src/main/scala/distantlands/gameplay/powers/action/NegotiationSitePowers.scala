@@ -10,8 +10,8 @@ import distantlands.model._
   * rulings 18 to 20 and 27 to 29).
   *
   * The rule is `NegotiationSites` and `DealRules`, which the Negotiation
-  * reads. This power hooks no window. It is registered so the card counts
-  * as implemented. Its moves write the Negotiation's own lines.
+  * reads. This power hooks no window. Its moves write the Negotiation's own
+  * lines.
   */
 case object DeedWriter extends ContributingPower:
   val id: PowerId = DeedWriterCard.power.id

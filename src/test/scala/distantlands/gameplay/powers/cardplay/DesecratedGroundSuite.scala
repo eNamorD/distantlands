@@ -5,7 +5,7 @@ import distantlands.gameplay.actions.VisionRules
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.powers.{NoteText, PowerFixture,
-  PowerImplementationStatus, SearchFixture, WalkerPowerCatalog}
+  SearchFixture, WalkerPowerCatalog}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.{Look, PlacementPicks, Table}
@@ -111,7 +111,3 @@ class DesecratedGroundSuite extends munit.FunSuite:
       .edifice(SacredGroundCard.id, EdificeSide.Ruined, at = home)
       .imperial(actor).ready
     assert(!DesecratedGroundRule.keeps(ready, actor))
-
-  test("the ruined face counts as implemented"):
-    assert(PowerImplementationStatus.implemented(
-      SacredGroundCard.ruined.power.id))

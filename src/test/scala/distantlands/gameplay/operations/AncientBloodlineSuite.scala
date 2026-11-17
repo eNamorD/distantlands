@@ -2,7 +2,7 @@ package distantlands.gameplay.operations
 
 import distantlands.gameplay.PowerAccess
 import distantlands.gameplay.cards.DeepWoodsSite
-import distantlands.gameplay.powers.{ConsentPowers, PowerImplementationStatus}
+import distantlands.gameplay.powers.ConsentPowers
 import distantlands.gameplay.powers.action.DowsingSticksCard
 import distantlands.gameplay.powers.campaign.WrestlersCard
 import distantlands.gameplay.powers.search.ErrandBoyCard
@@ -90,12 +90,9 @@ class AncientBloodlineSuite extends munit.FunSuite:
     assertEquals(ConsentPowers.default
       .granter(ready, AncientBloodline.id), Some(p2))
 
-  test("the printed set holds the lock, and the card counts as " +
-      "implemented"):
+  test("the printed set holds the lock"):
     val printed = OperationRestrictions.forCatalog(catalog).printed
     assert(printed.exists {
       case locked: LockedCards => locked.asIf.contains(AncientBloodline)
       case _ => false
     })
-    assert(PowerImplementationStatus.implemented(
-      AncientBloodline.id))

@@ -1,7 +1,7 @@
 # The Last Chronicle Powers
 
 **Status:** designed 2026-11-16, approved section by section by the owner.
-Each slice is planned when the one before it lands. Slice 1 landed 2026-11-16. Slice 2 landed 2026-11-16. Slice 3 landed 2026-11-16.
+Each slice is planned when the one before it lands. Slice 1 landed 2026-11-16. Slice 2 landed 2026-11-16. Slice 3 landed 2026-11-16. Slice 4 landed 2026-11-16.
 
 **Builds on** the [Legacy Chronicle powers design](2026-11-13-legacy-chronicle-powers-design.md)
 (the Throne's windows, Reformer at the start of the Throne, Heirloom's keep,
@@ -98,6 +98,14 @@ rulings" section in `docs/rules/ambiguities.md`, numbered as here.
    then Hiding Place, then Blasted Pastures. Reformer moves cards only
    among sites the winner rules, so it cannot change who rules Hiding Place
    or Blasted Pastures, and the order changes no outcome.
+7. **Teeming World deals each card on top of its pile** (re-rules
+   Foundations ruling 9, owner 2026-11-16). The rest of the stack is dealt
+   one card at a time to the Cradle, the Provinces and the Hinterland in
+   turn, and each card dealt goes on top of its pile, so the last card
+   dealt to a pile is its top. The old reading, the first card dealt on
+   top, kept the alpha shuffle's unimplemented denizens off the pile tops.
+   With a uniform shuffle that reason is gone, and the deal follows the
+   table.
 
 ## Approach
 
@@ -175,6 +183,17 @@ Remove, with their tests:
 - `PowerImplementationStatus` itself (owner, 2026-11-16): every printed
   power is accounted for, so no check of it remains.
 
+Keep, and change:
+
+- `SetupDeal.discards` deals each card on top of its pile (ruling 7).
+  Both decks are shuffled uniformly by `ChronicleRandomPort.shuffle`, and
+  `ShufflePolicy` goes with its one policy.
+- The powers registered in `WalkerPowerCatalog` that hook no window stay
+  registered (owner, 2026-11-16): the catalog remains the one place that
+  names a handler for each printed power. Their doc comments drop "it is
+  registered so the card counts as implemented" and keep what reads the
+  power.
+
 The plan re-inventories every file this list names at the HEAD it starts
 from before editing.
 
@@ -227,7 +246,9 @@ from `unimplemented.txt` until slice 4 deletes the file.
 ## Docs
 
 - `docs/rules/ambiguities.md`: the "Last Chronicle powers rulings" section,
-  rulings 1 to 6, each added by its slice.
+  rulings 1 to 7, each added by its slice. Ruling 7 also marks Foundations
+  ruling 9 re-ruled, and `docs/architecture/game-setup.md` describes the
+  new deal.
 - `docs/rules/chronicle.md`: Digital notes at the start of the Throne
   (the hidden relics, Hiding Place, Blasted Pastures), at Shape Empire
   (Ancient City, Hall of Bandits), and at Stock Reliquary, whose facedown
@@ -240,7 +261,8 @@ from `unimplemented.txt` until slice 4 deletes the file.
   `PowerImplementationStatus` or unimplemented cards
   (`docs/catalog/README.md`, `docs/architecture/codebase-structure.md`,
   `docs/architecture/all-exile-round-endings.md`, `docs/rules/ambiguities.md`
-  items 1 and 5, and any the plan's inventory finds).
+  items 1 and 5, `DESIGN.md` and `.impeccable/design.json`, and any the
+  plan's inventory finds).
 
 ## Out of scope
 

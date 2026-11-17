@@ -76,7 +76,7 @@ object RoundMarker:
   * Market's favor is placed; Take Wealth already takes a site's secrets.
   * Its line reads the step: "Placed 2 secrets on the bandit sites." With no
   * bandit site nothing is placed and no line is written. The School's
-  * intact face is not implemented (catalog batch 9, "Out of scope").
+  * intact face is a Challenge modifier, `SchoolOfVines`.
   */
 case object RuinedSchool extends RuinedSetupRule:
   val edifice: EdificeId = SchoolOfVinesCard.id

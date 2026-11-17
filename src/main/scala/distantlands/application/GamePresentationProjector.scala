@@ -4,7 +4,7 @@ import distantlands.catalog.{AdviserOnly, ExecutableCatalog, Locked, ModifierMar
   PrintsPowers, SiteOnly}
 import distantlands.gameplay.PlayerSecretSummary
 import distantlands.gameplay.phases.rest.FinishRestProcedure
-import distantlands.gameplay.powers.{AdviserLimit, PlayerFacts, PowerImplementationStatus,
+import distantlands.gameplay.powers.{AdviserLimit, PlayerFacts,
   WalkerPowerCatalog}
 import distantlands.gameplay.powers.legacies.GoldenKey
 import distantlands.gameplay.powers.wake.TrackerWake
@@ -18,16 +18,6 @@ import distantlands.protocol.projection._
 private[application] final class GamePresentationProjector(
     catalog: ExecutableCatalog
 ):
-  // A card is implemented only once every power it declares is implemented
-  // (see PowerImplementationStatus); a card with no declared power has
-  // nothing to fall back on, so it reads as not yet implemented rather than
-  // trivially done.
-  private val powerImplemented = PowerImplementationStatus.implemented
-
-  private def cardImplemented(definition: PrintsPowers): Boolean =
-    definition.powers.nonEmpty && definition.powers.forall(power =>
-      powerImplemented(power.id))
-
   def siteLabel(id: SiteId): String =
     catalog.site(id).fold(safeLabel(id.value))(_.name)
   def denizenLabel(id: DenizenId): String =
@@ -56,7 +46,6 @@ private[application] final class GamePresentationProjector(
         case EdificeSide.Intact => "intact"
         case EdificeSide.Ruined => "ruined"
       }), favor = value.tokens.favor, secrets = value.tokens.secrets,
-      implemented = face.exists(cardImplemented),
       powers = face.fold(Vector.empty)(powerFaces))
 
   def readyPlayers(ready: ReadyGame) = ready.game.current.players.map { player =>
@@ -501,7 +490,7 @@ private[application] final class GamePresentationProjector(
       CardDetailsProjection(value.value, "denizen", d.name, Some(d.suit.key),
         Some(restrictionName(d)), Some(d.rulesText),
         orientation.map(orientationName), hidden = hidden,
-        implemented = cardImplemented(d), powers = powerFaces(d))
+        powers = powerFaces(d))
     }
     case value: VisionId => VisionCardPresentation.byId.get(value.value).fold(
       CardDetailsProjection(value.value, "vision", safeLabel(value.value),
@@ -515,8 +504,7 @@ private[application] final class GamePresentationProjector(
         orientation = orientation.map(orientationName), hidden = hidden)) { r =>
       CardDetailsProjection(value.value, "relic", r.name, rulesText = Some(r.rulesText),
         orientation = orientation.map(orientationName), relicValue = Some(r.value),
-        defense = Some(r.defense), hidden = hidden, implemented = cardImplemented(r),
-        powers = powerFaces(r))
+        defense = Some(r.defense), hidden = hidden, powers = powerFaces(r))
     }
     // A legacy's name, seal and text (implementation ruling R11); its goal
     // waits for the legacy strip (Legacies design, slice 5).
@@ -526,7 +514,7 @@ private[application] final class GamePresentationProjector(
       CardDetailsProjection(value.value, "legacy", l.name, Some(l.suit.key),
         rulesText = Some(l.rulesText),
         orientation = orientation.map(orientationName), hidden = hidden,
-        implemented = cardImplemented(l), powers = powerFaces(l),
+        powers = powerFaces(l),
         legacyGoal = Some(LegacyGoalProjection(l.goal.key, l.goal.printed)))
     }
     case other => CardDetailsProjection(other.value, other.getClass.getSimpleName,

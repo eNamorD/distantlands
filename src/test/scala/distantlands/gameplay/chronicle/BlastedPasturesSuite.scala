@@ -3,8 +3,7 @@ package distantlands.gameplay.chronicle
 import distantlands.gameplay.{OathRules, WalkerDiceFixture}
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
-import distantlands.gameplay.powers.{PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.powers.action.{EldersCard, GiantsPathCard}
 import distantlands.gameplay.powers.economy.{CupOfPlentyCard,
   HallowedSpringCard, VillageIdiotCard, WildPasturesCard}
@@ -53,9 +52,7 @@ class BlastedPasturesSuite extends munit.FunSuite:
         note.args
     }
 
-  test("Blasted Pastures is implemented"):
-    assert(PowerImplementationStatus.implemented(
-      WildPasturesCard.ruined.power.id))
+  test("Blasted Pastures is registered under its printed id"):
     assertEquals(BlastedPastures.id, WildPasturesCard.ruined.power.id)
 
   test("unless the Throne holder rules it, every Nomad card on the map is " +

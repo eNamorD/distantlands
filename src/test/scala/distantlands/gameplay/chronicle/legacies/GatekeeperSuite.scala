@@ -7,8 +7,7 @@ import distantlands.gameplay.OathRules
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.chronicle.{ChronicleWalk, ResolveLegacies}
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.economy.VillageIdiotCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -61,9 +60,6 @@ class GatekeeperSuite extends munit.FunSuite:
       .denizen(VillageIdiotCard, AncientCitySite)
       .legacy(p2, GatekeeperCard).legacy(p2, SeerCard)
       .legacy(p2, PeacemakerCard).legacy(p3, WealthyCard)
-
-  test("Gatekeeper is implemented"):
-    assert(PowerImplementationStatus.implemented(GatekeeperCard.power.id))
 
   test("the holder is offered Decline, then exactly the enemies' active " +
       "legacies whose goal they meet (R6)"):

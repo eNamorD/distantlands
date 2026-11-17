@@ -49,12 +49,11 @@ class CardFaceSuite extends munit.FunSuite:
     * that; what lies on the card in play is not (real proportions design). */
   test("printed parts carry the printed mark and live state does not"):
     val card = CardDetails("c", "denizen", "Sly Fox", suit = Some("beast"),
-      orientation = Some("face-up"), favor = 2, implemented = false)
+      orientation = Some("face-up"), favor = 2)
     val node = CardFace.render(card)
     assertEquals(all(node, ".printed").map(_.getAttribute("class")
       .split(" ").head), Vector("card-header"))
-    assertEquals(all(node, ".card-tokens.printed, " +
-      ".card-unimplemented-badge.printed"), Vector.empty)
+    assertEquals(all(node, ".card-tokens.printed"), Vector.empty)
     val back = CardFace.render(CardDetails("hidden", "denizen",
       "Facedown denizen", orientation = Some("face-down"), hidden = true))
     assertEquals(all(back, ".card-back-letter.printed").size, 1)
@@ -295,12 +294,6 @@ class CardFaceSuite extends munit.FunSuite:
     assertEquals(firstMatch(node, ".card-hover-summary .card-name")
       .map(_.textContent),
       Some("Ancient Crown"))
-
-  test("an unimplemented card is marked by class, accessible name and badge"):
-    val node = CardFace.render(faceUp.copy(implemented = false))
-    assert(node.classList.contains("card-face-unimplemented"))
-    assertEquals(node.getAttribute("aria-label"), "Old Oak (unimplemented)")
-    assertEquals(all(node, ".card-unimplemented-badge").size, 1)
 
   test("the card id rides the element for focus restoration"):
     assertEquals(CardFace.render(faceUp).getAttribute("data-card-id"), "d1")

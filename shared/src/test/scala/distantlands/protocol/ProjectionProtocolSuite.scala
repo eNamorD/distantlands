@@ -357,12 +357,6 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       projection.walkerDecision.map(_.copy(query = Some(annotated))))
     assertRoundTrips(carrying)
 
-  test("a card defaults to implemented and round-trips implemented = false"):
-    assert(known.implemented)
-    val unimplemented = known.copy(cardId = "stub", implemented = false)
-    val withStub = projection.copy(temporaryHandPreview = Vector(unimplemented))
-    assertRoundTrips(withStub)
-
   test("a negotiate query and a waiting deal round trip with and without editing"):
     val card = CardDetailsProjection("r1", "relic", "Relic One",
       orientation = Some("face-down"))

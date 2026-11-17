@@ -96,17 +96,13 @@ private[frontend] object CardFace:
       if faceDown(card) && !dormantLegacy(card) then "card-face-down" else "",
       if faceDown(card) && !card.hidden && !dormantLegacy(card) then
         "card-face-knowable" else "",
-      if dormantLegacy(card) then "card-face-dormant" else "",
-      if card.implemented then "" else "card-face-unimplemented")
+      if dormantLegacy(card) then "card-face-dormant" else "")
       .filter(_.nonEmpty).mkString(" ")
     if !card.hidden then
       node.style.setProperty("--name-em",
         (math.round(nameWidthEm(card.name) * 100) / 100.0).toString)
     node.setAttribute("data-card-id", card.cardId)
-    node.setAttribute("aria-label",
-      if card.hidden then card.name
-      else if card.implemented then card.name
-      else s"${card.name} (unimplemented)")
+    node.setAttribute("aria-label", card.name)
     // The whole name on hover, for the zoomed-out face that shows initials.
     if !card.hidden then HoverTip.set(node, card.name)
 
@@ -139,7 +135,7 @@ private[frontend] object CardFace:
 
   /** Priority order, dropped from the bottom as the box shrinks: the header
     * (suit glyph with the restriction banner hung under it, name, and
-    * defense at its right end), live tokens, the power marks, unimplemented.
+    * defense at its right end), live tokens and the power marks.
     * The suit rides the header as a glyph rather than a word below the name:
     * it costs no line and colour plus shape says it faster than reading
     * does. The restriction is a banner under it for the same reason, as the
@@ -208,9 +204,7 @@ private[frontend] object CardFace:
       text("span", s"legacy-goal legacy-goal-${goal.key} printed", goal.text))
     Vector(Some(header), goal,
       Option.when(tokens.childNodes.length > 0)(tokens),
-      Option.when(marks.childNodes.length > 0)(marks),
-      Option.when(!card.implemented)(
-        text("span", "card-unimplemented-badge", "Unimplemented"))).flatten
+      Option.when(marks.childNodes.length > 0)(marks)).flatten
 
   private def counted(token: String, count: Int): Vector[dom.Element] =
     Vector(RulesTextRenderer.glyph(token),

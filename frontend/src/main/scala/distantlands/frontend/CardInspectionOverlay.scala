@@ -233,8 +233,6 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
       RulesTextRenderer.powers(value).foreach(rules.appendChild)
       panel.appendChild(rules)
     }
-    if !card.implemented then
-      panel.appendChild(text("p", "card-unimplemented-badge", "Unimplemented"))
     panel
 
   /** A power below its braid, which divides it from the one above: the

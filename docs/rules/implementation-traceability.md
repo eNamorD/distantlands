@@ -61,7 +61,7 @@ unknown vocabulary remains an error.
 
 The "reviewed pre-alpha fallback" column describes this milestone as
 shipped; the diagnostics it recorded were retired on 2026-10-23
-([decision](../superpowers/specs/2026-10/2026-10-23-reviewed-catalog-retirement-decision.md)), so an unimplemented
+([decision](../superpowers/specs/2026-10/2026-10-23-reviewed-catalog-retirement-decision.md)), so an unregistered
 handler is now ignored and nothing is recorded.
 
 `gameplay/powers`, application

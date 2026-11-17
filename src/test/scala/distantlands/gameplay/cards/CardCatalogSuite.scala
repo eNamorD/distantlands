@@ -2,8 +2,8 @@ package distantlands.gameplay.cards
 
 import distantlands.catalog.{AdviserOnly, ExecutableCatalog, Locked,
   ModifierMark, PrintedPower, PrintsPowers, SiteOnly}
-import distantlands.gameplay.powers.{PhasePowerCatalog,
-  PowerImplementationStatus, SelectedModifier, WalkerPowerCatalog}
+import distantlands.gameplay.powers.{PhasePowerCatalog, SelectedModifier,
+  WalkerPowerCatalog}
 import distantlands.gameplay.powers.campaign.BattlePlan
 import distantlands.gameplay.powers.challenge.SchoolOfVines
 import distantlands.gameplay.powers.recover.DrownedLibrary
@@ -170,32 +170,6 @@ class CardCatalogSuite extends munit.FunSuite:
     def ofPrinted(id: PowerId): Boolean = printed(id) ||
       printed.exists(power => id.value.startsWith(power.value + "."))
     assertEquals(registered.filterNot(ofPrinted).distinct, Vector.empty)
-
-  test("a card leaves the holding files once a power of it is implemented, " +
-      "and sits there until then"):
-    // A card with no implemented power shares the holding files; one with
-    // any implemented power sits beside that power. The status is the one
-    // judge, so a card implemented as an operation restriction or a site
-    // handler a game rule runs leaves holding too.
-    val implemented = PowerImplementationStatus.implemented
-    def held(card: AnyRef): Boolean =
-      card.getClass.getPackageName == "distantlands.catalog.holding"
-    def misplaced(card: AnyRef, name: String, powers: Vector[PowerId])
-        : Option[String] =
-      Option.when(held(card) == powers.exists(implemented))(
-        if held(card) then s"$name is implemented but held"
-        else s"$name is unimplemented but not held")
-    val findings =
-      catalog.denizens.flatMap(card =>
-        misplaced(card, card.name, card.powers.map(_.id))) ++
-      catalog.relics.flatMap(card =>
-        misplaced(card, card.name, card.powers.map(_.id))) ++
-      catalog.legacies.flatMap(card =>
-        misplaced(card, card.name, card.powers.map(_.id))) ++
-      catalog.edifices.flatMap(card => misplaced(card, card.intact.name,
-        (card.intact.powers ++ card.ruined.powers).map(_.id))) ++
-      catalog.sites.flatMap(site => misplaced(site, site.name, site.handlers))
-    assertEquals(findings, Vector.empty)
 
   test("card powers are registered whichever cards a catalog lists"):
     def cardPowers(listed: ExecutableCatalog): Set[PowerId] =

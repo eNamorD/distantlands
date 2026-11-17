@@ -4,8 +4,7 @@ import distantlands.gameplay.OathRules
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.chronicle.legacies.IronHandCard
 import distantlands.gameplay.powers.banner.TheNeedleCard
-import distantlands.gameplay.powers.{PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.model._
@@ -40,12 +39,6 @@ class BathsSuite extends munit.FunSuite:
       : Vector[LegacyState] =
     ready.game.campaign.lineages(ready.game.current.player(player).get.lineage)
       .legacies
-
-  test("both faces of the Baths are implemented"):
-    assert(PowerImplementationStatus.implemented(
-      StoneBathsCard.intact.power.id))
-    assert(PowerImplementationStatus.implemented(
-      StoneBathsCard.ruined.power.id))
 
   test("at Stone Baths an unmet dormant legacy stays dormant, and a met " +
       "one still activates"):

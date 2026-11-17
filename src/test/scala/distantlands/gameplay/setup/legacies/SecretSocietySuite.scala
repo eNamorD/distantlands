@@ -2,8 +2,7 @@ package distantlands.gameplay.setup.legacies
 
 import distantlands.application.GameCommand
 import distantlands.gameplay.actions.{ProcedureNotes, VisionRules}
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.{LaterGameFixture, SetupLegacyFixture,
   SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -201,6 +200,5 @@ class SecretSocietySuite extends munit.FunSuite:
     assertNotEquals(done.ready.game.current.turn.phase, Phase.Setup)
     assertEquals(done.ready.game.current.player(p2).get.advisers.size, 2)
 
-  test("the card has left holding and its power is registered"):
+  test("Secret Society is registered among the setup legacies"):
     assert(LegacySetupPowers.all.contains(SecretSociety))
-    assert(PowerImplementationStatus.implemented(SecretSocietyCard.power.id))
