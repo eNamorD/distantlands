@@ -15,7 +15,7 @@ import distantlands.gameplay.walker.{ChoicePayload, LogNoted, WalkerPowers,
   WalkerStepRecorded}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
-import distantlands.testkit.Table
+import distantlands.testkit.{DecisionAnswers, Table}
 import distantlands.testkit.Unwrap.accepted
 
 /** Amber Doors in Setup's ordered pawn window (catalog batch 13, rulings
@@ -58,16 +58,19 @@ class DoorsPowerOrderSuite extends munit.FunSuite:
       catalog, ready, ready.game.current.turn.activePlayer, Vector.empty)),
       TriggeredProcedureRef.Setup, powers, answers = {
         case park if park.decisionId == LegacyKeep.decisionId(p1) =>
-          ChooseOneAnswer(DecisionOptionRef.Legacy(RivalCard.id))
+          DecisionAnswers.pickOfferedLegacy(park.decide.query,
+            RivalCard.id)
         case park if park.decisionId == LegacyKeep.decisionId(p2) =>
-          ChooseOneAnswer(DecisionOptionRef.Legacy(RuthlessCard.id))
+          DecisionAnswers.pickOfferedLegacy(park.decide.query,
+            RuthlessCard.id)
         case park if park.decisionId == OrderedWindow.decisionId(p2, 0) =>
           ChooseOneAnswer(first)
         case park if park.decisionId == AmberDoors.useDecisionId(Some(p2)) =>
           ChooseOneAnswer(AmberDoors.discard)
         case park
             if park.decisionId == AmberDoors.activateDecisionId(Some(p2)) =>
-          ChooseOneAnswer(DecisionOptionRef.Legacy(activated))
+          DecisionAnswers.pickOfferedLegacy(park.decide.query,
+            activated)
       })
 
   private def l2Legacies(run: SetupWalkDriver.SetupWalked)
@@ -146,13 +149,17 @@ class DoorsPowerOrderSuite extends munit.FunSuite:
       SetupProcedure.build(catalog, lost, lost.game.current.turn.activePlayer,
         Vector.empty)), TriggeredProcedureRef.Setup, powers, answers = {
         case park if park.decisionId == LegacyKeep.decisionId(p1) =>
-          ChooseOneAnswer(DecisionOptionRef.Legacy(RivalCard.id))
+          DecisionAnswers.pickOfferedLegacy(park.decide.query,
+            RivalCard.id)
         case park if park.decisionId == LegacyKeep.decisionId(p2) =>
-          ChooseOneAnswer(DecisionOptionRef.Legacy(RuthlessCard.id))
+          DecisionAnswers.pickOfferedLegacy(park.decide.query,
+            RuthlessCard.id)
         case park if park.decisionId == p1Discard =>
-          ChooseOneAnswer(DecisionOptionRef.Legacy(TheStandardBearerCard.id))
+          DecisionAnswers.pickOfferedLegacy(park.decide.query,
+            TheStandardBearerCard.id)
         case park if park.decisionId == p2Discard =>
-          ChooseOneAnswer(DecisionOptionRef.Legacy(RuthlessCard.id))
+          DecisionAnswers.pickOfferedLegacy(park.decide.query,
+            RuthlessCard.id)
       })
     val discards = run.asked.filter(decide =>
       Set(p1Discard, p2Discard).contains(decide.decisionId))

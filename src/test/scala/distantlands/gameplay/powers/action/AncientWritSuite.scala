@@ -6,7 +6,8 @@ import distantlands.gameplay.setup.legacies.{MatchmakerCard, PopulistCard,
   SeerCard, WorldCrafterCard}
 import distantlands.model._
 import distantlands.protocol.projection.DecisionQueryProjection
-import distantlands.testkit.{Look, Outcomes, PhasePowerHarness, Table}
+import distantlands.testkit.{DecisionAnswers, Look, Outcomes, PhasePowerHarness,
+  Table}
 import distantlands.testkit.CardRefs.LegacyRef
 import distantlands.testkit.Table.{p1, p3}
 import distantlands.testkit.Unwrap.accepted
@@ -15,7 +16,7 @@ import distantlands.testkit.Unwrap.accepted
   * dormant and discard the others to the bottom of the legacy deck
   * (catalog batch 13, rulings 1, 2, 6 and 8). */
 class AncientWritSuite extends munit.FunSuite:
-  import PhasePowerHarness.{after, answer, awaits, pick, use}
+  import PhasePowerHarness.{after, answer, awaits, use}
 
   private val writ = AncientWritCard.id
   private val source = DecisionOptionRef.Relic(writ)
@@ -53,7 +54,7 @@ class AncientWritSuite extends munit.FunSuite:
     val used = accepted(use(holding(SeerCard, PopulistCard, WorldCrafterCard,
       RivalCard).ready, AncientWrit, source))
     val kept = after(accepted(answer(used, p1, AncientWrit.decisionId,
-      pick(DecisionOptionRef.Legacy(populist)))))
+      DecisionAnswers.keepLegacy(populist, seer, crafter))))
     assertEquals(legaciesOf(kept), Vector(LegacyState(populist, active = false)))
     assertEquals(handOf(kept), Vector.empty)
     assertEquals(kept.game.current.commonCards.legacyDeck,
@@ -85,7 +86,7 @@ class AncientWritSuite extends munit.FunSuite:
     val used = accepted(use(holding(SeerCard, PopulistCard, WorldCrafterCard)
       .ready, AncientWrit, source))
     val kept = accepted(answer(used, p1, AncientWrit.decisionId,
-      pick(DecisionOptionRef.Legacy(seer))))
+      DecisionAnswers.keepLegacy(seer, populist, crafter)))
     assertEquals(NoteText.said(AncientWrit, used.events ++ kept.events)
       .map(_.text), Vector("p1 drew 3 legacies.", "p1 kept a legacy."))
     val single = accepted(use(holding(SeerCard).ready, AncientWrit, source))
@@ -96,7 +97,7 @@ class AncientWritSuite extends munit.FunSuite:
     val start = holding(SeerCard, PopulistCard, WorldCrafterCard).ready
     val used = accepted(use(start, AncientWrit, source))
     val kept = accepted(answer(used, p1, AncientWrit.decisionId,
-      pick(DecisionOptionRef.Legacy(crafter))))
+      DecisionAnswers.keepLegacy(crafter, seer, populist)))
     assertEquals(
       Outcomes.ready(accepted(PhasePowerHarness.replayed(start,
         used.events ++ kept.events))),
@@ -115,7 +116,7 @@ class AncientWritSuite extends munit.FunSuite:
       crafter))
     assertEquals(handOf(after(used)), Vector.empty)
     val kept = after(accepted(answer(used, p3, AncientWrit.decisionId,
-      pick(DecisionOptionRef.Legacy(crafter)))))
+      DecisionAnswers.keepLegacy(crafter, seer, populist))))
     assertEquals(legaciesOf(kept), Vector(LegacyState(crafter, active = false)))
     assertEquals(LegacyDraws.hand(kept, p3), Vector.empty)
     assertEquals(kept.game.current.commonCards.legacyDeck.takeRight(2),
@@ -125,7 +126,7 @@ class AncientWritSuite extends munit.FunSuite:
     val used = accepted(use(holding(SeerCard, PopulistCard)
       .legacy(p3, MatchmakerCard).ready, AncientWrit, source))
     val kept = accepted(answer(used, p3, AncientWrit.decisionId,
-      pick(DecisionOptionRef.Legacy(seer))))
+      DecisionAnswers.keepLegacy(seer, populist)))
     assertEquals(NoteText.said(AncientWrit, used.events ++ kept.events)
       .map(_.text), Vector(
         s"p3 drew 2 legacies for p1 with ${MatchmakerCard.id.value}.",
@@ -135,7 +136,8 @@ class AncientWritSuite extends munit.FunSuite:
     val used = accepted(use(holding(SeerCard, PopulistCard)
       .legacy(p3, MatchmakerCard).ready, AncientWrit, source))
     assertEquals(PhasePowerHarness.queryOf(used, p3).collect {
-      case one: DecisionQueryProjection.ChooseOne => one.heading }.flatten,
+      case partition: DecisionQueryProjection.Partition =>
+        partition.heading }.flatten,
       Some("Matchmaker: keep a legacy for p1"))
 
   test("a dormant Matchmaker chooses for nobody"):
@@ -149,7 +151,7 @@ class AncientWritSuite extends munit.FunSuite:
       .legacy(p1, MatchmakerCard).ready, AncientWrit, source))
     assertEquals(waiting(used), Some(AncientWrit.decisionId -> p1))
     val kept = accepted(answer(used, p1, AncientWrit.decisionId,
-      pick(DecisionOptionRef.Legacy(seer))))
+      DecisionAnswers.keepLegacy(seer, populist)))
     assertEquals(NoteText.said(AncientWrit, used.events ++ kept.events)
       .map(_.text), Vector("p1 drew 2 legacies.", "p1 kept a legacy."))
 
@@ -158,7 +160,7 @@ class AncientWritSuite extends munit.FunSuite:
       .legacy(p3, MatchmakerCard).ready
     val used = accepted(use(start, AncientWrit, source))
     val kept = accepted(answer(used, p3, AncientWrit.decisionId,
-      pick(DecisionOptionRef.Legacy(seer))))
+      DecisionAnswers.keepLegacy(seer, populist, crafter)))
     assertEquals(
       Outcomes.ready(accepted(PhasePowerHarness.replayed(start,
         used.events ++ kept.events))),

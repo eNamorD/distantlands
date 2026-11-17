@@ -33,6 +33,9 @@ import distantlands.model.OathViolation._
  *     Branch(Decide(legacy-choice, keeper), ...))        // seat in turn order
  *   ...                                                  // (Foundation III)
  *   Sequence(Vector.empty)                               // window = SetupWorldDeck
+ *   Branch(Draw(2 into the keeper's hand))               // a first game's
+ *   ...                                                  // LegacyKeep.draw, per
+ *                                                        // seat in turn order
  *   Sequence(                                            // per participant
  *     Branch(Decide(pawn-placement, participant)),       // legal sites, and
  *                                                        // Quest's stay-off
@@ -42,12 +45,10 @@ import distantlands.model.OathViolation._
  *                                                        // placer orders its powers
  *     Branch(Decide(secret-society discard, participant)) // over the limit,
  *                                                        // with a pawn
- *     Sequence(                                          // a first game's
- *       Branch(Draw(2 into the keeper's hand)),          // LegacyKeep.step
- *       Branch(                                          // two in the hand; one
- *         Decide(legacy-choice, keeper),                 // is kept unasked
- *         BuildOps(keep one, the other to the bottom),
- *         Note(kept a legacy)))
+ *     Branch(                                            // a first game's
+ *       Decide(legacy-choice, keeper),                   // LegacyKeep.keep; one
+ *       BuildOps(keep one, the other to the bottom),     // in the hand is kept
+ *       Note(kept a legacy))                             // unasked
  *     QuestToDistantLands.swapStep(participant)          // no pawn, a card to
  *                                                        // give (R31, R37)
  *     Branch(                                            // with a pawn; a player
@@ -116,7 +117,8 @@ object SetupProcedure:
 
   private def tree(catalog: ExecutableCatalog, ready: ReadyGame): Operation =
     val participants = turnOrder(ready)
-    // A first game keeps in each player's turn, after their pawn (CR p. 7);
+    // A first game draws every seat's legacies before the first pawn and
+    // keeps in each player's turn, after their pawn (CR p. 7);
     // a later game keeps while Foundation III resolves, every seat before
     // any pawn (CR "Later games", step 5; catalog batch 13, ruling 3). An
     // exile-only game resolves its stored foundations, so it keeps in
@@ -128,7 +130,12 @@ object SetupProcedure:
       ready.game.campaign.baseline)
     val keeps =
       if firstGame then Vector.empty else participants.map(LegacyKeep.step)
-    val steps = participants.map(playerStep(catalog, ready, _, firstGame))
+    // A first game draws every seat's two before the first pawn, so each
+    // player places holding them (CR p. 7), and keeps after their pawn.
+    val firstGameDraws =
+      if firstGame then participants.map(LegacyKeep.draw) else Vector.empty
+    val steps = firstGameDraws ++
+      participants.map(playerStep(catalog, ready, _, firstGame))
     val setupEnd = Sequence(Vector.empty, Some(PowerWindow.SetupEnd))
     val chancellor = Imperials.chancellor(ready)
     val imperialMaps = chancellor.filter(_ => ImperialMaps.applies(ready))
@@ -249,8 +256,9 @@ object SetupProcedure:
       SecretSociety.excessStep(catalog, participant.playerId,
         SecretSociety.discardDecisionId(participant.playerId),
         TriggeredProcedureRef.Setup)) ++
-      // A first game's keep; a later game's ran in Foundation III.
-      Option.when(firstGame)(LegacyKeep.step(participant)) ++ Vector(
+      // A first game's keep, of the two drawn before the first pawn; a
+      // later game's ran in Foundation III.
+      Option.when(firstGame)(LegacyKeep.keep(participant)) ++ Vector(
       QuestToDistantLands.swapStep(participant.playerId),
       // A player with no pawn chooses and reveals at their first Wake,
       // keyed on the missing pawn (Legacy Setup powers rulings 18, 20).

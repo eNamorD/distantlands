@@ -8,8 +8,7 @@ import distantlands.application.gamelog.{GoldenLog, LaterGameLogScripts,
 import distantlands.gameplay.setup.legacies.{MatchmakerCard, PopulistCard,
   WorldCrafterCard}
 import distantlands.model._
-import distantlands.model.DecisionAnswer.ChooseOneAnswer
-import distantlands.testkit.Situation
+import distantlands.testkit.{DecisionAnswers, Situation}
 
 /** Who sees a draw Matchmaker's holder keeps (spec ruling 13; R16): the
   * holder, and not the owner, while it waits; the kept legacy, its owner
@@ -28,7 +27,7 @@ class MatchmakerProjectionSuite extends munit.FunSuite:
   private def parkedAt(decisionId: String) =
     Situation.start(Situation.rules(catalog).withAnswers {
       case park if park.decisionId == LegacyKeep.decisionId(p2) =>
-        ChooseOneAnswer(DecisionOptionRef.Legacy(drawn.last))
+        DecisionAnswers.keepLegacy(drawn.last, drawn.head)
     }).parkedAt(decisionId)(GameCommand.Begin(record, orders))
 
   test("before p2's keep is reached, nobody identifies p2's draw (R16)"):

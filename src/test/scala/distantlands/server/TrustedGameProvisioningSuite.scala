@@ -55,7 +55,9 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
 
   /** A two-seat game begun with two events: one resource, two seats, one
     * stream, and its GameStarted and WalkerParked entries. */
-  private val twoSeatGameStored = StoredRows(1, 2, 1, 2)
+  /** GameStarted, one hidden legacy draw per seat (a first game draws
+    * every seat's two before the first pawn) and Setup's first park. */
+  private val twoSeatGameStored = StoredRows(1, 2, 1, 4)
 
   private def rows(connection: Connection, gameId: String): StoredRows =
     def count(table: String): Int =
@@ -78,9 +80,6 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
         Right(("trusted-game", Vector(
         TrustedSeatLink("p1", "https://games.example.test/s/AAAAAAAAAAAAAAAAAAAAAA"),
         TrustedSeatLink("p2", "https://games.example.test/s/AQEBAQEBAQEBAQEBAQEBAQ")))))
-      // GameStarted plus the WalkerParked fact from Setup's immediate first
-      // park (2026-09-21 Chronicle design, slice 2): two event entries for
-      // one bootstrap, not the legacy one.
       assertEquals(rows(connection, gameId), twoSeatGameStored)
       codes.take(2).zipWithIndex.foreach { case (code, index) =>
         assertEquals(owner.identities.resolveTrustedSeat(code.digest),
@@ -96,7 +95,7 @@ class TrustedGameProvisioningSuite extends munit.FunSuite:
           index += 1
       finally statement.close()
       val loaded = new GameApplicationService(catalog, owner.eventStreams).load(gameId)
-      assertEquals(loaded.toOption.flatten.map(_.nextSequence), Some(2L))
+      assertEquals(loaded.toOption.flatten.map(_.nextSequence), Some(4L))
       val journal = present(accepted(owner.eventStreams.load(gameId)),
         s"stream $gameId").records.mkString
       codes.foreach(code => assert(!journal.contains(code.raw)))

@@ -250,10 +250,10 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
               NatureWorshipCard.id),
               SetupAdviserSteps.discardKey)))))
       ),
-      Left(GameApplicationError.StaleClientPosition(1L, 2L)))
+      Left(GameApplicationError.StaleClientPosition(1L, 5L)))
     assertEquals(
       loaded(repository.load("game-stale-v2")).nextSequence,
-      2L)
+      5L)
 
   test("malformed v1 envelopes are rejected without reinterpretation"):
     val repository = new InMemoryEventStreamRepository

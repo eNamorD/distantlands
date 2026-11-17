@@ -10,8 +10,9 @@ import distantlands.model._
   *
   * Public Ambitions, the altered face: the first 4 are dealt faceup to the
   * public row and nobody draws. Quiet Ambitions, the normal face and every
-  * first game's (ruling 4): game start deals nothing, and each player's
-  * keep in Setup draws 2 from the deck (`LegacyKeep`). A short deck deals
+  * first game's (ruling 4): game start deals nothing, and Setup draws 2
+  * from the deck for each player's keep (`LegacyKeep`), a first game's
+  * all before the first pawn. A short deck deals
   * or draws what remains (ruling 5).
   */
 final case class LegacyDeal(face: FoundationFace, seats: Vector[PlayerId]):

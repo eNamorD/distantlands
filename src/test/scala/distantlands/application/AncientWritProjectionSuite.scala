@@ -5,7 +5,7 @@ import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.setup.legacies.{MatchmakerCard, PopulistCard,
   SeerCard, WorldCrafterCard}
 import distantlands.model._
-import distantlands.testkit.{PhasePowerHarness, Table}
+import distantlands.testkit.{DecisionAnswers, PhasePowerHarness, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.accepted
 
@@ -14,7 +14,7 @@ import distantlands.testkit.Unwrap.accepted
   * choose; then the kept legacy its owner alone, and the discarded ones
   * nobody. p1 uses the Writ and p3 holds Matchmaker. */
 class AncientWritProjectionSuite extends munit.FunSuite:
-  import PhasePowerHarness.{after, answer, pick, use}
+  import PhasePowerHarness.{after, answer, use}
 
   private val presentation = new GamePresentationProjector(catalog)
   private val drawn = Vector(SeerCard.id, PopulistCard.id, WorldCrafterCard.id)
@@ -39,7 +39,8 @@ class AncientWritProjectionSuite extends munit.FunSuite:
   test("once kept, the owner alone identifies the kept legacy and nobody " +
       "the discarded ones"):
     val kept = after(accepted(answer(used, p3, AncientWrit.decisionId,
-      pick(DecisionOptionRef.Legacy(PopulistCard.id)))))
+      DecisionAnswers.keepLegacy(PopulistCard.id, SeerCard.id,
+        WorldCrafterCard.id))))
     assert(presentation.identifiesAt(kept, Some(p1), PopulistCard.id))
     Vector(Some(p2), Some(p3), None).foreach(viewer => assert(
       !presentation.identifiesAt(kept, viewer, PopulistCard.id), s"$viewer"))
