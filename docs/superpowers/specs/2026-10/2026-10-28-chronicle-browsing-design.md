@@ -94,7 +94,7 @@ Tabletop Simulator (TTS) string.
 
 ### Chronicle page (`/`)
 
-Top to bottom:
+One centered column, top to bottom, each button on a line of its own:
 
 1. **Loaded Chronicle summary**, when one is loaded: the name as text with an
    edit button that turns it into a text box with Save and Cancel (Save refuses
@@ -106,12 +106,14 @@ Top to bottom:
    entries (name, game, era, saved date), each with Load and Delete. Delete asks
    to confirm; deleting the loaded entry clears the loaded Chronicle.
 5. **Edit Chronicle**, disabled, hover reason "Coming in a later release".
-6. **Import Chronicle.** A JSON file or a pasted TTS string, which needs a name.
-   The convert route checks it. A name clash asks to rename the import or replace
+6. **Import Chronicle.** A button that opens a dialog: "Upload a Chronicle JSON
+   file", a divider, then "Or paste a TTS string", which needs a name. The
+   convert route checks it. A name clash asks to rename the import or replace
    the entry. A successful import becomes the loaded Chronicle.
-7. **Export Chronicle.** The loaded Chronicle as a `<name>.chronicle.json`
-   download or a copied TTS string. Disabled without a loaded Chronicle; TTS is
-   disabled with a reason until the codec lands.
+7. **Export Chronicle.** A button that opens a dialog: the loaded Chronicle as
+   a `<name>.chronicle.json` download, a divider, then its TTS string, asked of
+   the server as the dialog opens and shown with a button that copies it.
+   Disabled with a reason without a loaded Chronicle.
 
 ### Player selection page (`/new-game`)
 

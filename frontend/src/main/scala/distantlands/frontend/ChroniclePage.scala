@@ -12,7 +12,9 @@ private[frontend] enum HostChronicle:
 
 /** The Chronicle page at `/` (Chronicle browsing design, "Chronicle page").
   * Every change redraws the whole page from the shelf. `kept` is false when
-  * the browser refused storage; the shelf then lasts as long as the page. */
+  * the browser refused storage; the shelf then lasts as long as the page.
+  * The page is one centered column, each button on a line of its own;
+  * Import and Export open dialogs over it. */
 private[frontend] object ChroniclePage:
   def render(mount: dom.Element, shelf: ChronicleShelf, kept: Boolean,
       client: ChronicleClient, files: ChronicleFiles,
@@ -23,34 +25,36 @@ private[frontend] object ChroniclePage:
       if mount.querySelector(".chronicle-page-title") != null then
         render(mount, shelf, kept, client, files, choose)
     mount.textContent = ""
-    mount.appendChild(text("h1", "chronicle-page-title", "Distant Lands"))
+    val page = element("div", "chronicle-page")
+    mount.appendChild(page)
+    page.appendChild(text("h1", "chronicle-page-title", "Distant Lands"))
     if !kept then
       val notice = text("p", "status chronicle-storage-refused",
         "Chronicles cannot be kept in this browser. A Chronicle you import " +
           "or create stays here until you leave this page; export it to " +
           "keep a copy.")
       notice.setAttribute("role", "alert")
-      mount.appendChild(notice)
+      page.appendChild(notice)
     val loaded = shelf.loaded
     loaded.foreach { saved =>
-      mount.appendChild(loadedSummary(saved, shelf, client, () => redraw()))
+      page.appendChild(loadedSummary(saved, shelf, client, () => redraw()))
       val continue = button("Continue Chronicle", "continue-chronicle")
       continue.onclick = _ => choose(HostChronicle.Continue(saved))
-      mount.appendChild(continue)
+      page.appendChild(continue)
     }
     val fresh = button("New Chronicle", "new-chronicle")
     fresh.onclick = _ => choose(HostChronicle.New)
-    mount.appendChild(fresh)
+    page.appendChild(fresh)
     val rows = shelf.rows
     if rows.nonEmpty then
-      mount.appendChild(savedList(rows, shelf, () => redraw()))
+      page.appendChild(savedList(rows, shelf, () => redraw()))
     val edit = button("Edit Chronicle", "edit-chronicle")
     HoverTip.withhold(edit, "Coming in a later release")
-    mount.appendChild(edit)
-    mount.appendChild(ChronicleTransfer.importSection(shelf, client, files,
-      () => redraw()))
-    mount.appendChild(ChronicleTransfer.exportSection(loaded.map(_.entry),
-      client, files))
+    page.appendChild(edit)
+    page.appendChild(ChronicleTransfer.importButton(mount, shelf, client,
+      files, () => redraw()))
+    page.appendChild(ChronicleTransfer.exportButton(mount,
+      loaded.map(_.entry), client, files))
 
   private def loadedSummary(saved: SavedChronicle, shelf: ChronicleShelf,
       client: ChronicleClient, redraw: () => Unit): dom.Element =

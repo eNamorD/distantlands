@@ -57,12 +57,12 @@ class ChroniclePageSuite extends munit.FunSuite:
       assert(!shows(browser, "chronicle-saved"))
       assert(!shows(browser, "chronicle-loaded"))
       assert(shows(browser, "new-chronicle"))
-      assert(shows(browser, "chronicle-import"))
+      assert(shows(browser, "import-chronicle"))
       val edit = browser.byClass("edit-chronicle").head
       assertEquals(edit.getAttribute("aria-disabled"), "true")
       assertEquals(edit.getAttribute(HoverTip.Attribute),
         "Coming in a later release")
-      assertEquals(browser.byClass("export-chronicle-json").head
+      assertEquals(browser.byClass("export-chronicle").head
         .getAttribute("aria-disabled"), "true")
       assert(!shows(browser, "chronicle-storage-refused"))
 
@@ -85,7 +85,7 @@ class ChroniclePageSuite extends munit.FunSuite:
       assertEquals(textOf(browser, "chronicle-summary-line"),
         "Game 1 · Era: 20 to win · Red 9, Blue 6")
       assert(shows(browser, "continue-chronicle"))
-      assert(!browser.byClass("export-chronicle-json").head
+      assert(!browser.byClass("export-chronicle").head
         .hasAttribute("aria-disabled"))
 
   test("a loaded entry lists its six foundations, the altered ones " +
@@ -131,9 +131,10 @@ class ChroniclePageSuite extends munit.FunSuite:
         "Ashen Crown"))
       val known = Vector("chronicle-loaded", "continue-chronicle",
         "new-chronicle", "chronicle-saved", "edit-chronicle",
-        "chronicle-import", "chronicle-export")
-      val order = (0 until browser.mount.children.length).toVector
-        .map(browser.mount.children(_).getAttribute("class"))
+        "import-chronicle", "export-chronicle")
+      val page = browser.byClass("chronicle-page").head
+      val order = (0 until page.children.length).toVector
+        .map(page.children(_).getAttribute("class"))
         .flatMap(classes => Option(classes).toVector
           .flatMap(_.split(" ")).filter(known.contains))
       assertEquals(order, known)
@@ -238,6 +239,7 @@ class ChroniclePageSuite extends munit.FunSuite:
       renderChroniclePage(browser, kept = false)
       val notice = browser.byClass("chronicle-storage-refused").head
       assertEquals(notice.getAttribute("role"), "alert")
+      browser.click("import-chronicle")
       as[dom.html.TextArea](browser.byClass("import-chronicle-tts").head)
         .value = "abc"
       browser.input("Name for the TTS import").value = "Iron Vow"
@@ -245,4 +247,6 @@ class ChroniclePageSuite extends munit.FunSuite:
       browser.settle.map { _ =>
         assertEquals(textOf(browser, "chronicle-loaded-name"), "Iron Vow")
         assert(shows(browser, "chronicle-storage-refused"))
+        // The redraw that shows the import closes the dialog.
+        assert(!shows(browser, "chronicle-dialog"))
       }
