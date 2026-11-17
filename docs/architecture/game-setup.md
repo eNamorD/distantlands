@@ -38,8 +38,8 @@ goes under the Visions as the world deck. Under Teeming World each player
 draws until they hold three starting advisers and keeps every card drawn
 facedown, after any adviser their lineage stored, with no hand and no
 adviser choice; the rest of the stack is dealt one card at a time to the
-Cradle, Provinces and Hinterland discard piles, the first card dealt to a
-pile its top and each later card beneath; and the world deck is the five
+Cradle, Provinces and Hinterland discard piles, each card dealt going on
+top of its pile; and the world deck is the five
 Visions, shuffled. A seated lineage that stores Oaths of Loyalty active
 buries every starting adviser it would gain: under Teeming World it draws
 3 − x cards, x the advisers Oaths kept, and buries every card drawn at the

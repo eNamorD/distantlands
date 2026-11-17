@@ -251,20 +251,20 @@ class AlteredFoundationSetupSuite extends munit.FunSuite:
       "seeded"):
     val ready = started(teemingWorldChronicle)
     val rest = brandNewChronicle.worldDeck.drop(9)
-    /** Every third card of the rest from `from`, the first dealt last: a
-      * pile is stored top last, and its first card dealt is its top. */
+    /** Every third card of the rest from `from`, in the order dealt: a pile
+      * is stored top last, and each card dealt goes on top. */
     def everyThird(from: Int): Vector[WorldCardId] =
-      rest.indices.filter(_ % 3 == from).map(rest).toVector.reverse
+      rest.indices.filter(_ % 3 == from).map(rest).toVector
     assertEquals(rest.size, 51)
     assertEquals(ready.game.current.commonCards.regionalDiscards, Map(
       Region.Cradle -> everyThird(0), Region.Provinces -> everyThird(1),
       Region.Hinterland -> everyThird(2)))
-    // The first three cards dealt top the piles, and the last three lie at
-    // their bottoms.
+    // The first three cards dealt lie at the piles' bottoms, and the last
+    // three top them.
     assertEquals(Region.all.map(region =>
-      ready.game.current.commonCards.discard(region).last), rest.take(3))
+      ready.game.current.commonCards.discard(region).head), rest.take(3))
     assertEquals(Region.all.map(region =>
-      ready.game.current.commonCards.discard(region).head), rest.takeRight(3))
+      ready.game.current.commonCards.discard(region).last), rest.takeRight(3))
 
   test("a Teeming World stack that does not divide by three leaves the " +
       "Cradle pile the odd card"):
