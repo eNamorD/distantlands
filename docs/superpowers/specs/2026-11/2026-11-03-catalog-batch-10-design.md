@@ -493,9 +493,10 @@ that pick for the Act menu. The four cards live beside the Challenge in
 `ChallengeReach` reads their picks:
 
 - **School of Vines:** a banner an enemy holds no longer needs the user's
-  pawn at its holder's pawn's site. Imperial players are not each other's
-  enemies (rules glossary, "Enemy"), so a Citizen still needs the
-  Chancellor's site.
+  pawn at its holder's pawn's site. Every other player is an enemy,
+  Imperial or not (rules glossary, "Enemy"), so a Citizen reaches the
+  Chancellor's banner too. (Corrected 2026-11-16: this design first said
+  Imperial players are not each other's enemies.)
 - **Sigil of the Eye:** the same for the Darkest Secret, whoever holds it;
   **Sigil of the Heart:** for the People's Favor.
 - **Magician's Code** (2 favor, placed on the card), for the Darkest Secret
@@ -621,7 +622,7 @@ the Tracker's holder. The primitives `TrackPawn` and `ClearTrackedPawn`
 write it, and are journalled, so replay rebuilds it.
 
 - **Action.** Free. The user picks an enemy pawn at their site
-  (`Imperials.enemies`), records `TrackPawn`, then `EnterPhase(Rest)`.
+  (any other player's, Imperial or not), records `TrackPawn`, then `EnterPhase(Rest)`.
   With no enemy pawn there, the menu shows "No valid enemy pawn". Line:
   "Tracked {Red}." No phase-end line, since log lines name no actor.
 - **Wake.** An optional `PhasePower` (ruling 6), usable while the user

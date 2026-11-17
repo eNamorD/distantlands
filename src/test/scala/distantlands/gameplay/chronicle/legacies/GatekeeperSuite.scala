@@ -86,9 +86,11 @@ class GatekeeperSuite extends munit.FunSuite:
     assertEquals(asked(sun(secretKeeper.legacy(p3, SeerCard,
       active = false))), None)
 
-  test("an Imperial ally's legacy is not an enemy's"):
+  test("another Imperial player's legacy is takeable: Imperial players are " +
+      "each other's enemies"):
     val run = sun(secretKeeper.imperial(p2, p3).legacy(p3, SeerCard))
-    assertEquals(asked(run), None)
+    assertEquals(offered(run), Vector(Gatekeeper.decline,
+      DecisionOptionRef.Legacy(SeerCard.id)))
 
   test("nothing takeable asks nothing, and a dormant Gatekeeper asks " +
       "nothing (ruling 1)"):

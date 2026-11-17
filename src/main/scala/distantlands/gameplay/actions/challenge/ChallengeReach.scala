@@ -63,11 +63,12 @@ object ChallengeReach:
     else Some(codeTooFew)
 
   /** Whether `picks` let `actor` challenge `banner`, which `holder` holds,
-    * without standing at the holder's pawn site. */
-  def unbound(ready: ReadyGame, actor: PlayerId, picks: Vector[CardId],
+    * without standing at the holder's pawn site. School of Vines reaches
+    * any other player's banner: every other player is an enemy, Imperial
+    * or not (rules glossary, "Enemy"). */
+  def unbound(actor: PlayerId, picks: Vector[CardId],
       banner: Banner, holder: PlayerId): Boolean =
-    (picks.contains(SchoolOfVinesCard.id) &&
-      Imperials.enemies(ready, actor, holder)) ||
+    (picks.contains(SchoolOfVinesCard.id) && holder != actor) ||
       (banner match
         case Banner.DarkestSecret => picks.contains(SigilOfTheEyeCard.id)
         case Banner.PeoplesFavor => picks.contains(SigilOfTheHeartCard.id))
