@@ -561,7 +561,9 @@ fits. Spacing runs 4, 6, 8, 12, 18px;
 
 The start pages (the Chronicle page and game creation) are the only
 scrolling documents: they scroll inside `#app` with 28px/16px/48px padding,
-forms in a 40rem grid.
+each in one centered column at most 40rem wide. Headings and intro text are
+centered; forms stay left-aligned inside the column. The Chronicle page
+stacks its buttons one to a line, and opens Import and Export as dialogs.
 
 ## Elevation & Depth
 

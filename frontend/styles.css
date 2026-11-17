@@ -193,6 +193,15 @@ body { margin: 0; }
 button { font: inherit; }
 .trusted-host-form, .host-field { display: grid; gap: 0.5rem; }
 .trusted-host-form { max-width: 40rem; gap: 1rem; }
+/* Player selection and the seat links after it: one centered column, like
+   the Chronicle page, so the intro wraps instead of running wide. */
+.host-page { max-width: 40rem; margin: 0 auto; display: grid; gap: 0.75rem; }
+.host-page > h1, .host-page > p { text-align: center; }
+.host-intro { max-width: 65ch; justify-self: center; margin: 0 0 0.5rem; }
+.host-page > .chronicle-back { justify-self: start; }
+/* The seat-link rows mark nothing, so the list keeps no indent for markers. */
+.host-page .seat-links { margin: 0; padding: 0; }
+.host-page .created-game-id { margin: 0; }
 .host-field input, .host-field textarea, .seat-link { font: inherit; padding: 0.5rem; min-width: 0; }
 .host-players { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
 .host-player { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
