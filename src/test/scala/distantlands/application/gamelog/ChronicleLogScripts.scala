@@ -12,10 +12,14 @@ import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
   Revolutionary, RevolutionaryCard, Rival, RivalCard, RoyalLine,
   RoyalLineCard, TheBrightBeacon, TheBrightBeaconCard, TheEarCard}
 import distantlands.gameplay.{BanditCrownCard, GrandMaskCard}
+import distantlands.gameplay.powers.action.{EldersCard, GiantsPathCard}
+import distantlands.gameplay.powers.campaign.RivalKhanCard
 import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
   DowntroddenCard, GolemLegionsCard, HallowedSpringCard, MapLibraryCard,
-  VillageIdiotCard}
-import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+  VillageIdiotCard, WildPasturesCard}
+import distantlands.gameplay.powers.setup.GreatForgeCard
+import distantlands.gameplay.powers.whenplayed.{GreatHerdCard,
+  ThreateningRoarCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import distantlands.testkit.{MenuPlay, Table}
@@ -136,6 +140,37 @@ object ChronicleLogScripts:
         ChooseOneAnswer(DecisionOptionRef.Relic(CupOfPlentyCard.id))
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("throne-hiding-place", service, p1)
+
+  /** The game of [[chronicleStarted]] with Blasted Pastures at Broken
+    * Peaks, which bandits rule, Elders at Deep Woods and Giant's Rampage at
+    * Ancient City: at the start of the Throne all three are buried, named
+    * inline (Last Chronicle powers, slice 3). */
+  def throneBlastedPastures(using munit.Location): Script =
+    blastedPastures("throne-blasted-pastures", table => table
+      .denizen(EldersCard, at = DeepWoodsSite)
+      .edifice(GiantsPathCard, EdificeSide.Ruined, at = AncientCitySite))
+
+  /** The same, with six Nomad cards, so the line lists them as a card
+    * list. */
+  def throneBlastedPasturesListed(using munit.Location): Script =
+    blastedPastures("throne-blasted-pastures-listed", table => table
+      .denizen(EldersCard, at = DeepWoodsSite)
+      .denizen(GreatHerdCard, at = DeepWoodsSite)
+      .edifice(GiantsPathCard, EdificeSide.Ruined, at = AncientCitySite)
+      .denizen(RivalKhanCard, at = AncientCitySite)
+      .edifice(GreatForgeCard, EdificeSide.Intact, at = BuriedGiantSite))
+
+  /** [[chronicleStarted]]'s table with Blasted Pastures at Broken Peaks and
+    * the Nomad cards `nomads` places. */
+  private def blastedPastures(name: String, nomads: Table => Table)(
+      using munit.Location): Script =
+    val (service, acting) = atTable(name, nomads(Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .edifice(WildPasturesCard, EdificeSide.Ruined, at = BrokenPeaksSite))
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script(name, service, p1)
 
   /** The game of [[chronicleStarted]] with Oaths of Loyalty and Heirloom:
     * p2 holds the Darkest Secret, Cup of Plenty (the highest relic) and
@@ -297,6 +332,7 @@ object ChronicleLogScripts:
       "sun-gatekeeper-chronicler" -> (() => sunGatekeeperChronicler),
       "throne-heirloom" -> (() => throneHeirloom),
       "throne-hiding-place" -> (() => throneHidingPlace),
+      "throne-blasted-pastures" -> (() => throneBlastedPastures),
       "chronicle-oaths-heirloom" -> (() => chronicleOathsHeirloom),
       "chronicle-iron-hand" -> (() => chronicleIronHand),
       "chronicle-royal-line" -> (() => chronicleRoyalLine),

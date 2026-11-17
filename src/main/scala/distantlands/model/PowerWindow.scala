@@ -235,7 +235,8 @@ object PowerWindow:
   /** The start of the Throne, before Offer Citizenship: the held relics
     * are hidden (Last Chronicle powers design, ruling 3), then Reformer's
     * step (Legacy Chronicle powers design, ruling 12), then Hiding
-    * Place's (Last Chronicle powers design, ruling 4). */
+    * Place's and Blasted Pastures' (Last Chronicle powers design, rulings
+    * 4 to 6). */
   case object ChronicleStartOfThrone extends OtherWindow:
     val key = "chronicle.throne.start-of-throne"
   case object ChronicleOfferCitizenship extends OtherWindow:

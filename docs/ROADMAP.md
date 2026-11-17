@@ -205,13 +205,6 @@ the powers used during a game with the
 and the cards that act on legacies with
 [catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md).
 
-- [ ] **The last Chronicle powers.** One printed power still does
-  nothing: Blasted Pastures (E07 ruined) buries the Nomad cards on the map
-  at the start of the Throne unless the winner rules it
-  ([Last Chronicle powers design](superpowers/specs/2026-11/2026-11-16-last-chronicle-powers-design.md),
-  slice 3). With it `src/test/resources/powers/unimplemented.txt` is
-  empty, which unblocks **Retire the unimplemented-card machinery across
-  the stack**.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the
@@ -315,10 +308,10 @@ one.
 - [ ] **Retire the unimplemented-card machinery across the stack.** Every
   printed denizen power runs since Reliquary Raid, and
   [catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)
-  emptied `catalog/holding/`. One power remains in
-  `src/test/resources/powers/unimplemented.txt` (**The last Chronicle
-  powers**, under Chronicle steps). Once the snapshot is empty, remove the machinery that sorts, filters and marks
-  unimplemented cards:
+  emptied `catalog/holding/`. The
+  [last Chronicle powers](superpowers/specs/2026-11/2026-11-16-last-chronicle-powers-design.md)
+  emptied `src/test/resources/powers/unimplemented.txt`. Remove the
+  machinery that sorts, filters and marks unimplemented cards (slice 4):
   - The implemented-first deal: `ShufflePolicy.implementedFirst`,
     `ImplementedCardCatalog`, the implemented filler in
     `FirstGameChronicleGenerator`'s pools, and the unimplemented denizens

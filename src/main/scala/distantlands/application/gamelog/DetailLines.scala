@@ -152,8 +152,10 @@ private[gamelog] final class DetailLines(words: LogWords,
       case discard: Discard.Relic =>
         line(words.subject(discard.actingPlayer, actor, "set aside") ++
           words.one(asItLay(discard.card)))
+      // A buried card is named as it lay: an edifice in the deck has no
+      // side, and a ruined one would read as its intact face.
       case Bury(buried, _, _) =>
-        line(LogSpan.Text("Buried ") +: words.one(card(buried.id)))
+        line(LogSpan.Text("Buried ") +: words.one(asItLay(buried.id)))
       // The Ear's, The Bright Beacon's and Seer's peeks only record what the
       // holder knows; each power writes its one line (Legacy Chronicle powers
       // R47, Legacy Setup powers R26).

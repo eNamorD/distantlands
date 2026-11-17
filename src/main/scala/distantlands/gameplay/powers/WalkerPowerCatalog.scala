@@ -1,8 +1,8 @@
 package distantlands.gameplay.powers
 
 import distantlands.catalog.ExecutableCatalog
-import distantlands.gameplay.chronicle.{AncientCityEnduring, HallOfBandits,
-  HidingPlace, RuinedBaths, StoneBaths}
+import distantlands.gameplay.chronicle.{AncientCityEnduring,
+  BlastedPastures, HallOfBandits, HidingPlace, RuinedBaths, StoneBaths}
 import distantlands.gameplay.chronicle.legacies.LegacyChroniclePowers
 import distantlands.gameplay.operations.OperationRestrictions
 import distantlands.gameplay.phases.rest.Arbiter
@@ -64,7 +64,7 @@ import distantlands.model.{CardId, PowerId}
   * reads it. The Baths hook none either, as Sun steps 2 and 3 read them,
   * nor do Ancient City's Enduring and Hall of Bandits, which Shape Empire
   * reads. Hiding Place adds a step at the start of the Throne, after
-  * Reformer's.
+  * Reformer's. Blasted Pastures adds one after Hiding Place's.
   * The legacies' SETUP powers (`LegacySetupPowers`) hook no
   * window: game start and Setup's steps read them.
   * `restrictionSet` gives every walker step the catalog's global operation
@@ -105,8 +105,8 @@ object WalkerPowerCatalog:
       Vector(Dazzle, GreatMarket, BanditMarket, GreatForge, BrokenForge,
         ProvingGrounds, EmptyGrounds, LostDoors, AmberDoors, StoneBaths,
         RuinedBaths, AncientCityEnduring, HallOfBandits, HidingPlace,
-        RuinedTemple, HallOfMockery, LostGuardians, RuinedSchool,
-        BrokenHorn, BrokenClock, FallenSpire, TakeWealthLimit,
+        BlastedPastures, RuinedTemple, HallOfMockery, LostGuardians,
+        RuinedSchool, BrokenHorn, BrokenClock, FallenSpire, TakeWealthLimit,
         TakeWealthPawnGate, LightFingers, Beloved, TheNeedle, Arbiter,
         ConspiracyWhenPlayed) ++
       LegacyChroniclePowers.all ++

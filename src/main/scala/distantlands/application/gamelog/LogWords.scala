@@ -83,12 +83,21 @@ private[gamelog] final class LogWords(catalog: ExecutableCatalog,
     if ids.size <= LogWords.Inline then cards(words)
     else if words.forall(_.isInstanceOf[CardWord.Back]) then
       Vector(LogSpan.Text(s"${ids.size} cards"))
-    else Vector(LogSpan.Cards(ids.zip(words).map((id, word) => face(id, word))))
+    else Vector(LogSpan.Cards(ids.zip(words).map((id, word) =>
+      face(id, word, states))))
 
-  /** A card as a card list shows it: its face when named, else its back. */
-  private def face(id: CardId, word: CardWord)
+  /** A card as a card list shows it: its face when named, else its back. A
+    * named edifice shows the side it lies on in the last of `states` that
+    * holds it on the map. */
+  private def face(id: CardId, word: CardWord, states: Vector[ReadyGame])
       : distantlands.protocol.projection.CardDetailsProjection = word match
-    case CardWord.Named(_) => presentation.cardDetails(id, None, hidden = false)
+    case CardWord.Named(_) => id match
+      case edifice: EdificeId => states.reverseIterator.flatMap(state =>
+          state.game.cardIndex.toOption.flatMap(_.stateOf(edifice)))
+        .collectFirst { case lying: EdificeState =>
+          presentation.edificeCardDetails(lying) }
+        .getOrElse(presentation.cardDetails(id, None, hidden = false))
+      case other => presentation.cardDetails(other, None, hidden = false)
     case CardWord.Back(_) => presentation.hiddenCard(id match
       case _: RelicId => "relic"
       case other => presentation.cardKind(other))
