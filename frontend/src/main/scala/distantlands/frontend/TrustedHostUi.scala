@@ -62,17 +62,21 @@ private[frontend] object TrustedHostUi:
       openCreated: Option[TrustedGameCreateResponse => Unit] = None)
       : () => Boolean =
     mount.textContent = ""
+    // One centered column, as on the Chronicle page, narrow enough that
+    // the intro wraps.
+    val page = element("div", "host-page")
+    mount.appendChild(page)
     val backLink = button("Back", "chronicle-back")
     backLink.setAttribute("type", "button")
     backLink.onclick = event =>
       event.preventDefault()
       if !backLink.disabled then back()
-    mount.appendChild(backLink)
-    mount.appendChild(text("h1", "", "Create an Oath game"))
+    page.appendChild(backLink)
+    page.appendChild(text("h1", "", "Create an Oath game"))
     val imperial = roles(chronicle)
     def label(color: PlayerColor): String =
       name(color) + imperial.get(color).fold("")(role => s", ${role.capitalize}")
-    mount.appendChild(text("p", "", openCreated match {
+    page.appendChild(text("p", "host-intro", openCreated match {
       case None => "Add one row per player, then send each player " +
         "their assigned link. Anyone with a seat link can control that seat. " +
         firstPlayerSentence(imperial) +
@@ -255,12 +259,12 @@ private[frontend] object TrustedHostUi:
               status.textContent = "Game created. Opening it…"
               openCreated.foreach(_(created))
             case Right(created) =>
-              mount.removeChild(form)
-              mount.removeChild(backLink)
+              page.removeChild(form)
+              page.removeChild(backLink)
               status.textContent =
                 "Game created. Copy and save each assigned seat link." +
                   unsaved.fold("")(reason => s" $reason")
-              mount.appendChild(text("p", "created-game-id", s"Game ID: ${created.gameId}"))
+              page.appendChild(text("p", "created-game-id", s"Game ID: ${created.gameId}"))
               val links = element("ol", "seat-links")
               created.seats.foreach { seat =>
                 val row = element("li", "seat-link-row")
@@ -284,13 +288,13 @@ private[frontend] object TrustedHostUi:
                 row.appendChild(copy)
                 links.appendChild(row)
               }
-              mount.appendChild(links)
+              page.appendChild(links)
         }
     create.onclick = event => { event.preventDefault(); submit() }
     form.asInstanceOf[dom.html.Form].onsubmit = event => { event.preventDefault(); submit() }
     form.appendChild(create)
-    mount.appendChild(form)
-    mount.appendChild(status)
+    page.appendChild(form)
+    page.appendChild(status)
     () => creating
 
   private def swatch(color: PlayerColor): dom.Element =
