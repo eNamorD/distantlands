@@ -209,6 +209,10 @@ and the last printed powers with the
 Every printed card power now runs.
 
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
+  The rulebook also lets a group end an era after a number of games or an
+  amount of time; the Chronicle stores only a point target. An era that
+  ends after M games should read "Era: Game N of M" on the Chronicle page,
+  beside today's "Era: First to T".
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the
   browser.

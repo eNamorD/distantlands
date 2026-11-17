@@ -563,7 +563,12 @@ The start pages (the Chronicle page and game creation) are the only
 scrolling documents: they scroll inside `#app` with 28px/16px/48px padding,
 each in one centered column at most 40rem wide. Headings and intro text are
 centered; forms stay left-aligned inside the column. The Chronicle page
-stacks its buttons one to a line, and opens Import and Export as dialogs.
+stacks its buttons one to a line, and opens Load, Import and Export as
+dialogs. Above them, the Loaded Chronicle box is the page's one framed
+surface: a 2px Brass border at 12px, its label set into the top edge on a
+Base patch, "None" in Ink Dim when empty. Its scoresheet follows the paper
+scorepad: running totals in tabular figures, the Chancellor's score in a
+1.5px circle and Citizens' underlined, a Brass Line rule between rows.
 
 ## Elevation & Depth
 
