@@ -4,14 +4,14 @@ These are not claimed errors in the rulebook. They are places where an implement
 
 ## Component-data dependencies
 
-1. **Card powers and exact costs.** The catalog contains stable printed IDs, reviewed text, and handler keys. No card is left in the holding package, so `catalog/holding/` is gone ([Catalog batch 13 design](../superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)). Four printed powers still have no executable behavior. They are listed in `src/test/resources/powers/unimplemented.txt`: the ruined faces Blasted Pastures (E07), Hall of Bandits (E16) and Hiding Place (E26), and the Ancient City's enduring power. Many actions can be modified or replaced by card powers (CR pp. 28-30, 42).
+1. **Card powers and exact costs.** The catalog contains stable printed IDs, reviewed text, and handler keys. No card is left in the holding package, so `catalog/holding/` is gone ([Catalog batch 13 design](../superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)). Two printed powers still have no executable behavior. They are listed in `src/test/resources/powers/unimplemented.txt`: the ruined faces Blasted Pastures (E07) and Hiding Place (E26). Many actions can be modified or replaced by card powers (CR pp. 28-30, 42).
 2. **Foundation faces.** The catalog contains the six normal/altered records, and game start reads the faces a Chronicle stores; a first game's are all normal ([Foundations rulings](#foundations-rulings), item 17). The altered faces of Foundations II (Movers and Shakers) and IV (Teeming World) are built at setup, and so is Wide Horizons (I), which leaves the map's remaining slots empty for its Explore action to fill in play. An altered V, Grand Council, starts the People's Favor on its Grand Council face, and an altered VI, Festival, the Darkest Secret on its Festival face ([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md), slices 5 and 6). The Beacon's Shape Foundation restores one altered face in the Chronicle. Foundation III deals legacies at game start: Quiet Ambitions draws 2 for each player to keep one in Setup, and Public Ambitions deals a faceup row of 4 ([Legacies design](../superpowers/specs/2026-11/2026-11-13-legacies-design.md), slice 2). The [Foundations rulings](#foundations-rulings) hold the batch's rulings and readings, and the [traceability table](implementation-traceability.md#setup) lists the evidence.
 3. **Player-board tables/icons.** Supply refresh thresholds and some costs are
    graphically encoded on player boards. Trade yield is resolved by the current
    combined rulebook prose: favor is 1 + matches; secrets equal matches (CR
    pp. 18, 24).
 4. **Banner ribbons and non-default faces.** CR p. 32 explains ribbon semantics, but machine execution needs exact component-side icon sequences and initial values.
-5. **Component behavior coverage.** Printed identities and the runtime catalog are complete, but banner ribbons and the four powers item 1 lists still require typed executable handlers.
+5. **Component behavior coverage.** Printed identities and the runtime catalog are complete, but banner ribbons and the two powers item 1 lists still require typed executable handlers.
 
 ## Formalization decisions
 
@@ -420,6 +420,13 @@ Rulings for the cards that act on legacies ([Catalog batch 13 design](../superpo
 18. **Ruined Temple at the win.** Once Royal Line and Conspirator have settled the final winner, and before the Sun, a pledged winner takes every bandit site: its bandits go to the bandit supply, and it takes one of the winner's warbands, Imperial for an Imperial winner, the bank topped up when short. Sun step 2's legacy goals then see those sites, and Crown Chancellor, Shape Empire and the rest treat them as the winner's. Line: "p2 took rule of 3 bandit sites with Ruined Temple".
 19. **Ruined Temple's double.** A pledged winner's legacy bonus doubles wherever it is scored, at Score Lineage Points and at Chronicler, so a declaration cannot strip the double. The 3 base points are not doubled, and gifts are spent from the doubled total. Lines: "p1 scored 9 lineage points (3 base, 6 from Beast, doubled by Ruined Temple)", and at Chronicler "p1 scored 4 lineage points (4 from Beast, doubled by Ruined Temple)".
 20. **The Temple's offer** goes to a placer who has a secret or has pledged, so it stands while its own burn resolves in the ordered pawn window (item 9).
+
+## Last Chronicle powers rulings
+
+Rulings for the last four printed powers ([Last Chronicle powers design](../superpowers/specs/2026-11/2026-11-16-last-chronicle-powers-design.md)), taken with the owner on 2026-11-16. Items are the design's rulings; each slice adds its own.
+
+1. **Ancient City is Enduring.** No card at its site is discarded in Shape Empire, whoever performs the step, Iron Hand's Exile included. The protection is Shape Empire's only: Revolutionary's discard comes after Build Edifice and still discards cards at Ancient City.
+2. **Hall of Bandits.** While its ruined face is on the map, a ruined edifice at a site bandits rule is not discarded in the Chronicle. Shape Empire is the only Chronicle discard that reaches a bandit site. Hall of Bandits keeps itself when bandits rule its site. A bury is not a discard. It writes no line.
 
 ## Source relationship cautions
 

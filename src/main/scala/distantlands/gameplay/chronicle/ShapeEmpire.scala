@@ -10,10 +10,11 @@ import distantlands.model._
   * 11 and 14). The Throne holder may remove any of their warbands from
   * sites but the last one on the map; with no site, they clear their pawn's
   * site and place one there. Then every denizen at a site they do not rule
-  * is discarded, except intact edifices and cards at Enduring sites. Iron
-  * Hand's Exile holder, read when the step is reached, performs it in the
-  * Throne holder's place, over the sites they rule (Legacy Chronicle
-  * powers design, ruling 19; R31). */
+  * is discarded, except intact edifices, cards at Enduring sites and,
+  * while Hall of Bandits is on the map, ruined edifices at bandit sites
+  * (`ShapeEmpireExemptions`). Iron Hand's Exile holder, read when the step
+  * is reached, performs it in the Throne holder's place, over the sites
+  * they rule (Legacy Chronicle powers design, ruling 19; R31). */
 object ShapeEmpire:
   val removeDecisionId: String = "chronicle.shape-empire.remove"
 
@@ -80,24 +81,22 @@ object ShapeEmpire:
           PositionedLocation(Location.WarbandBank(kind)))
       }), required = true))
 
-  /** Cards at Enduring sites are not discarded in Shape Empire (CR p. 37).
-    * Ancient City is one; its handler names the keyword. */
-  private def enduring(catalog: ExecutableCatalog, site: SiteId): Boolean =
-    catalog.site(site).exists(_.handlers.exists(_.value.endsWith(".enduring")))
-
-  /** The cards at sites the holder does not rule, but Enduring ones, are
-    * discarded. Rival's holder, read when the discard is reached, first keeps
-    * any of them, ruined edifices included (Legacy Chronicle powers design,
-    * ruling 9; R8): the question's options are the cards this Branch read,
-    * so a walk resumed there finds the same ones. */
+  /** The cards at sites the holder does not rule, but those
+    * `ShapeEmpireExemptions` keeps, are discarded. Rival's holder, read when
+    * the discard is reached, first keeps any of them, ruined edifices
+    * included (Legacy Chronicle powers design, ruling 9; R8): the
+    * question's options are the cards this Branch read, so a walk resumed
+    * there finds the same ones. */
   private def discards(catalog: ExecutableCatalog, state: ReadyGame,
       holder: PlayerId): Vector[Operation] =
     val current = state.game.current
     val cards = current.map.inPlay.filterNot(site =>
-      ChronicleTasks.rules(state, holder, site) || enduring(catalog, site))
+      ChronicleTasks.rules(state, holder, site) ||
+        ShapeEmpireExemptions.enduring(catalog, site))
       .flatMap(site => current.map.regionOf(site).toVector.flatMap(region =>
-        current.map.sites(site).denizens.flatMap(card =>
-          discardOf(catalog, site, region, card, holder)
+        current.map.sites(site).denizens
+          .filterNot(ShapeEmpireExemptions.banditRuin(state, site, _))
+          .flatMap(card => discardOf(catalog, site, region, card, holder)
             .map(op => (site, card, op)))))
     if cards.isEmpty then Vector.empty
     else ChronicleLegacyRules.protector(state) match
