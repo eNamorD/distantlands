@@ -121,14 +121,8 @@ Hiding Place".
 
 ## Running things
 
-- This plan starts from slice 1. Before Task 1, check that slice 1 is
-  merged: `git log 0.2.0-alpha --oneline | grep -i "hall of bandits"`
-  must print a commit. If it prints nothing, stop and report. Then, in
-  this worktree, run `git rebase 0.2.0-alpha`. The branch holds only this
-  plan's commit, so the rebase is clean.
-- Until the rebase, the link check reports this plan's links to
-  `ambiguities.md#last-chronicle-powers-rulings`, which slice 1 creates.
-  After it, Task 5's gate must pass with no missing anchor.
+- This plan starts from slice 1, which is merged into 0.2.0-alpha as
+  `e989502a8`. The branch is rebased onto it, and the link check passes.
 - The worktree needs `.tooling` and `node_modules` symlinked from the main
   checkout before `./sbtw`. They are already linked.
 - One suite: `./sbtw "testOnly distantlands.gameplay.chronicle.HidingPlaceSuite"`.
@@ -1129,9 +1123,11 @@ rulings" section, after item 2:
 ```
 
 In item 40 of "Legacy Chronicle powers rulings", replace "Stock Reliquary
-first turns every held relic but the Grand Scepter facedown" with "the
-start of the Throne first turns every held relic but the Grand Scepter
-facedown ([Last Chronicle powers rulings](#last-chronicle-powers-rulings), item 3)".
+first turns every held relic but the Grand Scepter facedown" with:
+
+```markdown
+the start of the Throne first turns every held relic but the Grand Scepter facedown ([Last Chronicle powers rulings](#last-chronicle-powers-rulings), item 3)
+```
 
 In item 1 of "Component-data dependencies", replace "Two printed powers
 still have no executable behavior. They are listed in
@@ -1181,15 +1177,11 @@ replace "Heirloom keeps a relic for the next game through
 `StartingRelicKept`, and The Ear places the scattered relics, its ACTION
 half in the Legacy ACTION powers row (`legacies/HeirloomSuite`,
 `legacies/TheEarSuite`, `application/HiddenChronicleCardsSuite`, the
-`throne-heirloom` and `chronicle-ear-beacon` goldens)" with "The held
-relics turn facedown at the start of the Throne; Heirloom and Hiding
-Place keep a relic for the next game through `RelicKeep` and
-`StartingRelicKept`, and The Ear places the scattered relics, its ACTION
-half in the Legacy ACTION powers row ([Last Chronicle powers rulings](ambiguities.md#last-chronicle-powers-rulings),
-items 3 and 4; `legacies/HeirloomSuite`, `HidingPlaceSuite`,
-`legacies/TheEarSuite`, `application/HiddenChronicleCardsSuite`, the
-`throne-heirloom`, `throne-hiding-place` and `chronicle-ear-beacon`
-goldens)".
+`throne-heirloom` and `chronicle-ear-beacon` goldens)" with:
+
+```markdown
+The held relics turn facedown at the start of the Throne; Heirloom and Hiding Place keep a relic for the next game through `RelicKeep` and `StartingRelicKept`, and The Ear places the scattered relics, its ACTION half in the Legacy ACTION powers row ([Last Chronicle powers rulings](ambiguities.md#last-chronicle-powers-rulings), items 3 and 4; `legacies/HeirloomSuite`, `HidingPlaceSuite`, `legacies/TheEarSuite`, `application/HiddenChronicleCardsSuite`, the `throne-heirloom`, `throne-hiding-place` and `chronicle-ear-beacon` goldens)
+```
 
 - [ ] **Step 4: The roadmap and the spec status**
 
