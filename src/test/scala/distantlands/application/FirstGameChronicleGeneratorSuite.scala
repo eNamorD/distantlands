@@ -73,8 +73,8 @@ class FirstGameChronicleGeneratorSuite extends munit.FunSuite:
     val hearth = catalog.denizens.filter(_.suit == Suit.Hearth)
     val short = catalog.copy(denizens =
       catalog.denizens.filterNot(_.suit == Suit.Hearth) ++ hearth.take(11))
-    assertEquals(
-      FirstGameChronicleGenerator.generate(short, "Short", random).left.toOption,
+    val refused = FirstGameChronicleGenerator.generate(short, "Short", random)
+    assertEquals(refused.left.toOption,
       Some(ChronicleGeneratorFailure.TooFewSuitDenizens(Suit.Hearth, 11)))
 
   test("five generated atlas orders are not all the same: the port is " +

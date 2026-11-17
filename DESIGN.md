@@ -737,9 +737,9 @@ table.
   single word too long for the box is hyphenated at a syllable; token row
   and defense row at 1em. Each power's modifier tab or battle-plan crown
   stands in the lower-left corner at 1.5em, a row of them for a card with
-  several, lifted above a Replace badge: a first
-  step toward a face that shows its powers, whose text and cost are read in
-  the overlay. Footer sinks to the bottom.
+  several, lifted above a Replace badge: a first step toward a face that
+  shows its powers, whose text and cost are read in the overlay. Footer
+  sinks to the bottom.
 - **Compact (zoomed-out map only):** the box and ratio are unchanged; the
   suit glyph moves to the top-left corner at 1.5em, with the face padded
   1.7em at the top so the name starts under it, and the name sits centered

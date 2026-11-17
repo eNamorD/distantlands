@@ -139,8 +139,8 @@ class WealthySuite extends munit.FunSuite:
     assertEquals(asked, Vector(TheStandardBearer.decisionId(p3),
       Wealthy.decisionId(p3)))
 
-  test("Wealthy is registered among the setup legacies and alters " +
-      "Foundation II"):
+  test("Wealthy is registered among the setup legacies, after The " +
+      "Standard Bearer, and alters Foundation II"):
     assert(LegacySetupPowers.all.contains(Wealthy))
     assert(LegacySetupPowers.all.indexOf(TheStandardBearer) <
       LegacySetupPowers.all.indexOf(Wealthy))

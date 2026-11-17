@@ -18,7 +18,6 @@ import distantlands.protocol.projection._
 private[application] final class GamePresentationProjector(
     catalog: ExecutableCatalog
 ):
-
   def siteLabel(id: SiteId): String =
     catalog.site(id).fold(safeLabel(id.value))(_.name)
   def denizenLabel(id: DenizenId): String =
@@ -505,8 +504,7 @@ private[application] final class GamePresentationProjector(
         orientation = orientation.map(orientationName), hidden = hidden)) { r =>
       CardDetailsProjection(value.value, "relic", r.name, rulesText = Some(r.rulesText),
         orientation = orientation.map(orientationName), relicValue = Some(r.value),
-        defense = Some(r.defense), hidden = hidden,
-        powers = powerFaces(r))
+        defense = Some(r.defense), hidden = hidden, powers = powerFaces(r))
     }
     // A legacy's name, seal and text (implementation ruling R11); its goal
     // waits for the legacy strip (Legacies design, slice 5).

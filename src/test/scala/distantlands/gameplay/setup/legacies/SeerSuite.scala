@@ -140,7 +140,8 @@ class SeerSuite extends munit.FunSuite:
       SetupProcedure.noteKeys, woken.events).map(_.text).contains(
       s"p2 placed the Visions with ${SeerCard.id.value}"))
 
-  test("Seer is registered among the setup legacies"):
+  test("Seer is registered among the setup legacies, after Secret " +
+      "Society"):
     assert(LegacySetupPowers.all.contains(Seer))
     assert(LegacySetupPowers.all.indexOf(SecretSociety) <
       LegacySetupPowers.all.indexOf(Seer))
