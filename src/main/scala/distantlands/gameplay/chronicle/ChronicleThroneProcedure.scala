@@ -8,10 +8,11 @@ import distantlands.model._
 
 /** The Throne task (CR p. 37, `docs/rules/chronicle.md` task 2), resolved
   * by the player holding its card. Each step is its own power window.
-  * Three empty windows hold the legacies' added steps: one at the start,
-  * where Reformer acts, one after Build Edifice, where Revolutionary does,
-  * and one before Scatter Relics, where Heirloom does (Legacy Chronicle
-  * powers design, rulings 11-13). */
+  * The window at the start hides the held relics (Last Chronicle powers
+  * design, ruling 3), then holds Reformer's step; two empty windows hold
+  * the other legacies' added steps: one after Build Edifice, where
+  * Revolutionary acts, and one before Scatter Relics, where Heirloom does
+  * (Legacy Chronicle powers design, rulings 11-13). */
 object ChronicleThroneProcedure:
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
@@ -26,7 +27,8 @@ object ChronicleThroneProcedure:
     IronHand.noteKeys(TriggeredProcedureRef.ChronicleThrone)
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
-    ChronicleWindows.step(PowerWindow.ChronicleStartOfThrone, Vector.empty),
+    ChronicleWindows.step(PowerWindow.ChronicleStartOfThrone,
+      ReliquaryAndRelics.hide),
     ChronicleWindows.step(PowerWindow.ChronicleOfferCitizenship,
       OfferCitizenship.steps),
     ChronicleWindows.step(PowerWindow.ChronicleShapeEmpire,

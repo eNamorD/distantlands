@@ -6,23 +6,29 @@ import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
 
-/** Stock Reliquary and Scatter Relics, the Throne's fourth and fifth steps
-  * (CR p. 37). */
+/** The Throne's hidden relics, Stock Reliquary and Scatter Relics (CR
+  * p. 37): the hide at the start of the Throne, then its fourth and fifth
+  * steps. */
 object ReliquaryAndRelics:
   val discardDecisionId: String = "chronicle.stock-reliquary.discard"
   val reliquaryLimit: Int = 5
 
   private val scepter = TheGrandScepterCard.id
 
-  /** The Throne holder adds every relic they hold but the Grand Scepter to
-    * the Reliquary, facedown, then discards down to five of their choice.
-    * First every relic players hold but the Grand Scepter turns facedown
-    * and is forgotten by every viewer, so no relic is deducible from here
-    * on; each owner still sees their own (Legacy Chronicle powers R28,
-    * re-ruled by the owner 2026-11-14). Before any relic leaves its holder,
-    * warbands on a card go back to their supply. */
+  /** The base step at the start of the Throne (Last Chronicle powers
+    * design, ruling 3): every relic players hold but the Grand Scepter
+    * turns facedown and is forgotten by every viewer, so no relic is
+    * deducible from here on; each owner still sees their own (Legacy
+    * Chronicle powers R28, re-ruled by the owner 2026-11-14). It runs
+    * before any power of the window, so a relic Hiding Place keeps is
+    * kept secretly. */
+  val hide: Vector[Operation] = Vector(
+    BuildOps((state, _) => Right(hidden(state)), required = true))
+
+  /** Warbands on a card go back to their supply, then the Throne holder
+    * adds every relic they hold but the Grand Scepter to the Reliquary,
+    * facedown, and discards down to five of their choice. */
   val stock: Vector[Operation] = Vector(
-    BuildOps((state, _) => Right(hidden(state)), required = true),
     BuildOps((state, _) => Right(returnFromCards(state)), required = true),
     Branch((state, _) =>
     ChronicleTasks.forHolder(state, ChronicleTask.Throne)(holder => Vector(
@@ -36,7 +42,12 @@ object ReliquaryAndRelics:
     * since the relics leave their holders here and the game has ended
     * (owner's ruling, 2026-11-03). Nothing is asked. */
   private def returnFromCards(ready: ReadyGame): Vector[CoreOperation] =
-    ready.game.current.warbandsOnCards.toVector.flatMap((card, forces) =>
+    ready.game.current.warbandsOnCards.keys.toVector
+      .flatMap(warbandsOff(ready, _))
+
+  /** Every warband standing on `card` back to its supply. */
+  def warbandsOff(ready: ReadyGame, card: CardId): Vector[CoreOperation] =
+    ready.game.current.warbandsOnCards.get(card).toVector.flatMap(forces =>
       forces.toVector.filter(_._2 > 0).map((kind, n) =>
         Move(Piece.Warbands(kind, n),
           PositionedLocation(Location.OnCard(card)),

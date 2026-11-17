@@ -86,9 +86,10 @@ final case class WinnerNamed(winner: PlayerId, kind: VictoryKind)
     extends ChronicleOperation, LeafOperation
 
 /** Turns `relics`, each held by a player, facedown and clears every
-  * viewer's record of them, at the start of Stock Reliquary (Legacy
-  * Chronicle powers R28, re-ruled by the owner 2026-11-14): the Sun's reveal
-  * made them public, and no seat but the holder may know them afterwards.
+  * viewer's record of them, at the start of the Throne (Last Chronicle
+  * powers design, ruling 3; Legacy Chronicle powers R28, re-ruled by the
+  * owner 2026-11-14): the Sun's reveal made them public, and no seat but
+  * the holder may know them afterwards.
   * Their owners still see their own. The Grand Scepter and a relic no
   * player holds are refused. */
 final case class RelicsHidden(relics: Vector[RelicId])

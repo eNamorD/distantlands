@@ -2,13 +2,15 @@ package distantlands.application
 
 import distantlands.gameplay.{BanditCrownCard, GrandMaskCard, OathRules,
   WalkerDiceFixture}
-import distantlands.gameplay.cards.AncientCitySite
+import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.chronicle.{ChronicleWalk, ReliquaryAndRelics}
 import distantlands.gameplay.chronicle.legacies.{Heirloom, HeirloomCard,
-  TheBrightBeacon, TheBrightBeaconCard, TheEar, TheEarCard}
+  Reformer, ReformerCard, TheBrightBeacon, TheBrightBeaconCard, TheEar,
+  TheEarCard}
 import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.powers.economy.CupOfPlentyCard
+import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.{Outcomes, Table}
@@ -105,9 +107,31 @@ class HiddenChronicleCardsSuite extends munit.FunSuite:
       assert(all(table).forall(card =>
         !presentation.identifiesAt(ready, viewer, card)), viewer))
 
-  test("Stock Reliquary hides every held relic but the Grand Scepter: at " +
-      "Heirloom's question its holder still names their own, and no other " +
-      "seat or the public does (R28)"):
+  test("the start of the Throne hides every held relic but the Grand " +
+      "Scepter before Reformer's question: its holder still names their " +
+      "own, and no other seat or the public does (ruling 3)"):
+    // p1 won and is the Chancellor; the Empire rules Ancient City and
+    // Broken Peaks, so Reformer has a card to move.
+    val table = ChronicleWalk.throneHeldByChancellorP1
+      .warbandsAt(AncientCitySite, p1, 1).warbandsAt(BrokenPeaksSite, p1, 1)
+      .denizen(ThreateningRoarCard, at = AncientCitySite)
+      .legacy(p1, ReformerCard)
+      .relic(p2, CupOfPlentyCard).relic(p2, GrandMaskCard)
+    val relics = Vector(CupOfPlentyCard.id, GrandMaskCard.id)
+    assert(relics.forall(presentation.identifiesAt(table.ready, Some(p1), _)))
+    val atReformer = ChronicleWalk.walkedTo(rules, ChronicleWalk.started(
+      rules, table, TriggeredProcedureRef.ChronicleSun), Reformer.pickId(p1))
+    assertEquals(ChronicleWalk.parked(atReformer.state).map(_.decisionId),
+      Some(Reformer.pickId(p1)))
+    val ready = Outcomes.ready(atReformer.state)
+    assert(relics.forall(presentation.identifiesAt(ready, Some(p2), _)))
+    Vector(Some(p1), Some(p3), None).foreach(viewer =>
+      assert(relics.forall(!presentation.identifiesAt(ready, viewer, _)),
+        viewer))
+
+  test("the start of the Throne hides every held relic but the Grand " +
+      "Scepter: at Heirloom's question its holder still names their own, " +
+      "and no other seat or the public does (R28)"):
     val table = ChronicleWalk.throneHeldByChancellorP1
       .warbandsAt(AncientCitySite, p1, 1)
       .relic(p2, CupOfPlentyCard).relic(p2, GrandMaskCard)
@@ -129,8 +153,9 @@ class HiddenChronicleCardsSuite extends munit.FunSuite:
       _.query.asInstanceOf[DecisionQuery.ChooseOne].options.map(_.ref)).toSet,
       relics.map(id => DecisionOptionRef.Relic(id): DecisionOptionRef).toSet)
 
-  test("Stock Reliquary clears a seat's recorded knowledge of another " +
-      "seat's relic: at Heirloom's question p1 no longer names it (R28)"):
+  test("the start of the Throne clears a seat's recorded knowledge of " +
+      "another seat's relic: at Heirloom's question p1 no longer names it " +
+      "(R28)"):
     // p1 knows p2's facedown Cup of Plenty from a record, as when p1 held
     // it before passing it on, not from the Sun's reveal.
     val table = ChronicleWalk.throneHeldByChancellorP1

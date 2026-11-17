@@ -12,7 +12,7 @@
 21.0 decision 1 | [player:p1|p1] took the Throne task
 26.0 decision 1 | [player:p1|p1] took the World task
 28.0 decision 1 | [player:p2|p2] took the Beacon task
-33.0 delta 1 | Moved 1 Imperial warband to [site:site:ancient-city|Ancient City]
+34.0 delta 1 | Moved 1 Imperial warband to [site:site:ancient-city|Ancient City]
 36.0 delta 1 | [player:p2|p2] set aside [card:R07|Cup of Plenty]
 36.1 delta 1 | [player:p2|p2] set aside [card:R05|Grand Mask]
 36.2 delta 1 | [player:p2|p2] set aside [card:R11|Bandit Crown]

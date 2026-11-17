@@ -67,8 +67,8 @@ class ChronicleLegacyLogSuite extends munit.FunSuite:
     Vector(Some(p1), Some(p3), None).foreach(viewer =>
       assertEquals(heirloomLines(viewer), Vector(public), viewer))
 
-  test("after Stock Reliquary no other seat or the public can name the " +
-      "relics Scatter Relics sets aside (R28)"):
+  test("after the start of the Throne no other seat or the public can " +
+      "name the relics Scatter Relics sets aside (R28)"):
     val script = ChronicleLogScripts.throneHeirloom
     Vector(Some(p1), Some(p3), None).foreach { viewer =>
       val said = format(script, viewer).map(text)
