@@ -294,12 +294,13 @@ class ChroniclePagesSuite extends munit.FunSuite:
         Some(storageWithAnEmpire())))
       browser.click("continue-chronicle")
       assertEquals(browser.byClass("host-player-color").map(_.textContent),
-        Vector("Red, Chancellor", "Blue, Citizen"))
+        Vector("Red Chancellor", "Blue Citizen"))
       assert(browser.nodes.exists(
-        _.getAttribute("aria-label") == "Red, Chancellor player ID"))
+        _.getAttribute("aria-label") == "Red Chancellor player ID"))
+      // A color with no lineage in the Chronicle yet starts as an Exile.
       browser.click("add-player-toggle")
       assertEquals(browser.byClass("add-player-option").head.textContent,
-        "Yellow")
+        "Yellow Exile")
 
   test("player selection says the Chancellor goes first in an Empire game"):
     TestBrowser.useSynchronously(): browser =>
