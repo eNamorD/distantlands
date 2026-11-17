@@ -1,6 +1,6 @@
 package distantlands.frontend
 
-import distantlands.protocol.{ChronicleScore, ChronicleSummary}
+import distantlands.protocol.{ChronicleLegacy, ChronicleSummary}
 import scala.scalajs.js
 
 /** How the Chronicle pages word a Chronicle's summary. */
@@ -8,22 +8,18 @@ private[frontend] object ChronicleText:
   /** A generated lineage is `<color>-lineage`; it reads as its color. */
   def lineage(id: String): String = id.stripSuffix("-lineage").capitalize
 
-  /** "Game 3 · Era: 20 to win · Red 9, Blue 6". */
+  /** "Game 3 · Era: First to 20": the scores are the scoresheet's. */
   def summaryLine(summary: ChronicleSummary): String =
-    (headline(summary) ++ Option.when(summary.scores.nonEmpty)(
-      summary.scores.map(score => s"${lineage(score.lineage)} ${score.score}")
-        .mkString(", "))).mkString(" · ")
+    headline(summary).mkString(" · ")
 
-  /** "Red 9 · Seer, Iron Hand (dormant)": a lineage's score and its
-    * legacies, the dormant ones marked (Legacies implementation ruling
-    * R39). */
-  def lineageLine(score: ChronicleScore): String =
-    (s"${lineage(score.lineage)} ${score.score}" +: Option.when(
-      score.legacies.nonEmpty)(score.legacies.map(legacy =>
-        if legacy.active then legacy.name else s"${legacy.name} (dormant)")
-      .mkString(", ")).toVector).mkString(" · ")
+  /** "Seer, Iron Hand (dormant)": a lineage's legacies, the dormant ones
+    * marked (Legacies implementation ruling R39). */
+  def legacies(held: Vector[ChronicleLegacy]): String =
+    held.map(legacy =>
+      if legacy.active then legacy.name else s"${legacy.name} (dormant)")
+      .mkString(", ")
 
-  /** "Game 3 · Era: 20 to win · saved 2026-10-29". */
+  /** "Game 3 · Era: First to 20 · saved 2026-10-29". */
   def rowDetails(saved: SavedChronicle): String =
     (headline(saved.entry.summary) :+ s"saved ${localDate(saved.savedAt)}")
       .mkString(" · ")
@@ -38,4 +34,4 @@ private[frontend] object ChronicleText:
 
   private def headline(summary: ChronicleSummary): Vector[String] = Vector(
     summary.game.fold("Game unknown")(game => s"Game $game"),
-    s"Era: ${summary.eraTarget} to win")
+    s"Era: First to ${summary.eraTarget}")

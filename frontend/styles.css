@@ -239,9 +239,66 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .chronicle-page { max-width: 40rem; margin: 0 auto; display: grid;
   justify-items: center; gap: 0.75rem; text-align: center; }
 .chronicle-page > button { width: min(100%, 18rem); padding: 0.4rem 0.75rem; }
-.chronicle-saved, .chronicle-loaded { width: 100%; margin: 0.75rem 0;
-  display: grid; gap: 0.75rem; }
-.chronicle-saved .chronicle-row { text-align: left; }
+/* The Loaded Chronicle box: a brass frame with its name set into the top
+   edge, kept in place with "None" when nothing is loaded. The label's Base
+   patch hides the border behind it. */
+.chronicle-loaded { position: relative; width: 100%; margin: 0.75rem 0 0.5rem;
+  padding: 1.5rem 1rem 1rem; display: grid; gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr); justify-items: center;
+  border: 2px solid var(--brass); border-radius: 12px; }
+.chronicle-loaded-label { position: absolute; top: 0; left: 0.75rem;
+  transform: translateY(-50%); margin: 0; padding: 0 0.4rem;
+  background: var(--base); color: var(--brass); font-size: 0.9rem; }
+.chronicle-loaded-none, .chronicle-no-scores { margin: 0; color: var(--ink-dim); }
+.chronicle-loaded > .continue-chronicle { width: min(100%, 18rem);
+  padding: 0.4rem 0.75rem; }
+.chronicle-saved { display: grid; gap: 0.75rem; }
+.chronicle-saved-none { margin: 0; color: var(--ink-dim); }
+/* In the Load dialog each row is the name over its details, with Load and
+   Delete to the right, ruled off from the next. */
+.chronicle-saved .chronicle-row { display: grid;
+  grid-template-columns: minmax(0, 1fr) auto; column-gap: 0.75rem;
+  row-gap: 0.15rem; padding: 0.6rem 0;
+  border-bottom: 1px solid var(--brass-line); }
+.chronicle-saved .chronicle-row:last-child { border-bottom: 0; }
+.chronicle-saved .chronicle-row-name, .chronicle-saved .chronicle-row-details {
+  grid-column: 1; }
+.chronicle-saved .chronicle-row-details { font-size: 0.9rem; }
+.chronicle-saved .chronicle-row-controls { grid-column: 2; grid-row: 1 / span 2; }
+/* The scoresheet: lineages down the side, the last five games across, each
+   cell the running total. As on the paper scorepad, the Chancellor's score
+   is circled and Citizens' are underlined. */
+.chronicle-scoresheet { width: 100%; border-collapse: collapse;
+  font-variant-numeric: tabular-nums; }
+.chronicle-scoresheet th, .chronicle-scoresheet td { padding: 0.35rem 0.4rem;
+  border-bottom: 1px solid var(--brass-line); text-align: center; }
+.chronicle-scoresheet thead th { color: var(--brass); font-size: 0.8rem;
+  font-weight: 400; white-space: nowrap; }
+.chronicle-scoresheet tbody tr:last-child > * { border-bottom: 0; }
+.chronicle-scoresheet .scoresheet-lineage { text-align: left; font-weight: 400; }
+.chronicle-scoresheet thead th:first-child { text-align: left; }
+.scoresheet-lineage-name { display: inline-flex; align-items: center;
+  gap: 0.4rem; font-weight: 700; }
+.scoresheet-lineage-name .color-swatch { width: 0.9rem; height: 0.9rem; }
+.scoresheet-legacies { display: block; margin-top: 0.15rem; color: var(--ink-dim);
+  font-size: 0.8rem; }
+.scoresheet-earlier { width: 1.5rem; color: var(--ink-dim); }
+.scoresheet-mark { display: inline-grid; place-items: center; min-width: 1.75em;
+  height: 1.75em; border: 1.5px solid transparent; border-radius: 50%; }
+.scoresheet-chancellor { border-color: currentColor; }
+.scoresheet-citizen { text-decoration: underline; text-underline-offset: 0.2em;
+  text-decoration-thickness: 1.5px; }
+.scoresheet-total { font-weight: 700; color: var(--cream-bright); }
+.scoresheet-frame { width: 100%; overflow-x: auto; }
+/* A phone's box holds eight narrow columns: the game headings drop the word
+   "Game" from sight, and the cells and the box's sides tighten. */
+@media (max-width: 30rem) {
+  .chronicle-loaded { padding: 1.4rem 0.5rem 0.75rem; }
+  .chronicle-scoresheet th, .chronicle-scoresheet td { padding: 0.3rem 0.15rem; }
+  .scoresheet-game-word { position: absolute; width: 1px; height: 1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .scoresheet-mark { min-width: 1.6em; height: 1.6em; }
+}
 .chronicle-import, .chronicle-export { display: grid; gap: 0.75rem; }
 .chronicle-export > button { justify-self: start; }
 .import-chronicle-tts { font: inherit; min-height: 5rem; padding: 0.5rem;
@@ -1519,11 +1576,6 @@ button.foundation-card:hover { background: var(--pressed);
 /* On the zoomed-out map the cards hold the glance text size, as a site's
    details do; a name the row cannot hold is cut, never wrapped. */
 .map-compact .foundation-card { font-size: var(--glance-text); }
-/* On the Chronicle page the six stand three abreast. The page scrolls, so
-   a name its column cannot hold wraps. */
-.chronicle-loaded .foundation-strip {
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 0.5rem; }
-.chronicle-loaded .foundation-name { white-space: normal; }
 /* Under the regions, where the physical board keeps them. Their text is set
    larger than the map's own, as the map is drawn at about half size. */
 .favor-bank { display: flex; align-items: center; justify-content: center;

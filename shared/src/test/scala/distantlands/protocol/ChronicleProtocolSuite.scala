@@ -54,6 +54,27 @@ class ChronicleProtocolSuite extends munit.FunSuite:
     assert(!ChronicleEntryCodec.encodeValue(entry)("summary")("scores")(0)
       .obj.contains("legacies"))
 
+  test("a summary's scorepad round trips, a role per score, and an entry " +
+      "saved before it was kept has none"):
+    val played = entry.copy(summary = entry.summary.copy(scorepad = Vector(
+      Vector(ChronicleScorepadEntry("red-lineage", 3, Some("chancellor")),
+        ChronicleScorepadEntry("blue-lineage", 0)),
+      Vector(ChronicleScorepadEntry("red-lineage", 3, Some("chancellor")),
+        ChronicleScorepadEntry("blue-lineage", 5, Some("citizen"))))))
+    assertEquals(roundTripped(played), Right(played))
+    val rows = ChronicleEntryCodec.encodeValue(played)("summary")("scorepad")
+    assert(!rows(0)(1).obj.contains("role"))
+    val saved = ChronicleEntryCodec.encodeValue(played)
+    saved("summary").obj.remove("scorepad")
+    assertEquals(ChronicleEntryCodec.decodeValue(saved, "$"), Right(entry))
+
+  test("a scorepad score refuses an unknown role"):
+    val raw = ChronicleEntryCodec.encodeValue(entry.copy(summary =
+      entry.summary.copy(scorepad = Vector(Vector(
+        ChronicleScorepadEntry("red-lineage", 3))))))
+    raw("summary")("scorepad")(0)(0)("role") = "usurper"
+    assert(ChronicleEntryCodec.decodeValue(raw, "$").isLeft)
+
   test("a summary's foundation refuses an unknown face"):
     val raw = ChronicleEntryCodec.encodeValue(entry.copy(summary =
       entry.summary.copy(foundations = Vector(

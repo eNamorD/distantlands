@@ -13,17 +13,25 @@ private[frontend] enum HostChronicle:
 /** The Chronicle page at `/` (Chronicle browsing design, "Chronicle page").
   * Every change redraws the whole page from the shelf. `kept` is false when
   * the browser refused storage; the shelf then lasts as long as the page.
-  * The page is one centered column, each button on a line of its own;
-  * Import and Export open dialogs over it. */
+  * The page is one centered column: the Loaded Chronicle box, then each
+  * button on a line of its own; Load, Import and Export open dialogs over
+  * it. */
 private[frontend] object ChroniclePage:
   def render(mount: dom.Element, shelf: ChronicleShelf, kept: Boolean,
       client: ChronicleClient, files: ChronicleFiles,
       choose: HostChronicle => Unit): Unit =
+    draw(mount, shelf, kept, client, files, choose, loadOpen = false)
+
+  /** Draws the page; `loadOpen` reopens the Load dialog, as a Delete or
+    * Keep in it redraws the page behind it too. */
+  private def draw(mount: dom.Element, shelf: ChronicleShelf, kept: Boolean,
+      client: ChronicleClient, files: ChronicleFiles,
+      choose: HostChronicle => Unit, loadOpen: Boolean): Unit =
     // An import or rename that answers after the player has moved on to
     // player selection must not draw this page over it.
-    def redraw(): Unit =
+    def redraw(loadOpen: Boolean = false): Unit =
       if mount.querySelector(".chronicle-page-title") != null then
-        render(mount, shelf, kept, client, files, choose)
+        draw(mount, shelf, kept, client, files, choose, loadOpen)
     mount.textContent = ""
     val page = element("div", "chronicle-page")
     mount.appendChild(page)
@@ -36,18 +44,20 @@ private[frontend] object ChroniclePage:
       notice.setAttribute("role", "alert")
       page.appendChild(notice)
     val loaded = shelf.loaded
-    loaded.foreach { saved =>
-      page.appendChild(loadedSummary(saved, shelf, client, () => redraw()))
-      val continue = button("Continue Chronicle", "continue-chronicle")
-      continue.onclick = _ => choose(HostChronicle.Continue(saved))
-      page.appendChild(continue)
-    }
+    page.appendChild(loaded.fold(noneLoaded())(saved =>
+      loadedSummary(saved, shelf, client, () => redraw(),
+        () => choose(HostChronicle.Continue(saved)))))
     val fresh = button("New Chronicle", "new-chronicle")
     fresh.onclick = _ => choose(HostChronicle.New)
     page.appendChild(fresh)
-    val rows = shelf.rows
-    if rows.nonEmpty then
-      page.appendChild(savedList(rows, shelf, () => redraw()))
+    val load = button("Load Chronicle", "open-load-chronicle")
+    def openLoad(): Unit = ChronicleDialog.open(mount, load,
+      "load-chronicle-dialog", "Load Chronicle",
+      savedList(shelf.rows, shelf, () => redraw(),
+        () => redraw(loadOpen = true)))
+    if shelf.rows.isEmpty then HoverTip.withhold(load, NothingSaved)
+    else load.onclick = _ => openLoad()
+    page.appendChild(load)
     val edit = button("Edit Chronicle", "edit-chronicle")
     HoverTip.withhold(edit, "Coming in a later release")
     page.appendChild(edit)
@@ -55,11 +65,30 @@ private[frontend] object ChroniclePage:
       files, () => redraw()))
     page.appendChild(ChronicleTransfer.exportButton(mount,
       loaded.map(_.entry), client, files))
+    if loadOpen then openLoad()
+
+  private val NothingSaved = "No Chronicles saved in this browser"
+
+  /** The Loaded Chronicle box, labelled on its border, around `content`. */
+  private def loadedBox(content: dom.Element*): dom.Element =
+    val section = element("section", "chronicle-loaded")
+    val label = text("h2", "chronicle-loaded-label", "Loaded Chronicle")
+    label.id = "chronicle-loaded-label"
+    section.setAttribute("aria-labelledby", label.id)
+    section.appendChild(label)
+    content.foreach(section.appendChild)
+    section
+
+  /** The box kept in place with nothing loaded. */
+  private def noneLoaded(): dom.Element =
+    val box = loadedBox(text("p", "chronicle-loaded-none", "None"))
+    box.classList.add("chronicle-loaded-empty")
+    box
 
   private def loadedSummary(saved: SavedChronicle, shelf: ChronicleShelf,
-      client: ChronicleClient, redraw: () => Unit): dom.Element =
-    val section = element("section", "chronicle-loaded")
-    section.setAttribute("aria-label", "Loaded Chronicle")
+      client: ChronicleClient, redraw: () => Unit,
+      continueWith: () => Unit): dom.Element =
+    val section = loadedBox()
     val heading = element("div", "chronicle-loaded-heading")
     val status = text("p", "status", "")
     status.setAttribute("role", "status")
@@ -103,28 +132,30 @@ private[frontend] object ChroniclePage:
     section.appendChild(heading)
     section.appendChild(text("p", "chronicle-summary-line",
       ChronicleText.summaryLine(saved.entry.summary)))
-    // Each lineage on a line of its own, with its legacies, once any holds
-    // one (R39).
-    val scores = saved.entry.summary.scores
-    if scores.exists(_.legacies.nonEmpty) then
-      val list = element("ul", "chronicle-lineages")
-      list.setAttribute("aria-label", "Lineages")
-      scores.foreach(score =>
-        list.appendChild(text("li", "", ChronicleText.lineageLine(score))))
-      section.appendChild(list)
-    // The faces the next game starts on. An entry saved before foundations
-    // were kept lists none, and shows no strip.
-    val foundations = saved.entry.summary.foundations
-    if foundations.nonEmpty then
-      section.appendChild(FoundationStrip.render(
-        FoundationStrip.ofChronicle(foundations)))
+    // A Chronicle gains its lineages when its first game is scored.
+    section.appendChild(
+      if saved.entry.summary.scores.isEmpty then
+        text("p", "chronicle-no-scores", "No lineage points scored yet.")
+      else ChronicleScoresheet.render(
+        ChronicleScoresheet.of(saved.entry.summary)))
     section.appendChild(status)
+    val continue = button("Continue Chronicle", "continue-chronicle")
+    continue.onclick = _ => continueWith()
+    section.appendChild(continue)
     section
 
+  /** The Load dialog's list. Load closes the dialog with the page's redraw;
+    * a Delete or Keep redraws with the dialog open again. */
   private def savedList(rows: Vector[ShelfRow], shelf: ChronicleShelf,
-      redraw: () => Unit): dom.Element =
-    val section = element("section", "chronicle-saved")
-    section.appendChild(text("h2", "", "Load Chronicle"))
+      redraw: () => Unit, redrawOpen: () => Unit): dom.Element =
+    val section = element("div", "chronicle-saved")
+    if rows.isEmpty then
+      section.appendChild(text("p", "chronicle-saved-none", s"$NothingSaved."))
+    else section.appendChild(savedRows(rows, shelf, redraw, redrawOpen))
+    section
+
+  private def savedRows(rows: Vector[ShelfRow], shelf: ChronicleShelf,
+      redraw: () => Unit, redrawOpen: () => Unit): dom.Element =
     val list = element("ol", "chronicle-list")
     rows.foreach { row =>
       val item = element("li", "chronicle-row")
@@ -155,9 +186,9 @@ private[frontend] object ChroniclePage:
         val confirm = button("Delete", "confirm-delete-chronicle")
         confirm.onclick = _ =>
           shelf.delete(row.index, shown)
-          redraw()
+          redrawOpen()
         val keep = button("Keep", "keep-chronicle")
-        keep.onclick = _ => redraw()
+        keep.onclick = _ => redrawOpen()
         controls.appendChild(confirm)
         controls.appendChild(keep)
         keep.focus()
@@ -165,5 +196,4 @@ private[frontend] object ChroniclePage:
       item.appendChild(controls)
       list.appendChild(item)
     }
-    section.appendChild(list)
-    section
+    list
