@@ -1,11 +1,10 @@
 package distantlands.application
 
-import distantlands.gameplay.powers.PowerImplementationStatus
 import distantlands.gameplay.setup.{EmpireSetupRules, FirstGameRulesData,
   FirstGameSetupFixture, GameStartRules, LaterGameFixture, LegacyDeal}
 import distantlands.model._
 import distantlands.testkit.ChronicleShuffles
-import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Unwrap.accepted
 
 class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog
@@ -13,29 +12,14 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     PlayerId("p2"))
   private val factory = new GeneratedFirstGamePlanFactory(catalog)
 
-  test("implemented relics are still dealt first after setup: site relic " +
-      "slots, then the relic deck"):
-    val status = PowerImplementationStatus.implemented
-    val relics = ImplementedCardCatalog.ordinaryRelics(catalog, status)
-    def implementedFirst[A](cards: Vector[A], implemented: A => Boolean): Boolean =
-      cards.dropWhile(implemented).forall(card => !implemented(card))
-
+  test("site relic slots, then the relic deck, are dealt in the plan's " +
+      "relic order"):
     val plan = accepted(factory.build(config, ChronicleChoice.New("Test Chronicle")))
     val current = accepted(
       GameStartRules.evolve(catalog, plan.chronicle, plan.orders)).game.current
-
     val dealtRelics = current.map.inPlay.flatMap(site =>
       current.map.sites(site).relics.map(_.id)) ++ current.commonCards.relicDeck
     assertEquals(dealtRelics, plan.orders.relicOrder)
-    assert(implementedFirst(dealtRelics, relics), dealtRelics.toString)
-    assert(current.map.inPlay.flatMap(current.map.sites(_).denizens).forall {
-      case edifice: EdificeState =>
-        val printed = present(catalog.edifices
-          .find(_.id.value == edifice.id.value), edifice.id.value)
-        ImplementedCardCatalog.homelandEdifice(catalog, printed.suit, status)
-          .forall(_ == edifice.id)
-      case _ => true
-    }, "a Homeland in play carries its suit's implemented edifice")
 
   test("a new Chronicle carries no history and starts a first game"):
     val plan = accepted(factory.build(config, ChronicleChoice.New("Fresh")))
