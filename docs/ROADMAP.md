@@ -205,12 +205,12 @@ the powers used during a game with the
 and the cards that act on legacies with
 [catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md).
 
-- [ ] **The last Chronicle powers.** Four printed powers still do nothing:
+- [ ] **The last Chronicle powers.** Two printed powers still do nothing:
   Blasted Pastures (E07 ruined) buries the Nomad cards on the map at the
-  start of the Throne unless the winner rules it, Hall of Bandits (E16
-  ruined) keeps ruined edifices that bandits rule, Hiding Place (E26 ruined)
-  lets its ruler keep a facedown relic into the next game, and the Ancient
-  City's enduring power is unbuilt. With them
+  start of the Throne unless the winner rules it, and Hiding Place (E26
+  ruined) lets its ruler keep a relic into the next game
+  ([Last Chronicle powers design](superpowers/specs/2026-11/2026-11-16-last-chronicle-powers-design.md),
+  slices 2 and 3). With them
   `src/test/resources/powers/unimplemented.txt` is empty, which unblocks
   **Retire the unimplemented-card machinery across the stack**.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
@@ -316,7 +316,7 @@ one.
 - [ ] **Retire the unimplemented-card machinery across the stack.** Every
   printed denizen power runs since Reliquary Raid, and
   [catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md)
-  emptied `catalog/holding/`. Four powers remain in
+  emptied `catalog/holding/`. Two powers remain in
   `src/test/resources/powers/unimplemented.txt` (**The last Chronicle
   powers**, under Chronicle steps). Once the snapshot is empty, remove the machinery that sorts, filters and marks
   unimplemented cards:

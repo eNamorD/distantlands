@@ -1,7 +1,7 @@
 # The Last Chronicle Powers
 
 **Status:** designed 2026-11-16, approved section by section by the owner.
-Each slice is planned when the one before it lands.
+Each slice is planned when the one before it lands. Slice 1 landed 2026-11-16.
 
 **Builds on** the [Legacy Chronicle powers design](2026-11-13-legacy-chronicle-powers-design.md)
 (the Throne's windows, Reformer at the start of the Throne, Heirloom's keep,

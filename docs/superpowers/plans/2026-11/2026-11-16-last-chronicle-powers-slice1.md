@@ -76,10 +76,7 @@ rulings 1 and 2, and section "Slice 1: Shape Empire protections".
 - Several: `./sbtw "testOnly distantlands.gameplay.chronicle.ShapeEmpireSuite distantlands.gameplay.chronicle.legacies.RivalSuite distantlands.gameplay.chronicle.legacies.RevolutionarySuite distantlands.gameplay.chronicle.legacies.IronHandSuite distantlands.gameplay.powers.UnimplementedPowersSuite distantlands.gameplay.cards.CardCatalogSuite"`.
 - Every test: `./sbtw test` (about 7 minutes; run it in the background).
 - Architecture: `python3 scripts/check-architecture.py`.
-- Links: `python3 scripts/check-markdown-links.py`. Until Task 3 adds the
-  "Last Chronicle powers rulings" section, it reports this plan's links to
-  `ambiguities.md#last-chronicle-powers-rulings` as missing; Task 3's gate
-  must pass with none.
+- Links: `python3 scripts/check-markdown-links.py`.
 
 ---
 
@@ -568,9 +565,17 @@ In `docs/rules/rules-reference.md`, after the **Ruined Temple.** bullet, add:
 ```
 
 In `docs/rules/implementation-traceability.md`, in the Throne task row,
-replace "Shape Empire with Enduring sites ([rulings 6, 11, 14](ambiguities.md#chronicle-rulings))"
-with "Shape Empire with Ancient City's Enduring and Hall of Bandits
-([rulings 6, 11, 14](ambiguities.md#chronicle-rulings); [Last Chronicle powers rulings](ambiguities.md#last-chronicle-powers-rulings), items 1 and 2; `ShapeEmpireExemptionsSuite`)".
+replace
+
+```markdown
+Shape Empire with Enduring sites ([rulings 6, 11, 14](ambiguities.md#chronicle-rulings))
+```
+
+with
+
+```markdown
+Shape Empire with Ancient City's Enduring and Hall of Bandits ([rulings 6, 11, 14](ambiguities.md#chronicle-rulings); [Last Chronicle powers rulings](ambiguities.md#last-chronicle-powers-rulings), items 1 and 2; `ShapeEmpireExemptionsSuite`)
+```
 
 - [ ] **Step 4: The roadmap and the spec status**
 
