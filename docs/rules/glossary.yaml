@@ -46,7 +46,7 @@ terms:
     definition: "A special denizen with intact/locked and ruined/unlocked faces."
     citations: ["CR:30", "NF:16"]
   - term: enemy
-    definition: "Any non-self player; Imperials may still be enemies for effects and infighting."
+    definition: "Other players and the bandits. Imperial players are each other's enemies; \"your enemy\" in a campaign is your opponent."
     citations: ["CR:35", "CR:44"]
   - term: era
     definition: "Group-defined series of games scored by lineage points; score resets at era end while world state persists."

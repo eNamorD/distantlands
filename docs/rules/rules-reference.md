@@ -183,7 +183,7 @@ Without Empire, round 8 uses War Exhaustion while skipping Stable Regime and Cha
 - Card powers may add actions and trigger effects while using glossary-defined terms (CR p. 42).
 - "Cannot" overrides "can"; "must" is mandatory; "may" is optional. If multiple "cannot" rules conflict, use the more specific one (CR p. 42).
 - Component supply is normally limited; dice are unlimited. If a limited component runs out, ignore additional placement (CR p. 42).
-- Public and private information are enumerated on CR p. 42. A player may choose/share all their private information.
+- Public and private information are enumerated on CR p. 42. New Foundations lets players show each other hidden information they can peek at only in a Negotiation ([ambiguities F4](ambiguities.md#formalization-decisions)).
 - Consent must be actively enforced when an "Enemies cannot" persistent effect applies; forgetting waives it for that moment (CR p. 43).
 - A persistent power that restricts its ruler's enemies may be ignored with that ruler's consent, except inside a Campaign action unless the power's own text grants it (CR p. 29). The bandits never consent.
 - New Foundations makes "Enemies cannot" powers optional for their ruler, decided at the moment of use (NF p. 16). The digital game always enforces them and asks the ruler explicitly ([consent design](../superpowers/specs/2026-10/2026-10-08-consent-system-design.md)).
