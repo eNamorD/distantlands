@@ -44,6 +44,16 @@ object PowerAnswers:
       : Option[Vector[DecisionOptionRef]] = pending.answered.collectFirst:
     case Answered(`decision`, DecisionAnswer.ChooseManyAnswer(refs), _) => refs
 
+  /** The options the latest `Partition` answer to `decision` placed in
+    * `section`, in answer order. */
+  def placed(answered: Vector[Answered], decision: String, section: String)
+      : Option[Vector[DecisionOptionRef]] =
+    answered.reverseIterator.collectFirst {
+      case Answered(`decision`, DecisionAnswer.PartitionAnswer(placements),
+          _) =>
+        placements.collect { case DecisionPlacement(ref, `section`) => ref }
+    }
+
   def distribution(pending: PendingTree, decision: String)
       : Option[Vector[DistributeAmount]] = pending.answered.collectFirst:
     case Answered(`decision`, DecisionAnswer.DistributeAnswer(rows), _) => rows

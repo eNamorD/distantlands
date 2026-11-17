@@ -14,7 +14,7 @@ import distantlands.gameplay.setup.legacies.WealthyCard
 import distantlands.gameplay.walker.{LogNoted, WalkerPowers}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
-import distantlands.testkit.{Answers, Table}
+import distantlands.testkit.{Answers, DecisionAnswers, Table}
 import distantlands.testkit.Table.p1
 
 /** Amber Doors (E05 intact), SETUP / WHEN EXPLORED: "If you place your
@@ -40,7 +40,8 @@ class AmberDoorsSuite extends munit.FunSuite:
   private def discarding(chosen: LegacyId): Answers = {
     case park if park.decisionId == use => ChooseOneAnswer(AmberDoors.discard)
     case park if park.decisionId == activate =>
-      ChooseOneAnswer(DecisionOptionRef.Legacy(chosen))
+      DecisionAnswers.activateLegacy(chosen, DecisionAnswers
+        .offeredLegacies(park.decide.query).filterNot(_ == chosen)*)
   }
 
   /** Amber Doors' Setup steps for p1, who placed their pawn at Ancient
@@ -80,10 +81,12 @@ class AmberDoorsSuite extends munit.FunSuite:
     val asked = run.asked.filter(_.decisionId == activate)
     assertEquals(asked.size, 1)
     asked.head.query match
-      case one: DecisionQuery.ChooseOne =>
-        assertEquals(one.options.map(_.ref), Vector(rival, arbiter)
+      case partition: DecisionQuery.Partition =>
+        assertEquals(partition.options.map(_.ref), Vector(rival, arbiter)
           .map(DecisionOptionRef.Legacy(_)))
-      case other => fail(s"expected a choose-one, got $other")
+        assertEquals(partition.sections.map(_.label),
+          Vector("Activate", "Dormant"))
+      case other => fail(s"expected a partition, got $other")
     assertEquals(legaciesOf(run.ready), Vector(
       LegacyState(arbiter, active = true), LegacyState(rival, active = false)))
     assertEquals(deckOf(run.ready), Vector(wealthy, key, ruthless))
@@ -143,10 +146,10 @@ class AmberDoorsSuite extends munit.FunSuite:
     val asked = run.asked.filter(_.decisionId == activate)
     assertEquals(asked.size, 1)
     asked.head.query match
-      case one: DecisionQuery.ChooseOne =>
-        assertEquals(one.options.map(_.ref), Vector(rival, key)
+      case partition: DecisionQuery.Partition =>
+        assertEquals(partition.options.map(_.ref), Vector(rival, key)
           .map(DecisionOptionRef.Legacy(_)))
-      case other => fail(s"expected a choose-one, got $other")
+      case other => fail(s"expected a partition, got $other")
     assertEquals(legaciesOf(run.ready), Vector(
       LegacyState(key, active = true), LegacyState(rival, active = false)))
     assertEquals(deckOf(run.ready), Vector(ruthless))

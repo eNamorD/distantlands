@@ -155,7 +155,9 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
       campaign.evolved.map(entries.entry))
 
   /** The cards the viewer is handling and nothing else on the panel draws:
-    * their own temporary hand, face up because the cards are held in their
+    * their own temporary hand and the legacies waiting in their hand (a
+    * first game's two, drawn before any pawn, are read while placing it),
+    * face up because the cards are held in their
     * hand and read by them alone (another seat, and a spectator, are shown
     * nothing), and the card a parked placement is about, which may be held
     * elsewhere -- a facedown adviser is played from the board.
@@ -169,7 +171,8 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
       decision: Option[WalkerDecisionProjection])
       : Vector[CardDetailsProjection] =
     val hand = context.viewer.toVector.flatMap(viewer =>
-      context.current.temporaryHands.getOrElse(viewer, Vector.empty))
+      context.current.temporaryHands.getOrElse(viewer, Vector.empty) ++
+        context.current.legacyHands.getOrElse(viewer, Vector.empty))
       .map(card => presentation.cardDetails(card, Some(Orientation.FaceUp),
         hidden = false))
     val subjects = decision.toVector.flatMap(parked =>

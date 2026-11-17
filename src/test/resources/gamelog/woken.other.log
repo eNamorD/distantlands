@@ -1,11 +1,11 @@
 0.0 round 0 | Setup
-5.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
-11.0 decision 1 | [player:p2|p2] kept a legacy
-16.0 decision 1 | [player:p2|p2] kept a Denizen
-24.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
-30.0 decision 1 | [player:p3|p3] kept a legacy
-35.0 decision 1 | [player:p3|p3] kept a Denizen
-43.0 action 1 | [player:p1|p1] placed their pawn at [site:site:buried-giant|Buried Giant]
+8.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+13.0 decision 1 | [player:p2|p2] kept a legacy
+18.0 decision 1 | [player:p2|p2] kept a Denizen
+26.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
+31.0 decision 1 | [player:p3|p3] kept a legacy
+36.0 decision 1 | [player:p3|p3] kept a Denizen
+44.0 action 1 | [player:p1|p1] placed their pawn at [site:site:buried-giant|Buried Giant]
 49.0 decision 1 | [player:p1|p1] kept a legacy
 54.0 decision 1 | [player:p1|p1] kept [card:205|Disciples]
 58.0 round 0 | Round 1

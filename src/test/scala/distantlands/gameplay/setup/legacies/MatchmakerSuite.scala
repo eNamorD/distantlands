@@ -9,8 +9,7 @@ import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
 import distantlands.gameplay.walker.WalkerPowers
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
-import distantlands.model.DecisionAnswer.ChooseOneAnswer
-import distantlands.testkit.{ParkedNode, Situation}
+import distantlands.testkit.{DecisionAnswers, ParkedNode, Situation}
 import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Matchmaker in Quiet Ambitions: "Whenever players draw legacies from the
@@ -57,7 +56,7 @@ class MatchmakerSuite extends munit.FunSuite:
     val kept = drawn(p2).last
     val done = parkedAt(LegacyKeep.decisionId(p2)).withAnswers {
       case park if park.decisionId == LegacyKeep.decisionId(p2) =>
-        ChooseOneAnswer(DecisionOptionRef.Legacy(kept))
+        DecisionAnswers.keepLegacy(kept, drawn(p2).head)
     }.after()
     val legacies = done.ready.game.campaign.lineages(l2).legacies
     assert(legacies.contains(LegacyState(kept, active = false)), legacies)

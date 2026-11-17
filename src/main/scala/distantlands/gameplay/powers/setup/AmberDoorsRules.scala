@@ -93,13 +93,12 @@ case object LostDoors extends DoorsRule:
         legacy } match
         case Vector() => Vector.empty
         case Vector(only) => discardOf(actor, _ => Some(only))
-        case dormant => Decide(decisionId, actor, DecisionQuery.ChooseOne(
-          dormant.map(legacy =>
-            DecisionOption.Legacy(DecisionOptionRef.Legacy(legacy))),
-          heading = Some("Lost Doors: discard a dormant legacy"),
-          confirmVerb = Some("Discard"))) +:
-          discardOf(actor, pending => PowerAnswers.one(pending, decisionId)
-            .collect { case DecisionOptionRef.Legacy(legacy) => legacy }))
+        case dormant => LegacyDraws.pick(decisionId, actor, dormant,
+          LegacyDraws.Pick.discard,
+          heading = "Lost Doors: discard a dormant legacy",
+          confirmLabel = "Discard Legacy") +:
+          discardOf(actor, pending => LegacyDraws.picked(pending.answered,
+            decisionId, LegacyDraws.Pick.discard)))
 
   /** The legacy `chosen` names, from the lineage to the deck's bottom, and
     * the line. */
@@ -185,14 +184,13 @@ case object AmberDoors extends DoorsRule:
           case Vector() => Vector.empty
           case Vector(only) => activation(catalog, actor, Vector(only),
             _ => Some(only))
-          case drawn => Decide(activate, actor, DecisionQuery.ChooseOne(
-            drawn.map(legacy =>
-              DecisionOption.Legacy(DecisionOptionRef.Legacy(legacy))),
-            heading = Some("Amber Doors: activate a legacy"),
-            confirmVerb = Some("Activate"))) +:
+          case drawn => LegacyDraws.pick(activate, actor, drawn,
+            LegacyDraws.Pick.activate,
+            heading = "Amber Doors: activate a legacy",
+            confirmLabel = "Activate Legacy") +:
             activation(catalog, actor, drawn, answered =>
-              PowerAnswers.last(answered, activate).collect {
-                case DecisionOptionRef.Legacy(legacy) => legacy })))
+              LegacyDraws.picked(answered, activate,
+                LegacyDraws.Pick.activate))))
 
   /** Every legacy `actor` holds, from the lineage to the deck's bottom, and
     * the line. */

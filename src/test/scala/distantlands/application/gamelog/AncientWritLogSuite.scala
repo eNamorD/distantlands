@@ -4,8 +4,7 @@ import distantlands.gameplay.powers.action.{AncientWrit, AncientWritCard}
 import distantlands.gameplay.setup.legacies.{PopulistCard, SeerCard,
   WorldCrafterCard}
 import distantlands.model._
-import distantlands.model.DecisionAnswer.ChooseOneAnswer
-import distantlands.testkit.{MenuPlay, Table}
+import distantlands.testkit.{DecisionAnswers, MenuPlay, Table}
 import distantlands.testkit.Table.{p1, p2}
 import LogScripts.{atTable, format, texts}
 
@@ -23,7 +22,8 @@ class AncientWritLogSuite extends munit.FunSuite:
     val (service, act) = atTable("ancient-writ", table)
     act.withAnswers {
       case park if park.decisionId == AncientWrit.decisionId =>
-        ChooseOneAnswer(DecisionOptionRef.Legacy(PopulistCard.id))
+        DecisionAnswers.keepLegacy(PopulistCard.id, SeerCard.id,
+          WorldCrafterCard.id)
     }.after(MenuPlay.start(p1, ActionRef.UsePower(AncientWrit.id),
       Vector(DecisionOptionRef.Relic(AncientWritCard.id))))
     texts(format(Script("ancient-writ", service, p1), Some(viewer)))

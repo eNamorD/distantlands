@@ -122,13 +122,11 @@ case object AncientWrit extends PaidAction(AncientWritCard.power):
         Right(Vector(keptMove(only, chooser, lineage))), required = true),
         line)
       case drawn => Vector(
-        Decide(decisionId, chooser, DecisionQuery.ChooseOne(
-          drawn.map(legacy =>
-            DecisionOption.Legacy(DecisionOptionRef.Legacy(legacy))),
-          heading = Some(
+        LegacyDraws.pick(decisionId, chooser, drawn, LegacyDraws.Pick.keep,
+          heading =
             if chooser == owner then "Ancient Writ: keep a legacy"
-            else s"Matchmaker: keep a legacy for ${owner.value}"),
-          confirmVerb = Some("Keep"))),
+            else s"Matchmaker: keep a legacy for ${owner.value}",
+          confirmLabel = "Keep Legacy"),
         BuildOps((_, pending) =>
           settled(pending, drawn, chooser, lineage), required = true),
         line)
@@ -143,8 +141,9 @@ case object AncientWrit extends PaidAction(AncientWritCard.power):
   private def settled(pending: PendingTree, drawn: Vector[LegacyId],
       chooser: PlayerId, lineage: LineageId)
       : Either[OathViolation, Vector[CoreOperation]] =
-    PowerAnswers.one(pending, decisionId) match
-      case Some(DecisionOptionRef.Legacy(chosen)) if drawn.contains(chosen) =>
+    LegacyDraws.picked(pending.answered, decisionId, LegacyDraws.Pick.keep)
+      match
+      case Some(chosen) if drawn.contains(chosen) =>
         Right(keptMove(chosen, chooser, lineage) +: drawn.filterNot(_ == chosen)
           .map(legacy => Move(Piece.Card(legacy),
             PositionedLocation(Location.Hand(chooser)),

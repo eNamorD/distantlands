@@ -73,10 +73,11 @@ class WalkerChoicePanelRenderSuite extends munit.FunSuite:
       rulesText = Some("**SETUP:** Divide the favor evenly."),
       legacyGoal = Some(distantlands.protocol.projection.LegacyGoalProjection(
         "most-favor", "Hold the most favor.")))
-    val keep = DecisionOptionState("legacy", "L22", "Populist", Some(populist))
-    val panel = draw(WalkerDecisionState("setup", "setup.legacy-choice.p1",
-      query = Some(DecisionQueryState.ChooseOne(Vector(keep),
-        heading = Some("Keep a legacy")))))
+    val activate = DecisionOptionState("legacy", "L22", "Populist",
+      Some(populist))
+    val panel = draw(WalkerDecisionState("act", "power.the-mouth.legacy",
+      query = Some(DecisionQueryState.ChooseOne(Vector(activate),
+        heading = Some("The Mouth: activate a legacy whose goal you meet")))))
     assertEquals(Dom.one(panel, ".walker-choice").getAttribute("data-tip"),
       "Hold the most favor.")
 

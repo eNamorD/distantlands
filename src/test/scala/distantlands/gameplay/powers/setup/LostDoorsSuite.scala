@@ -16,7 +16,8 @@ import distantlands.gameplay.walker.{WalkerCompleted, WalkerDice,
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.model.OathState.Ready
-import distantlands.testkit.{Answers, PhasePowerHarness, Table}
+import distantlands.testkit.{Answers, DecisionAnswers, PhasePowerHarness,
+  Table}
 import distantlands.testkit.Table.p1
 import distantlands.testkit.Unwrap.accepted
 
@@ -61,15 +62,16 @@ class LostDoorsSuite extends munit.FunSuite:
       .legacy(p1, RuthlessCard, active = false).legacy(p1, GoldenKeyCard)
       .legacyDeck(RivalCard, ArbiterCard), {
         case park if park.decisionId == setupDiscard =>
-          ChooseOneAnswer(DecisionOptionRef.Legacy(rival))
+          DecisionAnswers.discardLegacy(rival, ruthless)
       })
     val asked = run.asked.filter(_.decisionId == setupDiscard)
     assertEquals(asked.size, 1)
     asked.head.query match
-      case one: DecisionQuery.ChooseOne =>
-        assertEquals(one.options.map(_.ref), Vector(ruthless, rival)
+      case partition: DecisionQuery.Partition =>
+        assertEquals(partition.options.map(_.ref), Vector(ruthless, rival)
           .map(DecisionOptionRef.Legacy(_)))
-      case other => fail(s"expected a choose-one, got $other")
+        assertEquals(partition.sections.map(_.label), Vector("Keep", "Discard"))
+      case other => fail(s"expected a partition, got $other")
     assertEquals(legaciesOf(run.ready), Vector(
       LegacyState(ruthless, active = false), LegacyState(key, active = true)))
     assertEquals(deckOf(run.ready), Vector(arbiter, rival))
@@ -137,7 +139,7 @@ class LostDoorsSuite extends munit.FunSuite:
     // The walk parks at the discard: resolving it under this id is the
     // proof, since the walker refuses an answer to any other question.
     val done = accepted(rules.resolveWalker(placed.state, p1, discard,
-      ChooseOneAnswer(DecisionOptionRef.Legacy(rival))))
+      DecisionAnswers.discardLegacy(rival, ruthless)))
     assert(done.events.contains(WalkerCompleted(ActionRef.Explore)),
       done.events)
     val ready = PhasePowerHarness.after(done)

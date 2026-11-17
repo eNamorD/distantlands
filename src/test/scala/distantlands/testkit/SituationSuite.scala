@@ -4,7 +4,8 @@ import distantlands.application.{GameApplicationService, GameCommand,
   InMemoryEventStreamRepository, ParkedServiceFixture}
 import distantlands.gameplay.actions.recover.RecoverProcedure
 import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
-import distantlands.gameplay.setup.{FirstGameSetupFixture, SetupProcedure}
+import distantlands.gameplay.setup.{FirstGameSetupFixture, LegacyKeep,
+  SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.{catalog, chronicle,
   orders, sites}
 import distantlands.gameplay.walker.ParkedDecisionAssertions
@@ -105,7 +106,7 @@ class SituationSuite extends munit.FunSuite:
     val failure = intercept[AssertionError](
       Situation.wake(Situation.rules(catalog).withPolicy(partitionless)))
     assert(failure.getMessage.contains(
-      SetupProcedure.adviserDecisionId(orders.firstPlayer)),
+      LegacyKeep.decisionId(orders.firstPlayer)),
       failure.getMessage)
     assert(failure.getMessage.contains("Partition"), failure.getMessage)
 

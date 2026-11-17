@@ -106,9 +106,10 @@ class MembershipBootstrapSuite extends munit.FunSuite:
         "userId", "actor").foreach(field => assert(!json.contains(field)))
       val replayed = present(accepted(service.load("bootstrap-game")),
         "the bootstrapped game")
-      // GameStarted plus the WalkerParked fact from Setup's immediate first
-      // park (2026-09-21 Chronicle design, slice 2).
-      assertEquals(replayed.nextSequence, 2L)
+      // GameStarted, one hidden legacy draw per seat (a first game draws
+      // every seat's two before the first pawn) and the WalkerParked fact
+      // from Setup's first park.
+      assertEquals(replayed.nextSequence, 5L)
       val ready = Outcomes.ready(replayed.state)
       assertEquals(ready.game.current.players.map(_.player.value),
         Vector("p2", "p3", "p1"))
@@ -120,7 +121,7 @@ class MembershipBootstrapSuite extends munit.FunSuite:
       // nothing.
       assertEquals(bootstrap.begin("bootstrap-game", AuthenticatedUser(owner),
         seating), Left(BootstrapFailure.Application(
-          GameApplicationError.StaleClientPosition(0L, 2L))))
+          GameApplicationError.StaleClientPosition(0L, 5L))))
       assertEquals(events.appendCalls, 1)
       assertEquals(present(accepted(events.load("bootstrap-game")),
         "the bootstrapped journal"), firstHistory)

@@ -53,15 +53,15 @@ class GameGatewaySuite extends munit.FunSuite:
 
   test("beginning a game persists history and reloads it"):
     val game = begun
-    // GameStarted plus the WalkerParked fact from Setup's immediate first
-    // park (2026-09-21 Chronicle design, slice 2): two records for one
-    // Begin command.
-    assertEquals(game.projection.nextSequence, 2L)
+    // GameStarted, one hidden legacy draw per seat (a first game draws
+    // every seat's two before the first pawn) and the WalkerParked fact
+    // from Setup's first park: five records for one three-seat Begin.
+    assertEquals(game.projection.nextSequence, 5L)
     val reopened = accepted(OwnedHsqldbEventStreamRepository.open(game.path))
     try
       val stored = loaded(new GameApplicationService(catalog, reopened)
         .load("bootstrap-game"))
-      assertEquals(stored.nextSequence, 2L)
+      assertEquals(stored.nextSequence, 5L)
       as[OathState.Ready](stored.state)
     finally reopened.close()
 
@@ -99,11 +99,11 @@ class GameGatewaySuite extends munit.FunSuite:
           DecisionAnswerWire.ChooseOneWire("site", "site:any")))
       assertEquals(gateway.submit("bootstrap-game", GameAccess.Public, pawn),
         Left(GatewayFailure.Access(AccessRefusal.Forbidden)))
-      assertEquals(loaded(reopened.load("bootstrap-game")).nextSequence, 2L)
+      assertEquals(loaded(reopened.load("bootstrap-game")).nextSequence, 5L)
       val page = accepted(gateway.log("bootstrap-game", GameAccess.Public, 0L))
-      assertEquals(page.nextSequence, 2L)
+      assertEquals(page.nextSequence, 5L)
       assert(page.entries.nonEmpty)
-      assertEquals(gateway.log("bootstrap-game", GameAccess.Public, 3L),
+      assertEquals(gateway.log("bootstrap-game", GameAccess.Public, 6L),
         Left(GatewayFailure.Malformed))
     finally reopened.close()
 

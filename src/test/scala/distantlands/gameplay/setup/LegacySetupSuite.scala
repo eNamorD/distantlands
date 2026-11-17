@@ -1,5 +1,6 @@
 package distantlands.gameplay.setup
 
+import distantlands.application.GameCommand
 import distantlands.gameplay.setup.legacies.{Populist, PopulistCard, Seer,
   SeerCard}
 import distantlands.gameplay.walker.{LogNoted, WalkerPowers}
@@ -84,20 +85,29 @@ class LegacySetupSuite extends munit.FunSuite:
     assertEquals(ready.game.current.commonCards.legacyDeck
       .takeRight(seats.size).toSet, seats.map(seat => drawn(seat.playerId)(1)).toSet)
 
-  test("each player is asked to keep one of exactly the two legacies they " +
-      "drew, and keeps the one chosen"):
+  test("each player sorts exactly the two legacies they drew into Keep, " +
+      "one, and Discard, and keeps the one placed in Keep"):
     var asked = Vector.empty[Decide]
     val keepSecond: Answers =
       case park if park.decisionId ==
           LegacyKeep.decisionId(park.awaiting) =>
         asked = asked :+ park.decide
-        DecisionAnswer.ChooseOneAnswer(
-          as[DecisionQuery.ChooseOne](park.decide.query).options(1).ref)
+        val Vector(first, second) =
+          as[DecisionQuery.Partition](park.decide.query).options.map(_.ref)
+        DecisionAnswer.PartitionAnswer(Vector(
+          DecisionPlacement(first, "discard"),
+          DecisionPlacement(second, "keep")))
     val woken = Situation.wake(Situation.rules(catalog).withAnswers(keepSecond))
     assertEquals(asked.map(_.owner).toSet, seats.map(_.playerId).toSet)
-    asked.foreach(decide => assertEquals(
-      as[DecisionQuery.ChooseOne](decide.query).options.map(_.ref),
-      drawn(decide.owner).map(DecisionOptionRef.Legacy(_))))
+    asked.foreach { decide =>
+      val query = as[DecisionQuery.Partition](decide.query)
+      assertEquals(query.options.map(_.ref),
+        drawn(decide.owner).map(DecisionOptionRef.Legacy(_)))
+      assertEquals(query.sections, Vector(
+        DecisionSection("keep", "Keep", 1, Some(1)),
+        DecisionSection("discard", "Discard", 0)))
+      assertEquals(query.confirmLabel, Some("Keep Legacy"))
+    }
     seats.foreach(seat => assertEquals(
       woken.ready.game.campaign.lineages(seat.lineageId).legacies,
       Vector(LegacyState(drawn(seat.playerId)(1), active = false))))
@@ -175,6 +185,18 @@ class LegacySetupSuite extends munit.FunSuite:
       inTurnOrder(orders.firstPlayer).flatMap(player => Vector(
         SetupProcedure.pawnDecisionId(player),
         LegacyKeep.decisionId(player))))
+
+  test("in a first game every seat draws its two legacies before the first " +
+      "pawn, so each player places holding them (CR p. 7)"):
+    val first = orders.firstPlayer
+    val atPawn = Situation.start(Situation.rules(catalog))
+      .parkedAt(SetupProcedure.pawnDecisionId(first))(
+        GameCommand.Begin(chronicle, orders))
+    seats.foreach(seat => assertEquals(
+      atPawn.ready.game.current.legacyHands.getOrElse(seat.playerId,
+        Vector.empty), drawn(seat.playerId), seat.playerId.value))
+    assert(seats.forall(seat => atPawn.ready.game.campaign
+      .lineages(seat.lineageId).legacies.isEmpty), "nobody has kept yet")
 
   test("in a later game every seat keeps while Foundation III resolves, " +
       "in turn order, before any pawn (catalog batch 13, ruling 3)"):
