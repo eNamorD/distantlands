@@ -11,11 +11,13 @@ These are not claimed errors in the rulebook. They are places where an implement
    combined rulebook prose: favor is 1 + matches; secrets equal matches (CR
    pp. 18, 24).
 4. **Banner ribbons and non-default faces.** CR p. 32 explains ribbon semantics, but machine execution needs exact component-side icon sequences and initial values.
-5. **Component behavior coverage.** Printed identities and the runtime catalog are complete, but banner ribbons still require typed executable handlers.
+   Resolved: both faces of both banners are built, and each ribbon runs its printed icons (`BannerRules.peoplesFavorRibbon`, `BannerRules.darkestSecretRibbon`, `ChallengeRibbon`; `ChallengeProcedureSuite`, `SecretTestamentSuite`, `FavoredSonSuite`).
+5. **Component behavior coverage.** Printed identities and the runtime catalog are complete, and banner ribbons run (item 4). `CardCatalogSuite` fails on a printed power with no registered handler.
 
 ## Formalization decisions
 
 1. **Action boundary.** Several automatic checks happen "after any action" (bandit refill, Oathkeeper transfer), while powers can introduce actions and nested effects. Define a transaction boundary and when state-based checks reach a fixed point (CR pp. 15-16, 42).
+   Resolved for the digital game: the boundary runs when the walker's queue empties, only after an action, so a queued chain gets one boundary after its last action; a nested part of an action has none ([walker game loop design](../superpowers/specs/2026-10/2026-10-09-walker-game-loop-design.md), rulings 4, 5 and 15; `OathDriver.boundary`, `OathDriverSuite`).
 2. **Simultaneous effects.** Turn player chooses order during a turn; current Chancellor chooses during Chronicle. Define who chooses outside both contexts and whether ordering choices are logged (CR p. 42).
 3. **Consent timeout/forgetting.** "Enemies cannot" effects fail if not enforced at the moment. A digital implementation needs an explicit prompt/auto-consent policy so silence is deterministic (CR p. 43).
    Resolved for the digital game: the engine always enforces, and a blocked player asks the ruler explicitly; a ruler may set a standing per-player answer ([consent design](../superpowers/specs/2026-10/2026-10-08-consent-system-design.md), rulings 3 and 10).

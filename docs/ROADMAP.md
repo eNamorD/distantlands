@@ -229,20 +229,26 @@ Settings players can change during a game.
 
 ### Phase - Gameplay completeness gate
 
-Audit every rulebook procedure and every runtime component handler against the
-traceability matrix; close remaining hidden-information, simultaneous-ordering,
-randomness, consent, and nested-action gaps; then run complete replay,
+Close the gaps the [traceability matrix](rules/implementation-traceability.md#remaining-source-cited-work)
+lists under "Remaining source-cited work", then run complete replay,
 persistence, server, Scala.js, packaged-network, and browser acceptance gates.
 
-- [ ] **Refresh the traceability matrix.** Its dependency column was written
-  before most cards landed: Search still lists component powers as
-  deferred, Campaign says Scepter Bearer waits for legacy powers, Muster and
-  Trade omit Economy modifiers "until implemented", Challenge keeps
-  component powers as typed blockers, and the power framework row says most
-  component handlers remain. Every printed card power now runs
-  ([last Chronicle powers](superpowers/specs/2026-11/2026-11-16-last-chronicle-powers-design.md)).
-  Re-read each row against the code and its suites, and keep only the gaps
-  that remain, so the gate's audit starts from a current matrix.
+- [ ] **Challenge an ally's banner.** The rule asks for co-location only when
+  an enemy holds the banner (NF p. 15), but `ChallengeProcedure.legalBanners`
+  asks it of every holder, so a Citizen cannot challenge the Chancellor's
+  banner from another site.
+- [ ] **Order simultaneous powers (F2).** The placing player orders simultaneous
+  powers only in Setup's pawn window (`OrderedWindow`); elsewhere a window's
+  powers run in `ContributingPower.sortKey` order or the order a ruling fixes.
+  Settle with the owner who orders them, and when (CR p. 42).
+- [ ] **Show private cards (F4).** An owner can show their private cards
+  without turning them faceup only inside a Negotiation. Settle the reveal and
+  share policy (CR p. 42).
+- [ ] **Piece limits (F5).** Settle whether the digital game keeps the
+  physical piece limits exactly, the shared bank's secrets among them (CR p.
+  42).
+- [ ] **Seed policy (F6).** Random outcomes are recorded and replayed, not
+  seeded. Settle whether a seed is wanted (CR pp. 19, 30).
 
 ## Deferred items
 
