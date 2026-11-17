@@ -76,7 +76,6 @@
   --line-pane: #443c30;
   --selection-fill: #243442;
   --pile-back: #493751;
-  --unimplemented: #a15c4a;
   --error-line: #e27f79;
   --error-text: #ffd0cd;
   --token-symbol: #d8cdb4;
@@ -1111,7 +1110,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    exchanged. */
 .card-face-legacy { width: var(--card-h);
   height: calc(var(--card-h) / (var(--ratio-legacy))); border-color: var(--line); }
-.card-face-unimplemented { border-style: dashed; border-color: var(--unimplemented); }
 /* An empty slot is a place, not a card: nothing to inspect, so no ring. */
 .card-face:not(.card-slot-empty):hover, .card-face:focus-visible {
   outline: var(--option-ring) solid var(--cream-focus);
@@ -1138,8 +1136,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    marks and the room the face keeps free agree. On a denizen-shaped box the
    band stands just above the power marks' row; on a square or landscape box,
    which has no room for both rows, it stands at the foot unless the card
-   prints power marks there. An Unimplemented band or a Replace badge lifts
-   the marks, and the band with them. */
+   prints power marks there. A Replace badge lifts the marks, and the
+   band with them. */
 .card-face { --marks-bottom: 0.35em; --band-h: 1.3em;
   --band-bottom: calc(var(--marks-bottom) + 1.65em); }
 :is(.card-face-relic, .card-face-legacy):not(:has(> .card-power-marks)) {
@@ -1148,8 +1146,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    summary sets the band above its marks as the face would. */
 .card-hover-summary:has(> .card-power-marks) {
   --band-bottom: calc(var(--marks-bottom) + 1.65em); }
-.card-face:has(> .card-unimplemented-badge) {
-  --marks-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
 .card-face.board-option-replace { --marks-bottom: calc(0.35em + 1.6em); }
 .card-tokens { position: absolute; right: 0.3em; bottom: var(--band-bottom);
   left: 0.3em; display: flex; align-items: center; justify-content: center;
@@ -1177,24 +1173,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   align-items: center; gap: 0.15em; }
 .card-header .restriction-mark { width: 1.5em; height: 1.5em; }
 /* Each power's modifier tab or battle-plan crown, in the lower-left corner,
-   lifted above the unimplemented band or a Replace badge when either is
-   there. */
+   lifted above a Replace badge when one is there. */
 .card-power-marks { position: absolute; left: 0.35em;
   bottom: var(--marks-bottom); display: flex; gap: 0.15em; }
 .card-power-marks .power-mark { width: 1.5em; height: 1.5em; }
-/* A band across the card's foot, out to the dashed border, so the word gets
-   the card's whole width: at the floor's 0.7rem, mixed case, "Unimplemented"
-   fits the smallest card in a pane. The card keeps the band's height free
-   at its foot, worked out in the card's own font, so the restriction above
-   it never runs under it. */
-.card-unimplemented-badge { position: absolute; right: 0; bottom: 0; left: 0;
-  padding: 0 0.2em; background: var(--unimplemented); color: var(--cream-bright);
-  font-size: max(0.62em, 0.7rem); line-height: 1.35; text-align: center;
-  white-space: nowrap; }
-.card-face:has(> .card-unimplemented-badge) {
-  padding-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
-/* A face holding tokens keeps the band's room free, the Unimplemented
-   band's with it: what it prints stops above the band, and a name too long
+/* A face holding tokens keeps the token band's room free: what it
+   prints stops above the band, and a name too long
    for what is left is cut there, its whole text being the face's hover note
    and accessible name. */
 :is(.card-face, .card-hover-summary):has(> .card-tokens) {
@@ -1795,8 +1779,8 @@ button.festival-marker:hover,
 .map-compact .mat-board .site-cards .card-token-count { margin-right: 0.1em; }
 .map-tiny .mat-board .site-cards .card-tokens {
   font-size: min(var(--glance-text), 28px); }
-.map-compact .card-face .card-defense, .map-compact .card-face .card-power-marks,
-.map-compact .card-face .card-unimplemented-badge { display: none; }
+.map-compact .card-face .card-defense,
+.map-compact .card-face .card-power-marks { display: none; }
 /* The banner takes the corner opposite the suit glyph, in the room the
    face's top padding already keeps for it. */
 .map-compact .card-emblems { display: contents; }

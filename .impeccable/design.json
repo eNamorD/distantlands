@@ -234,11 +234,6 @@
         "displayName": "Pile Back",
         "canonical": "#493751"
       },
-      "unimplemented": {
-        "role": "neutral",
-        "displayName": "Unimplemented",
-        "canonical": "#a15c4a"
-      },
       "error-line": {
         "role": "neutral",
         "displayName": "Error Line",

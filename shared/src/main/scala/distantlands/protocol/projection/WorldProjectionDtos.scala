@@ -20,7 +20,6 @@ final case class CardDetailsProjection(
     relicValue: Option[Int] = None,
     defense: Option[Int] = None,
     hidden: Boolean = false,
-    implemented: Boolean = true,
     powers: Vector[PowerFaceProjection] = Vector.empty,
     /** Warbands standing on the card, one entry per force (Obsidian
       * Cage). */
