@@ -56,8 +56,8 @@ class HidingPlaceSuite extends munit.FunSuite:
   private def askedHidingPlace(run: ChronicleWalk.Run): Vector[Decide] =
     run.asked.filter(_.decisionId.startsWith("chronicle.throne.hiding-place"))
 
-  private def options(decide: Decide): Set[DecisionOptionRef] =
-    decide.query.asInstanceOf[DecisionQuery.ChooseOne].options.map(_.ref).toSet
+  private def options(decide: Decide): Vector[DecisionOptionRef] =
+    decide.query.asInstanceOf[DecisionQuery.ChooseOne].options.map(_.ref)
 
   test("Hiding Place is implemented"):
     assert(PowerImplementationStatus.implemented(
@@ -71,7 +71,9 @@ class HidingPlaceSuite extends munit.FunSuite:
     val run = through(table, keeping(p2, GrandMaskCard.id))
     val asked = askedHidingPlace(run)
     assertEquals(asked.map(_.owner), Vector(p2))
-    assertEquals(options(asked.head), Set[DecisionOptionRef](
+    // Decline is first; the relics follow in the holder's order.
+    assertEquals(options(asked.head).headOption, Some(HidingPlace.decline))
+    assertEquals(options(asked.head).toSet, Set[DecisionOptionRef](
       HidingPlace.decline, DecisionOptionRef.Relic(CupOfPlentyCard.id),
       DecisionOptionRef.Relic(GrandMaskCard.id)))
     assertEquals(lineage(run.ready, p2).startingRelics,
@@ -107,6 +109,8 @@ class HidingPlaceSuite extends munit.FunSuite:
   test("a site bandits rule, or nobody rules, asks nobody (ruling 4)"):
     val bandits = hidingPlaceAtBrokenPeaks.bandits(BrokenPeaksSite, 2)
       .relic(p2, CupOfPlentyCard)
+    assertEquals(SiteRule.rulingPlayer(bandits.ready, BrokenPeaksSite.id),
+      Some(SiteRuler.Bandits))
     assertEquals(askedHidingPlace(through(bandits, PartialFunction.empty)),
       Vector.empty)
     val unruled = hidingPlaceAtBrokenPeaks.relic(p2, CupOfPlentyCard)

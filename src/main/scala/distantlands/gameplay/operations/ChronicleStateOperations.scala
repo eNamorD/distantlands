@@ -198,8 +198,9 @@ private[operations] object ChronicleStateOperations:
               CardKnowledgeMoves.forget)))
 
   /** `relic` from `player`'s relics to their lineage's starting relics
-    * (Heirloom; R20). The Grand Scepter, a relic the player does not hold
-    * and a relic with tokens are refused. */
+    * (Heirloom, R20; Hiding Place, Last Chronicle powers design, ruling 4).
+    * The Grand Scepter, a relic the player does not hold and a relic with
+    * tokens or warbands on it are refused. */
   def startingRelicKept(ready: ReadyGame, player: PlayerId, relic: RelicId)
       : Either[OperationError, ReadyGame] =
     val held = ready.game.current.player(player)
