@@ -202,8 +202,11 @@ their SETUP powers with the
 [Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md),
 the powers used during a game with the
 [Legacy in-play powers design](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md),
-and the cards that act on legacies with
-[catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md).
+the cards that act on legacies with
+[catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md),
+and the last printed powers with the
+[last Chronicle powers design](superpowers/specs/2026-11/2026-11-16-last-chronicle-powers-design.md).
+Every printed card power now runs.
 
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
@@ -230,6 +233,16 @@ Audit every rulebook procedure and every runtime component handler against the
 traceability matrix; close remaining hidden-information, simultaneous-ordering,
 randomness, consent, and nested-action gaps; then run complete replay,
 persistence, server, Scala.js, packaged-network, and browser acceptance gates.
+
+- [ ] **Refresh the traceability matrix.** Its dependency column was written
+  before most cards landed: Search still lists component powers as
+  deferred, Campaign says Scepter Bearer waits for legacy powers, Muster and
+  Trade omit Economy modifiers "until implemented", Challenge keeps
+  component powers as typed blockers, and the power framework row says most
+  component handlers remain. Every printed card power now runs
+  ([last Chronicle powers](superpowers/specs/2026-11/2026-11-16-last-chronicle-powers-design.md)).
+  Re-read each row against the code and its suites, and keep only the gaps
+  that remain, so the gate's audit starts from a current matrix.
 
 ## Deferred items
 
@@ -519,8 +532,7 @@ as current.
   are browsable; saved games and replays are not.
 - [ ] **L5 — Asynchronous accounts, invitations, and notifications**
 - [ ] **L6 — Incremental implementation of remaining phases and rules** (tracked
-  in the phased sequence above; the remaining cards come with
-  **Phase - Chronicle steps**)
+  in the phased sequence above)
 - [ ] **L7 — Incremental synchronization transport**
   - Replace complete-snapshot polling with conditional responses, projection
     deltas, long polling, SSE, or another push transport when scale or latency
