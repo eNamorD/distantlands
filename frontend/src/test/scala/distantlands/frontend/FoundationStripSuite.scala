@@ -1,7 +1,6 @@
 package distantlands.frontend
 
 import distantlands.frontend.Dom.{all, click, one}
-import distantlands.protocol.ChronicleFoundation
 import distantlands.protocol.projection.FoundationProjection
 
 /** The six foundation setup cards as a strip (Foundations design, slice 1):
@@ -68,22 +67,6 @@ class FoundationStripSuite extends munit.FunSuite:
     click(cards(2))
     assertEquals(opened, Vector("Foundation III · Public Ambitions" ->
       Vector("Deal 4 legacy cards.\n\nEveryone competes.")))
-
-  test("a Chronicle's cards show the same names and marks and are not " +
-      "buttons"):
-    val strip = FoundationStrip.render(FoundationStrip.ofChronicle(Vector(
-      ChronicleFoundation(1, "altered", "Wide Horizons"),
-      ChronicleFoundation(2, "normal", "Powerful Tribes"))))
-    assertEquals(all(strip, "button").size, 0)
-    val cards = all(strip, "span.foundation-card")
-    // A plain row is read as its text, so it carries no label to ignore.
-    assertEquals(cards.map(_.hasAttribute("aria-label")),
-      Vector(false, false))
-    assertEquals(cards.map(card => all(card, "span").map(_.textContent)),
-      Vector(Vector("I", "Wide Horizons", "Altered"),
-        Vector("II", "Powerful Tribes")))
-    click(cards.head)
-    assertEquals(opened, Vector.empty)
 
   test("a number no card prints reads as its digits"):
     assertEquals(FoundationStrip.numeral(4), "IV")

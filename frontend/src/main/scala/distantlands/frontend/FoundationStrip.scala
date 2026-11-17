@@ -1,21 +1,19 @@
 package distantlands.frontend
 
-import distantlands.protocol.ChronicleFoundation
 import distantlands.protocol.projection.FoundationProjection
 import org.scalajs.dom
 import ServerUiSupport.{element, text}
 
 /** The six foundation setup cards as a read-only strip (Foundations design,
   * slice 1): one row a card, its numeral, the name of the face in use and,
-  * on an altered card, the word. The table's strip stands in the shared
-  * bank, and a click on a card reads its face's rules in the overlay; the
-  * Chronicle page lists the same six with no rules to read.
+  * on an altered card, the word. The strip stands in the table's shared
+  * bank, and a click on a card reads its face's rules in the overlay.
   */
 private[frontend] object FoundationStrip:
   /** One card as the strip draws it. `rules` is the text of the face in
-    * use, which a click reads; the Chronicle page carries none. */
+    * use, which a click reads. */
   final case class Card(number: Int, altered: Boolean, name: String,
-      rules: Option[String])
+      rules: String)
 
   private val Numerals = Vector("I", "II", "III", "IV", "V", "VI")
 
@@ -25,12 +23,7 @@ private[frontend] object FoundationStrip:
 
   def ofGame(foundations: Vector[FoundationProjection]): Vector[Card] =
     foundations.map(foundation => Card(foundation.number,
-      foundation.face == "altered", foundation.name,
-      Some(foundation.rulesText)))
-
-  def ofChronicle(foundations: Vector[ChronicleFoundation]): Vector[Card] =
-    foundations.map(foundation => Card(foundation.number,
-      foundation.face == "altered", foundation.name, None))
+      foundation.face == "altered", foundation.name, foundation.rulesText))
 
   /** "Foundation I · Wide Horizons": the overlay's title and the hover
     * note. */
@@ -56,19 +49,13 @@ private[frontend] object FoundationStrip:
     section
 
   private def face(card: Card): dom.Element =
-    val node = card.rules match
-      case Some(rules) =>
-        val button = ServerUiSupport.button("", "foundation-card")
-        button.`type` = "button"
-        // A control is named in one phrase; its parts alone open with "I".
-        button.setAttribute("aria-label", label(card))
-        button.onclick = _ =>
-          CardInspection.openText(title(card), Vector(rules), button,
-            Some("foundation"))
-        button
-      // A plain row is read as its own text: numeral, name and mark. A
-      // label on a span is ignored, so it carries none.
-      case None => element("span", "foundation-card")
+    val node = ServerUiSupport.button("", "foundation-card")
+    node.`type` = "button"
+    // A control is named in one phrase; its parts alone open with "I".
+    node.setAttribute("aria-label", label(card))
+    node.onclick = _ =>
+      CardInspection.openText(title(card), Vector(card.rules), node,
+        Some("foundation"))
     // The name is cut to one line on a small map; the note keeps it whole.
     HoverTip.set(node, title(card))
     node.appendChild(text("span", "foundation-number", numeral(card.number)))
