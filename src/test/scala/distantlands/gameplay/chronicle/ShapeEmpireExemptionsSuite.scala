@@ -10,6 +10,7 @@ import distantlands.gameplay.operations.HallOfMinistersCard
 import distantlands.gameplay.powers.{PowerImplementationStatus,
   WalkerPowerCatalog}
 import distantlands.gameplay.powers.action.FaeMerchantCard
+import distantlands.gameplay.powers.economy.VillageIdiotCard
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -42,13 +43,16 @@ class ShapeEmpireExemptionsSuite extends munit.FunSuite:
   test("a card at Ancient City stays when Iron Hand's Exile shapes the " +
       "Empire in the Chancellor's place (ruling 1)"):
     // p3 holds Iron Hand and rules Broken Peaks; the Empire rules Deep
-    // Woods. Ancient City is nobody's, so only Enduring keeps its card.
+    // Woods, whose card only Iron Hand's Shape Empire discards. Ancient
+    // City is nobody's, so only Enduring keeps its card.
     val table = ChronicleWalk.throneHeldByChancellorP1
       .warbandsAt(DeepWoodsSite, p1, 1).warbandsAt(BrokenPeaksSite, p3, 1)
       .denizen(ThreateningRoarCard, at = AncientCitySite)
       .denizen(FaeMerchantCard, at = BuriedGiantSite)
+      .denizen(VillageIdiotCard, at = DeepWoodsSite)
       .legacy(p3, IronHandCard)
     val run = throne(table)
+    assert(!onMap(run.ready, VillageIdiotCard.id))
     assert(onMap(run.ready, ThreateningRoarCard.id))
     assert(!onMap(run.ready, FaeMerchantCard.id))
 
@@ -83,6 +87,18 @@ class ShapeEmpireExemptionsSuite extends munit.FunSuite:
     assert(onMap(run.ready, HallOfMinistersCard.id))
     assert(!onMap(run.ready, FaeMerchantCard.id))
     assert(!onMap(run.ready, SchoolOfVinesCard.id))
+
+  test("a ruined Hall of Bandits discarded in the same Shape Empire still " +
+      "keeps the ruins at bandit sites"):
+    // Deep Woods has no warbands: the Hall is discarded there, in the same
+    // batch that would discard the ruin at Buried Giant.
+    val table = empireAt(BrokenPeaksSite)
+      .edifice(HallOfMinistersCard, EdificeSide.Ruined, at = DeepWoodsSite)
+      .bandits(BuriedGiantSite, 2)
+      .edifice(SchoolOfVinesCard, EdificeSide.Ruined, at = BuriedGiantSite)
+    val run = throne(table)
+    assert(!onMap(run.ready, HallOfMinistersCard.id))
+    assert(onMap(run.ready, SchoolOfVinesCard.id))
 
   test("the Hall of Ministers, its intact face, keeps no ruin at a bandit " +
       "site"):
