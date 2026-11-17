@@ -1,17 +1,19 @@
 package distantlands.gameplay.phases.rest
 
 import distantlands.model.PlayerId
+import java.security.SecureRandom
 
 /** The randomness of a round's end: the purple end die of a Stable Regime
   * check (CR p. 19), and the winner War Exhaustion picks in a game with no
-  * Empire and no Oathkeeper. Production rolls; tests fix the answers. */
+  * Empire and no Oathkeeper. Production rolls from a `SecureRandom`;
+  * tests fix the answers. */
 trait RoundEndRandomPort:
   def choose(candidates: Vector[PlayerId]): PlayerId
   /** One roll of the end die, from 1 to 6. */
   def endDie(): Int
 object RoundEndRandomPort:
   val random: RoundEndRandomPort = new RoundEndRandomPort:
-    private val rng = new scala.util.Random()
+    private val rng = new scala.util.Random(new SecureRandom())
     def choose(candidates: Vector[PlayerId]): PlayerId =
       candidates(rng.nextInt(candidates.size))
     def endDie(): Int = rng.nextInt(6) + 1
