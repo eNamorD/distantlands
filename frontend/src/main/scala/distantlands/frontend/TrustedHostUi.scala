@@ -74,8 +74,11 @@ private[frontend] object TrustedHostUi:
     page.appendChild(backLink)
     page.appendChild(text("h1", "", "Create an Oath game"))
     val imperial = roles(chronicle)
+    // "Red Citizen": the color and the role its lineage starts the game
+    // in. A lineage without an Imperial role, or a new one, is an Exile
+    // (`GameStartRules` starts new lineages as Exiles).
     def label(color: PlayerColor): String =
-      name(color) + imperial.get(color).fold("")(role => s", ${role.capitalize}")
+      s"${name(color)} ${imperial.get(color).fold("Exile")(_.capitalize)}"
     page.appendChild(text("p", "host-intro", openCreated match {
       case None => "Add one row per player, then send each player " +
         "their assigned link. Anyone with a seat link can control that seat. " +
@@ -268,7 +271,10 @@ private[frontend] object TrustedHostUi:
               val links = element("ol", "seat-links")
               created.seats.foreach { seat =>
                 val row = element("li", "seat-link-row")
-                row.appendChild(text("span", "", seat.playerId))
+                row.appendChild(text("span", "seat-link-player", seat.playerId))
+                // The response holds no color; the seat's row chose it.
+                participants.find(_.playerId == seat.playerId).foreach(player =>
+                  row.appendChild(text("span", "seat-link-color", label(player.color))))
                 val link = dom.document.createElement("input").asInstanceOf[dom.html.Input]
                 link.className = "seat-link"
                 link.value = seat.url

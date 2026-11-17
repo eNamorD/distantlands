@@ -569,6 +569,11 @@ surface: a 2px Brass border at 12px, its label set into the top edge on a
 Base patch, "None" in Ink Dim when empty. Its scoresheet follows the paper
 scorepad: running totals in tabular figures, the Chancellor's score in a
 1.5px circle and Citizens' underlined, a Brass Line rule between rows.
+Game creation labels each player row with its color and starting role in
+one phrase ("Red Citizen", "Yellow Exile"), apart from the player name the
+host types. The player rows share one set of columns so the name fields
+line up, and the seat links do too on screens wider than a phone; the seat
+links repeat the phrase in Ink Dim after each name.
 
 ## Elevation & Depth
 
