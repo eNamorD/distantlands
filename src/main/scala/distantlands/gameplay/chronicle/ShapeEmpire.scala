@@ -80,11 +80,6 @@ object ShapeEmpire:
           PositionedLocation(Location.WarbandBank(kind)))
       }), required = true))
 
-  /** Cards at Enduring sites are not discarded in Shape Empire (CR p. 37).
-    * Ancient City is one; its handler names the keyword. */
-  private def enduring(catalog: ExecutableCatalog, site: SiteId): Boolean =
-    catalog.site(site).exists(_.handlers.exists(_.value.endsWith(".enduring")))
-
   /** The cards at sites the holder does not rule, but Enduring ones, are
     * discarded. Rival's holder, read when the discard is reached, first keeps
     * any of them, ruined edifices included (Legacy Chronicle powers design,
@@ -94,7 +89,8 @@ object ShapeEmpire:
       holder: PlayerId): Vector[Operation] =
     val current = state.game.current
     val cards = current.map.inPlay.filterNot(site =>
-      ChronicleTasks.rules(state, holder, site) || enduring(catalog, site))
+      ChronicleTasks.rules(state, holder, site) ||
+        ShapeEmpireExemptions.enduring(catalog, site))
       .flatMap(site => current.map.regionOf(site).toVector.flatMap(region =>
         current.map.sites(site).denizens.flatMap(card =>
           discardOf(catalog, site, region, card, holder)
