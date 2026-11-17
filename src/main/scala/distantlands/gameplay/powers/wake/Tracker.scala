@@ -38,12 +38,13 @@ case object TrackerAction extends PaidAction(TrackerCard.action):
   override def noteKeys: Vector[NoteKey] = notes.declared
   override def narratedDecisions: Set[String] = Set(decisionId)
 
-  /** The enemies of `player` whose pawns stand at `player`'s site. */
+  /** The enemies of `player` whose pawns stand at `player`'s site. Every
+    * other player is an enemy, Imperial or not (rules glossary, "Enemy"). */
   def targets(ready: ReadyGame, player: PlayerId): Vector[PlayerId] =
     ready.game.current.pawnSite(player).toVector.flatMap(site =>
       ready.game.current.players.collect {
         case other if other.pawnSite.contains(site) &&
-            Imperials.enemies(ready, player, other.player) => other.player })
+            other.player != player => other.player })
 
   override def refusal(catalog: ExecutableCatalog, ready: ReadyGame,
       player: PlayerId, source: DecisionOptionRef, starts: QueuedStarts)

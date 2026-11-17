@@ -233,10 +233,6 @@ Close the gaps the [traceability matrix](rules/implementation-traceability.md#re
 lists under "Remaining source-cited work", then run complete replay,
 persistence, server, Scala.js, packaged-network, and browser acceptance gates.
 
-- [ ] **Imperial players are enemies.** `Imperials.enemies` treats two
-  Imperial players as allies, but the glossary's "Enemy" is every other
-  player and the bandits. Tracker, School of Vines and Gatekeeper read it, so
-  each skips an Imperial enemy; catalog batch 10 design made the same misreading.
 - [ ] **Audit simultaneous ordering.** Order is chosen only where it changes
   the outcome (F2). Find every window where two powers can resolve at once
   and their order changes the result, and check that the player chooses or a

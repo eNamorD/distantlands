@@ -63,11 +63,12 @@ case object Gatekeeper extends ContributingPower:
           Branch((_, pending) => taken(holder, options, pending)))))
 
   /** Each seated enemy's active legacies whose goal `holder` meets, with
-    * their owner, in turn order (Legacies R21). */
+    * their owner, in turn order (Legacies R21). Every other player is an
+    * enemy, Imperial or not (rules glossary, "Enemy"). */
   private def takeable(catalog: ExecutableCatalog, state: ReadyGame,
       holder: PlayerId): Vector[(PlayerId, LegacyId)] = for
     enemy <- LegacyGoals.turnOrder(state)
-      if Imperials.enemies(state, holder, enemy)
+      if enemy != holder
     lineage <- ChronicleTasks.lineageOf(state, enemy).toVector
     legacy <- state.game.campaign.lineages.get(lineage).toVector
       .flatMap(_.legacies) if legacy.active

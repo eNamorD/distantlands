@@ -91,10 +91,12 @@ class TrackerSuite extends munit.FunSuite:
       .pawn(p2, peaks).adviser(p1, tracker).ready
     assertEquals(writtenReason(menuOption(alone, TrackerAction.id)),
       Some(PawnMoves.noValidEnemyPawn))
-    // A Citizen is no enemy of the Chancellor.
-    val allied = actingWithP2AtTrackersSite.imperial(p1, p2).ready
-    assertEquals(writtenReason(menuOption(allied, TrackerAction.id)),
-      Some(PawnMoves.noValidEnemyPawn))
+
+  test("a Citizen may track the Chancellor: Imperial players are each " +
+      "other's enemies"):
+    val imperial = actingWithP2AtTrackersSite.imperial(p1, p2).ready
+    assert(menuOption(imperial, TrackerAction.id).available)
+    assertEquals(TrackerAction.targets(imperial, p1), Vector(p2))
 
   // ---- WAKE ----
 

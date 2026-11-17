@@ -2,8 +2,10 @@ package distantlands.application
 
 import distantlands.gameplay.walker.WalkerDice
 import distantlands.model._
+import java.security.SecureRandom
 
-
+/** Dice and shuffles for the walker. Production draws from a
+  * `SecureRandom`, so no draw predicts the next; tests fix the outcomes. */
 trait CampaignDicePort:
   def rollAttack(count: Int): Vector[AttackDieFace]
   def rollDefense(count: Int): Vector[DefenseDieFace]
@@ -16,7 +18,7 @@ trait CampaignDicePort:
   def shuffle(count: Int): Vector[Int] = CampaignDicePort.uniform(count)
 object CampaignDicePort:
   val random: CampaignDicePort = new CampaignDicePort:
-    private val rng = new scala.util.Random()
+    private val rng = new scala.util.Random(new SecureRandom())
     private val attack = Vector(
       AttackDieFace.HollowSword, AttackDieFace.HollowSword,
       AttackDieFace.HollowSword, AttackDieFace.OneSword,
@@ -41,10 +43,10 @@ object CampaignDicePort:
     override def shuffle(count: Int): Either[OathViolation, Vector[Int]] =
       Right(port.shuffle(count))
 
-  private val shuffler = new scala.util.Random()
+  private val shuffler = new scala.util.Random(new SecureRandom())
   private def uniform(count: Int): Vector[Int] =
     shuffler.shuffle((0 until count).toVector)
 
-  private val roundRoller = new scala.util.Random()
+  private val roundRoller = new scala.util.Random(new SecureRandom())
   private def uniformRound(count: Int): Vector[RoundDieFace] =
     Vector.fill(count)(RoundDieFace.values(roundRoller.nextInt(6)))
