@@ -154,7 +154,7 @@ No step has an actor in the digital version.
    - Digital: an empty window. The Chronicle stores no pieces, and the Empire's sites are kept Cradlemost first ([ruling 18](ambiguities.md#chronicle-rulings)).
 4. **Store.** Store the Empire's sites, with their cards, on top of the Empire divider, Cradlemost on top. Store each player's pieces, advisers and legacies, keeping legacy faces; store the Chancellor's pieces, the Grand Scepter and the Reliquary apart from the players; store the Visions and the world deck behind the World Deck divider. The rulebook's "play again or store" choice does not apply: the digital phase always ends by journaling `ChronicleUpdated` with the evolved Chronicle. **Actor:** none: procedural.
    - Digital: one log line per Empire site. The Chronicle Phase then journals the record, which must pass game start's card accounting and keep every site and relic it started with. The Dispossessed are the older ones followed by the six the World task added.
-   - Digital: with Iron Hand, the holder's sites are stored in the Empire's place, Cradlemost first, "Buried Giant stays on the map with Iron Hand". Until Iron Hand's SETUP half lands, the next game restores them as the Empire's sites ([Legacy Chronicle powers rulings](ambiguities.md#legacy-chronicle-powers-rulings), items 44 and 51).
+   - Digital: with Iron Hand, the holder's sites are stored in the Empire's place, Cradlemost first, "Buried Giant stays on the map with Iron Hand". The next game restores them as the Empire's sites, and Iron Hand's SETUP half puts the holder's warbands on them (`setup/legacies/IronHandSetupSuite`; [Legacy Chronicle powers rulings](ambiguities.md#legacy-chronicle-powers-rulings), items 44 and 51).
 
 ## Card and rulebook differences
 

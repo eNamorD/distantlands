@@ -11,18 +11,24 @@ These are not claimed errors in the rulebook. They are places where an implement
    combined rulebook prose: favor is 1 + matches; secrets equal matches (CR
    pp. 18, 24).
 4. **Banner ribbons and non-default faces.** CR p. 32 explains ribbon semantics, but machine execution needs exact component-side icon sequences and initial values.
-5. **Component behavior coverage.** Printed identities and the runtime catalog are complete, but banner ribbons still require typed executable handlers.
+   Resolved: both faces of both banners are built, and each ribbon runs its printed icons (`BannerRules.peoplesFavorRibbon`, `BannerRules.darkestSecretRibbon`, `ChallengeRibbon`; `ChallengeProcedureSuite`, `SecretTestamentSuite`, `FavoredSonSuite`).
+5. **Component behavior coverage.** Printed identities and the runtime catalog are complete, and banner ribbons run (item 4). `CardCatalogSuite` fails on a printed power with no registered handler.
 
 ## Formalization decisions
 
 1. **Action boundary.** Several automatic checks happen "after any action" (bandit refill, Oathkeeper transfer), while powers can introduce actions and nested effects. Define a transaction boundary and when state-based checks reach a fixed point (CR pp. 15-16, 42).
+   Resolved for the digital game: the boundary runs when the walker's queue empties, only after an action, so a queued chain gets one boundary after its last action; a nested part of an action has none ([walker game loop design](../superpowers/specs/2026-10/2026-10-09-walker-game-loop-design.md), rulings 4, 5 and 15; `OathDriver.boundary`, `OathDriverSuite`).
 2. **Simultaneous effects.** Turn player chooses order during a turn; current Chancellor chooses during Chronicle. Define who chooses outside both contexts and whether ordering choices are logged (CR p. 42).
+   Resolved: order is chosen only where it changes the outcome; elsewhere a window's powers run in a fixed order (`ContributingPower.sortKey`). Where it matters, the player chooses or a ruling fixes the order: Setup's pawn window (`OrderedWindow`), the Doors ([Catalog batch 13 rulings](#catalog-batch-13-rulings), items 11 to 13), Start of Throne ([Last Chronicle powers rulings](#last-chronicle-powers-rulings), item 6) (owner, 2026-11-16).
 3. **Consent timeout/forgetting.** "Enemies cannot" effects fail if not enforced at the moment. A digital implementation needs an explicit prompt/auto-consent policy so silence is deterministic (CR p. 43).
    Resolved for the digital game: the engine always enforces, and a blocked player asks the ruler explicitly; a ruler may set a standing per-player answer ([consent design](../superpowers/specs/2026-10/2026-10-08-consent-system-design.md), rulings 3 and 10).
    An official ruling on the Hall of Ministers makes enforcement all-or-nothing: once waived, it lets through every discard that happens at the same time. The engine treats one operation batch as that moment (consent design, ruling 3).
 4. **Private information.** The rules permit owners to view/share their private data. Multiplayer UI needs visibility and reveal/audit policies for facedown advisers, relics, drawn cards, and secret selections (CR p. 42).
+   Resolved: New Foundations drops the base game's "allow any other player to peek"; negotiators may show each other hidden information they can peek at, and only then (NF, Negotiate). The deal terms support it; an owner always sees their own private cards (owner, 2026-11-16).
 5. **Unlimited dice vs limited pieces.** Dice are unlimited; other components are limited and extra placement is ignored. Decide whether digital inventory should preserve physical limits exactly (CR p. 42).
+   Resolved: favor and secrets have no physical limit; a suit bank's contents still bound what it gives. Every other piece is exact: 14 warbands per Exile lineage, 24 bandit, 24 purple, and every card, relic, pawn, banner and marker. A Chronicle step that places one warband per site adds what the bank lacks ([Chronicle rulings](#chronicle-rulings), items 20 and 22) (owner, 2026-11-16).
 6. **Random winner/coin flips.** No-Empire exhaustion can choose randomly, and unclear Tribunal promise breach uses a coin flip. Specify RNG seed and event log behavior (CR pp. 19, 30).
+   Resolved: no per-game seed. Every roll, shuffle and random pick is recorded in the journal, and replay reads it back without rolling. A seed would tie replay to the generator and to the order of draws, and a leaked seed would reveal every later draw. The coin flip does not arise, since the engine enforces no promise (catalog batch 12 design, ruling 12) (owner, 2026-11-16).
 7. **Ties by role/context (resolved only for fixed first-game Supremacy).**
    Supremacy's ordinary qualification is strict: rule more sites than every
    other player, so an initially unheld title is not assigned across a highest

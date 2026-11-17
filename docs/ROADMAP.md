@@ -229,20 +229,18 @@ Settings players can change during a game.
 
 ### Phase - Gameplay completeness gate
 
-Audit every rulebook procedure and every runtime component handler against the
-traceability matrix; close remaining hidden-information, simultaneous-ordering,
-randomness, consent, and nested-action gaps; then run complete replay,
+Close the gaps the [traceability matrix](rules/implementation-traceability.md#remaining-source-cited-work)
+lists under "Remaining source-cited work", then run complete replay,
 persistence, server, Scala.js, packaged-network, and browser acceptance gates.
 
-- [ ] **Refresh the traceability matrix.** Its dependency column was written
-  before most cards landed: Search still lists component powers as
-  deferred, Campaign says Scepter Bearer waits for legacy powers, Muster and
-  Trade omit Economy modifiers "until implemented", Challenge keeps
-  component powers as typed blockers, and the power framework row says most
-  component handlers remain. Every printed card power now runs
-  ([last Chronicle powers](superpowers/specs/2026-11/2026-11-16-last-chronicle-powers-design.md)).
-  Re-read each row against the code and its suites, and keep only the gaps
-  that remain, so the gate's audit starts from a current matrix.
+- [ ] **Imperial players are enemies.** `Imperials.enemies` treats two
+  Imperial players as allies, but the glossary's "Enemy" is every other
+  player and the bandits. Tracker, School of Vines and Gatekeeper read it, so
+  each skips an Imperial enemy; catalog batch 10 design made the same misreading.
+- [ ] **Audit simultaneous ordering.** Order is chosen only where it changes
+  the outcome (F2). Find every window where two powers can resolve at once
+  and their order changes the result, and check that the player chooses or a
+  ruling fixes it.
 
 ## Deferred items
 

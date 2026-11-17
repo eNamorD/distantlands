@@ -23,8 +23,8 @@ import distantlands.model.OathViolation._
   * it runs, in order:
   *
   *  1. the action boundary, when an action has finished since the last one
-  *     (`boundaryDue`, ruling 5): the ignored-rule diagnostics, the bandit
-  *     refill and the Oathkeeper check. A title walk the check starts hands
+  *     (`boundaryDue`, ruling 5): the bandit refill and the Oathkeeper
+  *     check. A title walk the check starts hands
   *     back here when it ends.
   *  2. the turn's start, after a Finish Rest or Setup walk: the round's end
   *     when the last player has rested, Arbiter's step first when its

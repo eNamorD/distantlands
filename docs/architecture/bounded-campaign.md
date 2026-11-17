@@ -245,17 +245,15 @@ of its own.
 
 ## Scope
 
-Campaign has no first-game gates: it does not check roles, Foundation faces or
-legacies, and the audit of the rules such gates would stand for is deferred.
-There is no cancel after the start. An unsupported handler does not block. A
-plan window finishes by itself when no plan is left.
+Campaign has no first-game gate. Roles change it through the Imperial rules
+(Imperial Infighting and Imperial Tactics), and Foundation faces and legacies
+through their own powers.
+There is no cancel after the start. An unregistered handler is ignored, and
+every printed plan has one. A plan window finishes by itself when no plan is
+left.
 
 ## Deferred
 
-- The first-game rule audit (roles, Foundation faces, legacies).
-- Further optional attacker, defender and deterministic bandit plan families,
-  non-deterministic loss choices, and the additional Raid, victory, defeat and
-  `At End` handlers. The timing windows exist and no behavior is inferred for them.
 - A battle summary in the Game Log, tracked as ROADMAP "Phase - Campaign battle
   summary". The durable `lastCampaignResult` stays, for the powers that read
   the last result.

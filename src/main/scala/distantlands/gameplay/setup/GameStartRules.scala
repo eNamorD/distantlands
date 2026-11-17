@@ -15,8 +15,8 @@ import distantlands.model.OathViolation._
  * Validation here is only what Setup itself needs: known and unique ids
  * across every Chronicle field (`ChronicleAccounting`), how a later game
  * starts, with an Empire, with none or as a first or exile-only game
- * (`EmpireSetupRules`), the foundation faces it starts with
- * (`StartingFoundations`) and enough cards to deal. A first game's
+ * (`EmpireSetupRules`) and enough cards to deal. The foundation faces it
+ * starts with (`StartingFoundations`) are read, not validated. A first game's
  * Homelands each store one edifice of their suit (Empire ruling R26), or
  * the Chronicle carries history and starts an exile-only game.
  * The old plan's suit-count and Vision-packet audit is the generator's own
@@ -68,7 +68,7 @@ object GameStartRules:
             RelicState(id, Orientation.FaceDown, Tokens.empty) },
           stored.items.collectFirst { case id: EdificeId => id })))
       game = OathGame(
-        // The faces `buildPlan` read from the Chronicle and did not refuse.
+        // The faces `buildPlan` read from the Chronicle.
         CampaignState(atlas, plan.foundations, lineages, chronicle.reliquary,
           chronicle.dispossessed, Map.empty, plan.oathkeeperGoal,
           chronicle.era,

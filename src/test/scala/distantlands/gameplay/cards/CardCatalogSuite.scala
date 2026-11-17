@@ -2,6 +2,7 @@ package distantlands.gameplay.cards
 
 import distantlands.catalog.{AdviserOnly, ExecutableCatalog, Locked,
   ModifierMark, PrintedPower, PrintsPowers, SiteOnly}
+import distantlands.gameplay.operations.OperationRestrictions
 import distantlands.gameplay.powers.{PhasePowerCatalog, SelectedModifier,
   WalkerPowerCatalog}
 import distantlands.gameplay.powers.campaign.BattlePlan
@@ -170,6 +171,19 @@ class CardCatalogSuite extends munit.FunSuite:
     def ofPrinted(id: PowerId): Boolean = printed(id) ||
       printed.exists(power => id.value.startsWith(power.value + "."))
     assertEquals(registered.filterNot(ofPrinted).distinct, Vector.empty)
+
+  test("every printed power is registered, except the Homelands' and Plains'"):
+    val registered = (WalkerPowerCatalog.default(catalog).powers.map(_.id) ++
+      PhasePowerCatalog.default.powers.map(_.id) ++
+      OperationRestrictions.printedRules.map(_.id)).toSet
+    val printed = powers.map(_.id) ++ catalog.sites.flatMap(_.handlers)
+    // Card play's Homeland rule runs a Homeland's handler; a Plains prints
+    // no power.
+    def runByAGameRule(id: PowerId): Boolean =
+      id.value.startsWith("site.") &&
+        (id.value.contains(".homeland-") || id.value.endsWith(".plains"))
+    assertEquals(printed.filterNot(registered).filterNot(runByAGameRule),
+      Vector.empty)
 
   test("card powers are registered whichever cards a catalog lists"):
     def cardPowers(listed: ExecutableCatalog): Set[PowerId] =
