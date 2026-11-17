@@ -23,7 +23,7 @@ object ChronicleThroneProcedure:
   def noteKeys: Vector[NoteKey] = OfferCitizenship.noteKeys ++
     ShapeEmpire.noteKeys ++
     BuildEdifice.noteKeys ++ LineageScoring.noteKeys ++ SwearOath.noteKeys ++
-    LegacyChroniclePowers.throneNoteKeys ++
+    LegacyChroniclePowers.throneNoteKeys ++ RelicKeep.noteKeys ++
     IronHand.noteKeys(TriggeredProcedureRef.ChronicleThrone)
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(

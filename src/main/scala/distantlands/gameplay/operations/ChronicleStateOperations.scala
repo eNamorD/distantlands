@@ -213,6 +213,9 @@ private[operations] object ChronicleStateOperations:
         s"${player.value} holds no ${relic.value} to keep"))
       case (Some(state), _) if !state.tokens.isEmpty => Left(
         InvalidDescription(s"${relic.value} still holds tokens"))
+      case _ if ready.game.current.warbandsOnCards.get(relic)
+          .exists(_.values.exists(_ > 0)) => Left(
+        InvalidDescription(s"${relic.value} still holds warbands"))
       case (Some(_), Some(id)) => Right(ready.updateCurrent(current =>
         current.copy(players = current.players.map(state =>
           if state.player == player then

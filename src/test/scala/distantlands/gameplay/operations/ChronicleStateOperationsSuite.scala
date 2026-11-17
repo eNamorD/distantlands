@@ -4,6 +4,7 @@ import distantlands.gameplay.powers.travel.PathfinderCard
 import distantlands.gameplay.setup.legacies.WealthyCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
+import distantlands.gameplay.powers.campaign.ObsidianCageCard
 import distantlands.gameplay.powers.economy.CupOfPlentyCard
 import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.gameplay.setup.FirstGameSetupFixture
@@ -253,6 +254,13 @@ class ChronicleStateOperationsSuite extends munit.FunSuite:
     rejected(run(Table.start.relic(p1, CupOfPlentyCard)
       .tokens(CupOfPlentyCard, secrets = 1).ready,
       StartingRelicKept(p1, CupOfPlentyCard.id)))
+
+  test("a relic with warbands on it is not kept"):
+    val ready = Table.start.relic(p1, ObsidianCageCard)
+      .warbandsOnCard(ObsidianCageCard, p2, 1).ready
+    val refusal = rejected(run(ready,
+      StartingRelicKept(p1, ObsidianCageCard.id)))
+    assert(refusal.toString.contains("still holds warbands"), refusal)
 
   test("a named winner replaces the game's result"):
     val ended = Table.start.imperial(p1, p2).update(_.updateCurrent(_.copy(

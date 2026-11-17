@@ -95,11 +95,13 @@ final case class WinnerNamed(winner: PlayerId, kind: VictoryKind)
 final case class RelicsHidden(relics: Vector[RelicId])
     extends ChronicleOperation, LeafOperation
 
-/** Keeps a held relic for the next game (Heirloom; Legacy Chronicle powers
-  * design, ruling 13; R20): it leaves the player's relics for their
-  * lineage's `startingRelics`, outside play and the card index (Legacies
-  * R2), and game start hands it back facedown. The Grand Scepter, a relic
-  * the player does not hold and a relic with tokens are refused. */
+/** Keeps a held relic for the next game (Heirloom, Legacy Chronicle powers
+  * design, ruling 13, R20; Hiding Place, Last Chronicle powers design,
+  * ruling 4): it leaves the player's relics for their lineage's
+  * `startingRelics`, outside play and the card index (Legacies R2), and
+  * game start hands it back facedown. The Grand Scepter, a relic the
+  * player does not hold and a relic with tokens or warbands on it are
+  * refused. */
 final case class StartingRelicKept(player: PlayerId, relic: RelicId)
     extends ChronicleOperation, LeafOperation
 

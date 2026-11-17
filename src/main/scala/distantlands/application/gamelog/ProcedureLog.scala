@@ -2,11 +2,11 @@ package distantlands.application.gamelog
 
 import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   ChronicleSunProcedure, ResolveLegacies, BuildEdifice, IntroduceNewcomers, LineageScoring,
-  OfferCitizenship, ProtectAndDispossess, ShapeEmpire, ShapeFoundation,
-  SwearOath, WelcomeStranger,
+  OfferCitizenship, ProtectAndDispossess, RelicKeep, ShapeEmpire,
+  ShapeFoundation, SwearOath, WelcomeStranger,
   ChronicleStarsProcedure}
 import distantlands.gameplay.chronicle.legacies.{Chronicler, Gatekeeper,
-  Heirloom, IronHand, OathsOfLoyalty, Reformer, Revolutionary, Rival,
+  IronHand, OathsOfLoyalty, Reformer, Revolutionary, Rival,
   RoyalLine, TheBrightBeacon, TheEar}
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
@@ -471,8 +471,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       Revolutionary.discardedWith -> LogKind.Decision,
       Reformer.moved -> LogKind.Decision,
       Reformer.swapped -> LogKind.Decision,
-      Heirloom.keptPublic -> LogKind.Decision,
-      Heirloom.keptPrivate -> LogKind.Decision,
+      RelicKeep.keptPublic -> LogKind.Decision,
+      RelicKeep.keptPrivate -> LogKind.Decision,
       TheEar.placed -> LogKind.Decision)),
     narratedPrefixes = Vector("chronicle.throne.offer",
       "chronicle.throne.legacy-cap.",
