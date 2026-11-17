@@ -52,7 +52,7 @@ class ChroniclePageSuite extends munit.FunSuite:
     row.querySelector(s".$className").asInstanceOf[dom.html.Button].click()
 
   test("an empty browser keeps the Loaded Chronicle box with None, offers " +
-      "New, and withholds Load, Edit and Export with reasons"):
+      "New, leaves out Load, and withholds Edit and Export with reasons"):
     TestBrowser.useSynchronously(): browser =>
       renderChroniclePage(browser)
       val box = browser.byClass("chronicle-loaded").head
@@ -63,8 +63,9 @@ class ChroniclePageSuite extends munit.FunSuite:
       assert(!shows(browser, "chronicle-scoresheet"))
       assert(shows(browser, "new-chronicle"))
       assert(shows(browser, "import-chronicle"))
-      Vector("open-load-chronicle" -> "No Chronicles saved in this browser",
-        "edit-chronicle" -> "Coming in a later release",
+      // With nothing saved there is nothing to load, so no Load button.
+      assert(!shows(browser, "open-load-chronicle"))
+      Vector("edit-chronicle" -> "Coming in a later release",
         "export-chronicle" -> "Load a Chronicle to export it").foreach {
         case (name, reason) =>
           val control = browser.byClass(name).head
@@ -254,8 +255,11 @@ class ChroniclePageSuite extends munit.FunSuite:
       browser.click("confirm-delete-chronicle")
       assertEquals(textOf(browser, "chronicle-saved-none"),
         "No Chronicles saved in this browser.")
-      assertEquals(browser.byClass("open-load-chronicle").head
-        .getAttribute("aria-disabled"), "true")
+      assert(!shows(browser, "open-load-chronicle"))
+      // Its opener gone, closing the dialog focuses New Chronicle.
+      browser.click("chronicle-dialog-close")
+      assertEquals(dom.document.activeElement,
+        browser.byClass("new-chronicle").head)
 
   test("an unreadable entry is listed as Unreadable with only Delete"):
     TestBrowser.useSynchronously(): browser =>

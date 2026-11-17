@@ -50,14 +50,19 @@ private[frontend] object ChroniclePage:
     val fresh = button("New Chronicle", "new-chronicle")
     fresh.onclick = _ => choose(HostChronicle.New)
     page.appendChild(fresh)
-    val load = button("Load Chronicle", "open-load-chronicle")
-    def openLoad(): Unit = ChronicleDialog.open(mount, load,
+    // With nothing saved there is nothing to load, so the page leaves Load
+    // out. A Delete that empties the list redraws with the dialog still
+    // open, and closing it then focuses New Chronicle in Load's place.
+    val load = Option.when(shelf.rows.nonEmpty)(
+      button("Load Chronicle", "open-load-chronicle"))
+    def openLoad(): Unit = ChronicleDialog.open(mount, load.getOrElse(fresh),
       "load-chronicle-dialog", "Load Chronicle",
       savedList(shelf.rows, shelf, () => redraw(),
         () => redraw(loadOpen = true)))
-    if shelf.rows.isEmpty then HoverTip.withhold(load, NothingSaved)
-    else load.onclick = _ => openLoad()
-    page.appendChild(load)
+    load.foreach { control =>
+      control.onclick = _ => openLoad()
+      page.appendChild(control)
+    }
     val edit = button("Edit Chronicle", "edit-chronicle")
     HoverTip.withhold(edit, "Coming in a later release")
     page.appendChild(edit)
