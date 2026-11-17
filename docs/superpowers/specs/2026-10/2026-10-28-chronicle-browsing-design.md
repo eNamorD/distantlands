@@ -119,8 +119,10 @@ button on a line of its own.
 3. **Load Chronicle.** A button that opens a dialog listing the entries (name,
    game, era, saved date), each with Load and Delete. Load closes the dialog.
    Delete asks to confirm and keeps the dialog open; deleting the loaded
-   entry clears the loaded Chronicle. With no entries the button is disabled,
-   hover reason "No Chronicles saved in this browser".
+   entry clears the loaded Chronicle. With no entries the page leaves the
+   button out; a Delete that empties the list leaves the dialog open, saying
+   "No Chronicles saved in this browser.", and closing it focuses New
+   Chronicle.
 4. **Edit Chronicle**, disabled, hover reason "Coming in a later release".
 5. **Import Chronicle.** A button that opens a dialog: "Upload a Chronicle JSON
    file", a divider, then "Or paste a TTS string", which needs a name. The
