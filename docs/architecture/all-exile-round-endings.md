@@ -67,7 +67,7 @@ Rest and the round ending accept only all-Exile lineages
 (`BeginRestProcedure.validateSupportedState`, `StateBasedEvaluation.supported`).
 The Rest powers registered in `PhasePowerCatalog` include Vow of Poverty
 (`powers/economy`), Silver Tongue, Insomnia and Naysayers (`powers/rest`),
-and Vow of Obedience (`powers/cardplay`). An applicable unimplemented Rest
+and Vow of Obedience (`powers/cardplay`). An applicable unregistered Rest
 handler is ignored, not blocking, and Begin Rest records nothing about it. Mechanics are never inferred from
 rules text or handler-name fragments. Banner faces and Foundations are rule
 sources in `RuleSourceIndex` like any card. The Foundation

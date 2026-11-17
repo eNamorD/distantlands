@@ -73,8 +73,5 @@ List a new card in `NewFoundations`. `CardCatalogSuite`
 component counts, so a forgotten card fails a test. It also checks the printed
 ID ranges, globally unique card identities, power-ID and site-handler
 uniqueness, non-blank text, the symbol vocabulary, non-negative printed numbers,
-the Forge requirements of three-slot sites, that every registered card power
-is printed in the catalog, and that a card sits in a `catalog/holding`
-package exactly while `PowerImplementationStatus` reports none of its powers
-implemented. No card does today, so the package does not exist; the rule
-keeps an unimplemented card apart if one is ever added.
+the Forge requirements of three-slot sites, and that every registered card
+power is printed in the catalog.

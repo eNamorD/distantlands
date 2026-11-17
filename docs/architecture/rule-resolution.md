@@ -135,26 +135,16 @@ preference check and the Game Log. Consent commands go to the application's
 `ConsentDesk`, not to the rules. Their events evolve through
 `gameplay/consent/ConsentEvolution.scala`.
 
-## Unimplemented powers
-
-A power the code does not implement is ignored, not recorded. It never fails
-or blocks a command.
-
-`PowerImplementationStatus` counts a power as implemented when
-`WalkerPowerCatalog`, `PhasePowerCatalog` or
-`OperationRestrictions.printedRules` covers it, or when it is a site
-handler `gameplay/cards/HomelandsAndPlains.scala` lists: a Homeland's, which
-card play's Homeland rule runs, or a Plains', which prints no power. No
-catalog carries an "implemented" flag: being wired in is what implemented
-means. The UI's
-unimplemented-card marker, `ImplementedCardCatalog` and the first-game
-generator read the same status, and `UnimplementedPowersSuite` pins the
-exact unimplemented set in `src/test/resources/powers/unimplemented.txt`.
+## Unregistered powers
 
 A power no catalog covers contributes nothing: the walker gathers only
-registered powers, so an unimplemented automatic power has no effect and an
-unimplemented player-selected power is simply not offered. Nothing records
-the omission; the reviewed stub registries that once produced an
+registered powers, so an unregistered automatic power has no effect and an
+unregistered player-selected power is not offered. It never fails or blocks
+a command, and nothing records it. Every printed power is registered in
+`WalkerPowerCatalog` or `PhasePowerCatalog`, enforced by
+`OperationRestrictions.printedRules`, or is a site handler that a game rule
+runs (a Homeland's, which card play's Homeland rule runs) or that prints no
+power (a Plains'). The reviewed stub registries that once produced an
 `IgnoredRulesRecorded` diagnostic were retired on 2026-10-23
 ([decision](../superpowers/specs/2026-10/2026-10-23-reviewed-catalog-retirement-decision.md)).
 
@@ -173,5 +163,4 @@ operations and never gathers powers or folds windows again. Each
    `PrintedRule`, and add it to its catalog.
 4. Read access through `PowerAccess`. Express effects as core operations;
    never edit owned state directly.
-5. Drop its line from `src/test/resources/powers/unimplemented.txt`.
-6. Test ordering, inactive and facedown sources, the look-ahead, and replay.
+5. Test ordering, inactive and facedown sources, the look-ahead, and replay.
