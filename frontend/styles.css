@@ -348,6 +348,7 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .game-table .table-chronicle { margin: 0 0 12px; display: grid; gap: 6px; }
 .game-table .table-chronicle p { margin: 0; }
 .table-chronicle-note { color: var(--brass); }
+.table-chronicle-way-on { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 .chronicle-save-prompt, .chronicle-dialog { position: fixed; inset: 0;
   z-index: 60; display: grid; place-items: center; padding: 16px;
   background: #000a; }
