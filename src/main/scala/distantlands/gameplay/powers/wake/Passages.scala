@@ -9,7 +9,7 @@ import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
 import distantlands.gameplay.powers.action.PawnMoves
 import distantlands.model._
 
-object HiddenPassagesCard extends Edifice(EdificeId("E25"), Suit.Hearth):
+object HiddenPassagesCard extends Edifice(EdificeId("E25"), Suit.Discord):
   object intact extends EdificeFace("Hidden Passages") with Locked:
     val power = PrintedPower(PowerId("edifice.e25.intact"),
       persistent = false, cost = Cost.free,

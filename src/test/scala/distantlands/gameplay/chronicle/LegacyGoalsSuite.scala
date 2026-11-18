@@ -12,7 +12,7 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
 import distantlands.gameplay.operations.TheGrandScepterCard
 import distantlands.gameplay.powers.economy.{CupOfPlentyCard, OldSongsCard,
   RowdyPubCard, VillageIdiotCard}
-import distantlands.gameplay.powers.setup.ProvingGroundsCard
+import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.gameplay.GrandMaskCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -60,7 +60,7 @@ class LegacyGoalsSuite extends munit.FunSuite:
       "player rules, and their own advisers, facedown too (R23)"):
     val table = won.warbandsAt(AncientCitySite, p2, 1)
       .denizen(VillageIdiotCard, AncientCitySite)
-      .edifice(ProvingGroundsCard, EdificeSide.Ruined, AncientCitySite)
+      .edifice(GreatMarketCard, EdificeSide.Ruined, AncientCitySite)
       .denizen(RowdyPubCard, FairIsleSite)
       .adviser(p3, OldSongsCard, facedown = true)
     def score(player: PlayerId) = LegacyGoals.score(table.ready, catalog,

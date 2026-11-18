@@ -72,7 +72,7 @@ class AtlasPlacementSuite extends munit.FunSuite:
   test("a placed site gives each suit's bank 1 favor from the shared bank " +
       "per card in its denizen slots, its edifice included, and none for " +
       "a relic"):
-    // Deep Woods stores the Great Market (Discord), Wizard's Conclave and
+    // Deep Woods stores the Great Market (Hearth), Wizard's Conclave and
     // Map Library (both Arcane) and Sticky Fire.
     val ready = threeSitesAndAnAtlas.storedInAtlas(DeepWoodsSite,
       GreatMarketCard, WizardsConclaveCard, MapLibraryCard, StickyFireCard)
@@ -82,7 +82,7 @@ class AtlasPlacementSuite extends munit.FunSuite:
       PositionedLocation(Location.SharedBank),
       PositionedLocation(Location.FavorBank(suit)))
     assertEquals(AtlasPlacement.suitFavor(catalog, planned), Vector(
-      fromSharedBank(1, Suit.Discord), fromSharedBank(2, Suit.Arcane)))
+      fromSharedBank(2, Suit.Arcane), fromSharedBank(1, Suit.Hearth)))
     val bare = accepted(AtlasPlacement.at(catalog, threeSitesAndAnAtlas.ready,
       AtlasEnd.Recent))
     assertEquals(AtlasPlacement.suitFavor(catalog, bare), Vector.empty)

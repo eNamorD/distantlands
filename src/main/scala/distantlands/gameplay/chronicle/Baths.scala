@@ -4,7 +4,7 @@ import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
 import distantlands.gameplay.powerresolver.{Contribution, ContributingPower}
 import distantlands.model._
 
-object StoneBathsCard extends Edifice(EdificeId("E04"), Suit.Discord):
+object StoneBathsCard extends Edifice(EdificeId("E04"), Suit.Hearth):
   object intact extends EdificeFace("Stone Baths") with Locked:
     val power = PrintedPower(PowerId("edifice.e04.intact"),
       persistent = true, cost = Cost.free,

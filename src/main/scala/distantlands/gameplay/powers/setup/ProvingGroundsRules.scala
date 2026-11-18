@@ -8,7 +8,7 @@ import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, Off
 import distantlands.gameplay.powers.PlayerFacts
 import distantlands.model._
 
-object ProvingGroundsCard extends Edifice(EdificeId("E22"), Suit.Hearth):
+object ProvingGroundsCard extends Edifice(EdificeId("E22"), Suit.Discord):
   object intact extends EdificeFace("Proving Grounds") with Locked:
     val power = PrintedPower(PowerId("edifice.e22.intact"),
       persistent = false, cost = Cost.free,

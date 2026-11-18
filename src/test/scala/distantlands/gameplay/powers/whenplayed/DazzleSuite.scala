@@ -1,6 +1,6 @@
 package distantlands.gameplay.powers.whenplayed
 
-import distantlands.gameplay.powers.campaign.SpiralCastleCard
+import distantlands.gameplay.powers.travel.GrandCanalCard
 import distantlands.gameplay.operations.{AncientBloodlineCard,
   HallOfMinistersCard}
 import distantlands.gameplay.powers.NoteText
@@ -8,7 +8,7 @@ import distantlands.gameplay.powers.action.HomesteadersCard
 import distantlands.gameplay.powers.campaign.WrestlersCard
 import distantlands.gameplay.powers.search.{ErrandBoyCard, LandWardenCard}
 import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
-import distantlands.gameplay.powers.setup.ProvingGroundsCard
+import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.model._
 import distantlands.testkit.{Look, Outcomes}
 import distantlands.testkit.Table.{p1, p2}
@@ -94,20 +94,20 @@ class DazzleSuite extends munit.FunSuite:
 
   test("Dazzle discards a ruined Hearth edifice, not an intact one or " +
       "another suit's"):
-    val emptyGrounds = ProvingGroundsCard.id
-    val spiralCastle = SpiralCastleCard.id
+    val greatMarket = GreatMarketCard.id
+    val grandCanal = GrandCanalCard.id
     val ruinedSchool = SchoolOfVinesCard.id
     val ready = holding
-      .edifice(ProvingGroundsCard, EdificeSide.Ruined, at = homeSite)
-      .edifice(SpiralCastleCard, EdificeSide.Intact, at = homeSite)
+      .edifice(GreatMarketCard, EdificeSide.Ruined, at = homeSite)
+      .edifice(GrandCanalCard, EdificeSide.Intact, at = homeSite)
       .edifice(SchoolOfVinesCard, EdificeSide.Ruined, at = homeSite).ready
     val after = Outcomes.finished(play(ready, power, dazzle)).treeless
     val remaining = Look(after).cardsAt(homeSite)
-    assert(!remaining.contains(emptyGrounds),
+    assert(!remaining.contains(greatMarket),
       "a ruined Hearth edifice is discarded")
-    assert(remaining.contains(spiralCastle), "an intact edifice is locked")
+    assert(remaining.contains(grandCanal), "an intact edifice is locked")
     assert(remaining.contains(ruinedSchool), "a Beast edifice is not discarded")
-    assertEquals(after.game.current.setAsideEdifices, Vector(emptyGrounds))
+    assertEquals(after.game.current.setAsideEdifices, Vector(greatMarket))
 
   test("Dazzle leaves other suits and other regions alone"):
     val errandBoy = ErrandBoyCard.id

@@ -6,7 +6,7 @@ import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
   PowerCtx, Transform}
 import distantlands.model._
 
-object GrandCanalCard extends Edifice(EdificeId("E03"), Suit.Discord):
+object GrandCanalCard extends Edifice(EdificeId("E03"), Suit.Hearth):
   object intact extends EdificeFace("Grand Canal") with Locked:
     val power = PrintedPower(PowerId("edifice.e03.intact"),
       persistent = true, cost = Cost.free,

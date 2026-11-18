@@ -3,6 +3,7 @@ package distantlands.testkit
 import distantlands.application.{CampaignDicePort, EventStreamRepository,
   GameCommand, GameApplicationService}
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.chronicle.BuildEdifice
 import distantlands.gameplay.phases.PhaseMenu
 import distantlands.gameplay.phases.rest.RoundEndRandomPort
 import distantlands.gameplay.powerresolver.PhasePowers
@@ -110,7 +111,7 @@ final case class Situation(state: OathState, events: Vector[OathEvent],
 
 object Situation:
   /** The answer a park gets when the test names none. `ChooseOne`: the first
-    * available option. `Partition`: the first option kept in the first section that
+    * available option, except Build Edifice's, which builds nothing. `Partition`: the first option kept in the first section that
     * demands one, every other option in another section -- the "keep one,
     * discard the rest" shape of Setup's adviser choice. `ChooseMany`: the
     * options it opens selected, else the first `min` available options. `ChooseAmount`: `min`. `Distribute`:
@@ -119,6 +120,10 @@ object Situation:
     * is not answered by default and fails the walk naming the decision.
     */
   val defaultAnswer: Answers =
+    // Build Edifice builds nothing: the first option would bury a card.
+    case Park(Decide(BuildEdifice.cardDecisionId, _, _, _, _, _, _, _),
+        _, _, _) =>
+      DecisionAnswer.ChooseOneAnswer(BuildEdifice.skip)
     case Park(Decide(_, _, one: DecisionQuery.ChooseOne, _, _, _, _, _),
         _, _, _) if one.options.exists(_.available) =>
       DecisionAnswer.ChooseOneAnswer(one.options.filter(_.available).head.ref)
