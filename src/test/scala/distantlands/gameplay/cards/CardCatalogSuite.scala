@@ -106,10 +106,18 @@ class CardCatalogSuite extends munit.FunSuite:
     // Spiteful Mirror is picked in the Muster and Trade modifier decisions,
     // but its card prints no modifier icon.
     val unmarked = Set(PowerId("relic.spiteful-mirror"))
+    // The two Vows print the Muster icon but apply on their own, so the
+    // engine writes them as automatic rules, not `SelectedModifier`s.
+    val automatic = Map(
+      PowerId("denizen.vow-of-beastkin") ->
+        ModifierMark.Action(MajorActionType.Muster),
+      PowerId("denizen.vow-of-wandering.muster") ->
+        ModifierMark.Action(MajorActionType.Muster))
     val printed = powers.collect { case power if !power.persistent =>
       power.modifier.map(power.id -> _) }.flatten.toMap
-    assertEquals(printed, engine -- unmarked)
+    assertEquals(printed, (engine -- unmarked) ++ automatic)
     assert(unmarked.forall(engine.contains), unmarked)
+    assert(automatic.keys.forall(id => !engine.contains(id)), automatic)
 
   // Persistent modifiers have no engine type to check against, so the
   // owner's reading of the printed icons is pinned here.
