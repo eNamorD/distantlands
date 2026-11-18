@@ -256,6 +256,36 @@ class LineageScoringSuite extends munit.FunSuite:
       "p1 gave up 2 points to give p3 1 point.",
       "p1 keeps 2 points"))
 
+  /** The Throne held by p1 at a table of two: p3 is not seated, and the
+    * tasks are shared between p1 and p2. */
+  private def twoSeats: Table = ChronicleWalk.throneHeldByChancellorP1.update(
+    state =>
+      val p3Lineage = state.game.current.player(p3).get.lineage
+      state.updateCurrent(current => current.copy(
+          players = current.players.filter(_.player != p3),
+          chronicleTasks = current.chronicleTasks.map {
+            case (task, `p3`) => task -> p2
+            case other => other }))
+        .updateCampaign(campaign => campaign.copy(lineages =
+          campaign.lineages.filter(_._1 != p3Lineage)))
+        .copy(playerColors = state.playerColors.filter(_._1 != p3)))
+
+  private def givingP2(at: OathTransition, amount: Int)(
+      using munit.Location): OathTransition =
+    val next = accepted(rules.resolveWalker(at.state, p1,
+      LineageScoring.giftsDecisionId, DecisionAnswer.DistributeAnswer(Vector(
+        DistributeAmount(DecisionOptionRef.Player(p2), amount)))))
+    OathTransition(next.state, at.events ++ next.events)
+
+  test("at a table of two the winner may give the one other player points " +
+      "or keep them all"):
+    val at = atGiftsOn(twoSeats.warbandsAt(AncientCitySite, p1, 1))
+    val kept = givingP2(at, 0)
+    assertEquals(scoreLines(kept.events), Vector("p1 scored 3 lineage points"))
+    val gifted = givingP2(at, 1)
+    assertEquals(scoreLines(gifted.events).take(2), Vector(
+      "p1 scored 3 lineage points", "p1 gave up 2 points to give p2 1 point."))
+
   test("a winner alone at the table is asked no gift question, and the " +
       "line names the total with no gift or keeps line"):
     // The engine starts a one-seat game (only the start pages ask for

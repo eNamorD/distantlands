@@ -30,7 +30,8 @@ private[frontend] object DistributePanelRenderer:
       panel.appendChild(rows)
       panel.appendChild(text("p", "distribute-remaining",
         s"Remaining: ${draft.state.remaining}"))
-      Option.when(query.minTotal < query.maxTotal)(query.minTotal).foreach(min =>
+      Option.when(query.minTotal > 0 && query.minTotal < query.maxTotal)(
+        query.minTotal).foreach(min =>
         panel.appendChild(text("p", "distribute-minimum",
           s"At least $min must be placed")))
       val confirm = button(query.confirmLabel, "distribute-confirm")
