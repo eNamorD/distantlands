@@ -213,6 +213,13 @@ Every printed card power now runs.
   amount of time; the Chronicle stores only a point target. An era that
   ends after M games should read "Era: Game N of M" on the Chronicle page,
   beside today's "Era: First to T".
+- [ ] **Oathkeeper cards at Swear an Oath.** Swear an Oath offers the four
+  goals as plain buttons with no description. Offer the Oathkeeper cards
+  instead, each drawn as a card with its goal and its successor condition,
+  so a player picks by reading what each goal asks. This needs the
+  Oathkeeper cards in the catalog and as a presentable option kind. The
+  same options are built by True Oath and The Red Seer, so they should
+  show the cards too.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the
   browser.
