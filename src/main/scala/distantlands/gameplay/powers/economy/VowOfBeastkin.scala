@@ -1,6 +1,7 @@
 package distantlands.gameplay.powers.economy
 
-import distantlands.catalog.{AdviserOnly, Denizen, Locked, PrintedPower}
+import distantlands.catalog.{AdviserOnly, Denizen, Locked, ModifierMark,
+  PrintedPower}
 import distantlands.gameplay.{EffectiveSuit, PowerAccess}
 import distantlands.gameplay.actions.economy.MusterSource
 import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
@@ -10,6 +11,7 @@ import distantlands.model._
 object VowOfBeastkinCard extends Denizen(DenizenId("196"), "Vow of Beastkin", Suit.Beast) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.vow-of-beastkin"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Muster)),
     text = "You **must** muster on a card matching any of your " +
       "advisers, but you gain one more warband.")
   val powers: Vector[PrintedPower] = Vector(power)
