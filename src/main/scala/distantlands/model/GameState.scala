@@ -53,15 +53,20 @@ final case class EraGame(entries: Vector[EraEntry]):
   require(entries.map(_.lineage).distinct.size == entries.size,
     "a game records each lineage once")
 
-/** The era scorepad. Resetting `games` at an era's end belongs to the
-  * Eras item. */
-final case class EraState(targetScore: Int, games: Vector[EraGame]):
+/** The era scorepad. `carriedScores` holds lineage totals that arrived
+  * without their games, as a TTS import carries them; a lineage's total is
+  * its latest game's entry, else its carried score. Resetting `games` and
+  * `carriedScores` at an era's end belongs to the Eras item. */
+final case class EraState(targetScore: Int, games: Vector[EraGame],
+    carriedScores: Map[LineageId, Int] = Map.empty):
   require(targetScore > 0, "era target score must be positive")
+  require(carriedScores.values.forall(_ >= 0),
+    "lineage scores must be non-negative")
 
   /** The lineage's latest total, or 0 before it has one. */
   def score(lineage: LineageId): Int =
     games.reverseIterator.flatMap(_.entries.find(_.lineage == lineage))
-      .nextOption().fold(0)(_.totalScore)
+      .nextOption().fold(carriedScores.getOrElse(lineage, 0))(_.totalScore)
 
 final case class CampaignState(
     atlas: AtlasState,

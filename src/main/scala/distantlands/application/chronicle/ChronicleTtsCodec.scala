@@ -11,16 +11,19 @@ final case class TtsExport(text: String, omitted: Vector[String])
 
 /** A Chronicle to and from the TTS export string (Chronicle TTS codec
   * design). Decoding takes the name from the caller and fills the rest of
-  * what TTS does not carry: Oathkeeper goal
-  * Supremacy unless a version 3 string sets it, era target 20 with no
-  * scores, no previous players, no Foundation alteration sources. Encoding
-  * writes version 3 and lists what it left out, always the name first. */
+  * what TTS does not carry: Oathkeeper goal Supremacy unless the string
+  * sets an Oath, era target 20 with no scorepad games (each lineage's score
+  * becomes a carried score), no previous players, no Foundation alteration
+  * sources. Encoding writes `TtsWire.version` and lists what it left out,
+  * always the name first. TTS leaves the colors of extra players (8 and
+  * up) to each client; none of ours has one, so a non-empty extra player
+  * is refused. */
 final class ChronicleTtsCodec(catalog: ExecutableCatalog):
   private val ids = TtsIds(catalog)
   private val colors: Vector[PlayerColor] =
     TtsWire.colors.map(key => PlayerColor.fromKey(key).get)
   private val defaultEra = EraState(20, Vector.empty)
-  // The version 3 goal digits; 0 is unset, 5-20 reserved, 21+ fan content.
+  // The Oath digits; 0 is unset, 5-20 reserved, 21+ fan content.
   private val goalDigits: Vector[(Int, OathkeeperGoal)] = Vector(
     1 -> OathkeeperGoal.Supremacy, 2 -> OathkeeperGoal.Devotion,
     3 -> OathkeeperGoal.ThePeople, 4 -> OathkeeperGoal.Protection)
@@ -31,14 +34,20 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
     TtsWire.decodeExport(text).flatMap((_, tts) => fromTts(tts, name))
 
   def encode(chronicle: Chronicle): Either[String, TtsExport] =
-    toTts(chronicle).flatMap(TtsWire.encodeExport(_, 3))
+    toTts(chronicle).flatMap(TtsWire.encodeExport)
       .map(TtsExport(_, omitted(chronicle)))
 
-  /** Versions differ only in the goal digit, which `tts` already holds. */
+  /** `tts` already holds what versions differ in: an older string reads
+    * as an unset Oath and lineage scores of 0. */
   private[chronicle] def fromTts(tts: TtsChronicle, name: String)
       : Either[String, Chronicle] =
-    val empty = TtsFoundations(0, None)
+    val empty = TtsFoundations(0, 0)
+    val (named, extra) = tts.players.splitAt(colors.size)
     for
+      _ <- extra.zipWithIndex.collectFirst {
+        case (Some(player), index) if !emptyExile(player) =>
+          s"TTS player ${colors.size + index + 1} has no color here"
+      }.toLeft(())
       _ <- Chronicle.nameProblem(name).toLeft(())
       atlasBox <- sites(tts.atlasBox.getOrElse(Vector.empty))
       world <- sites(tts.world.getOrElse(Vector.empty))
@@ -47,12 +56,17 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
       dispossessed <- denizens(tts.dispossessed.getOrElse(Vector.empty))
       reliquary <- relics(tts.reliquary.getOrElse(Vector.empty))
       foundations = tts.foundations.getOrElse(empty)
-      goal <- oathkeeperGoal(foundations.goal)
-      lineages <- sequence(colors.zip(tts.players).collect {
-        case (color, Some(player)) if !emptyExile(player) =>
-          lineage(color, player)
-      })
-    yield Chronicle(name, atlasBox, world, worldDeck, relicDeck, defaultEra, goal,
+      goal <- oathkeeperGoal(foundations.oath)
+      seated = colors.zip(named).collect {
+        case (color, Some(player)) if !emptyExile(player) => color -> player
+      }
+      lineages <- sequence(seated.map((color, player) =>
+        lineage(color, player)))
+      era = defaultEra.copy(carriedScores = seated.collect {
+        case (color, player) if player.lineageScore > 0 =>
+          lineageOf(color) -> player.lineageScore
+      }.toMap)
+    yield Chronicle(name, atlasBox, world, worldDeck, relicDeck, era, goal,
       dispossessed, reliquary, FoundationNumber.all.zipWithIndex.collect {
         case (number, bit) if (foundations.mask & (1 << bit)) != 0 =>
           number -> FoundationState(FoundationFace.Altered, Set.empty)
@@ -71,21 +85,21 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
       reliquary <- sequence(chronicle.reliquary.map(ids.ttsCard))
       players <- sequence(colors.map(color =>
         chronicle.lineages.find(_.id == lineageOf(color))
-          .fold(Right(TtsPlayer(0, Vector.empty, Vector.empty, Vector.empty)))(
-            ttsPlayer)))
+          .fold(Right(TtsPlayer.emptyExile))(ttsPlayer(_, chronicle.era))))
     yield TtsChronicle(Some(atlasBox), Some(world), Some(worldDeck),
       Some(relicDeck), Some(dispossessed), Some(reliquary),
       Some(TtsFoundations(FoundationNumber.all.zipWithIndex.collect {
         case (number, bit) if chronicle.foundations.get(number)
             .exists(_.face == FoundationFace.Altered) => 1 << bit
-      }.sum, goalDigits.find(_._2 == chronicle.oathkeeperGoal).map(_._1))),
+      }.sum, goalDigits.find(_._2 == chronicle.oathkeeperGoal).fold(0)(_._1))),
       players.map(Some(_)))
 
   private def omitted(chronicle: Chronicle): Vector[String] = Vector(
     Some("the name"),
     Option.when(chronicle.era.targetScore != defaultEra.targetScore)(
       "the era target"),
-    Option.when(chronicle.era.games.nonEmpty)("the era scorepad"),
+    // Each lineage's latest total travels; the games behind it do not.
+    Option.when(chronicle.era.games.nonEmpty)("the era scorepad's games"),
     Option.when(chronicle.lineages.exists(_.previousPlayer.nonEmpty))(
       "previous players"),
     Option.when(chronicle.foundations.values
@@ -94,7 +108,8 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
     // An empty Exile section reads back as no lineage.
     Option.when(chronicle.lineages.exists(l => l.role == Role.Exile &&
       l.startingAdvisers.isEmpty && l.legacies.isEmpty &&
-      l.startingRelics.isEmpty))("Exile lineages with nothing kept")).flatten
+      l.startingRelics.isEmpty && chronicle.era.score(l.id) == 0))(
+      "Exile lineages with nothing kept")).flatten
 
   private def sites(tts: Vector[TtsSite]): Either[String, Vector[StoredSite]] =
     sequence(tts.map(site =>
@@ -123,16 +138,15 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
       case _ => Left(s"TTS card $n is not a relic")
     }))
 
-  private def oathkeeperGoal(digit: Option[Int])
-      : Either[String, OathkeeperGoal] = digit.getOrElse(0) match
+  private def oathkeeperGoal(digit: Int)
+      : Either[String, OathkeeperGoal] = digit match
     case 0 => Right(OathkeeperGoal.Supremacy)
     case n if n > 20 => Left(s"Oathkeeper goal $n is fan content")
     case n => goalDigits.find(_._1 == n).map(_._2)
       .toRight(s"Oathkeeper goal $n is reserved")
 
   private def emptyExile(player: TtsPlayer): Boolean =
-    player.status == 0 && player.cards.isEmpty && player.legacies.isEmpty &&
-      player.relics.isEmpty
+    player == TtsPlayer.emptyExile
 
   private def lineage(color: PlayerColor, player: TtsPlayer)
       : Either[String, LineageState] =
@@ -147,7 +161,8 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
       advisers.map(DenizenState(_, Orientation.FaceDown, Tokens.empty)),
       startingRelics = kept)
 
-  private def ttsPlayer(lineage: LineageState): Either[String, TtsPlayer] =
+  private def ttsPlayer(lineage: LineageState, era: EraState)
+      : Either[String, TtsPlayer] =
     for
       cards <- sequence(lineage.startingAdvisers.map {
         case denizen: DenizenState => ids.ttsCard(denizen.id)
@@ -158,4 +173,5 @@ final class ChronicleTtsCodec(catalog: ExecutableCatalog):
       legacies <- sequence(lineage.legacies.map(l =>
         ids.ttsLegacy(l.id).map(TtsLegacy(_, flipped = l.active))))
       kept <- sequence(lineage.startingRelics.map(ids.ttsCard))
-    yield TtsPlayer(roles.indexOf(lineage.role), cards, legacies, kept)
+    yield TtsPlayer(roles.indexOf(lineage.role), era.score(lineage.id), cards,
+      legacies, kept)

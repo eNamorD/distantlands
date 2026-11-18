@@ -34,6 +34,24 @@ class ChronicleJsonCodecSuite extends munit.FunSuite:
       FoundationNumber.I -> normal, FoundationNumber.IV -> reordered))
     assertEquals(codec.encode(one), codec.encode(other))
 
+  test("carried lineage scores round trip, and are left out when there " +
+      "are none"):
+    val carried = chronicle.copy(era = chronicle.era.copy(carriedScores = Map(
+      LineageId("red-lineage") -> 7, LineageId("blue-lineage") -> 2)))
+    val text = codec.encode(carried)
+    assert(text.contains("\"carriedScores\":[{\"lineage\":\"blue-lineage\""),
+      text)
+    assertEquals(codec.decode(text), Right(carried))
+    assert(!codec.encode(chronicle).contains("carriedScores"))
+
+  test("a negative carried score is refused"):
+    val carried = chronicle.copy(era = chronicle.era.copy(carriedScores = Map(
+      LineageId("red-lineage") -> 7)))
+    assertEquals(codec.decode(codec.encode(carried).replace(
+      "\"totalScore\":7", "\"totalScore\":-7")),
+      Left("$.era.carriedScores[0].totalScore: must be between 0 and " +
+        "9007199254740991 inclusive"))
+
   test("decoding refuses another format, malformed text and a blank name"):
     val text = codec.encode(chronicle)
     assertEquals(codec.decode(text.replace("\"format\":1", "\"format\":2")),

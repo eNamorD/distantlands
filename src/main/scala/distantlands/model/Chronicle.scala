@@ -33,8 +33,9 @@ object StoredSite:
  * unique; `ChronicleUpdated` copies it forward unchanged.
  *
  * `era` and `oathkeeperGoal` are required; a first game starts at
- * `EraState(20, Vector.empty)` and `OathkeeperGoal.Supremacy`. The TTS string has
- * no era field, and gains an Oath digit in encoding version 3.
+ * `EraState(20, Vector.empty)` and `OathkeeperGoal.Supremacy`. From encoding
+ * version 3 the TTS string carries an Oath digit and each lineage's score
+ * (an import's become `era.carriedScores`), but no era target or games.
  */
 final case class Chronicle(
     name: String,
