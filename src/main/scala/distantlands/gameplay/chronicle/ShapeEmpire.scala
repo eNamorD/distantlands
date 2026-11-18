@@ -7,9 +7,10 @@ import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
 
 /** Shape Empire, the Throne's second step (CR p. 37, Chronicle rulings 6, 9,
-  * 11 and 14). The Throne holder may remove any of their warbands from
-  * sites but the last one on the map; with no site, they clear their pawn's
-  * site and place one there. Then every denizen at a site they do not rule
+  * 11, 14 and 24). The Throne holder chooses the sites that stay in the Empire,
+  * all of them to start with and at least one, and every site left out loses
+  * all their warbands; with no site, they clear their pawn's site and place
+  * one there. Then every denizen at a site they do not rule
   * is discarded, except intact edifices, cards at Enduring sites and,
   * while Hall of Bandits is on the map, ruined edifices at bandit sites
   * (`ShapeEmpireExemptions`). Iron Hand's Exile holder, read when the step
@@ -44,8 +45,8 @@ object ShapeEmpire:
             case SiteForces.Occupied(`kind`, count) => Some(site -> count)
             case _ => None)
         if ruled.isEmpty then fallback(state, holder, kind)
-        else if ruled.map(_._2).sum <= 1 then Vector.empty
-        else removeSome(holder, kind, ruled)
+        else if ruled.size <= 1 then Vector.empty
+        else keepSome(holder, kind, ruled)
 
   /** With no site ruled: clear the pawn's site and place one warband. */
   private def fallback(state: ReadyGame, holder: PlayerId, kind: ForceKind)
@@ -64,22 +65,27 @@ object ShapeEmpire:
           PositionedLocation(Location.WarbandBank(kind)), at)),
           required = true))
 
-  private def removeSome(holder: PlayerId, kind: ForceKind,
-      ruled: Vector[(SiteId, Int)]): Vector[Operation] = Vector(
-    Decide(removeDecisionId, holder, DecisionQuery.Distribute(
-      ruled.map((site, count) =>
-        DistributeSlot(DecisionOptionRef.Site(site), 0, count, None)),
-      0, ruled.map(_._2).sum - 1,
-      heading = Some("Remove warbands from the Empire"),
-      confirmLabel = "Remove")),
-    BuildOps((_, pending) => PowerAnswers.distribution(pending,
-      removeDecisionId).toRight(PowerAnswers.missing(removeDecisionId))
-      .map(_.collect {
-        case DistributeAmount(DecisionOptionRef.Site(site), amount)
-            if amount > 0 => Move(Piece.Warbands(kind, amount),
-          PositionedLocation(Location.Site(site)),
-          PositionedLocation(Location.WarbandBank(kind)))
-      }), required = true))
+  /** The holder chooses the sites that stay in the Empire, all of them
+    * to start with, and at least one. Each site left out loses every
+    * warband of the holder's: a site is kept or given up whole (Chronicle
+    * ruling 24), so one warband may not be shed from a site that stays. */
+  private def keepSome(holder: PlayerId, kind: ForceKind,
+      ruled: Vector[(SiteId, Int)]): Vector[Operation] =
+    val sites = ruled.map((site, _) =>
+      DecisionOption.Site(DecisionOptionRef.Site(site)))
+    Vector(
+      Decide(removeDecisionId, holder, DecisionQuery.ChooseMany(1,
+        sites.size, sites, heading = Some("Choose sites in the next Empire."),
+        confirm = Some(CountedConfirm("Keep", "site", "sites")),
+        selected = sites)),
+      BuildOps((_, pending) => PowerAnswers.many(pending, removeDecisionId)
+        .toRight(PowerAnswers.missing(removeDecisionId)).map(kept =>
+          ruled.collect {
+            case (site, count) if !kept.contains(DecisionOptionRef.Site(site)) =>
+              Move(Piece.Warbands(kind, count),
+                PositionedLocation(Location.Site(site)),
+                PositionedLocation(Location.WarbandBank(kind)))
+          }), required = true))
 
   /** The cards at sites the holder does not rule, but those
     * `ShapeEmpireExemptions` keeps, are discarded. Rival's holder, read when

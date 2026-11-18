@@ -113,7 +113,7 @@ object Situation:
     * available option. `Partition`: the first option kept in the first section that
     * demands one, every other option in another section -- the "keep one,
     * discard the rest" shape of Setup's adviser choice. `ChooseMany`: the
-    * first `min` available options. `ChooseAmount`: `min`. `Distribute`:
+    * options it opens selected, else the first `min` available options. `ChooseAmount`: `min`. `Distribute`:
     * each slot its minimum, when those sum within the bounds.
     * `ChooseAmounts`: the suggested amounts. Anything else
     * is not answered by default and fails the walk naming the decision.
@@ -134,7 +134,8 @@ object Situation:
     case Park(Decide(_, _, many: DecisionQuery.ChooseMany, _, _, _, _, _),
         _, _, _) if many.options.count(_.available) >= many.min =>
       DecisionAnswer.ChooseManyAnswer(
-        many.options.filter(_.available).take(many.min).map(_.ref))
+        if many.selected.nonEmpty then many.selected.map(_.ref)
+        else many.options.filter(_.available).take(many.min).map(_.ref))
     case Park(Decide(_, _, amount: DecisionQuery.ChooseAmount, _, _, _, _, _),
         _, _, _) =>
       DecisionAnswer.ChooseAmountAnswer(amount.min)

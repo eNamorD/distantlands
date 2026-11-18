@@ -97,8 +97,8 @@ object ChronicleWalk:
       case Right(None) => None
       case other => munit.Assertions.fail(s"expected a parked decision, got $other")
 
-  /** The plainest legal answer: the first available option, the fewest
-    * picks a choose-many allows, nothing given in a distribution, and, in
+  /** The plainest legal answer: the first available option, a
+    * choose-many's preselected options, else the fewest picks it allows, nothing given in a distribution, and, in
     * a partition, each section's minimum. */
   def plainestAnswer(decide: Decide)(using munit.Location): DecisionAnswer =
     decide.query match
@@ -106,7 +106,8 @@ object ChronicleWalk:
         DecisionAnswer.ChooseOneAnswer(one.options.filter(_.available).head.ref)
       case many: DecisionQuery.ChooseMany =>
         DecisionAnswer.ChooseManyAnswer(
-          many.options.filter(_.available).take(many.min).map(_.ref))
+          if many.selected.nonEmpty then many.selected.map(_.ref)
+          else many.options.filter(_.available).take(many.min).map(_.ref))
       case spread: DecisionQuery.Distribute =>
         DecisionAnswer.DistributeAnswer(spread.slots.map(slot =>
           DistributeAmount(slot.ref, slot.minimum)))

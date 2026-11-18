@@ -104,18 +104,24 @@ private[frontend] object BoardSelectionDraft:
 
   /** The draft a fresh position opens `decision` with: the facedown-adviser
     * pick with one adviser to play has it picked, as the pick before the
-    * walker did. Every other decision opens with nothing picked.
+    * walker did, and a choose-many opens with the options its query
+    * preselects. Every other decision opens with nothing picked.
     */
   def preselected(context: BoardSelectionContext,
       decision: Option[WalkerDecisionState]): Option[BoardSelectionDraft] =
-    for
-      parked <- decision.filter(_.decisionId == facedownAdviserDecisionId)
-      query <- parked.query.collect { case one: DecisionQueryState.ChooseOne =>
-        one }
-      available = query.options.filter(_.choosable)
-      only <- Option.when(available.size == 1)(available.head)
-    yield BoardSelectionDraft(context, parked.decisionId, query,
-      Vector(BoardOptionViews.key(only)))
+    decision.flatMap(parked => parked.query.flatMap {
+      case one: DecisionQueryState.ChooseOne =>
+        Option.when(parked.decisionId == facedownAdviserDecisionId)(
+          one.options.filter(_.choosable)).filter(_.size == 1)
+          .map(available => BoardSelectionDraft(context, parked.decisionId,
+            one, Vector(BoardOptionViews.key(available.head))))
+      case many: DecisionQueryState.ChooseMany =>
+        Some(many.options.filter(option => option.preselected &&
+          option.choosable)).filter(_.nonEmpty)
+          .map(chosen => BoardSelectionDraft(context, parked.decisionId, many,
+            chosen.map(BoardOptionViews.key)))
+      case _ => None
+    })
 
   /** The draft after a click on `option`, starting a fresh one when
     * `previous` is empty or answers another question.

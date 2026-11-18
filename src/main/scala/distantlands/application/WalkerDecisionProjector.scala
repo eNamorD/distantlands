@@ -293,7 +293,10 @@ private[application] final class WalkerDecisionProjector(
           offered <- described(many.options)
           fixed <- described(many.locked)
         yield DecisionQueryProjection.ChooseMany(
-          fixed.map(_.copy(state = "locked")) ++ offered, many.min, many.max,
+          fixed.map(_.copy(state = "locked")) ++ offered.map(row =>
+            row.copy(preselected = many.selected.exists(option =>
+              option.ref.kind == row.kind &&
+                option.ref.wireId == row.id))), many.min, many.max,
           many.heading,
           many.tallies.map(tally => DecisionTallyProjection(tally.label,
             tally.unit, tally.perOption.toVector.map((ref, value) =>

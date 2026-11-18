@@ -159,6 +159,13 @@ object DecisionQueries:
           Vector(confirm.verb, confirm.one, confirm.many).forall(_.trim.nonEmpty)
             && confirm.none.forall(_.trim.nonEmpty)), decisionId,
           "declares a blank confirm label")
+        _ <- require(many.selected.forall(option =>
+          many.options.exists(offered => offered.ref == option.ref &&
+            offered.available)), decisionId,
+          "opens with an option selected that may not be chosen")
+        _ <- require(many.selected.isEmpty ||
+          many.selected.size >= min && many.selected.size <= max, decisionId,
+          s"opens with ${many.selected.size} selected, outside $min..$max")
       yield ()
 
     case DecisionQuery.ChooseAmount(min, max, heading, confirmLabel,

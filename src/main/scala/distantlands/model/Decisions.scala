@@ -350,13 +350,21 @@ object DecisionQuery:
     * client shows them chosen, and no answer names them. `tallies`,
     * `summary` and `confirm` are display only, like `heading`; a query with
     * no `confirm` gets the client's generic "Confirm".
+    *
+    * `selected` are the options a client opens with picked, for a question
+    * whose usual answer is most of its options, such as Shape Empire's
+    * sites to keep. Like `ChooseAmount`'s `suggested` it is display only:
+    * the answer is still whatever the player confirms, and it must be a
+    * legal one, so `selected` stays within the options that may be chosen
+    * and within `min..max`.
     */
   final case class ChooseMany(min: Int, max: Int,
       options: Vector[DecisionOption], heading: Option[String] = None,
       locked: Vector[DecisionOption] = Vector.empty,
       tallies: Vector[DecisionTally] = Vector.empty,
       summary: Option[DecisionSummary] = None,
-      confirm: Option[CountedConfirm] = None) extends DecisionQuery
+      confirm: Option[CountedConfirm] = None,
+      selected: Vector[DecisionOption] = Vector.empty) extends DecisionQuery
 
   /** Pick an integer from `min` to `max` inclusive. Both labels are required,
     * as on [[Distribute]]: the panel has a confirm step, and a range with no

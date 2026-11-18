@@ -137,6 +137,17 @@ class ProjectionProtocolSuite extends munit.FunSuite:
             "site-slot", "site:a:0", "Bury Known at Site A",
             replaces = Vector(known), buries = true))))))))
 
+  test("a preselected option round-trips, and is written only when set"):
+    val plain = DecisionOptionProjection("site", "plains", "Plains")
+    val kept = plain.copy(id = "hills", label = "Hills", preselected = true)
+    val decision = projection.copy(walkerDecision = Some(
+      WalkerDecisionProjection("chronicle", "chronicle.shape-empire.remove",
+        query = Some(DecisionQueryProjection.ChooseMany(Vector(plain, kept),
+          1, 2)))))
+    assertRoundTrips(decision)
+    assertEquals(GameProjectionCodec.encode(decision).split("preselected")
+      .length - 1, 1)
+
   test("the Imperial Tactics offer panel round-trips, and is absent when unset"):
     val row = DecisionOptionProjection("denizen", "108", "Shield Wall", None,
       Vector("Defense"), Some("Defense"))
