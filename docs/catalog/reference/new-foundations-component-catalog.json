@@ -4310,7 +4310,7 @@
   "edifices": [
     {
       "id": "E01",
-      "suit": "discord",
+      "suit": "hearth",
       "intact": {
         "name": "Hall of Debate",
         "restrictions": [
@@ -4338,7 +4338,7 @@
     },
     {
       "id": "E02",
-      "suit": "discord",
+      "suit": "hearth",
       "intact": {
         "name": "Great Market",
         "restrictions": [
@@ -4366,7 +4366,7 @@
     },
     {
       "id": "E03",
-      "suit": "discord",
+      "suit": "hearth",
       "intact": {
         "name": "Grand Canal",
         "restrictions": [
@@ -4394,7 +4394,7 @@
     },
     {
       "id": "E04",
-      "suit": "discord",
+      "suit": "hearth",
       "intact": {
         "name": "Stone Baths",
         "restrictions": [
@@ -4422,7 +4422,7 @@
     },
     {
       "id": "E05",
-      "suit": "discord",
+      "suit": "hearth",
       "intact": {
         "name": "Amber Doors",
         "restrictions": [
@@ -4870,7 +4870,7 @@
     },
     {
       "id": "E21",
-      "suit": "hearth",
+      "suit": "discord",
       "intact": {
         "name": "Festival District",
         "restrictions": [
@@ -4898,7 +4898,7 @@
     },
     {
       "id": "E22",
-      "suit": "hearth",
+      "suit": "discord",
       "intact": {
         "name": "Proving Grounds",
         "restrictions": [
@@ -4926,7 +4926,7 @@
     },
     {
       "id": "E23",
-      "suit": "hearth",
+      "suit": "discord",
       "intact": {
         "name": "Spiral Castle",
         "restrictions": [
@@ -4982,7 +4982,7 @@
     },
     {
       "id": "E25",
-      "suit": "hearth",
+      "suit": "discord",
       "intact": {
         "name": "Hidden Passages",
         "restrictions": [

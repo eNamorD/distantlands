@@ -16,7 +16,7 @@ class ExecutableCatalogSuite extends munit.FunSuite:
     assertEquals(catalog.denizen(DenizenId("9")).map(_.name), Some("Alchemist"))
     assertEquals(catalog.relic(RelicId("R01")).map(_.name), Some("Sticky Fire"))
     assertEquals(catalog.edifice(EdificeId("E01")).map(_.suit),
-      Some(Suit.Discord))
+      Some(Suit.Hearth))
     assertEquals(catalog.legacy(LegacyId("L01")).map(_.name), Some("Iron Hand"))
     assertEquals(catalog.site(SiteId("site:deep-woods")).map(_.name),
       Some("Deep Woods"))
@@ -59,7 +59,7 @@ class ExecutableCatalogSuite extends munit.FunSuite:
     assertEquals(catalog.suitOf(AlchemistCard.id),
       Some(Suit.Arcane))
     assertEquals(catalog.suitOf(HallOfDebateCard.id),
-      Some(Suit.Discord))
+      Some(Suit.Hearth))
     assertEquals(catalog.suitOf(StickyFireCard.id), None)
 
   test("a copied catalog indexes its own components"):

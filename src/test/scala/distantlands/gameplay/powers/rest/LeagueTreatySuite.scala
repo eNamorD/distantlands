@@ -133,12 +133,12 @@ class LeagueTreatySuite extends munit.FunSuite:
     Vector(EdificeSide.Intact, EdificeSide.Ruined).foreach { side =>
       val owner = p2 // off p1's turn
       val edifice = HallOfDebateCard.id
-      val edificeSuit = Suit.Discord // Hall of Debate's printed suit
+      val edificeSuit = Suit.Hearth // Hall of Debate's printed suit
       val ready = leagueTreatyAct(Some(owner))
         .withFavoredCard(DisciplesCard, at = AncientCitySite, favor = 1)
         .edifice(edifice, side, at = treatySite).tokens(edifice, favor = 2)
         .ready
-      // A suit that is neither Arcane nor Discord.
+      // A suit that is neither Arcane nor Hearth.
       val destinationBank = Suit.Order
       val destination = LeagueTreatyContribution.destinationDecisionId(ready,
         p1, treatySite, treatyCard)

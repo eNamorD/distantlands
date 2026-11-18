@@ -6,7 +6,7 @@ import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
   PowerCtx, Transform}
 import distantlands.model._
 
-object HallOfDebateCard extends Edifice(EdificeId("E01"), Suit.Discord):
+object HallOfDebateCard extends Edifice(EdificeId("E01"), Suit.Hearth):
   object intact extends EdificeFace("Hall of Debate") with Locked:
     val power = PrintedPower(PowerId("edifice.e01.intact"),
       persistent = true, cost = Cost.free,

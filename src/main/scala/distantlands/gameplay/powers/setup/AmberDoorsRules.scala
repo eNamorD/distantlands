@@ -8,7 +8,7 @@ import distantlands.gameplay.powers.{LegacyDraws, PowerAnswers}
 import distantlands.gameplay.powers.legacies.LegacyActivation
 import distantlands.model._
 
-object AmberDoorsCard extends Edifice(EdificeId("E05"), Suit.Discord):
+object AmberDoorsCard extends Edifice(EdificeId("E05"), Suit.Hearth):
   object intact extends EdificeFace("Amber Doors") with Locked:
     val power = PrintedPower(PowerId("edifice.e05.intact"),
       persistent = false, cost = Cost.free,

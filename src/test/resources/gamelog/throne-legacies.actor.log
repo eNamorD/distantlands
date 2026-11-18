@@ -13,7 +13,7 @@
 49.0 decision 1 | [player:p1|p1] swapped [card:179|Threatening Roar] and [card:231|Village Idiot] with [card:L35|Reformer]
 59.0 decision 1 | [player:p3|p3] protected 1 denizen with [card:L17|Rival]
 64.0 delta 1 | Buried [card:231|Village Idiot]
-65.0 decision 1 | [player:p2|p2] built [card:E01|Hall of Debate] at [site:site:ancient-city|Ancient City]
+65.0 decision 1 | [player:p2|p2] built [card:E21|Festival District] at [site:site:ancient-city|Ancient City]
 84.0 delta 1 | [player:p3|p3] discarded [card:179|Threatening Roar] to the Provinces discard
 85.0 decision 1 | [player:p3|p3] discarded 1 denizen with [card:L15|Revolutionary]
 87.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]

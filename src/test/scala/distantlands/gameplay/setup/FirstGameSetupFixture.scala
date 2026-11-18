@@ -48,9 +48,16 @@ object FirstGameSetupFixture:
   val relics: Vector[RelicId] = catalog.relics
     .filter(_.id != TheGrandScepterCard.id)
     .map(r => RelicId(r.id.value))
+  /** Hall of Debate and Great Market (E01 and E02, the first Hearth
+    * edifices) change the banks and banners when Setup ends, which would
+    * move every fixture start; a Homeland's edifice here is the suit's
+    * first that does not. */
+  private def actsAtSetup(id: String): Boolean = id == "E01" || id == "E02"
+
   val homelandEdifices: Vector[(SiteId, EdificeId)] = sites.flatMap { siteId =>
     catalog.sites.find(_.id == siteId).get.homeland.map: suit =>
-      val edifice = catalog.edifices.find(_.suit == suit).get
+      val edifice = catalog.edifices.filter(_.suit == suit)
+        .find(e => !actsAtSetup(e.id.value)).get
       siteId -> EdificeId(edifice.id.value)
   }
   private val edificesBySite = homelandEdifices.toMap

@@ -4,7 +4,7 @@ import distantlands.catalog.{Edifice, EdificeFace, Locked, PrintedPower}
 import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
 import distantlands.model._
 
-object GreatMarketCard extends Edifice(EdificeId("E02"), Suit.Discord):
+object GreatMarketCard extends Edifice(EdificeId("E02"), Suit.Hearth):
   object intact extends EdificeFace("Great Market") with Locked:
     val power = PrintedPower(PowerId("edifice.e02.intact"),
       persistent = false, cost = Cost.free,

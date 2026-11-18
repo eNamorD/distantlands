@@ -17,7 +17,7 @@ object CouncilArbiterCard extends Denizen(DenizenId("200"), "Council Arbiter", S
       "follow your adviser limit._")
   val powers: Vector[PrintedPower] = Vector(power)
 
-object FestivalDistrictCard extends Edifice(EdificeId("E21"), Suit.Hearth):
+object FestivalDistrictCard extends Edifice(EdificeId("E21"), Suit.Discord):
   object intact extends EdificeFace("Festival District") with Locked:
     val power = PrintedPower(PowerId("edifice.e21.intact"),
       persistent = false, cost = Cost.free,
