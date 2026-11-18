@@ -2,7 +2,8 @@ package distantlands.application
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
-import distantlands.gameplay.chronicle.{BuildEdifice, ResolveLegacies}
+import distantlands.gameplay.chronicle.{BuildEdifice, ProtectAndDispossess,
+  ResolveLegacies}
 import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import distantlands.gameplay.powerresolver.PhasePowers
 import distantlands.gameplay.walker.{OptionWarnings, ProcedureWalker,
@@ -12,7 +13,7 @@ import distantlands.protocol.projection.{CardDetailsProjection,
   CountedConfirmProjection, DecisionOptionProjection, DecisionQueryProjection,
   DecisionSectionProjection, DecisionSlotProjection, DecisionSummaryProjection,
   DecisionTallyProjection, DecisionTallyValueProjection,
-  PublicPreviewProjection, WalkerDecisionProjection, WalkerRollOutcomeProjection,
+  PublicPreviewProjection, PublicPreviewSection, WalkerDecisionProjection, WalkerRollOutcomeProjection,
   WalkerStatusProjection, WalkerWaitingProjection}
 
 /** Projects a parked generic-walker position (`CurrentGameState.walkerPending`
@@ -115,18 +116,25 @@ private[application] final class WalkerDecisionProjector(
 
   /** The cards every viewer sees beside a parked decision, whoever may
     * answer it: Build Edifice's available edifices, faceup and intact as
-    * they would be built. */
+    * they would be built, or the World's two faceup stacks to protect. */
   def publicPreview(context: ScopedProjectionContext)
       : Option[PublicPreviewProjection] = for
     parked <- parkedPosition(context)
-    if ProcedureWalker.openDecisions(context.ready, parked.tree,
-      parked.pending, parked.powers, probing = false)
-      .exists(_.decisionId == BuildEdifice.cardDecisionId)
-    cards = BuildEdifice.available(catalog, context.current).map((_, id) =>
-      presentation.edificeCardDetails(
-        EdificeState(id, EdificeSide.Intact, Tokens.empty)))
-    if cards.nonEmpty
-  yield PublicPreviewProjection("Available edifices", cards)
+    open = ProcedureWalker.openDecisions(context.ready, parked.tree,
+      parked.pending, parked.powers, probing = false).map(_.decisionId)
+    sections = (if open.contains(BuildEdifice.cardDecisionId) then
+      Vector(PublicPreviewSection("Available edifices",
+        BuildEdifice.available(catalog, context.current).map((_, id) =>
+          presentation.edificeCardDetails(
+            EdificeState(id, EdificeSide.Intact, Tokens.empty)))))
+    else if open.contains(ProtectAndDispossess.protectDecisionId) then
+      ProtectAndDispossess.faceupStacks(context.ready).zipWithIndex.map(
+        (stack, at) => PublicPreviewSection(s"Stack ${at + 1}", stack.map(
+          card => presentation.cardDetails(card, Some(Orientation.FaceUp),
+            hidden = false))))
+    else Vector.empty).filter(_.cards.nonEmpty)
+    if sections.nonEmpty
+  yield PublicPreviewProjection(sections)
 
   /** The public "who is this waiting on" projection, for every viewer who
     * owes no answer -- Task 5's counterpart to `project`. Built off the same

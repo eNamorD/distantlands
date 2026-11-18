@@ -93,7 +93,10 @@ class ProjectionProtocolSuite extends munit.FunSuite:
   test("a public preview round-trips, and a payload without one decodes to " +
       "none"):
     assertRoundTrips(projection.copy(publicPreview = Some(
-      PublicPreviewProjection("Available edifices", Vector(known)))))
+      PublicPreviewProjection(Vector(
+        PublicPreviewSection("Stack 1", Vector(known)),
+        PublicPreviewSection("Stack 2", Vector(known.copy(cardId = "other")))))
+      )))
     val raw = ujson.read(GameProjectionCodec.encode(projection))
     raw.obj.remove("publicPreview")
     assertEquals(GameProjectionCodec.decode(ujson.write(raw)).map(

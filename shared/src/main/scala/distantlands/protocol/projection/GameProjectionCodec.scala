@@ -174,17 +174,26 @@ object GameProjectionCodec:
     planAidPrompt, foundations, publicLegacies, reliquary, publicPreview)
 
   private def encodePublicPreview(value: PublicPreviewProjection): ujson.Value =
-    ujson.Obj("title" -> value.title,
-      "cards" -> encoded(value.cards)(WorldProjectionCodec.encodeCard))
+    ujson.Obj("sections" -> encoded(value.sections)(section =>
+      ujson.Obj("title" -> section.title, "cards" ->
+        encoded(section.cards)(WorldProjectionCodec.encodeCard))))
 
   private def decodePublicPreview(raw: ujson.Value, path: String)
       : Result[PublicPreviewProjection] = for
+    row <- obj(raw, path)
+    _ <- exact(row, Set("sections"), path)
+    sectionRaws <- array(row, "sections", path)
+    sections <- traverse(sectionRaws, s"$path.sections")(decodeSection)
+  yield PublicPreviewProjection(sections)
+
+  private def decodeSection(raw: ujson.Value, path: String)
+      : Result[PublicPreviewSection] = for
     row <- obj(raw, path)
     _ <- exact(row, Set("title", "cards"), path)
     title <- string(row, "title", path)
     cardRaws <- array(row, "cards", path)
     cards <- traverse(cardRaws, s"$path.cards")(WorldProjectionCodec.decodeCard)
-  yield PublicPreviewProjection(title, cards)
+  yield PublicPreviewSection(title, cards)
 
   private def decodeFoundation(raw: ujson.Value, path: String)
       : Result[FoundationProjection] = for

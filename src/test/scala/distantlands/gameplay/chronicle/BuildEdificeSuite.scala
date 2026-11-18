@@ -83,7 +83,8 @@ class BuildEdificeSuite extends munit.FunSuite:
     Vector(projector.project("game", loaded, p1),
       projector.project("game", loaded, PlayerId("p2")),
       projector.projectPublic("game", loaded)).foreach: seen =>
-      val preview = seen.publicPreview.get
+      val preview = seen.publicPreview.get.sections.head
+      assertEquals(seen.publicPreview.get.sections.size, 1)
       assertEquals(preview.title, "Available edifices")
       assertEquals(preview.cards.map(_.cardId), available)
       assert(preview.cards.forall(card => card.cardKind == "edifice" &&

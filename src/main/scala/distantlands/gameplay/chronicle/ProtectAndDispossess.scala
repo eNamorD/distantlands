@@ -5,8 +5,10 @@ import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
 
 /** Protect and Dispossess, the World's third step (CR p. 38). The World
-  * task holder protects one of the two faceup stacks by naming a card in
-  * it; the stack goes to their temporary hand. They keep one secretly as a
+  * task holder protects one of the two faceup stacks, "Protect Stack 1" or
+  * "Protect Stack 2", the cards of which every viewer sees beside the
+  * question (`WalkerDecisionProjector.publicPreview`); the stack goes to
+  * their temporary hand. They keep one secretly as a
   * facedown starting adviser and the other two go to the world deck bottom.
   * The other six gathered cards wait in the gathering pile until the step
   * ends, then are newly Dispossessed with one log line. Nobody knows the
@@ -49,32 +51,41 @@ object ProtectAndDispossess:
     val pile = state.game.current.cardGathering
     pile.take(pile.size - stackSize).collect { case id: DenizenId => id }
 
+  /** The faceup stacks in the order the buttons name them, the first
+    * "Stack 1". */
+  def faceupStacks(state: ReadyGame): Vector[Vector[DenizenId]] =
+    faceup(state).grouped(stackSize).toVector
+
+  private def stackRef(number: Int): DecisionOptionRef.Button =
+    DecisionOptionRef.Button(s"protect-stack-$number")
+
   private def protect(state: ReadyGame, holder: PlayerId): Vector[Operation] =
-    if faceup(state).isEmpty then Vector.empty
+    val stacks = faceupStacks(state)
+    if stacks.isEmpty then Vector.empty
     else Vector(
       Decide(protectDecisionId, holder, DecisionQuery.ChooseOne(
-        faceup(state).map(card =>
-          DecisionOption.Denizen(DecisionOptionRef.Denizen(card))),
-        heading = Some("Protect a stack: choose any card in it"),
-        confirmVerb = Some("Protect"))),
-      BuildOps((live, pending) => chosen(pending).map(card =>
-        split(live, holder, card)), required = true),
+        stacks.indices.map(at => DecisionOption.Button(stackRef(at + 1),
+          s"Protect Stack ${at + 1}")).toVector,
+        heading = Some("Protect a stack"))),
+      BuildOps((live, pending) => chosen(live, pending).map(stack =>
+        split(live, holder, stack)), required = true),
       Note(noteId, states => states.now.game.current.temporaryHands
         .get(holder).filter(_.nonEmpty).map(cards =>
           protectedStack.sourceless(NoteArg.Player(holder),
             NoteArg.Cards(cards)))))
 
-  private def chosen(pending: PendingTree): Either[OathViolation, DenizenId] =
-    PowerAnswers.one(pending, protectDecisionId).collect {
-      case DecisionOptionRef.Denizen(card) => card
-    }.toRight(PowerAnswers.missing(protectDecisionId))
+  /** The index of the answered stack, counting from 0. */
+  private def chosen(state: ReadyGame, pending: PendingTree)
+      : Either[OathViolation, Int] =
+    PowerAnswers.one(pending, protectDecisionId).flatMap(answer =>
+      faceupStacks(state).indices.find(at => stackRef(at + 1) == answer))
+      .toRight(PowerAnswers.missing(protectDecisionId))
 
   /** The protected stack to the holder's hand. The rest stay in the
     * gathering pile, the facedown stack still last. */
-  private def split(state: ReadyGame, holder: PlayerId, card: DenizenId)
+  private def split(state: ReadyGame, holder: PlayerId, stack: Int)
       : Vector[CoreOperation] =
     val pile = state.game.current.cardGathering
-    val stack = pile.indexOf(card) / stackSize
     pile.zipWithIndex.collect { case (id, at) if at / stackSize == stack =>
       Move(Piece.Card(id), PositionedLocation(Location.CardGathering),
         PositionedLocation(Location.Hand(holder)))

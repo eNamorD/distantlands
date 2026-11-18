@@ -80,13 +80,15 @@ class WorldTaskSuite extends munit.FunSuite:
     val nine = gathered(walked)
     decide.query match
       case one: DecisionQuery.ChooseOne =>
-        assertEquals(one.options.map(_.ref), nine.take(6).map(card =>
-          DecisionOptionRef.Denizen(card.asInstanceOf[DenizenId])))
+        assertEquals(one.options.map(_.ref), Vector(
+          DecisionOptionRef.Button("protect-stack-1"),
+          DecisionOptionRef.Button("protect-stack-2")))
+        assertEquals(one.heading, Some("Protect a stack"))
       case other => fail(other.toString)
     val second = nine.slice(3, 6)
     val protectedStep = accepted(rules.resolveWalker(walked.state, p2,
       ProtectAndDispossess.protectDecisionId, ChooseOneAnswer(
-        DecisionOptionRef.Denizen(second(1).asInstanceOf[DenizenId]))))
+        DecisionOptionRef.Button("protect-stack-2"))))
     val parked = Outcomes.ready(protectedStep.state)
     assertEquals(parked.game.current.temporaryHands.get(p2), Some(second))
     assertEquals(parked.game.current.cardGathering,
@@ -108,6 +110,41 @@ class WorldTaskSuite extends munit.FunSuite:
     assertEquals(after.game.current.cardGathering, Vector.empty)
     assertEquals(after.game.current.newlyDispossessed,
       nine.take(3) ++ nine.drop(6))
+
+  test("protecting Stack 1 takes the first faceup three to the hand"):
+    val walked = parkedOnProtect(tasksAssigned)
+    val nine = gathered(walked)
+    val protectedStep = accepted(rules.resolveWalker(walked.state, p2,
+      ProtectAndDispossess.protectDecisionId, ChooseOneAnswer(
+        DecisionOptionRef.Button("protect-stack-1"))))
+    val after = Outcomes.ready(protectedStep.state)
+    assertEquals(after.game.current.temporaryHands.get(p2),
+      Some(nine.take(3)))
+    assertEquals(after.game.current.cardGathering, nine.drop(3))
+
+  test("every seat and the public view see the two faceup stacks beside " +
+      "the question, and not the facedown one"):
+    val walked = parkedOnProtect(tasksAssigned)
+    val nine = gathered(walked)
+    val projector = new distantlands.application.GameProjector(catalog)
+    val loaded = distantlands.application.LoadedGame(walked.state, 1L)
+    Vector(projector.project("game", loaded, p1),
+      projector.project("game", loaded, p2),
+      projector.projectPublic("game", loaded)).foreach: seen =>
+      val sections = seen.publicPreview.get.sections
+      assertEquals(sections.map(_.title), Vector("Stack 1", "Stack 2"))
+      assertEquals(sections.map(_.cards.map(_.cardId)),
+        Vector(nine.slice(0, 3), nine.slice(3, 6)).map(_.map(_.value)))
+      assert(sections.flatMap(_.cards).forall(!_.hidden))
+
+  test("once the stack is protected the question no longer carries a preview"):
+    val walked = parkedOnProtect(tasksAssigned)
+    val protectedStep = accepted(rules.resolveWalker(walked.state, p2,
+      ProtectAndDispossess.protectDecisionId, ChooseOneAnswer(
+        DecisionOptionRef.Button("protect-stack-1"))))
+    assertEquals(new distantlands.application.GameProjector(catalog).project(
+      "game", distantlands.application.LoadedGame(protectedStep.state, 1L),
+      p2).publicPreview, None)
 
   test("a faceup locked adviser is gathered too (Chronicle ruling 16)"):
     val locked = catalog.denizens.collectFirst {

@@ -50,9 +50,13 @@ final case class GameProjection(
     ,publicPreview: Option[PublicPreviewProjection] = None
 )
 
-/** A titled run of cards shown to the whole table ([[GameProjection]]'s
-  * `publicPreview`). */
-final case class PublicPreviewProjection(title: String,
+/** The cards shown to the whole table beside a decision ([[GameProjection]]'s
+  * `publicPreview`), as titled runs drawn in order. */
+final case class PublicPreviewProjection(
+    sections: Vector[PublicPreviewSection])
+
+/** One titled run of cards in a [[PublicPreviewProjection]]. */
+final case class PublicPreviewSection(title: String,
     cards: Vector[CardDetailsProjection])
 
 /** Every seat's view of the game's Chronicle (Chronicle browsing design,
