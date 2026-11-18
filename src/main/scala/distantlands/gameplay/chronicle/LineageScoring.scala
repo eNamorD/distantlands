@@ -125,7 +125,7 @@ object LineageScoring:
       Decide(giftsDecisionId, winner, DecisionQuery.Distribute(
         others.map(player => DistributeSlot(DecisionOptionRef.Player(player),
           0, giftable, None)), 0, giftable,
-        heading = Some("Give lineage points: 2 of yours for 1 of theirs"),
+        heading = Some("May give lineage points away at a 2-for-1 rate."),
         confirmLabel = "Score")),
       Branch((live, pending) => PowerAnswers.distribution(pending,
         giftsDecisionId) match

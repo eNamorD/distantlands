@@ -351,6 +351,16 @@ class DecisionQuerySuite extends munit.FunSuite:
       Suit.Arcane -> 0, Suit.Discord -> 1, Suit.Hearth -> 2, Suit.Nomad -> 3), anyone),
       Right(()))
 
+  test("one slot is a real choice when its total is a range"):
+    val lone = Vector(slot(Suit.Arcane, 0, 2))
+    assertEquals(DecisionQueries.wellFormed(decisionId, ranged(lone, 0, 2)),
+      Right(()))
+
+  test("one slot with no open bounds stays forced even over a range"):
+    val fixed = Vector(slot(Suit.Arcane, 1, 1))
+    assertEquals(DecisionQueries.wellFormed(decisionId, ranged(fixed, 0, 2)),
+      violation("declares fewer than two variable slots, leaving nothing to decide"))
+
   test("a ranged distribution is well formed when its range is reachable and open"):
     val two = Vector(slot(Suit.Arcane, 0, 3), slot(Suit.Nomad, 0, 3))
     assertEquals(DecisionQueries.wellFormed(decisionId, ranged(two, 0, 3)),

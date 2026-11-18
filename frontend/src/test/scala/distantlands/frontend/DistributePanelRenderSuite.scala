@@ -101,6 +101,16 @@ class DistributePanelRenderSuite extends munit.FunSuite:
     minTotal = 1, maxTotal = 3)
   private val rangedParked = parked.copy(query = Some(rangedQuery))
 
+  test("a range whose minimum is zero shows no minimum line"):
+    val optional = rangedQuery.copy(minTotal = 0)
+    val optionalParked = parked.copy(query = Some(optional))
+    val draft = WalkerDistributeDraft.reconcile(None,
+      BoardSelectionContext("game", "red", 9), Some(optionalParked))
+    val panel = dom.document.createElement("div")
+    DistributePanelRenderer.render(Surface.Distribute(optionalParked, optional),
+      draft, canControl = true, panel, new RecordingControls())
+    assertEquals(panel.querySelectorAll(".distribute-minimum").length, 0)
+
   test("a range shows its minimum and confirms anywhere inside it"):
     val ui = new RecordingControls()
     val draft = WalkerDistributeDraft.reconcile(None,

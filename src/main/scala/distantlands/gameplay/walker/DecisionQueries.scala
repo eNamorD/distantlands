@@ -55,7 +55,9 @@ object DecisionQueries:
     * itself.
     * A distribution is forced when fewer than two slots have variable bounds,
     * or when its minimums or maximums already sum to its total; all are
-    * rejected.
+    * rejected. A total that is itself a range (`minTotal < maxTotal`) is
+    * a choice even for one slot: how much to place is the question, so one
+    * variable slot is enough.
     *
     * A choose-one with a single option is deliberately NOT rejected. A lone
     * button is a consent step rather than a choice — the player is being
@@ -225,13 +227,14 @@ object DecisionQueries:
       val minimums = slots.map(_.minimum.toLong).sum
       val maximums = slots.map(_.maximum.toLong).sum
       val variableSlots = slots.count(s => s.minimum < s.maximum)
+      val rangedTotal = minTotal < maxTotal
       val suggested = slots.flatMap(_.suggested)
       for
         _ <- require(heading.exists(_.trim.nonEmpty), decisionId,
           "declares no heading")
         _ <- require(confirmLabel.trim.nonEmpty, decisionId,
           "declares a blank confirm label")
-        _ <- require(slots.size >= 2, decisionId,
+        _ <- require(slots.size >= 2 || rangedTotal, decisionId,
           "declares fewer than two slots")
         _ <- require(refs.distinct.size == refs.size, decisionId,
           "declares duplicate options")
@@ -250,7 +253,8 @@ object DecisionQueries:
           "that already make its total, leaving nothing to decide")
         _ <- require(maximums != minTotal, decisionId, "declares maximums " +
           "that already make its total, leaving nothing to decide")
-        _ <- require(variableSlots >= 2, decisionId,
+        _ <- require(variableSlots >= (if rangedTotal then 1 else 2),
+          decisionId,
           "declares fewer than two variable slots, leaving nothing to decide")
         _ <- require(suggested.isEmpty || suggested.size == slots.size,
           decisionId, "suggests amounts for some slots but not all")
