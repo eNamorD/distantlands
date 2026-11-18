@@ -75,12 +75,20 @@ private[gamelog] final class NoteLines(words: LogWords,
   /** The states before `at` that a note's cards are judged at: its action's
     * start, and the step it restates, the last step before it. A generic
     * line judges a card before and after its own operation, so a note
-    * restating it never names less. */
+    * restating it never names less.
+    *
+    * A shuffle forgets every card of its pile for every player
+    * (`PileOperations`), so a state before the last shuffle in the action
+    * is not one a card may be judged at: the World's gathered cards were
+    * faceup advisers when it began, and nobody knows them once shuffled. */
   private def states(journal: LogJournal, run: Run, at: Int): Vector[ReadyGame] =
     val restated = (run.first until at).reverseIterator.find(index =>
       journal.event(index).isInstanceOf[WalkerStepRecorded])
-    journal.readyBefore(run.first).toVector ++
-      restated.toVector.flatMap(journal.readyBefore)
+    val shuffled = (run.first until at).reverseIterator.find(index =>
+      journal.ops(index).exists(_.operation.isInstanceOf[Shuffle]))
+    val starts = Vector(run.first) ++ restated
+    starts.filter(index => shuffled.forall(index > _))
+      .flatMap(journal.readyBefore)
 
   /** Whether the note at `at` posts at all. The identical-note drop exists
     * for the hide hook, which fires once per hidden option; a procedure has
