@@ -1,7 +1,8 @@
 package distantlands.frontend
 
 import distantlands.model.PlayerColor
-import distantlands.protocol.projection.PublicPreviewProjection
+import distantlands.protocol.projection.{PublicPreviewProjection,
+  PublicPreviewSection}
 
 import org.scalajs.dom
 
@@ -36,14 +37,28 @@ class TemporaryHandPreviewSuite extends munit.FunSuite:
       .querySelectorAll(".temporary-hand-preview").length, 0)
 
   test("a public preview is drawn under its own title, whatever the hand"):
-    val shown = panel(Vector.empty, Some(PublicPreviewProjection(
-      "Available edifices", Vector(card, card.copy(cardId = "edifice:b")))))
+    val shown = panel(Vector.empty, Some(PublicPreviewProjection(Vector(
+      PublicPreviewSection("Available edifices",
+        Vector(card, card.copy(cardId = "edifice:b")))))))
     assertEquals(shown.querySelector(".public-preview > h3").textContent,
       "Available edifices")
     assertEquals(shown.querySelectorAll(".public-preview .card-face").toVector
       .map(_.asInstanceOf[dom.Element].getAttribute("data-card-id")),
       Vector("denizen:a", "edifice:b"))
 
+  test("each section of a public preview is drawn as its own titled group"):
+    val shown = panel(Vector.empty, Some(PublicPreviewProjection(Vector(
+      PublicPreviewSection("Stack 1", Vector(card)),
+      PublicPreviewSection("Stack 2", Vector(card.copy(cardId = "denizen:b"),
+        card.copy(cardId = "denizen:c")))))))
+    val groups = shown.querySelectorAll(".public-preview").toVector
+      .map(_.asInstanceOf[dom.Element])
+    assertEquals(groups.map(_.querySelector("h3").textContent),
+      Vector("Stack 1", "Stack 2"))
+    assertEquals(groups.map(_.querySelectorAll(".card-face").length),
+      Vector(1, 2))
+
   test("a public preview with no cards draws no section"):
-    assertEquals(panel(Vector.empty, Some(PublicPreviewProjection("None",
-      Vector.empty))).querySelectorAll(".public-preview").length, 0)
+    assertEquals(panel(Vector.empty, Some(PublicPreviewProjection(Vector(
+      PublicPreviewSection("None", Vector.empty))))).querySelectorAll(
+      ".public-preview").length, 0)

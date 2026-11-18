@@ -45,12 +45,10 @@ object ChronicleWalk:
       TriggeredProcedureRef.ChronicleThrone))
     val walked = walkedTo(rules, started,
       ProtectAndDispossess.protectDecisionId)
-    val nine = distantlands.testkit.Outcomes.ready(walked.state).game.current
-      .cardGathering
     accepted(rules.resolveWalker(walked.state, Table.p2,
       ProtectAndDispossess.protectDecisionId,
       DecisionAnswer.ChooseOneAnswer(
-        DecisionOptionRef.Denizen(nine(4).asInstanceOf[DenizenId])))).state
+        DecisionOptionRef.Button("protect-stack-2")))).state
 
   /** A Chronicle walked to the end of one procedure: the state replayed to
     * that end, the events up to it, and every decision it parked on. */
