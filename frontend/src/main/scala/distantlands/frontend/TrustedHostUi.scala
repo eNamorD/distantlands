@@ -41,11 +41,12 @@ private[frontend] object TrustedHostUi:
         LineageColors.flatMap(color =>
           byLineage.get(s"${color.key}-lineage").map(color -> _)).toMap
 
-  /** "First player" or the Empire's: who goes first in this game. */
-  private def firstPlayerSentence(roles: Map[PlayerColor, String]): String =
+  /** How the seating is chosen. The first player is named only when no
+    * Chancellor is seated: the Empire's Chancellor goes first, and the
+    * setup rules say so. */
+  private def seatingSentence(roles: Map[PlayerColor, String]): String =
     if roles.values.exists(_ == "chancellor") then
-      "Seating order is chosen at random. The Chancellor goes first, or a " +
-        "random Citizen when the Chancellor does not play. "
+      "Seating order is chosen at random. "
     else "Seating order and the first player are chosen at random. "
 
   /** Mirrors the backend identifier rule in `TrustedGameCodecFields.identifier`. */
@@ -79,15 +80,18 @@ private[frontend] object TrustedHostUi:
     // (`GameStartRules` starts new lineages as Exiles).
     def label(color: PlayerColor): String =
       s"${name(color)} ${imperial.get(color).fold("Exile")(_.capitalize)}"
-    page.appendChild(text("p", "host-intro", openCreated match {
+    val intro = text("p", "host-intro", openCreated match {
       case None => "Add one row per player, then send each player " +
         "their assigned link. Anyone with a seat link can control that seat. " +
-        firstPlayerSentence(imperial) +
+        seatingSentence(imperial) +
         "Save these links before leaving this page."
-      case Some(_) => "Add one row per player. " +
-        firstPlayerSentence(imperial) +
-        "The new game opens as the first listed player; switch players from the toolbar."
-    }))
+      case Some(_) => "Add one row per player. " + seatingSentence(imperial).trim
+    })
+    if openCreated.isDefined then
+      intro.appendChild(element("br", ""))
+      intro.appendChild(dom.document.createTextNode(
+        "In dev-server mode, switch players using the toolbar."))
+    page.appendChild(intro)
     val form = element("form", "trusted-host-form")
     val nameField = chronicle match
       case HostChronicle.New =>
