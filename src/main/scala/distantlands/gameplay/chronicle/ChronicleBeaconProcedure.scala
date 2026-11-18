@@ -16,15 +16,19 @@ object ChronicleBeaconProcedure:
 
   /** The notes the Beacon's steps write. */
   def noteKeys: Vector[NoteKey] =
+    ChronicleSteps.noteKeys(TriggeredProcedureRef.ChronicleBeacon) ++
     IntroduceNewcomers.noteKeys ++ WelcomeStranger.noteKeys ++
       ShapeFoundation.noteKeys ++
       OathsOfLoyalty.noteKeys(TriggeredProcedureRef.ChronicleBeacon) ++
       LegacyChroniclePowers.beaconNoteKeys
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
-    ChronicleWindows.step(PowerWindow.ChronicleIntroduceNewcomers,
+    ChronicleWindows.step(ChronicleSteps.introduceNewcomers,
+      PowerWindow.ChronicleIntroduceNewcomers,
       IntroduceNewcomers.steps(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleWelcomeStranger,
+    ChronicleWindows.step(ChronicleSteps.welcomeStranger,
+      PowerWindow.ChronicleWelcomeStranger,
       WelcomeStranger.steps),
-    ChronicleWindows.step(PowerWindow.ChronicleShapeFoundation,
+    ChronicleWindows.step(ChronicleSteps.shapeFoundation,
+      PowerWindow.ChronicleShapeFoundation,
       ShapeFoundation.steps(catalog)))

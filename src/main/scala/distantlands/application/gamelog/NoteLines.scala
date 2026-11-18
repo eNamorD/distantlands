@@ -1,6 +1,7 @@
 package distantlands.application.gamelog
 
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.chronicle.ChronicleSteps
 import distantlands.gameplay.powers.OathkeeperGoalChoice
 import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, LogNoted,
   WalkerCompleted, WalkerParked, WalkerStepRecorded}
@@ -41,6 +42,8 @@ private[gamelog] final class NoteLines(words: LogWords,
 
   private def line(journal: LogJournal, run: Run, at: Int,
       viewer: Option[PlayerId]): Option[Posted] = journal.event(at) match
+    // A step heading posts with its step's first line (`GameLogFormatter`).
+    case LogNoted(_, note, _) if ChronicleSteps.isHeading(note.key) => None
     case LogNoted(power, note, _) if posts(journal, run, at, power, note) =>
       for
         after <- journal.readyAfter(at)
@@ -80,12 +83,15 @@ private[gamelog] final class NoteLines(words: LogWords,
     * A shuffle forgets every card of its pile for every player
     * (`PileOperations`), so a state before the last shuffle in the action
     * is not one a card may be judged at: the World's gathered cards were
-    * faceup advisers when it began, and nobody knows them once shuffled. */
+    * faceup advisers when it began, and nobody knows them once shuffled.
+    * Hiding the held relics forgets them the same way: the Throne began
+    * with them faceup, and only their holders know them once hidden. */
   private def states(journal: LogJournal, run: Run, at: Int): Vector[ReadyGame] =
     val restated = (run.first until at).reverseIterator.find(index =>
       journal.event(index).isInstanceOf[WalkerStepRecorded])
     val shuffled = (run.first until at).reverseIterator.find(index =>
-      journal.ops(index).exists(_.operation.isInstanceOf[Shuffle]))
+      journal.ops(index).exists(step => step.operation.isInstanceOf[Shuffle] ||
+        step.operation.isInstanceOf[RelicsHidden]))
     val starts = Vector(run.first) ++ restated
     starts.filter(index => shuffled.forall(index > _))
       .flatMap(journal.readyBefore)

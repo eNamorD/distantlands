@@ -6,26 +6,41 @@
 9.1 turn 0 | [player:p1|p1]'s turn
 9.2 phase 0 | Wake
 10.0 victory 0 | [player:p1|p1] won as the Usurper
-15.0 phase 0 | Chronicle
-18.0 delta 1 | The Empire broke
-19.0 delta 1 | [player:p1|p1] became Chancellor
-21.0 decision 1 | [player:p1|p1] took the Throne task
-26.0 decision 1 | [player:p1|p1] took the World task
-31.0 decision 1 | [player:p1|p1] took the Beacon task
-39.0 decision 1 | [player:p2|p2] took the World task
-52.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
-58.0 delta 1 | [player:p3|p3] scored [amount:1 lineage point] with [card:L01|Iron Hand] (1 from Beast)
-63.0 decision 1 | The Oathkeeper goal became Protection
-72.0 decision 1 | [player:p2|p2] protected the stack of [card:180|Fae Merchant], [card:181|Second Chance] and [card:182|Pied Piper]
-77.0 decision 1 | [player:p2|p2] kept a Denizen as a starting adviser
-78.0 delta 1 | [cards:183 100 101 back denizen back denizen back denizen|6 cards] were dispossessed
-90.0 decision 1 | [player:p1|p1] chose Discord, Arcane and Order
-100.0 decision 1 | [player:p1|p1] welcomed [card:21|Naysayers] as a starting adviser
-102.0 delta 1 | [site:site:ancient-city|Ancient City] was archived
-103.0 delta 1 | [site:site:broken-peaks|Broken Peaks] was archived
-104.0 delta 1 | [site:site:desolate-shore|Desolate Shore] was archived
-105.0 delta 1 | [site:site:dunes|Dunes] was archived
-106.0 delta 1 | [site:site:fair-isle|Fair Isle] was archived
-107.0 delta 1 | [site:site:golden-valley|Golden Valley] was archived
-108.0 delta 1 | [site:site:buried-giant|Buried Giant] stays on the map with [card:L01|Iron Hand]
-109.0 delta 1 | [site:site:deep-woods|Deep Woods] stays on the map with [card:L01|Iron Hand]
+15.0 round 0 | Chronicle Phase
+17.0 phase 0 | The Sun
+20.0 section 1 chronicle-step-1@18 | Crown Chancellor
+20.1 delta 1 chronicle-step-1@18 | [player:p1|p1] became Chancellor
+23.0 section 1 chronicle-step-2@21 | Assign Tasks
+23.1 decision 1 chronicle-step-2@21 | [player:p1|p1] took the Throne task
+28.0 decision 1 chronicle-step-2@21 | [player:p1|p1] took the World task
+33.0 decision 1 chronicle-step-2@21 | [player:p1|p1] took the Beacon task
+41.0 decision 1 chronicle-step-2@21 | [player:p1|p1] gave [player:p2|p2] the World task
+43.0 phase 0 | The Throne
+61.0 section 1 chronicle-step-6@60 | Score Lineage Points
+61.1 delta 1 chronicle-step-6@60 | [player:p1|p1] scored [amount:3 lineage points]
+67.0 delta 1 chronicle-step-6@60 | [player:p3|p3] scored [amount:1 lineage point] with [card:L01|Iron Hand] (1 from Beast)
+73.0 section 1 chronicle-step-7@68 | Swear an Oath
+73.1 decision 1 chronicle-step-7@68 | [player:p1|p1] declared an Oath of Protection
+75.0 phase 0 | The World
+80.0 section 1 chronicle-step-1@79 | Protect and Dispossess
+80.1 delta 1 chronicle-step-1@79 | Stack 1: [card:180|Fae Merchant], [card:181|Second Chance] and [card:182|Pied Piper]
+81.0 delta 1 chronicle-step-1@79 | Stack 2: [card:183|Mushrooms], [card:100|Bandit Chief] and [card:101|Chaos Cult]
+86.0 decision 1 chronicle-step-1@79 | [player:p2|p2] protected the stack of [card:180|Fae Merchant], [card:181|Second Chance] and [card:182|Pied Piper]
+91.0 decision 1 chronicle-step-1@79 | [player:p2|p2] kept a Denizen as a starting adviser
+92.0 delta 1 chronicle-step-1@79 | [cards:183 100 101 back denizen back denizen back denizen|6 cards] were dispossessed
+95.0 phase 0 | The Beacon
+105.0 section 1 chronicle-step-0@95 | Introduce Newcomers
+105.1 decision 1 chronicle-step-0@95 | [player:p1|p1] chose Discord, Arcane and Order
+116.0 section 1 chronicle-step-1@111 | Welcome a Stranger
+116.1 decision 1 chronicle-step-1@111 | [player:p1|p1] welcomed [card:21|Naysayers] as a starting adviser
+119.0 phase 0 | The Stars
+120.0 section 1 chronicle-step-0@119 | Archive Rival Sites
+120.1 delta 1 chronicle-step-0@119 | [site:site:ancient-city|Ancient City] was archived
+121.0 delta 1 chronicle-step-0@119 | [site:site:broken-peaks|Broken Peaks] was archived
+122.0 delta 1 chronicle-step-0@119 | [site:site:desolate-shore|Desolate Shore] was archived
+123.0 delta 1 chronicle-step-0@119 | [site:site:dunes|Dunes] was archived
+124.0 delta 1 chronicle-step-0@119 | [site:site:fair-isle|Fair Isle] was archived
+125.0 delta 1 chronicle-step-0@119 | [site:site:golden-valley|Golden Valley] was archived
+127.0 section 1 chronicle-step-1@126 | Store
+127.1 delta 1 chronicle-step-1@126 | [site:site:buried-giant|Buried Giant] stays on the map with [card:L01|Iron Hand]
+128.0 delta 1 chronicle-step-1@126 | [site:site:deep-woods|Deep Woods] stays on the map with [card:L01|Iron Hand]

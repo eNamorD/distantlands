@@ -50,4 +50,4 @@ case object Heirloom extends ContributingPower:
             .toVector.flatMap(keep(holder, _))))))
 
   private def keep(holder: PlayerId, relic: RelicId): Vector[Operation] =
-    RelicKeep.kept(holder, relic, HeirloomCard.id)
+    RelicKeep.keep(holder, relic, HeirloomCard.id)

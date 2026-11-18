@@ -55,17 +55,18 @@ class ChronicleLegacyLogSuite extends munit.FunSuite:
         s"the Dispossessed with ${TheBrightBeaconCard.name}"), 1, viewer)
     }
 
-  test("Heirloom's relic is named to its holder alone (ruling 13; R19)"):
+  test("Heirloom's one line names its relic to its holder alone (ruling 13; " +
+      "R19)"):
     val script = ChronicleLogScripts.throneHeirloom
-    val public = s"${p2.value} kept a relic with ${HeirloomCard.name}"
+    val hidden = s"${p2.value} kept a Relic with ${HeirloomCard.name}"
     val named = s"${p2.value} kept ${CupOfPlentyCard.name} with " +
       HeirloomCard.name
     def heirloomLines(viewer: Option[PlayerId]) =
       format(script, viewer).map(text).filter(line =>
-        line == public || line == named)
-    assertEquals(heirloomLines(Some(p2)), Vector(public, named))
+        line == hidden || line == named)
+    assertEquals(heirloomLines(Some(p2)), Vector(named))
     Vector(Some(p1), Some(p3), None).foreach(viewer =>
-      assertEquals(heirloomLines(viewer), Vector(public), viewer))
+      assertEquals(heirloomLines(viewer), Vector(hidden), viewer))
 
   test("after the start of the Throne no other seat or the public can " +
       "name the relics Scatter Relics sets aside (R28)"):

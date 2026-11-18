@@ -110,6 +110,19 @@ class GameLogPaneSuite extends munit.FunSuite:
     assertEquals(items(content)(2).getAttribute("class"),
       "log-entry log-line log-section log-band log-band-search log-band-start")
 
+  test("a Chronicle step's heading and lines share one band named for the " +
+      "step's place in its task"):
+    val content = TestLog.sizedBox(total = 0, height = 0, scrolled = 0)
+    val heading = sectioned(20, LogKind.Section, "chronicle-step-3", 20,
+      "Build Edifice")
+    val built = sectioned(21, LogKind.Decision, "chronicle-step-3", 20,
+      "Red built Marble Fountains")
+    new GameLogPane(content).show("g|red", Vector(setup, heading, built),
+      Map.empty)
+    assertEquals(bands(content).drop(1), Vector(
+      "log-band log-band-chronicle-step-3 log-band-start",
+      "log-band log-band-chronicle-step-3 log-band-end"))
+
   test("an appended line of the same section takes over the band's end"):
     val content = TestLog.sizedBox(total = 0, height = 0, scrolled = 0)
     val pane = new GameLogPane(content)

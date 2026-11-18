@@ -45,7 +45,7 @@ case object HidingPlace extends ContributingPower:
               "next game"))),
           Branch((_, pending) => PowerAnswers.one(pending, decisionId(ruler))
             .collect { case DecisionOptionRef.Relic(relic) => relic }
-            .toVector.flatMap(RelicKeep.kept(ruler, _,
+            .toVector.flatMap(RelicKeep.keep(ruler, _,
               HallowedSpringCard.id))))))
 
   /** The player who rules Hiding Place's site, while it is on the map. */

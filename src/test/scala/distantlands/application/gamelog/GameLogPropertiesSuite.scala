@@ -70,7 +70,10 @@ class GameLogPropertiesSuite extends munit.FunSuite:
       entries.flatMap(_.section).distinct.foreach { section =>
         val own = entries.filter(_.section.contains(section))
         val tags = own.filter(_.kind == LogKind.Section)
-        if tagged(section.action) then
+        // A Chronicle step's band opens with its heading, as a tagged action
+        // does.
+        if tagged(section.action) ||
+            section.action.startsWith("chronicle-step-") then
           // A run that opens with no tag yet (a Muster still choosing its
           // source) has none; a run that has one shows it first.
           assert(tags.size <= 1, s"${script.name}: $tags")

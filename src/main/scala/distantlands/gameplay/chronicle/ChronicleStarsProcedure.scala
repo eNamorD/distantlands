@@ -20,6 +20,7 @@ object ChronicleStarsProcedure:
 
   /** The notes the Stars' steps write. */
   def noteKeys: Vector[NoteKey] = notes.declared ++
+    ChronicleSteps.noteKeys(TriggeredProcedureRef.ChronicleStars) ++
     IronHand.noteKeys(TriggeredProcedureRef.ChronicleStars)
 
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
@@ -30,14 +31,16 @@ object ChronicleStarsProcedure:
   private val steps: Vector[Operation] = Vector(
     // The constellation and narrative are not implemented (ruling 7).
     ChronicleWindows.step(PowerWindow.ChronicleWriteInTheStars, Vector.empty),
-    ChronicleWindows.step(PowerWindow.ChronicleArchiveRivalSites,
+    ChronicleWindows.step(ChronicleSteps.archiveRivalSites,
+      PowerWindow.ChronicleArchiveRivalSites,
       Vector(perSite(_.rivals, archived))),
     // Pieces return to their banks, which the Chronicle does not store;
     // the Empire's sites are already kept Cradlemost first.
     ChronicleWindows.step(PowerWindow.ChronicleCleanUp, Vector.empty),
     // Iron Hand's holder's sites stay in the Empire's place (Legacy
     // Chronicle powers design, ruling 21; R34).
-    ChronicleWindows.step(PowerWindow.ChronicleStore, Vector(Branch(
+    ChronicleWindows.step(ChronicleSteps.store,
+      PowerWindow.ChronicleStore, Vector(Branch(
       (state, _) =>
         if ChronicleLegacyRules.ironHand(state).isEmpty then
           Vector(perSite(_.empire, keptInEmpire))

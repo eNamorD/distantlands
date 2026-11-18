@@ -17,7 +17,7 @@ object SwearOath:
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone)
   private val notes = NoteSet(noteId)
   val swore: NoteKey = notes.key("swore", Vector(
-    NotePart.Text("The Oathkeeper goal became "), NotePart.Arg(0)))
+    NotePart.Arg(0), NotePart.Text(" declared an Oath of "), NotePart.Arg(1)))
   def noteKeys: Vector[NoteKey] = notes.declared
 
   val steps: Vector[Operation] = Vector(
@@ -31,11 +31,13 @@ object SwearOath:
             heading = Some("Swear an Oath"))),
           BuildOps((live, pending) => OathkeeperGoalChoice.set(live, pending,
             goalDecisionId, Set.empty), required = true)))),
-    Note(noteId, states => states.previous.collect {
-      case (before, after) if before.game.campaign.oathkeeperGoal !=
-          after.game.campaign.oathkeeperGoal =>
-        swore.sourceless(NoteArg.Goal(after.game.campaign.oathkeeperGoal))
-    }))
+    Note(noteId, states => for
+      (before, after) <- states.previous
+      if before.game.campaign.oathkeeperGoal !=
+        after.game.campaign.oathkeeperGoal
+      swearer <- states.now.game.current.chronicleTasks.get(ChronicleTask.Throne)
+    yield swore.sourceless(NoteArg.Player(swearer),
+      NoteArg.Goal(after.game.campaign.oathkeeperGoal))))
 
   /** The winning Vision's goal, set only when it is not already the goal.
     * With several winning Visions the winner chooses which one won. */

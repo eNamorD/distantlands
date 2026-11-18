@@ -15,12 +15,15 @@ object ChronicleWorldProcedure:
 
   /** The notes the World's steps write. */
   def noteKeys: Vector[NoteKey] = ProtectAndDispossess.noteKeys ++
+    ChronicleSteps.noteKeys(TriggeredProcedureRef.ChronicleWorld) ++
     OathsOfLoyalty.noteKeys(TriggeredProcedureRef.ChronicleWorld)
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
     ChronicleWindows.step(PowerWindow.ChronicleSeparateVisions,
       SeparateVisions.steps),
-    ChronicleWindows.step(PowerWindow.ChronicleGatherDenizens,
+    ChronicleWindows.step(ChronicleSteps.gatherDenizens,
+      PowerWindow.ChronicleGatherDenizens,
       GatherDenizens.steps(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleProtectAndDispossess,
+    ChronicleWindows.step(ChronicleSteps.protectAndDispossess,
+      PowerWindow.ChronicleProtectAndDispossess,
       ProtectAndDispossess.steps))

@@ -18,17 +18,21 @@ object ChronicleTaskAssignment:
   val giveBeacon: DecisionOptionRef.Button =
     DecisionOptionRef.Button("chronicle.give-beacon")
 
-  def steps(winner: PlayerId, note: ChronicleTask => Operation)
-      : Vector[Operation] = Vector(
+  /** The lines the step writes: a task taken by right, and a task given by
+    * choice, with who gave it. */
+  final case class Notes(took: ChronicleTask => Operation,
+      gave: (ChronicleTask, PlayerId) => Operation)
+
+  def steps(winner: PlayerId, notes: Notes): Vector[Operation] = Vector(
     BuildOps((_, _) => Right(Vector(
       ChronicleTaskAssigned(ChronicleTask.Throne, winner))), required = true),
-    note(ChronicleTask.Throne),
+    notes.took(ChronicleTask.Throne),
     bannerTask(ChronicleTask.World, worldDecisionId,
-      _.banners.peoplesFavor.holder, winner, "World", note),
+      _.banners.peoplesFavor.holder, winner, "World", notes),
     bannerTask(ChronicleTask.Beacon, beaconDecisionId,
-      _.banners.darkestSecret.holder, winner, "Beacon", note),
+      _.banners.darkestSecret.holder, winner, "Beacon", notes),
     Branch((state, _) => doubledHolder(state).toVector.flatMap(holder =>
-      giveAway(state, holder, note))))
+      giveAway(state, holder, notes))))
 
   private def assign(task: ChronicleTask, player: PlayerId): BuildOps =
     BuildOps((_, _) => Right(Vector(ChronicleTaskAssigned(task, player))),
@@ -36,9 +40,9 @@ object ChronicleTaskAssignment:
 
   private def bannerTask(task: ChronicleTask, decisionId: String,
       holder: CurrentGameState => Option[PlayerId], winner: PlayerId,
-      name: String, note: ChronicleTask => Operation): Operation =
+      name: String, notes: Notes): Operation =
     Branch((state, _) => holder(state.game.current) match
-      case Some(player) => Vector(assign(task, player), note(task))
+      case Some(player) => Vector(assign(task, player), notes.took(task))
       case None => Vector(
         Decide(decisionId, winner, DecisionQuery.ChooseOne(
           ChronicleTasks.playerOptions(ChronicleTasks.seated(state)),
@@ -47,14 +51,14 @@ object ChronicleTaskAssignment:
         BuildOps((_, pending) => ChronicleTasks.chosenPlayer(pending,
           decisionId).map(player => Vector(ChronicleTaskAssigned(task, player))),
           required = true),
-        note(task)))
+        notes.gave(task, winner)))
 
   private def doubledHolder(state: ReadyGame): Option[PlayerId] =
     val tasks = state.game.current.chronicleTasks
     tasks.get(ChronicleTask.World).filter(tasks.get(ChronicleTask.Beacon).contains)
 
   private def giveAway(state: ReadyGame, holder: PlayerId,
-      note: ChronicleTask => Operation): Vector[Operation] = Vector(
+      notes: Notes): Vector[Operation] = Vector(
     Decide(giveTaskDecisionId, holder, DecisionQuery.ChooseOne(Vector(
       DecisionOption.Button(giveWorld, "Give the World task"),
       DecisionOption.Button(giveBeacon, "Give the Beacon task")),
@@ -67,7 +71,8 @@ object ChronicleTaskAssignment:
       task <- givenTask(pending)
       player <- ChronicleTasks.chosenPlayer(pending, giveRecipientDecisionId)
     yield Vector(ChronicleTaskAssigned(task, player)), required = true),
-    Branch((_, pending) => givenTask(pending).toOption.toVector.map(note)))
+    Branch((_, pending) => givenTask(pending).toOption.toVector
+      .map(notes.gave(_, holder))))
 
   private def givenTask(pending: PendingTree)
       : Either[OathViolation, ChronicleTask] =

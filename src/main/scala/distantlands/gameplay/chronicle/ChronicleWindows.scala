@@ -30,3 +30,10 @@ object ChronicleWindows:
     * (hygiene pass, 2026-11-15). */
   def step(window: PowerWindow, ops: Vector[Operation]): Operation =
     Sequence(ops, Some(window))
+
+  /** `step` that opens a Game Log heading (`ChronicleSteps`). The heading's
+    * note sits outside the window, so a power that replaces the step's
+    * operations leaves it standing. */
+  def step(heading: ChronicleSteps.Heading, window: PowerWindow,
+      ops: Vector[Operation]): Operation =
+    Sequence(Vector(heading.note, step(window, ops)))

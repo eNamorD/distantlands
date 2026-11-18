@@ -4,6 +4,7 @@ import scala.util.chaining.scalaUtilChainingOps
 import distantlands.gameplay.actions.BannerRules
 import distantlands.gameplay.powerresolver.PhasePower
 import distantlands.gameplay.walker.LogNoted
+import distantlands.gameplay.chronicle.ChronicleSteps
 import distantlands.model._
 
 /** A phase power's notes as plain sentences, for the card suites (power log
@@ -20,8 +21,10 @@ object NoteText:
   /** The notes the power `id`, declaring `keys`, journaled in `events`. */
   def said(id: PowerId, keys: Vector[NoteKey], events: Vector[OathEvent])
       : Vector[Said] =
-    events.collect { case LogNoted(`id`, note, covers) =>
-      Said(note.key, sentence(keys, note), covers) }
+    events.collect {
+      // A step heading is the Game Log's grouping, never a line.
+      case LogNoted(`id`, note, covers) if !ChronicleSteps.isHeading(note.key) =>
+        Said(note.key, sentence(keys, note), covers) }
 
   /** `note` as the plain sentence its key in `keys` words. */
   def sentence(keys: Vector[NoteKey], note: LogNote): String =
