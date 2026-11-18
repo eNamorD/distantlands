@@ -263,10 +263,72 @@ class ChroniclePagesSuite extends munit.FunSuite:
       history.back("/")
       accepted(shelfOver(storage).put(entry("Ember Throne"),
         replacing = Some("Ashen Crown")))
-      history.back("/new-game")
+      history.back("/new-game?chronicle=Ashen%20Crown")
       assertEquals(history.replaced.toVector, Vector("/"))
       assert(shows(browser, "new-chronicle"))
       assert(!shows(browser, "create-trusted-game"))
+
+  test("Continue names its Chronicle in the address"):
+    TestBrowser.useSynchronously(): browser =>
+      val history = FakePageHistory()
+      startPages(browser, "/", ChronicleFixtures.devices(
+        Some(storageWithAshenCrown()), history = history))
+      browser.click("continue-chronicle")
+      assertEquals(history.pushed.toVector,
+        Vector("/new-game?chronicle=Ashen%20Crown"))
+
+  test("/new-game names a saved Chronicle and opens player selection for " +
+      "it, as after a reload"):
+    TestBrowser.use(): browser =>
+      val storage = storageWithAshenCrown()
+      accepted(shelfOver(storage).put(entry("Iron Vow")))
+      val history = FakePageHistory()
+      val requests = ArrayBuffer.empty[RecordedRequest]
+      Main.start(browser.mount, "/new-game", trustedAlpha = true,
+        creatingTransport(requests, None),
+        devices = ChronicleFixtures.devices(Some(storage), history = history),
+        search = "?chronicle=Ashen%20Crown")
+      assertEquals(history.replaced.toVector, Vector.empty)
+      assertEquals(browser.byClass("chronicle-continued").head.textContent,
+        "Chronicle: Ashen Crown")
+      browser.click("create-trusted-game")
+      browser.settle.map { _ =>
+        assertEquals(sentChronicles(requests),
+          Vector(ChronicleRequest.Saved(entry("Ashen Crown").json)))
+      }
+
+  test("/new-game naming a Chronicle that is not saved returns to /"):
+    TestBrowser.useSynchronously(): browser =>
+      val history = FakePageHistory()
+      Main.start(browser.mount, "/new-game", trustedAlpha = true,
+        creatingTransport(ArrayBuffer.empty, None),
+        devices = ChronicleFixtures.devices(Some(storageWithAshenCrown()),
+          history = history),
+        search = "?chronicle=Ember%20Throne")
+      assertEquals(history.replaced.toVector, Vector("/"))
+      assert(shows(browser, "new-chronicle"))
+      assert(!shows(browser, "create-trusted-game"))
+
+  test("the browser's Back while a Continue game is being created stays " +
+      "on its player selection"):
+    TestBrowser.use(): browser =>
+      val history = FakePageHistory()
+      val pending = Promise[Either[GameClientFailure, TransportResponse]]()
+      Main.start(browser.mount, "/", trustedAlpha = true,
+        ScriptedTransport((_, _, _) => pending.future),
+        devices = ChronicleFixtures.devices(Some(storageWithAshenCrown()),
+          history = history))
+      browser.click("continue-chronicle")
+      browser.click("create-trusted-game")
+      history.back("/")
+      assertEquals(history.pushed.toVector, Vector(
+        "/new-game?chronicle=Ashen%20Crown",
+        "/new-game?chronicle=Ashen%20Crown"))
+      pending.success(Right(TransportResponse(201,
+        seatLinksResponse("Ashen Crown"))))
+      browser.settle.map { _ =>
+        assertEquals(browser.byClass("seat-link").size, 2)
+      }
 
   test("refused storage still creates from a new Chronicle"):
     TestBrowser.use(): browser =>

@@ -140,14 +140,23 @@ field (New Chronicle; default "Chronicle 2026-10-28" with the current date;
 must not match a saved name) or the loaded Chronicle's name as text (Continue
 Chronicle), and a Back link to `/`. Create game sends `New(name)` or
 `Saved(json)`. On success with `New`, the browser saves the returned entry and
-loads it. A refusal shows on this page. Opening the page without having chosen
-New or Continue redirects to `/`. While a game is being created, the page
+loads it. A refusal shows on this page. Continue Chronicle names its Chronicle in the
+address, `/new-game?chronicle=<name>`, so a reload, Back and Forward keep it and
+the table's Start Next Game can link to it; a name no longer saved redirects to
+`/`. New Chronicle has no name yet, so it lives only in the page's memory:
+opening the page without having chosen New or naming a Chronicle redirects to
+`/`. While a game is being created, the page
 stays: its Back is disabled, and the browser's Back or Forward returns to
 `/new-game`, since the seat links appear only here.
 
 ### Automatic save
 
-When the projection carries an evolved Chronicle, the browser looks up the entry
+When the projection carries an evolved Chronicle, the table shows a row above
+its export controls: **Back to Main Menu** (to the Chronicle page) and **Start
+Next Game** (to `/new-game?chronicle=<name>` for the saved Chronicle). Start Next
+Game is withheld, with a hover reason, until the Chronicle is saved in the
+browser: when the browser keeps nothing, a write is refused, or the save waits
+on its dialog. The browser looks up the entry
 with the game's Chronicle name:
 
 | Entry with that name | Action |

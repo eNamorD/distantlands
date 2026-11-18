@@ -25,10 +25,12 @@ class TableChronicleSuite extends munit.FunSuite:
       storage: Option[ChronicleStorage],
       requests: ArrayBuffer[RecordedRequest] = ArrayBuffer.empty):
     var repaints = 0
+    var mainMenus = 0
+    val nextGames = ArrayBuffer.empty[String]
     val chronicle = new TableChronicle(browser.mount,
       storage.map(new ChronicleShelf(_, ChronicleFixtures.clock)),
       ChronicleClient(convertingTransport(requests)), FakeChronicleFiles(),
-      () => repaints += 1)
+      () => repaints += 1, () => mainMenus += 1, nextGames += _)
     def show(value: Option[ChronicleProjection]): Option[dom.Element] =
       val node = chronicle.section(value)
       node.foreach(browser.mount.appendChild)
@@ -149,6 +151,99 @@ class TableChronicleSuite extends munit.FunSuite:
         assertEquals(prompts(browser), Vector.empty)
         assertEquals(table.repaints, 1)
       }
+
+  private def wayOn(node: Option[dom.Element]): Vector[dom.html.Button] =
+    present(node, "a section").querySelectorAll(".table-chronicle-way-on button")
+      .toVector.map(_.asInstanceOf[dom.html.Button])
+
+  test("a row above the export controls offers the Main Menu and the next " +
+      "game"):
+    TestBrowser.useSynchronously(): browser =>
+      val node = Table(browser, Some(new MemoryChronicleStorage()))
+        .show(ashenCrown(Some(evolved)))
+      val section = present(node, "a section")
+      assertEquals(wayOn(node).map(_.textContent),
+        Vector("Back to Main Menu", "Start Next Game"))
+      val row = present(Option(section.querySelector(
+        ".table-chronicle-way-on")), "the row")
+      assert(row.nextElementSibling eq
+        section.querySelector(".chronicle-export-controls"))
+
+  test("before the Chronicle Phase there is no way on"):
+    TestBrowser.useSynchronously(): browser =>
+      val node = Table(browser, Some(new MemoryChronicleStorage()))
+        .show(ashenCrown(None))
+      assertEquals(present(node, "a section")
+        .querySelector(".table-chronicle-way-on"), null)
+
+  test("Back to Main Menu leaves the table"):
+    TestBrowser.useSynchronously(): browser =>
+      val table = Table(browser, Some(new MemoryChronicleStorage()))
+      table.show(ashenCrown(Some(evolved)))
+      browser.click("back-to-main-menu")
+      assertEquals(table.mainMenus, 1)
+      assertEquals(table.nextGames.toVector, Vector.empty)
+
+  test("Start Next Game goes to player selection for the saved Chronicle"):
+    TestBrowser.useSynchronously(): browser =>
+      val table = Table(browser, Some(new MemoryChronicleStorage()))
+      table.show(ashenCrown(Some(evolved)))
+      browser.click("start-next-game")
+      assertEquals(table.nextGames.toVector,
+        Vector("/new-game?chronicle=Ashen%20Crown"))
+
+  test("Start Next Game follows a Chronicle saved under a new name"):
+    TestBrowser.use(): browser =>
+      val table = Table(browser,
+        Some(storageHolding(entry("Ashen Crown", "d-9"))))
+      table.show(ashenCrown(Some(evolved)))
+      browser.click("chronicle-save-new")
+      browser.settle.map { _ =>
+        wayOn(table.show(ashenCrown(Some(evolved)))).last.click()
+        assertEquals(table.nextGames.toVector,
+          Vector("/new-game?chronicle=Ashen%20Crown%20(2)"))
+      }
+
+  test("Start Next Game says why it is withheld while the save waits on " +
+      "the dialog"):
+    TestBrowser.useSynchronously(): browser =>
+      val table = Table(browser,
+        Some(storageHolding(entry("Ashen Crown", "d-9"))))
+      val next = wayOn(table.show(ashenCrown(Some(evolved)))).last
+      assertEquals(next.getAttribute("data-tip"),
+        "Save the Chronicle in this browser first")
+      assertEquals(next.getAttribute("aria-disabled"), "true")
+      next.click()
+      assertEquals(table.nextGames.toVector, Vector.empty)
+
+  test("Start Next Game says why it is withheld in a browser that keeps " +
+      "nothing"):
+    TestBrowser.useSynchronously(): browser =>
+      val table = Table(browser, None)
+      val next = wayOn(table.show(ashenCrown(Some(evolved)))).last
+      assertEquals(next.getAttribute("data-tip"),
+        "This browser cannot keep Chronicles; download the JSON to keep it")
+      next.click()
+      assertEquals(table.nextGames.toVector, Vector.empty)
+
+  test("Start Next Game is withheld after a refused write"):
+    TestBrowser.useSynchronously(): browser =>
+      val refusing = new MemoryChronicleStorage():
+        override def write(key: String, value: String): Boolean = false
+      val table = Table(browser, Some(refusing))
+      val next = wayOn(table.show(ashenCrown(Some(evolved)))).last
+      assertEquals(next.getAttribute("aria-disabled"), "true")
+
+  test("Start Next Game opens once Overwrite has saved the Chronicle"):
+    TestBrowser.useSynchronously(): browser =>
+      val table = Table(browser,
+        Some(storageHolding(entry("Ashen Crown", "d-9"))))
+      table.show(ashenCrown(Some(evolved)))
+      browser.click("chronicle-overwrite")
+      val next = wayOn(table.show(ashenCrown(Some(evolved)))).last
+      next.click()
+      assertEquals(table.nextGames.toVector,
+        Vector("/new-game?chronicle=Ashen%20Crown"))
 
   test("a redraw keeps the export controls, and what they show"):
     TestBrowser.useSynchronously(): browser =>

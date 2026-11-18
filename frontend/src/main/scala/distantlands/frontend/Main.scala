@@ -12,25 +12,26 @@ object Main:
     HoverTip.install()
     start(mount, dom.window.location.pathname,
       mount.getAttribute("data-runtime-mode") == "trusted-alpha",
-      new SameOriginJsonTransport)
+      new SameOriginJsonTransport, search = dom.window.location.search)
 
   private[frontend] def start(mount: dom.Element, pathname: String,
       trustedAlpha: Boolean, transport: JsonTransport,
       navigate: String => Unit = url => dom.window.location.assign(url),
-      devices: ChronicleDevices = ChronicleDevices.browser): Unit =
+      devices: ChronicleDevices = ChronicleDevices.browser,
+      search: String = ""): Unit =
     val startPage = pathname == "/" || pathname == ChroniclePages.NewGamePath
     ServerUiSupport.canonicalGameId(pathname) match
       case Some(gameId) =>
         ServerModeUi.start(mount, new TrustedHttpGameClient(transport), Some(gameId),
-          transport = transport, devices = devices)
+          transport = transport, devices = devices, nextGame = navigate)
       case None if trustedAlpha && startPage =>
-        ChroniclePages.start(mount, pathname, transport, devices)
+        ChroniclePages.start(mount, pathname + search, transport, devices)
       case None if trustedAlpha => mount.textContent = "Open your assigned seat link."
       case None if ServerUiSupport.queryParameter("gameId").isEmpty =>
         // Development games are created exactly like trusted ones, then opened
         // in the development table as the first listed player.
-        ChroniclePages.start(mount, pathname, transport, devices, Some(created =>
+        ChroniclePages.start(mount, pathname + search, transport, devices, Some(created =>
           navigate(ServerUiSupport.sessionUrl(created.gameId, created.seats.head.playerId))))
       case None => ServerModeUi.start(mount, new HttpGameClient(transport),
         startOver = () => navigate(DevelopmentStartUrl), transport = transport,
-        devices = devices)
+        devices = devices, nextGame = navigate)
