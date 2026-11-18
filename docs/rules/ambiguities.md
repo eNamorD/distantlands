@@ -142,6 +142,7 @@ Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chron
 23. **Caged warbands at the Throne.** When the Throne returns the relics to the Reliquary, every warband on a card (Obsidian Cage) returns to its supply, since the game has ended; no board takes them (user, 2026-11-03).
 
 24. **Shape Empire keeps a site whole.** The Throne holder chooses which of the sites they rule stay in the next Empire, every one chosen to start with and at least one kept. Each site left out loses all the holder's warbands, and a site that stays keeps all of them: the CR's removal of "any" warbands is not offered one at a time, so a player cannot shed some warbands from a site they keep ruling. With one ruled site there is nothing to choose, even when it holds several warbands (owner, 2026-11-17).
+25. **Build Edifice builds at most one edifice.** Each suit has one available edifice. The builder buries one card at a site they rule, of any suit that has an available edifice, and the available edifice of the buried card's suit takes its place, intact. The CR's "any number" of edifices and its per-suit offers are not read as several burials: one card is buried, or none (owner, 2026-11-17). A Great Architect holder who is an Imperial buries any card, then picks which of the available edifices replaces it, and with one available edifice nothing is asked ([Legacy Chronicle powers rulings](#legacy-chronicle-powers-rulings), item 16).
 
 ## Foundations rulings
 
@@ -221,7 +222,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 13. **Two Sun windows hold the added steps:** one before Flip Legacies, for Gatekeeper, and one after Shuffle, for Chronicler (R5).
 14. **Gatekeeper and Chronicler each ask one choose-one, Decline first.** Gatekeeper's other options are the takeable legacies, each naming its holder, and it asks only when one is takeable; Chronicler's other option is Declare (R6).
 15. **Rival protects with one choose-many.** In Shape Empire, after the warbands are removed, Rival's holder chooses any of the cards the step would discard; those stay, the rest are discarded as before (design, ruling 9).
-16. **Great Architect performs Build Edifice for an Imperial holder,** and may bury a card for any available edifice, the topmost of each suit, never the whole deck. When the holder is the Throne holder, only the matching rule changes (design, ruling 10).
+16. **Great Architect performs Build Edifice for an Imperial holder,** who buries one card of any suit and picks which available edifice, the topmost of each suit, replaces it, never the whole deck ([Chronicle rulings](#chronicle-rulings), item 25). When the holder is the Throne holder, only the matching rule changes (design, ruling 10).
 17. **Revolutionary discards with one choose-many** after Build Edifice, among the denizens at Imperial sites, sent where Shape Empire sends them (design, ruling 11).
 18. **Reformer is a step at the start of the Throne,** only when its holder won: moves and swaps between sites they rule, ignoring locks, each one decision, until Done (design, ruling 12).
 19. **A card with an unbuilt half leaves holding** with its whole text and counts as implemented; the ROADMAP names the unbuilt half. Rival does so now; The Ear, Oaths of Loyalty and Iron Hand will (R7). Historical: every half has since landed, and the holding package and the implemented status are gone ([Last Chronicle powers design](../superpowers/specs/2026-11/2026-11-16-last-chronicle-powers-design.md), slice 4).
@@ -266,7 +267,7 @@ Rulings for the legacies' Chronicle powers ([Legacy Chronicle powers design](../
 58. **Royal Line's window** is the Sun's first, before Reveal Relics and Iron Hand's Sun checkpoint (R40); since Legacy in-play powers R36 it runs before Start Chronicle instead ([Legacy in-play powers rulings](#legacy-in-play-powers-rulings), item 60). Crown Chancellor and Assign Tasks read the winner when each is reached.
 59. **Royal Line's line** is "p3 named p2 the winner with Royal Line", only when the winner changes; the end-of-game line stays as it was, and the result banner follows the result (R41).
 60. **Superseded:** Build Edifice's second builder slot beside Iron Hand, which R43 fixed, no longer exists (R43, superseded by R32's re-ruling).
-61. **Build Edifice offers only the edifices available when the step began:** an edifice buried earlier in the step goes to the edifice deck but is not offered by a later suit (R45).
+61. **Build Edifice offers only the edifices available when the step began:** an edifice buried in the step goes to the edifice deck but is not offered in its place (R45; [Chronicle rulings](#chronicle-rulings), item 25).
 62. **The Ear's and The Bright Beacon's peeks write no Game Log line;** each power writes its one line, and the holder still knows the cards (R47).
 63. **Under Teeming World, Secret Society's rebuild shuffles only the Visions;** the Oaths burials stay below them in their order. Seer may still place a Vision below a buried card (R49).
 64. **After Seer's placement or Secret Society's rebuild, the Oaths holder still knows the cards they buried** (R50).

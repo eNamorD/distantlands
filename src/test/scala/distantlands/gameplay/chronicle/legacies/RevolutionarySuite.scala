@@ -137,12 +137,11 @@ class RevolutionarySuite extends munit.FunSuite:
   test("a walk resumed at Revolutionary's question after a build applies " +
       "the answer"):
     // Build Edifice first buries Threatening Roar for its suit's edifice.
-    val suit = catalog.denizen(ThreateningRoarCard.id).get.suit
     val building: PartialFunction[Decide, DecisionAnswer] =
       case decide if decide.decisionId ==
-          distantlands.gameplay.chronicle.BuildEdifice.decisionId(suit) =>
-        DecisionAnswer.ChooseManyAnswer(Vector(
-          DecisionOptionRef.Denizen(ThreateningRoarCard.id)))
+          distantlands.gameplay.chronicle.BuildEdifice.cardDecisionId =>
+        DecisionAnswer.ChooseOneAnswer(
+          DecisionOptionRef.Denizen(ThreateningRoarCard.id))
     val run = throne(empire, building.orElse(
       discarding(DecisionOptionRef.Denizen(FaeMerchantCard.id))))
     assert(!onMap(run.ready, FaeMerchantCard.id))

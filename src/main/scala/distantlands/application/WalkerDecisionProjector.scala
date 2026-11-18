@@ -2,7 +2,7 @@ package distantlands.application
 
 import distantlands.catalog.ExecutableCatalog
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
-import distantlands.gameplay.chronicle.ResolveLegacies
+import distantlands.gameplay.chronicle.{BuildEdifice, ResolveLegacies}
 import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import distantlands.gameplay.powerresolver.PhasePowers
 import distantlands.gameplay.walker.{OptionWarnings, ProcedureWalker,
@@ -12,7 +12,7 @@ import distantlands.protocol.projection.{CardDetailsProjection,
   CountedConfirmProjection, DecisionOptionProjection, DecisionQueryProjection,
   DecisionSectionProjection, DecisionSlotProjection, DecisionSummaryProjection,
   DecisionTallyProjection, DecisionTallyValueProjection,
-  WalkerDecisionProjection, WalkerRollOutcomeProjection,
+  PublicPreviewProjection, WalkerDecisionProjection, WalkerRollOutcomeProjection,
   WalkerStatusProjection, WalkerWaitingProjection}
 
 /** Projects a parked generic-walker position (`CurrentGameState.walkerPending`
@@ -112,6 +112,21 @@ private[application] final class WalkerDecisionProjector(
     projection <- this.parked(parked.procedure, parked.tree, context.ready,
       parked.pending, parked.powers, viewer, context.viewer)
   yield projection
+
+  /** The cards every viewer sees beside a parked decision, whoever may
+    * answer it: Build Edifice's available edifices, faceup and intact as
+    * they would be built. */
+  def publicPreview(context: ScopedProjectionContext)
+      : Option[PublicPreviewProjection] = for
+    parked <- parkedPosition(context)
+    if ProcedureWalker.openDecisions(context.ready, parked.tree,
+      parked.pending, parked.powers, probing = false)
+      .exists(_.decisionId == BuildEdifice.cardDecisionId)
+    cards = BuildEdifice.available(catalog, context.current).map((_, id) =>
+      presentation.edificeCardDetails(
+        EdificeState(id, EdificeSide.Intact, Tokens.empty)))
+    if cards.nonEmpty
+  yield PublicPreviewProjection("Available edifices", cards)
 
   /** The public "who is this waiting on" projection, for every viewer who
     * owes no answer -- Task 5's counterpart to `project`. Built off the same

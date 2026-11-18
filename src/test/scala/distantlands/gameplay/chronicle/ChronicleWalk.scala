@@ -102,6 +102,9 @@ object ChronicleWalk:
     * a partition, each section's minimum. */
   def plainestAnswer(decide: Decide)(using munit.Location): DecisionAnswer =
     decide.query match
+      // Build Edifice builds nothing: the first option would bury a card.
+      case _ if decide.decisionId == BuildEdifice.cardDecisionId =>
+        DecisionAnswer.ChooseOneAnswer(BuildEdifice.skip)
       case one: DecisionQuery.ChooseOne =>
         DecisionAnswer.ChooseOneAnswer(one.options.filter(_.available).head.ref)
       case many: DecisionQuery.ChooseMany =>

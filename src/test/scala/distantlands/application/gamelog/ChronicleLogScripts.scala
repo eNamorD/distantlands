@@ -291,7 +291,7 @@ object ChronicleLogScripts:
       case park if park.decisionId == Rival.decisionId(p3) ||
           park.decisionId == Revolutionary.decisionId(p3) =>
         firstCard(park.decide)
-      case park if park.decisionId == BuildEdifice.decisionId(Suit.Discord) =>
+      case park if park.decisionId == BuildEdifice.cardDecisionId =>
         firstCard(park.decide)
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("throne-legacies", service, p1)

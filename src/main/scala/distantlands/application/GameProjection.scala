@@ -137,6 +137,7 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
         reliquary = presentation.reliquary(context.ready, context.viewer),
         walkerWaiting = pending.walkerWaiting,
         temporaryHandPreview = handPreview(context, pending.walkerDecision),
+        publicPreview = walkerDecisions.publicPreview(context),
         supplyMaximum = SupplyTrack.Maximum,
         supplyBands = FinishRestProcedure.ExileSupply.refreshBands.map(band =>
           SupplyBandProjection(band.warbandsInBank.minimum,
