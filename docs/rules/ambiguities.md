@@ -141,6 +141,8 @@ Rulings given by the project owner for the Chronicle Phase ([chronicle.md](chron
 
 23. **Caged warbands at the Throne.** When the Throne returns the relics to the Reliquary, every warband on a card (Obsidian Cage) returns to its supply, since the game has ended; no board takes them (user, 2026-11-03).
 
+24. **Shape Empire keeps a site whole.** The Throne holder chooses which of the sites they rule stay in the next Empire, every one chosen to start with and at least one kept. Each site left out loses all the holder's warbands, and a site that stays keeps all of them: the CR's removal of "any" warbands is not offered one at a time, so a player cannot shed some warbands from a site they keep ruling. With one ruled site there is nothing to choose, even when it holds several warbands (owner, 2026-11-17).
+
 ## Foundations rulings
 
 Rulings and readings for the six foundation setup cards ([Foundations design](../superpowers/specs/2026-11/2026-11-11-foundations-design.md)). Items 1 to 8 were taken with the project owner on 2026-11-10 and 2026-11-11; items 1 to 5 are the Foundations design's rulings 1 to 5. Items 9 to 15 are the readings each slice's plan took, the most literal reading of the New Foundations text; the owner approved them on 2026-11-12, and in a second review that day decided the ones an item marks as the owner's.

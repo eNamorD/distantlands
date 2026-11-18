@@ -93,15 +93,14 @@ class RivalSuite extends munit.FunSuite:
 
   test("a walk resumed at Rival's question keeps what was chosen, after " +
       "the warband removal changed the map"):
-    // Two Imperial warbands: Shape Empire first asks p1 to remove some.
+    // Two Imperial sites: Shape Empire first asks p1 which sites stay.
     val table = outside.warbandsAt(BrokenPeaksSite, p1, 1)
       .legacy(p2, RivalCard)
     val removing: PartialFunction[Decide, DecisionAnswer] =
       case decide if decide.decisionId ==
           distantlands.gameplay.chronicle.ShapeEmpire.removeDecisionId =>
-        DecisionAnswer.DistributeAnswer(Vector(
-          DistributeAmount(DecisionOptionRef.Site(BrokenPeaksSite.id), 1),
-          DistributeAmount(DecisionOptionRef.Site(AncientCitySite.id), 0)))
+        DecisionAnswer.ChooseManyAnswer(Vector(
+          DecisionOptionRef.Site(AncientCitySite.id)))
     val run = throne(table, removing.orElse(
       keeping(DecisionOptionRef.Denizen(ThreateningRoarCard.id))))
     assert(onMap(run.ready, ThreateningRoarCard.id))

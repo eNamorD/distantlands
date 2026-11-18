@@ -181,7 +181,9 @@ final case class DecisionOptionProjection(kind: String, id: String,
     buries: Boolean = false,
     variant: Option[String] = None,
     group: Option[String] = None,
-    consent: Option[ConsentAskProjection] = None):
+    consent: Option[ConsentAskProjection] = None,
+    /** A choose-many's option the question opens with picked. */
+    preselected: Boolean = false):
   /** Whether the viewer may choose it: available, or available with a
     * warning. */
   def choosable: Boolean = state == "available" || state == "warning"

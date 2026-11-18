@@ -441,6 +441,20 @@ class DecisionQuerySuite extends munit.FunSuite:
     assertEquals(wellFormed(many(1, sites :+ sites.head)),
       invalid("decision recover.choice declares duplicate options"))
 
+  test("a choose-many may open with options selected, if they are pickable " +
+      "and within its range"):
+    def opening(selected: Vector[DecisionOption], min: Int = 1) =
+      many(min, max = Some(3)).copy(selected = selected)
+    assertEquals(wellFormed(opening(sites)), Right(()))
+    assertEquals(wellFormed(opening(sites.take(1))), Right(()))
+    assertEquals(wellFormed(opening(sites, min = 0)), Right(()))
+    assertEquals(wellFormed(opening(Vector(DecisionOption.Site(siteRef("z"))))),
+      invalid("decision recover.choice opens with an option selected that " +
+        "may not be chosen"))
+    assertEquals(wellFormed(many(2, max = Some(3)).copy(
+      selected = sites.take(1))), invalid("decision recover.choice opens " +
+        "with 1 selected, outside 2..3"))
+
   test("a choose-many whose only blocked options are askable still asks: " +
       "none may be picked yet, and none is an answer"):
     val askable = DecisionOption.Unavailable(sites.head, OptionReason.Askable(
