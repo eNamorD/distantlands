@@ -31,6 +31,11 @@ object ChronicleCrown:
       .map(l => l.id -> campaign.boxRoles.getOrElse(l.id, l.role))
     (seated ++ boxed).sortBy(_._1.value)
 
+  /** The lineages holding an Imperial role, the Chancellor's and the
+    * Citizens', seated or boxed: the Empire that stands. */
+  def imperials(ready: ReadyGame): Vector[LineageId] =
+    roles(ready).collect { case (lineage, role) if role.isImperial => lineage }
+
   /** If an Exile won: the former Chancellor and every Citizen, even in the
     * box, become Exiles; the Reliquary is discarded; Imperial warbands leave
     * the map without bandits taking their place; each site they held then

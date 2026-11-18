@@ -4,7 +4,7 @@ import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   ChronicleSunProcedure, ResolveLegacies, BuildEdifice, IntroduceNewcomers, LineageScoring,
   OfferCitizenship, ProtectAndDispossess, RelicKeep, ShapeEmpire,
   ShapeFoundation, SwearOath, WelcomeStranger,
-  ChronicleStarsProcedure}
+  ChronicleStarsProcedure, ChronicleSteps}
 import distantlands.gameplay.chronicle.legacies.{Chronicler, Gatekeeper,
   IronHand, OathsOfLoyalty, Reformer, Revolutionary, Rival,
   RoyalLine, TheBrightBeacon, TheEar}
@@ -361,9 +361,11 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     case TriggeredProcedureRef.ChronicleThrone => chronicleThrone
     case TriggeredProcedureRef.ChronicleWorld => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
+        ProtectAndDispossess.stackShown -> LogKind.Delta,
         ProtectAndDispossess.protectedStack -> LogKind.Decision,
         ProtectAndDispossess.keptAdviser -> LogKind.Decision,
         ProtectAndDispossess.dispossessed -> LogKind.Delta) ++
+        headings(TriggeredProcedureRef.ChronicleWorld) ++
         OathsOfLoyalty.noteKeys(TriggeredProcedureRef.ChronicleWorld)
           .map(_ -> LogKind.Decision)),
       narratedPrefixes = Vector("chronicle.world."), isSection = false)
@@ -373,6 +375,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         IntroduceNewcomers.returned -> LogKind.Delta,
         WelcomeStranger.keptAdviser -> LogKind.Decision,
         ShapeFoundation.keptAll -> LogKind.Decision) ++
+        headings(TriggeredProcedureRef.ChronicleBeacon) ++
         ShapeFoundation.restored.values.map(_ -> LogKind.Decision) ++
         OathsOfLoyalty.noteKeys(TriggeredProcedureRef.ChronicleBeacon)
           .map(_ -> LogKind.Decision) ++
@@ -382,7 +385,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       lines = ActionLineSource.Notes(Map(
         ChronicleStarsProcedure.archived -> LogKind.Delta,
         ChronicleStarsProcedure.keptInEmpire -> LogKind.Delta,
-        IronHand.stored -> LogKind.Delta)),
+        IronHand.stored -> LogKind.Delta) ++
+        headings(TriggeredProcedureRef.ChronicleStars)),
       narratedPrefixes = Vector.empty, isSection = false)
     case TriggeredProcedureRef.ChronicleFinish =>
       ProcedureLog(tag = None, isSection = false,
@@ -427,6 +431,12 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     narratedPrefixes = Vector("chronicle.final-winner.royal-line."),
     isSection = false)
 
+  /** A task's step headings: never posted as lines, since the log opens each
+    * with the step's first line, but declared at the kind they open. */
+  private def headings(procedure: TriggeredProcedureRef)
+      : Vector[(NoteKey, LogKind)] =
+    ChronicleSteps.noteKeys(procedure).map(_ -> LogKind.Section)
+
   private lazy val chronicleSun: ProcedureLog = ProcedureLog(tag = None,
     lines = ActionLineSource.Notes(Map(
       ChronicleSunProcedure.empireBroke -> LogKind.Delta,
@@ -443,8 +453,11 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       Chronicler.declared -> LogKind.Decision,
       Chronicler.scored -> LogKind.Delta) ++
       ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
-      ChronicleTask.all.map(task =>
-        ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),
+      Vector(ChronicleSunProcedure.exiled -> LogKind.Delta) ++
+      ChronicleTask.all.flatMap(task => Vector(
+        ChronicleSunProcedure.tookTask(task) -> LogKind.Decision,
+        ChronicleSunProcedure.gaveTask(task) -> LogKind.Decision)) ++
+      headings(TriggeredProcedureRef.ChronicleSun)),
     narratedPrefixes = Vector("chronicle.assign.",
       "chronicle.sun.public-legacy.", "chronicle.sun.legacy-cap.",
       "chronicle.sun.legacy."),
@@ -462,6 +475,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       OfferCitizenship.offered -> LogKind.Decision,
       OfferCitizenship.accepted -> LogKind.Decision,
       OfferCitizenship.declined -> LogKind.Decision,
+      OfferCitizenship.noExiles -> LogKind.Decision,
       OfferCitizenship.reactivated -> LogKind.Delta,
       OfferCitizenship.capped -> LogKind.Decision,
       Rival.protectedWith -> LogKind.Decision,
@@ -471,9 +485,9 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       Revolutionary.discardedWith -> LogKind.Decision,
       Reformer.moved -> LogKind.Decision,
       Reformer.swapped -> LogKind.Decision,
-      RelicKeep.keptPublic -> LogKind.Decision,
-      RelicKeep.keptPrivate -> LogKind.Decision,
-      TheEar.placed -> LogKind.Decision)),
+      RelicKeep.kept -> LogKind.Decision,
+      TheEar.placed -> LogKind.Decision) ++
+      headings(TriggeredProcedureRef.ChronicleThrone)),
     narratedPrefixes = Vector("chronicle.throne.offer",
       "chronicle.throne.legacy-cap.",
       "chronicle.throne.citizenship.", "chronicle.shape-empire.",

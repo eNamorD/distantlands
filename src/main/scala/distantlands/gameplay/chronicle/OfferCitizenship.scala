@@ -41,6 +41,9 @@ object OfferCitizenship:
     NotePart.Text(" accepted Citizenship")))
   val declined: NoteKey = notes.key("declined", Vector(NotePart.Arg(0),
     NotePart.Text(" declined Citizenship")))
+  /** The step's line when no seated Exile is there to offer. */
+  val noExiles: NoteKey = notes.key("no-exiles", Vector(
+    NotePart.Text("No Exiles to invite")))
   /** "p2 reactivated Iron Hand": a newly dormant legacy active again as its
     * Exile becomes a Citizen (Legacies implementation ruling R20). */
   val reactivated: NoteKey = notes.key("reactivated-legacy", Vector(
@@ -64,7 +67,7 @@ object OfferCitizenship:
       ChronicleTasks.seated(state).filter(player =>
           exiles(state).contains(player) || offeredTo.contains(player))
       match
-        case Vector() => Vector.empty
+        case Vector() => Vector(Note(noteId, _ => Some(noExiles.sourceless())))
         case candidates => Vector(
           Decide(offerDecisionId, holder, DecisionQuery.ChooseMany(0,
             candidates.size, ChronicleTasks.playerOptions(candidates),

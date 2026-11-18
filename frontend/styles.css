@@ -2038,6 +2038,21 @@ button.festival-marker:hover,
 .game-log .log-band-trade { --band: #94b58a; }
 .game-log .log-band-recover { --band: #9f8fc0; }
 .game-log .log-band-forge { --band: #8fa3bd; }
+/* A Chronicle step's band takes its colour from the step's place in its
+   task, reusing the action palette; the Throne's eight steps use all of it. */
+.game-log .log-band-chronicle-step-0, .game-log .log-band-chronicle-step-1,
+.game-log .log-band-chronicle-step-2, .game-log .log-band-chronicle-step-3,
+.game-log .log-band-chronicle-step-4, .game-log .log-band-chronicle-step-5,
+.game-log .log-band-chronicle-step-6, .game-log .log-band-chronicle-step-7 {
+  --band-fill: 9%; --band-edge: 28%; }
+.game-log .log-band-chronicle-step-0 { --band: #8fa3bd; }
+.game-log .log-band-chronicle-step-1 { --band: #c2b25c; }
+.game-log .log-band-chronicle-step-2 { --band: #b88aae; }
+.game-log .log-band-chronicle-step-3 { --band: #94b58a; }
+.game-log .log-band-chronicle-step-4 { --band: #c99a62; }
+.game-log .log-band-chronicle-step-5 { --band: #7fb0a8; }
+.game-log .log-band-chronicle-step-6 { --band: #d47c74; }
+.game-log .log-band-chronicle-step-7 { --band: #9f8fc0; }
 .game-log .log-band-start { margin-top: 4px; padding-top: 2px;
   border-top-width: 1px; border-top-left-radius: 4px;
   border-top-right-radius: 4px; }

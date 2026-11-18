@@ -22,6 +22,7 @@ object ChronicleThroneProcedure:
 
   /** The notes the Throne's steps write. */
   def noteKeys: Vector[NoteKey] = OfferCitizenship.noteKeys ++
+    ChronicleSteps.noteKeys(TriggeredProcedureRef.ChronicleThrone) ++
     ShapeEmpire.noteKeys ++
     BuildEdifice.noteKeys ++ LineageScoring.noteKeys ++ SwearOath.noteKeys ++
     LegacyChroniclePowers.throneNoteKeys ++ RelicKeep.noteKeys ++
@@ -29,22 +30,30 @@ object ChronicleThroneProcedure:
     BlastedPastures.throneNoteKeys
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
-    ChronicleWindows.step(PowerWindow.ChronicleStartOfThrone,
+    ChronicleWindows.step(ChronicleSteps.startOfThrone,
+      PowerWindow.ChronicleStartOfThrone,
       ReliquaryAndRelics.hide),
-    ChronicleWindows.step(PowerWindow.ChronicleOfferCitizenship,
+    ChronicleWindows.step(ChronicleSteps.offerCitizenship,
+      PowerWindow.ChronicleOfferCitizenship,
       OfferCitizenship.steps),
-    ChronicleWindows.step(PowerWindow.ChronicleShapeEmpire,
+    ChronicleWindows.step(ChronicleSteps.shapeEmpire,
+      PowerWindow.ChronicleShapeEmpire,
       ShapeEmpire.steps(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleBuildEdifice,
+    ChronicleWindows.step(ChronicleSteps.buildEdifice,
+      PowerWindow.ChronicleBuildEdifice,
       BuildEdifice.steps(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleAfterBuildEdifice,
       Vector.empty),
-    ChronicleWindows.step(PowerWindow.ChronicleStockReliquary,
+    ChronicleWindows.step(ChronicleSteps.stockReliquary,
+      PowerWindow.ChronicleStockReliquary,
       ReliquaryAndRelics.stock),
     ChronicleWindows.step(PowerWindow.ChronicleBeforeScatterRelics,
       Vector.empty),
-    ChronicleWindows.step(PowerWindow.ChronicleScatterRelics,
+    ChronicleWindows.step(ChronicleSteps.scatterRelics,
+      PowerWindow.ChronicleScatterRelics,
       ReliquaryAndRelics.scatter(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleScoreLineage,
+    ChronicleWindows.step(ChronicleSteps.scoreLineage,
+      PowerWindow.ChronicleScoreLineage,
       LineageScoring.steps(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleSwearOath, SwearOath.steps))
+    ChronicleWindows.step(ChronicleSteps.swearOath,
+      PowerWindow.ChronicleSwearOath, SwearOath.steps))

@@ -52,7 +52,7 @@ class SwearOathSuite extends munit.FunSuite:
     assert(!done.events.exists(_.toString.contains(SwearOath.goalDecisionId)),
       done.events)
     assert(lines(done.events).contains(
-      "The Oathkeeper goal became Supremacy"), done.events)
+      "p1 declared an Oath of Supremacy"), done.events)
 
   test("a win by a Vision whose goal is already current changes nothing"):
     val done = ChronicleWalk.answeringEverything(rules,
@@ -77,7 +77,7 @@ class SwearOathSuite extends munit.FunSuite:
         DecisionOptionRef.Vision(VisionRules.Faith))))
     assertEquals(Outcomes.ready(next.state).game.campaign.oathkeeperGoal,
       OathkeeperGoal.Devotion)
-    assert(lines(next.events).contains("The Oathkeeper goal became " +
+    assert(lines(next.events).contains("p1 declared an Oath of " +
       OathkeeperGoalChoice.named(OathkeeperGoal.Devotion)), next.events)
 
   test("choosing the Vision of the current goal changes nothing"):
@@ -115,5 +115,5 @@ class SwearOathSuite extends munit.FunSuite:
         OathkeeperGoalChoice.ref(chosen))))
     assertEquals(Outcomes.ready(next.state).game.campaign.oathkeeperGoal,
       chosen)
-    assert(lines(next.events).contains("The Oathkeeper goal became " +
+    assert(lines(next.events).contains("p1 declared an Oath of " +
       OathkeeperGoalChoice.named(chosen)), next.events)

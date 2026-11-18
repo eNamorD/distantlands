@@ -3,32 +3,55 @@
 0.2 phase 0 | Act
 5.0 phase 0 | Rest
 10.0 victory 0 | [player:p1|p1] won by Stable Regime
-15.0 phase 0 | Chronicle
-18.0 delta 1 | [card:L35|Reformer] set Foundation V to Grand Council
-20.0 delta 1 | [player:p1|p1] became Chancellor
-22.0 decision 1 | [player:p1|p1] took the Throne task
-27.0 decision 1 | [player:p1|p1] took the World task
-32.0 decision 1 | [player:p1|p1] took the Beacon task
-40.0 decision 1 | [player:p2|p2] took the World task
-49.0 decision 1 | [player:p1|p1] swapped [card:179|Threatening Roar] and [card:231|Village Idiot] with [card:L35|Reformer]
-59.0 decision 1 | [player:p3|p3] protected 1 denizen with [card:L17|Rival]
-67.0 delta 1 | Buried [card:231|Village Idiot]
-68.0 decision 1 | [player:p2|p2] built [card:E21|Festival District] at [site:site:ancient-city|Ancient City]
-72.0 delta 1 | [player:p3|p3] discarded [card:179|Threatening Roar] to the Provinces discard
-73.0 decision 1 | [player:p3|p3] discarded 1 denizen with [card:L15|Revolutionary]
-75.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
-84.0 decision 1 | The Oathkeeper goal became Protection
-94.0 decision 1 | [player:p2|p2] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
-99.0 decision 1 | [player:p2|p2] kept a Denizen as a starting adviser
-100.0 delta 1 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
-112.0 decision 1 | [player:p1|p1] chose Discord, Arcane and Order
-122.0 decision 1 | [player:p1|p1] welcomed [card:21|Naysayers] as a starting adviser
-126.0 decision 1 | [player:p1|p1] did not flip any foundations
-128.0 delta 1 | [site:site:buried-giant|Buried Giant] was archived
-129.0 delta 1 | [site:site:deep-woods|Deep Woods] was archived
-130.0 delta 1 | [site:site:desolate-shore|Desolate Shore] was archived
-131.0 delta 1 | [site:site:dunes|Dunes] was archived
-132.0 delta 1 | [site:site:fair-isle|Fair Isle] was archived
-133.0 delta 1 | [site:site:golden-valley|Golden Valley] was archived
-134.0 delta 1 | [site:site:ancient-city|Ancient City] stays in the Empire
-135.0 delta 1 | [site:site:broken-peaks|Broken Peaks] stays in the Empire
+15.0 round 0 | Chronicle Phase
+17.0 phase 0 | The Sun
+19.0 section 1 chronicle-step-0@17 | Resolve Legacies
+19.1 delta 1 chronicle-step-0@17 | [card:L35|Reformer] set Foundation V to Grand Council
+22.0 section 1 chronicle-step-1@20 | Crown Chancellor
+22.1 delta 1 chronicle-step-1@20 | [player:p1|p1] became Chancellor
+25.0 section 1 chronicle-step-2@23 | Assign Tasks
+25.1 decision 1 chronicle-step-2@23 | [player:p1|p1] took the Throne task
+30.0 decision 1 chronicle-step-2@23 | [player:p1|p1] took the World task
+35.0 decision 1 chronicle-step-2@23 | [player:p1|p1] took the Beacon task
+43.0 decision 1 chronicle-step-2@23 | [player:p1|p1] gave [player:p2|p2] the World task
+45.0 phase 0 | The Throne
+53.0 section 1 chronicle-step-0@45 | Start of Throne
+53.1 decision 1 chronicle-step-0@45 | [player:p1|p1] swapped [card:179|Threatening Roar] and [card:231|Village Idiot] with [card:L35|Reformer]
+58.0 section 1 chronicle-step-1@57 | Offer Citizenship
+58.1 decision 1 chronicle-step-1@57 | No Exiles to invite
+66.0 section 1 chronicle-step-2@59 | Shape Empire
+66.1 decision 1 chronicle-step-2@59 | [player:p3|p3] protected 1 denizen with [card:L17|Rival]
+75.0 section 1 chronicle-step-3@67 | Build Edifice
+75.1 delta 1 chronicle-step-3@67 | Buried [card:231|Village Idiot]
+76.0 decision 1 chronicle-step-3@67 | [player:p2|p2] built [card:E21|Festival District] at [site:site:ancient-city|Ancient City]
+80.0 delta 1 chronicle-step-3@67 | [player:p3|p3] discarded [card:179|Threatening Roar] to the Provinces discard
+81.0 decision 1 chronicle-step-3@67 | [player:p3|p3] discarded 1 denizen with [card:L15|Revolutionary]
+86.0 section 1 chronicle-step-6@85 | Score Lineage Points
+86.1 delta 1 chronicle-step-6@85 | [player:p1|p1] scored [amount:3 lineage points]
+96.0 section 1 chronicle-step-7@91 | Swear an Oath
+96.1 decision 1 chronicle-step-7@91 | [player:p1|p1] declared an Oath of Protection
+98.0 phase 0 | The World
+104.0 section 1 chronicle-step-1@103 | Protect and Dispossess
+104.1 delta 1 chronicle-step-1@103 | Stack 1: [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+105.0 delta 1 chronicle-step-1@103 | Stack 2: [card:182|Pied Piper], [card:183|Mushrooms] and [card:100|Bandit Chief]
+110.0 decision 1 chronicle-step-1@103 | [player:p2|p2] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+115.0 decision 1 chronicle-step-1@103 | [player:p2|p2] kept a Denizen as a starting adviser
+116.0 delta 1 chronicle-step-1@103 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
+119.0 phase 0 | The Beacon
+129.0 section 1 chronicle-step-0@119 | Introduce Newcomers
+129.1 decision 1 chronicle-step-0@119 | [player:p1|p1] chose Discord, Arcane and Order
+140.0 section 1 chronicle-step-1@135 | Welcome a Stranger
+140.1 decision 1 chronicle-step-1@135 | [player:p1|p1] welcomed [card:21|Naysayers] as a starting adviser
+145.0 section 1 chronicle-step-2@141 | Shape Foundation
+145.1 decision 1 chronicle-step-2@141 | [player:p1|p1] did not flip any foundations
+147.0 phase 0 | The Stars
+148.0 section 1 chronicle-step-0@147 | Archive Rival Sites
+148.1 delta 1 chronicle-step-0@147 | [site:site:buried-giant|Buried Giant] was archived
+149.0 delta 1 chronicle-step-0@147 | [site:site:deep-woods|Deep Woods] was archived
+150.0 delta 1 chronicle-step-0@147 | [site:site:desolate-shore|Desolate Shore] was archived
+151.0 delta 1 chronicle-step-0@147 | [site:site:dunes|Dunes] was archived
+152.0 delta 1 chronicle-step-0@147 | [site:site:fair-isle|Fair Isle] was archived
+153.0 delta 1 chronicle-step-0@147 | [site:site:golden-valley|Golden Valley] was archived
+155.0 section 1 chronicle-step-1@154 | Store
+155.1 delta 1 chronicle-step-1@154 | [site:site:ancient-city|Ancient City] stays in the Empire
+156.0 delta 1 chronicle-step-1@154 | [site:site:broken-peaks|Broken Peaks] stays in the Empire

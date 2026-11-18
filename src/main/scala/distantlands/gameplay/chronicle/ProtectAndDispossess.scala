@@ -25,6 +25,11 @@ object ProtectAndDispossess:
   val keptAdviser: NoteKey = notes.key("kept-adviser", Vector(
     NotePart.Arg(0), NotePart.Text(" kept "), NotePart.Arg(1),
     NotePart.Text(" as a starting adviser")))
+  /** "Stack 1: A, B and C": a faceup stack, named before the holder
+    * protects one. */
+  val stackShown: NoteKey = notes.key("stack-shown", Vector(
+    NotePart.Text("Stack "), NotePart.Arg(0), NotePart.Text(": "),
+    NotePart.Arg(1)))
   val dispossessed: NoteKey = notes.key("dispossessed", Vector(
     NotePart.Arg(0), NotePart.Text(" were dispossessed")))
   def noteKeys: Vector[NoteKey] = notes.declared
@@ -62,7 +67,9 @@ object ProtectAndDispossess:
   private def protect(state: ReadyGame, holder: PlayerId): Vector[Operation] =
     val stacks = faceupStacks(state)
     if stacks.isEmpty then Vector.empty
-    else Vector(
+    else stacks.zipWithIndex.map((stack, at) =>
+      Note(noteId, _ => Some(stackShown.sourceless(NoteArg.Number(at + 1),
+        NoteArg.Cards(stack))))) ++ Vector(
       Decide(protectDecisionId, holder, DecisionQuery.ChooseOne(
         stacks.indices.map(at => DecisionOption.Button(stackRef(at + 1),
           s"Protect Stack ${at + 1}")).toVector,

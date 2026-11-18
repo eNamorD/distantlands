@@ -6,29 +6,46 @@
 9.1 turn 0 | [player:p1|p1]'s turn
 9.2 phase 0 | Wake
 10.0 victory 0 | [player:p1|p1] won as the Usurper
-15.0 phase 0 | Chronicle
-18.0 delta 1 | The Empire broke
-19.0 delta 1 | [player:p1|p1] became Chancellor
-21.0 decision 1 | [player:p1|p1] took the Throne task
-26.0 decision 1 | [player:p1|p1] took the World task
-28.0 decision 1 | [player:p2|p2] took the Beacon task
-34.0 delta 1 | Moved 1 Imperial warband to [site:site:ancient-city|Ancient City]
-36.0 delta 1 | [player:p2|p2] set aside [card:R07|Cup of Plenty]
-36.1 delta 1 | [player:p2|p2] set aside [card:R05|Grand Mask]
-36.2 delta 1 | [player:p2|p2] set aside [card:R11|Bandit Crown]
-48.0 decision 1 | [player:p2|p2] chose where the relics went with [card:L19|The Ear]
-49.0 delta 1 | [player:p1|p1] scored [amount:3 lineage points]
-58.0 decision 1 | The Oathkeeper goal became Protection
-67.0 decision 1 | [player:p1|p1] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
-72.0 decision 1 | [player:p1|p1] kept a Denizen as a starting adviser
-73.0 delta 1 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
-81.0 decision 1 | [player:p2|p2] took six newcomers from the Dispossessed with [card:L24|The Bright Beacon]
-86.0 decision 1 | [player:p2|p2] welcomed [card:182|Pied Piper] as a starting adviser
-88.0 delta 1 | [site:site:broken-peaks|Broken Peaks] was archived
-89.0 delta 1 | [site:site:buried-giant|Buried Giant] was archived
-90.0 delta 1 | [site:site:deep-woods|Deep Woods] was archived
-91.0 delta 1 | [site:site:desolate-shore|Desolate Shore] was archived
-92.0 delta 1 | [site:site:dunes|Dunes] was archived
-93.0 delta 1 | [site:site:fair-isle|Fair Isle] was archived
-94.0 delta 1 | [site:site:golden-valley|Golden Valley] was archived
-95.0 delta 1 | [site:site:ancient-city|Ancient City] stays in the Empire
+15.0 round 0 | Chronicle Phase
+17.0 phase 0 | The Sun
+20.0 section 1 chronicle-step-1@18 | Crown Chancellor
+20.1 delta 1 chronicle-step-1@18 | [player:p1|p1] became Chancellor
+23.0 section 1 chronicle-step-2@21 | Assign Tasks
+23.1 decision 1 chronicle-step-2@21 | [player:p1|p1] took the Throne task
+28.0 decision 1 chronicle-step-2@21 | [player:p1|p1] took the World task
+30.0 decision 1 chronicle-step-2@21 | [player:p2|p2] took the Beacon task
+32.0 phase 0 | The Throne
+39.0 section 1 chronicle-step-2@38 | Shape Empire
+39.1 delta 1 chronicle-step-2@38 | Moved 1 Imperial warband to [site:site:ancient-city|Ancient City]
+44.0 section 1 chronicle-step-5@43 | Scatter Relics
+44.1 delta 1 chronicle-step-5@43 | [player:p2|p2] set aside [card:R07|Cup of Plenty]
+44.2 delta 1 chronicle-step-5@43 | [player:p2|p2] set aside [card:R05|Grand Mask]
+44.3 delta 1 chronicle-step-5@43 | [player:p2|p2] set aside [card:R11|Bandit Crown]
+56.0 decision 1 chronicle-step-5@43 | [player:p2|p2] chose where the relics went with [card:L19|The Ear]
+58.0 section 1 chronicle-step-6@57 | Score Lineage Points
+58.1 delta 1 chronicle-step-6@57 | [player:p1|p1] scored [amount:3 lineage points]
+68.0 section 1 chronicle-step-7@63 | Swear an Oath
+68.1 decision 1 chronicle-step-7@63 | [player:p1|p1] declared an Oath of Protection
+70.0 phase 0 | The World
+75.0 section 1 chronicle-step-1@74 | Protect and Dispossess
+75.1 delta 1 chronicle-step-1@74 | Stack 1: [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+76.0 delta 1 chronicle-step-1@74 | Stack 2: [card:182|Pied Piper], [card:183|Mushrooms] and [card:100|Bandit Chief]
+81.0 decision 1 chronicle-step-1@74 | [player:p1|p1] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+86.0 decision 1 chronicle-step-1@74 | [player:p1|p1] kept a Denizen as a starting adviser
+87.0 delta 1 chronicle-step-1@74 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
+90.0 phase 0 | The Beacon
+96.0 section 1 chronicle-step-0@90 | Introduce Newcomers
+96.1 decision 1 chronicle-step-0@90 | [player:p2|p2] took six newcomers from the Dispossessed with [card:L24|The Bright Beacon]
+102.0 section 1 chronicle-step-1@97 | Welcome a Stranger
+102.1 decision 1 chronicle-step-1@97 | [player:p2|p2] welcomed [card:182|Pied Piper] as a starting adviser
+105.0 phase 0 | The Stars
+106.0 section 1 chronicle-step-0@105 | Archive Rival Sites
+106.1 delta 1 chronicle-step-0@105 | [site:site:broken-peaks|Broken Peaks] was archived
+107.0 delta 1 chronicle-step-0@105 | [site:site:buried-giant|Buried Giant] was archived
+108.0 delta 1 chronicle-step-0@105 | [site:site:deep-woods|Deep Woods] was archived
+109.0 delta 1 chronicle-step-0@105 | [site:site:desolate-shore|Desolate Shore] was archived
+110.0 delta 1 chronicle-step-0@105 | [site:site:dunes|Dunes] was archived
+111.0 delta 1 chronicle-step-0@105 | [site:site:fair-isle|Fair Isle] was archived
+112.0 delta 1 chronicle-step-0@105 | [site:site:golden-valley|Golden Valley] was archived
+114.0 section 1 chronicle-step-1@113 | Store
+114.1 delta 1 chronicle-step-1@113 | [site:site:ancient-city|Ancient City] stays in the Empire
