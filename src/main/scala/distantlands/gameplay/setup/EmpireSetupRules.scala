@@ -40,16 +40,16 @@ object EmpireSetupRules:
     chronicle.world.isEmpty && !hasHistory(catalog, chronicle) &&
       chronicle.lineages.forall(_.role == Role.Exile)
 
-  /** What a brand-new Chronicle (`FirstGameChronicleGenerator`) never
-    * holds, and a played or imported one may: an altered foundation face or
-    * one with alteration sources, a lineage that played before or keeps
-    * starting advisers, legacies or starting relics, a scored game on the
-    * era scorepad, an Oathkeeper goal other than Supremacy, a stocked
-    * Reliquary, a denizen or relic stored at an Atlas site, and an Atlas
-    * site whose edifice is not the one a new Chronicle stores: an edifice
-    * at a site that is no Homeland, and a Homeland storing no edifice, one
-    * of another suit, or more than one. A listed normal face with no
-    * source, as a played Chronicle may list, is no history. */
+  /** What a brand-new Chronicle (`FirstGameChronicleGenerator`) never holds,
+    * and a played or imported one may: an altered foundation face or one with
+    * alteration sources, a lineage that played before or keeps starting
+    * advisers, legacies or starting relics, a scored game or a carried
+    * lineage score on the era scorepad, an Oathkeeper goal other than
+    * Supremacy, a stocked Reliquary, a denizen or relic stored at an Atlas
+    * site, and an Atlas site whose edifice is not the one a new Chronicle
+    * stores: an edifice at a site that is no Homeland, and a Homeland storing
+    * no edifice, one of another suit, or more than one. A listed normal face
+    * with no source, as a played Chronicle may list, is no history. */
   def hasHistory(catalog: ExecutableCatalog, chronicle: Chronicle): Boolean =
     chronicle.foundations.values.exists(state =>
       state.face == FoundationFace.Altered ||
@@ -57,7 +57,7 @@ object EmpireSetupRules:
     chronicle.lineages.exists(lineage => lineage.previousPlayer.nonEmpty ||
       lineage.startingAdvisers.nonEmpty || lineage.legacies.nonEmpty ||
       lineage.startingRelics.nonEmpty) ||
-    chronicle.era.games.nonEmpty ||
+    chronicle.era.games.nonEmpty || chronicle.era.carriedScores.nonEmpty ||
     chronicle.oathkeeperGoal != OathkeeperGoal.Supremacy ||
     chronicle.reliquary.nonEmpty ||
     chronicle.atlasBox.exists(stored => stored.items.exists {

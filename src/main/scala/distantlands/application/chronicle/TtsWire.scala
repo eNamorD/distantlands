@@ -6,17 +6,28 @@ final case class TtsSite(index: Int, items: Vector[Int])
 /** A legacy by TTS id, flipped or not. */
 final case class TtsLegacy(id: Int, flipped: Boolean)
 
-/** A player section. Status 0 is Exile, 1 Citizen, 2 Chancellor; relics are
-  * full TTS ids (401-499). */
-final case class TtsPlayer(status: Int, cards: Vector[Int],
+/** A player section. Status 0 is Exile, 1 Citizen, 2 Chancellor;
+  * `lineageScore` is the lineage's era score (0 in version 2, which has
+  * none); relics are full TTS ids (401-499). */
+final case class TtsPlayer(status: Int, lineageScore: Int, cards: Vector[Int],
     legacies: Vector[TtsLegacy], relics: Vector[Int])
 
+object TtsPlayer:
+  /** What a missing player is written as, and what an empty section from
+    * the exporter holds: an Exile with nothing. */
+  val emptyExile: TtsPlayer =
+    TtsPlayer(0, 0, Vector.empty, Vector.empty, Vector.empty)
+
 /** The flipped Foundations as a bitmask, Foundation I as bit 0, and the
-  * version 3 Oathkeeper goal digit when the string carries one. */
-final case class TtsFoundations(mask: Int, goal: Option[Int])
+  * Oath digit: 0 unset (always, in version 2), 1 Supremacy, 2 Devotion,
+  * 3 the People, 4 Protection, 5-20 reserved, 21+ fan content. */
+final case class TtsFoundations(mask: Int, oath: Int)
 
 /** Every section that the string held, in order; absent trailing
-  * sections are None. Card ids are full TTS ids (relics 401-499). */
+  * sections are None. Card ids are full TTS ids (relics 401-499).
+  * `players` holds the seven named colors' sections in `TtsWire.colors`
+  * order, then any extra player sections (players 8, 9, ...) that
+  * version 4 allows. */
 final case class TtsChronicle(
     atlasBox: Option[Vector[TtsSite]] = None,
     world: Option[Vector[TtsSite]] = None,
@@ -28,13 +39,18 @@ final case class TtsChronicle(
     players: Vector[Option[TtsPlayer]] = Vector.fill(7)(None))
 
 /** The Oath NF TTS Chronicle export string (harsch1/oath-nf-tts-scripts
-  * chronicle-codec.js at f6051bb0), ported exactly: base-82 numbers, packed
+  * chronicle-codec.js at 856373ec), ported exactly: base-82 numbers, packed
   * sites, decks and lists, a scrambled body between a version and a
   * checksum. This layer knows TTS numbers only; `ChronicleTtsCodec` maps them
-  * to catalog ids. Version 3 adds one goal digit after the Foundations
-  * bitmask, as its maintainer announced. */
+  * to catalog ids. Decoding reads versions 2 to 4; encoding always writes
+  * `version`. Version 3 widened the Foundations section to a 2-digit mask
+  * and an Oath digit, and gave each player a 2-digit lineage score; version
+  * 4 allows extra player sections after the named seven. */
 object TtsWire:
-  /** The player sections' colors, in section order. */
+  /** The version every encoding writes. */
+  val version: Int = 4
+
+  /** The named player sections' colors, in section order. */
   val colors: Vector[String] =
     Vector("red", "blue", "yellow", "black", "white", "brown", "pink")
 
@@ -52,7 +68,13 @@ object TtsWire:
   private val ChunkSize = 5
   private val ChunkWidth = 7
   private val FoundationCount = 6
-  private val SectionCount = 7 + colors.size
+  private val FoundationsWidth = 2
+  private val LineageWidth = 2
+  // 82^2 - 1, the most LineageWidth digits hold; a higher score is written
+  // as this.
+  private val MaxLineageScore = 82 * 82 - 1
+  private val PlayerOffset = 7
+  private val SectionCount = PlayerOffset + colors.size
   // JS numbers are exact up to Number.MAX_SAFE_INTEGER.
   private val MaxSafe = (1L << 53) - 1
 
@@ -69,16 +91,17 @@ object TtsWire:
       chronicle <- decodePlain(plain, version)
     yield (version, chronicle)
 
-  private[chronicle] def encodeExport(chronicle: TtsChronicle, version: Int)
-      : Either[String, String] =
+  def encodeExport(chronicle: TtsChronicle): Either[String, String] =
     for
-      plain <- encodePlain(chronicle, version)
+      plain <- encodePlain(chronicle)
       head <- padEncode(version, 2)
       body <- scramble(plain, decoding = false)
       tail <- padEncode(checksum(plain), 2)
     yield head + body + tail
 
-  /** The unscrambled string: every section, separated by `>`. */
+  /** The unscrambled string: every section, separated by `>`. Before
+    * version 4 there are no extra players, so more than the named
+    * sections is refused. */
   def decodePlain(plain: String, version: Int): Either[String, TtsChronicle] =
     val sections = plain.split(">", -1).toVector
     def at[A](index: Int)(decode: String => Either[String, A])
@@ -86,9 +109,10 @@ object TtsWire:
       sections.lift(index) match
         case None => Right(None)
         case Some(section) => decode(section).map(Some(_))
+    val playerCount = colors.size max (sections.size - PlayerOffset)
     for
       _ <- supported(version)
-      _ <- Either.cond(sections.size <= SectionCount, (),
+      _ <- Either.cond(version >= 4 || sections.size <= SectionCount, (),
         s"Expected at most $SectionCount sections, found ${sections.size}")
       atlasBox <- at(0)(decodeSites)
       world <- at(1)(decodeSites)
@@ -99,13 +123,16 @@ object TtsWire:
       reliquary <- at(5)(section =>
         unpackNumber(section, RelicRadix).map(_.map(_ + RelicOffset)))
       foundations <- at(6)(decodeFoundations(_, version))
-      players <- sequence(colors.indices.toVector.map(c => at(7 + c)(decodePlayer)))
+      players <- sequence(Vector.tabulate(playerCount)(p =>
+        at(PlayerOffset + p)(decodePlayer(_, version))))
     yield TtsChronicle(atlasBox, world, worldDeck, relicDeck, dispossessed,
       reliquary, foundations, players)
 
-  /** Sections up to the last present one; an absent one before it is
-    * written empty, which keeps every later section in its place. */
-  def encodePlain(chronicle: TtsChronicle, version: Int): Either[String, String] =
+  /** Sections up to the last present one, as `version` writes them. An
+    * absent one before it is written empty, except the Foundations and
+    * players, which are written as none flipped with no Oath and as an
+    * empty Exile, so every section still decodes. */
+  def encodePlain(chronicle: TtsChronicle): Either[String, String] =
     val sections: Vector[Option[Either[String, String]]] = Vector(
       chronicle.atlasBox.map(encodeSites),
       chronicle.world.map(encodeSites),
@@ -114,18 +141,24 @@ object TtsWire:
       chronicle.dispossessed.map(packIds(_, DeckRadix)),
       chronicle.reliquary.map(ids =>
         packNumber(ids.map(_ - RelicOffset), RelicRadix)),
-      chronicle.foundations.map(encodeFoundations(_, version))) ++
+      chronicle.foundations.map(encodeFoundations)) ++
       chronicle.players.map(_.map(encodePlayer))
+    val missing: Vector[Either[String, String]] =
+      Vector.fill(6)(Right("")) ++
+        (encodeFoundations(TtsFoundations(0, 0)) +:
+          Vector.fill(chronicle.players.size)(
+            encodePlayer(TtsPlayer.emptyExile)))
     val count = sections.lastIndexWhere(_.nonEmpty) + 1
     for
-      _ <- supported(version)
-      _ <- Either.cond(chronicle.players.size == colors.size, (),
-        s"Expected ${colors.size} player sections, found ${chronicle.players.size}")
-      written <- sequence(sections.take(count).map(_.getOrElse(Right(""))))
+      _ <- Either.cond(chronicle.players.size >= colors.size, (),
+        s"Expected at least ${colors.size} player sections, " +
+          s"found ${chronicle.players.size}")
+      written <- sequence(sections.zip(missing).take(count).map(
+        (section, absent) => section.getOrElse(absent)))
     yield written.mkString(">")
 
   private def supported(version: Int): Either[String, Unit] =
-    Either.cond(version == 2 || version == 3, (),
+    Either.cond(version >= 2 && version <= 4, (),
       s"This export string uses encoding version $version, which is not supported")
 
   // ---------- base 82 ----------
@@ -247,49 +280,51 @@ object TtsWire:
   private def safe(value: BigInt): Either[String, Long] =
     Either.cond(value <= MaxSafe, value.toLong, s"Cannot encode $value exactly")
 
-  // ---------- Foundations ----------
+  // ---------- Foundations and Oath ----------
+  // Always 3 characters: the flipped Foundations' bitmask in 2 digits, then
+  // the Oath digit. Version 2 had only the bitmask, unpadded, with an empty
+  // section meaning none flipped; it reads as an unset Oath.
 
   private def decodeFoundations(section: String, version: Int)
       : Either[String, TtsFoundations] =
     def mask(text: String): Either[String, Int] =
       (if text.isEmpty then Right(0L) else fromBase82(text)).flatMap(m =>
         Either.cond(m < (1 << FoundationCount), m.toInt,
-          s"Invalid Foundations value: $section"))
-    if version == 2 then mask(section).map(TtsFoundations(_, None))
-    else section.length match
-      case 0 | 1 => mask(section).map(TtsFoundations(_, None))
-      case 2 =>
-        for
-          m <- mask(section.take(1))
-          goal <- fromBase82(section.drop(1))
-        yield TtsFoundations(m, Some(goal.toInt))
-      case _ => Left(s"Invalid Foundations value: $section")
+          s"Invalid Foundations value: $text"))
+    if version == 2 then mask(section).map(TtsFoundations(_, 0))
+    else if section.length != FoundationsWidth + 1 then
+      Left(s"Foundations section should be ${FoundationsWidth + 1} " +
+        s"characters, found ${section.length}: $section")
+    else
+      for
+        m <- mask(section.take(FoundationsWidth))
+        oath <- fromBase82(section.drop(FoundationsWidth))
+      yield TtsFoundations(m, oath.toInt)
 
-  private def encodeFoundations(foundations: TtsFoundations, version: Int)
+  private def encodeFoundations(foundations: TtsFoundations)
       : Either[String, String] =
     for
       _ <- Either.cond(foundations.mask >= 0 &&
         foundations.mask < (1 << FoundationCount), (),
         s"Invalid Foundations mask ${foundations.mask}")
-      mask <- toBase82(foundations.mask)
-      goal <-
-        if version == 2 then Either.cond(foundations.goal.isEmpty, "",
-          "Encoding version 2 has no Oathkeeper goal")
-        else
-          val digit = foundations.goal.getOrElse(0)
-          Either.cond(digit >= 0 && digit < 82, Base82(digit).toString,
-            s"Oathkeeper goal $digit does not fit in one character")
-    yield mask + goal
+      _ <- Either.cond(foundations.oath >= 0 && foundations.oath < 82, (),
+        s"Oath ${foundations.oath} does not fit in one digit")
+      mask <- padEncode(foundations.mask, FoundationsWidth)
+    yield mask + Base82(foundations.oath)
 
   // ---------- players ----------
-  // [status][cards]#[legacies]#[relics]. Legacies are id + 100 when
-  // flipped, radix 200: under five are one number, five or more are packed
-  // like a deck, so the length tells the two apart.
+  // [status][lineage score: 2 digits][cards]#[legacies]#[relics]; version 2
+  // has no lineage score. Legacies are id + 100 when flipped, radix 200:
+  // under five are one number, five or more are packed like a deck, so the
+  // length tells the two apart.
 
   private def encodePlayer(player: TtsPlayer): Either[String, String] =
     for
       _ <- Either.cond(player.status >= 0 && player.status <= 2, (),
         s"Unknown player status: ${player.status}")
+      _ <- Either.cond(player.lineageScore >= 0, (),
+        s"Lineage score ${player.lineageScore} must be 0 or more")
+      score <- padEncode(player.lineageScore min MaxLineageScore, LineageWidth)
       _ <- player.legacies.find(l => l.id < 1 || l.id >= LegacyFlipped)
         .toLeft(()).left.map(l => s"Legacy ${l.id} does not fit")
       cards <- packNumber(player.cards, DeckRadix)
@@ -299,21 +334,30 @@ object TtsWire:
         if values.size < ChunkSize then packNumber(values, LegacyRadix)
         else packIds(values, LegacyRadix)
       relics <- packNumber(player.relics.map(_ - RelicOffset), RelicRadix)
-    yield Base82(player.status).toString + cards + "#" + legacies + "#" + relics
+    yield Base82(player.status).toString + score + cards + "#" + legacies +
+      "#" + relics
 
-  private def decodePlayer(section: String): Either[String, TtsPlayer] =
+  private def decodePlayer(section: String, version: Int)
+      : Either[String, TtsPlayer] =
     section.split("#", -1).toVector match
       case Vector(head, legacies, relics) =>
         val status = head.headOption.map(Base82.indexOf(_)).getOrElse(-1)
+        val scoreWidth = if version == 2 then 0 else LineageWidth
         for
           _ <- Either.cond(status >= 0 && status <= 2, (),
             s"Invalid player status in: $section")
-          cards <- unpackNumber(head.drop(1), DeckRadix).flatMap(deckCards)
+          _ <- Either.cond(head.length >= 1 + scoreWidth, (),
+            s"Player section is missing its lineage score: $section")
+          score <-
+            if scoreWidth == 0 then Right(0L)
+            else fromBase82(head.slice(1, 1 + scoreWidth))
+          cards <- unpackNumber(head.drop(1 + scoreWidth), DeckRadix)
+            .flatMap(deckCards)
           values <-
             if legacies.length < ChunkWidth then unpackNumber(legacies, LegacyRadix)
             else unpackIds(legacies, LegacyRadix)
           relicIds <- unpackNumber(relics, RelicRadix)
-        yield TtsPlayer(status, cards,
+        yield TtsPlayer(status, score.toInt, cards,
           values.map(v => TtsLegacy(v % LegacyFlipped, v > LegacyFlipped)),
           relicIds.map(_ + RelicOffset))
       case fields => Left(
