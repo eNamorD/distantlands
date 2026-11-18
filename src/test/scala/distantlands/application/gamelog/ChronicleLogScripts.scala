@@ -325,6 +325,24 @@ object ChronicleLogScripts:
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("beacon-kept-foundations", service, p1)
 
+  /** The game of [[chronicleStarted]] where every seat holds three faceup
+    * advisers, so all nine gathered cards were identifiable when the World
+    * began. Once shuffled, nobody knows them: the World's dispossessed line
+    * names only the three that stayed faceup in the pile. */
+  def chronicleWorldAdvisers(using munit.Location): Script =
+    val bare = Table.start.pawn(p1, AncientCitySite)
+      .pawn(p2, BrokenPeaksSite).pawn(p3, BuriedGiantSite)
+      .oathkeeper(Some(p1), TitleSide.Usurper)
+    val denizens = bare.ready.game.current.commonCards.worldDeck
+      .collect { case id: DenizenId => id }
+    val held = Vector(p1, p2, p3).zipWithIndex.foldLeft(bare) {
+      case (table, (player, seat)) => denizens.slice(seat * 3, seat * 3 + 3)
+        .foldLeft(table)((with3, card) => with3.adviser(player, card)) }
+    val (service, acting) = atTable("chronicle-world-advisers",
+      held.turn(p3, Phase.Act).banditsRefilled)
+    acting.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("chronicle-world-advisers", service, p1)
+
   val named: Vector[(String, () => Script)] =
     Vector("chronicle-started" -> (() => chronicleStarted),
       "throne-offered" -> (() => throneOffered),
@@ -335,6 +353,7 @@ object ChronicleLogScripts:
       "throne-blasted-pastures" -> (() => throneBlastedPastures),
       "chronicle-oaths-heirloom" -> (() => chronicleOathsHeirloom),
       "chronicle-iron-hand" -> (() => chronicleIronHand),
+      "chronicle-world-advisers" -> (() => chronicleWorldAdvisers),
       "chronicle-royal-line" -> (() => chronicleRoyalLine),
       "chronicle-ear-beacon" -> (() => chronicleEarBeacon),
       "throne-legacies" -> (() => throneLegacies),
