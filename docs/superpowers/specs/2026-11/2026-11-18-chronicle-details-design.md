@@ -1,7 +1,6 @@
 # Chronicle Details
 
-**Status:** designed 2026-11-18. Slices 1 (projection), 2 (aids and
-strip) and 3 (site drawing) have landed.
+**Status:** designed 2026-11-18. All four slices have landed.
 
 **Builds on** the [Chronicle browsing design](../2026-10/2026-10-28-chronicle-browsing-design.md)
 (its scoresheet and Chronicle projection), the
