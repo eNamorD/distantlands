@@ -142,6 +142,14 @@ class ChronicleDetailsProjectionSuite extends munit.FunSuite:
         Vector((IronHandCard.id.value, false), ("hidden", true)), viewer)
     }
 
+  test("seated lineages follow their seats' colours, not their ids (R5)"):
+    val start = Table.start.ready
+    // l1 sits on Yellow and l3 on Red, so l3 comes first and l1 last.
+    val ready = start.copy(playerColors = start.playerColors ++ Map(
+      p1 -> PlayerColor.Yellow, p3 -> PlayerColor.Red))
+    assertEquals(detailsFor(ready, Some(p1)).lineages.map(_.lineage),
+      Vector(p3, p2, p1).map(lineageOf(ready, _).value))
+
   test("in the Chronicle Phase every seat sees every legacy's face, " +
       "seated or not (R18)"):
     val ready = withUnseatedPurpleExileHoldingIronHandAndDormantArbiter(
