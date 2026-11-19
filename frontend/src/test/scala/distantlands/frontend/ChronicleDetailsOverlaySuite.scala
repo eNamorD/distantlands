@@ -171,3 +171,23 @@ class ChronicleDetailsOverlaySuite extends munit.FunSuite:
           assertEquals(dom.document.activeElement, detailsButton(browser))
         }
       }
+
+  test("a redraw keeps the Atlas frame and the scorepad frame scrolled " +
+      "sideways where the reader left them"):
+    val withDeepWoodsRecent = ashenCrownWithRedHoldingSeer.copy(
+      chronicleDetails = ashenCrownWithRedHoldingSeer.chronicleDetails.map(
+        _.copy(atlasRecent = Some(TestSites.quietSite("site:deep-woods",
+          "Deep Woods")))))
+    withShell { (browser, shell) =>
+      snapshot(shell, withDeepWoodsRecent)
+      click(detailsButton(browser))
+      def frames = Vector(".chronicle-details-atlas-frame",
+        ".scoresheet-frame").map(selector => one(content(browser), selector)
+          .asInstanceOf[dom.html.Element])
+      frames.zip(Vector(30.0, 12.0)).foreach((frame, left) =>
+        frame.scrollLeft = left)
+      val before = frames
+      snapshot(shell, withDeepWoodsRecent)
+      assert(frames.zip(before).forall(_ != _), "the frames were redrawn")
+      assertEquals(frames.map(_.scrollLeft), Vector(30.0, 12.0))
+    }

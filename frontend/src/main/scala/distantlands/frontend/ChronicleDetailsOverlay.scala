@@ -43,6 +43,9 @@ private[frontend] final class ChronicleDetailsOverlay(root: dom.Element,
   node.appendChild(panel)
   root.appendChild(node)
   private var latest = Option.empty[GameProjection]
+  /** The frames inside the content that scroll sideways (R13). */
+  private val SidewaysFrames =
+    Vector(".chronicle-details-atlas-frame", ".scoresheet-frame")
   private var opener = Option.empty[dom.html.Element]
 
   def isOpen: Boolean = !node.hasAttribute("hidden")
@@ -64,8 +67,18 @@ private[frontend] final class ChronicleDetailsOverlay(root: dom.Element,
 
   private def draw(value: GameProjection, resetScroll: Boolean): Unit =
     heading.textContent = value.chronicle.fold("Chronicle Details")(_.name)
+    // The frames that scroll sideways keep the reader's place too.
+    val sideways = if resetScroll then Vector.empty
+      else SidewaysFrames.flatMap(selector =>
+        frame(selector).map(selector -> _.scrollLeft))
     PanelContent.replace(content, ChronicleDetailsContent.render(value),
       heading, resetScroll)
+    sideways.foreach((selector, left) =>
+      frame(selector).foreach(_.scrollLeft = left))
+
+  private def frame(selector: String): Option[dom.html.Element] =
+    Option(content.querySelector(selector))
+      .map(_.asInstanceOf[dom.html.Element])
 
   def hide(): Unit =
     if isOpen then
