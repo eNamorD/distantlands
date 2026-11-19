@@ -4,7 +4,10 @@ import Dom.{all, click, one, press}
 import distantlands.model.PlayerColor
 import distantlands.protocol.ChronicleScorepadEntry
 import distantlands.protocol.projection.{ChronicleDetailsProjection,
-  ChronicleProjection, LineageDetailsProjection}
+  ChronicleProjection, ConsentPreferenceRowProjection,
+  ConsentPreferencesProjection, LineageDetailsProjection,
+  SitePowerProjection}
+import TestSites.*
 import org.scalajs.dom
 
 /** Chronicle Details over the table (Chronicle Details design, slice 4): a
@@ -177,7 +180,7 @@ class ChronicleDetailsOverlaySuite extends munit.FunSuite:
       "sideways where the reader left them"):
     val withDeepWoodsRecent = ashenCrownWithRedHoldingSeer.copy(
       chronicleDetails = ashenCrownWithRedHoldingSeer.chronicleDetails.map(
-        _.copy(atlasRecent = Some(TestSites.quietSite("site:deep-woods",
+        _.copy(atlasRecent = Some(quietSite("site:deep-woods",
           "Deep Woods")))))
     withShell { (browser, shell) =>
       snapshot(shell, withDeepWoodsRecent)
@@ -220,4 +223,39 @@ class ChronicleDetailsOverlaySuite extends munit.FunSuite:
       val prompt = one(browser.mount, ".chronicle-save-prompt")
       assert(prompt.contains(dom.document.activeElement),
         dom.document.activeElement.outerHTML)
+    }
+
+  test("the Atlas site's power reads its words with no consent grid, even " +
+      "one the viewer rules, and its hidden relic is a back with nothing " +
+      "to open"):
+    val shrine = SitePowerProjection("action", "Wind Shrine",
+      Some("Gain 1 favor."), id = "site.deep-woods.shrine")
+    val deepWoodsWithAPowerAndAHiddenRelic = quietSite(
+      "site:deep-woods", "Deep Woods").copy(powers = Vector(shrine))
+      .withRelicCapacity(1).withRelics(1)
+    val ruledByTheViewer = ashenCrownWithRedHoldingSeer.copy(
+      chronicleDetails = ashenCrownWithRedHoldingSeer.chronicleDetails.map(
+        _.copy(atlasRecent = Some(deepWoodsWithAPowerAndAHiddenRelic))),
+      // As if Red ruled the shrine: the map would open its grid.
+      consentPreferences = Vector(ConsentPreferencesProjection(shrine.id,
+        shrine.label, Vector(ConsentPreferenceRowProjection("blue",
+          "always")))))
+    withShell { (browser, shell) =>
+      snapshot(shell, ruledByTheViewer)
+      click(detailsButton(browser))
+      val atlas = one(content(browser), ".chronicle-details-atlas")
+      val inspector = one(browser.mount, ".card-overlay")
+      click(one(atlas, "button.site-power"))
+      assert(!inspector.hasAttribute("hidden"))
+      assertEquals(one(inspector, ".card-overlay-name").textContent,
+        "Wind Shrine")
+      assertEquals(all(inspector, ".consent-grid, .consent-grid-choice")
+        .size, 0)
+      press(dom.document.activeElement, "Escape")
+      assert(inspector.hasAttribute("hidden"))
+      val relic = one(atlas, ".site-cards > .card-face-relic.card-face-down")
+      assertEquals(relic.getAttribute("aria-label"), "Facedown relic")
+      assertNotEquals(relic.tagName, "BUTTON")
+      click(relic)
+      assert(inspector.hasAttribute("hidden"))
     }

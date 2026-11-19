@@ -39,7 +39,7 @@ class ChronicleDetailsContentSuite extends munit.FunSuite:
         "Chronicle Phase"))
 
   test("the Recent site is a mat row in a mat-board box of the row's width " +
-      "and ratio, drawn with nothing to choose (R12)"):
+      "and ratio (R12)"):
     val body = ChronicleDetailsContent.render(
       gameWithRecent(Some(deepWoodsStoringAKnownDenizen)))
     val board = one(body,
@@ -54,7 +54,6 @@ class ChronicleDetailsContentSuite extends munit.FunSuite:
     val site = one(board, ":scope > article.site")
     assertEquals(site.getAttribute("aria-label"), "Deep Woods")
     assertEquals(all(site, ".site-pawns > *").size, 0)
-    assertEquals(all(body, ".board-option, [data-option-ref]").size, 0)
 
   test("an empty Atlas reads that it holds no sites"):
     val atlas = one(ChronicleDetailsContent.render(gameWithRecent(None)),
