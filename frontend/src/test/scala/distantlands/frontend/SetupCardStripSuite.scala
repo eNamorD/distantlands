@@ -47,11 +47,15 @@ class SetupCardStripSuite extends munit.FunSuite:
     assertEquals(one(marked, ".foundation-mark").textContent, "Altered")
 
   test("a card is labelled and noted by its own words, and a click reads " +
-      "its lines under its title, with its plate"):
+      "its lines under its title, with its plate when it has one"):
     val card = one(aidStripOfOneUnmarkedCard, "button.aid-card")
     assertEquals(card.getAttribute("type"), "button")
     assertEquals(card.getAttribute("aria-label"), "Aid, The Sun")
     assertEquals(card.getAttribute(HoverTip.Attribute), "Aid · The Sun")
     click(card)
-    assertEquals(opened, Vector(("Aid · The Sun",
-      Vector("Front step.", "Back", "Back step."), None)))
+    click(one(SetupCardStrip.render("Foundations", "foundation",
+      Vector(markedTaggedFoundationCard)), "button.foundation-card"))
+    assertEquals(opened, Vector(
+      ("Aid · The Sun", Vector("Front step.", "Back", "Back step."), None),
+      ("Foundation III · Public Ambitions", Vector("Deal 4."),
+        Some("foundation"))))
