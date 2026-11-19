@@ -958,8 +958,9 @@ figure and a region's discard pile are buttons on the pill hover that open
 the text and card-list overlays: Supply at Rest and the pile's cards.
 
 ### Foundation Strip
-The six foundation setup cards, read-only (`FoundationStrip`). On the table
-they close the shared bank on the table's edge, after the banners, in three
+The six foundation setup cards, read-only (`FoundationStrip`, drawn by
+`SetupCardStrip`, which the Chronicle Phase aids share). On the table they
+close the shared bank on the table's edge, after the banners, in three
 columns, one row a card: Base
 fill, 1px Line border, 4px radius, `4px 8px` padding, the numeral in Ink Dim
 700 and the name of the face in use in Georgia 700. The name holds one line
