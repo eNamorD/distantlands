@@ -423,6 +423,62 @@ private[frontend] object WorldBoardRenderer:
     slot.setAttribute("aria-label", s"Empty site slot, $regionName")
     slot
 
+  /** A Stable Regime check the mat prints on the round wheel: after
+    * `round`, the end die's `pips` face or better ends the game for the
+    * Chancellor, read as `words`. */
+  private final case class EndDieTarget(round: Int, pips: Int,
+      words: String)
+
+  private val EndDieTargets = Vector(EndDieTarget(5, 6, "6"),
+    EndDieTarget(6, 5, "5 or 6"), EndDieTarget(7, 3, "3 or more"))
+
+  /** Each face's pips, from the die's centre, laid out as the mat's. */
+  private val EndDiePips: Map[Int, Vector[(Double, Double)]] =
+    val d = 5.5
+    Map(6 -> Vector((-d, -d), (-d, 0.0), (-d, d), (d, -d), (d, 0.0), (d, d)),
+      5 -> Vector((-d, -d), (d, -d), (0.0, 0.0), (-d, d), (d, d)),
+      3 -> Vector((-d, -d), (0.0, 0.0), (d, d)))
+
+  /** The purple die the mat prints on the line after the target's round,
+    * tilted along that line as the mat tilts it. It is dimmed while
+    * `rolls` is false: no roll is made unless the Chancellor or a Citizen
+    * is the Oathkeeper. */
+  private def endDie(target: EndDieTarget, rolls: Boolean): dom.Element =
+    val angle = -90.0 + target.round * 45.0
+    val radians = Math.toRadians(angle)
+    val (x, y) = (100.0 + 60.0 * Math.cos(radians),
+      100.0 + 60.0 * Math.sin(radians))
+    val die = svgElement("g")
+    die.setAttribute("class",
+      if rolls then "end-die printed" else "end-die end-die-idle printed")
+    die.setAttribute("data-after-round", target.round.toString)
+    die.setAttribute("transform",
+      f"translate($x%.2f $y%.2f) rotate(${(angle - 180.0) / 2}%.1f)")
+    die.setAttribute("role", "img")
+    die.setAttribute("aria-label",
+      s"End die after round ${target.round}: ${target.words}")
+    val wins = target.pips match
+      case 6 => "a 6"
+      case 5 => "a 5 or 6"
+      case _ => "a 3 or more"
+    HoverTip.set(die, s"End of round ${target.round}: if the Chancellor or " +
+      s"a Citizen is the Oathkeeper, roll the end die. The Chancellor wins " +
+      s"on $wins." + (if rolls then "" else " No roll now: the Oathkeeper " +
+        "is not the Chancellor or a Citizen."))
+    val face = svgElement("rect")
+    face.setAttribute("class", "end-die-face")
+    Vector("x" -> "-10", "y" -> "-10", "width" -> "20", "height" -> "20",
+      "rx" -> "3").foreach(face.setAttribute)
+    die.appendChild(face)
+    EndDiePips(target.pips).foreach { (px, py) =>
+      val pip = svgElement("circle")
+      pip.setAttribute("class", "end-die-pip")
+      pip.setAttribute("cx", px.toString); pip.setAttribute("cy", py.toString)
+      pip.setAttribute("r", "1.9")
+      die.appendChild(pip)
+    }
+    die
+
   private[frontend] final case class RoundSegment(path: String, labelX: Double,
       labelY: Double, markerX: Double, markerY: Double)
 
@@ -454,9 +510,15 @@ private[frontend] object WorldBoardRenderer:
     // far zoomed-out map takes out of sight.
     val lock = Option.when(track.usurperLimited)(
       s"Usurper locked until round ${track.limiterRound}")
+    val empire = value.players.exists(_.role.toLowerCase == "chancellor")
+    // The dice's targets are in the tracker's name too, for the far
+    // zoomed-out map that takes the dice out of sight.
+    val endDieWords = Option.when(empire)("end die after rounds 5, 6 and 7: " +
+      EndDieTargets.map(_.words).mkString(", "))
     section.setAttribute("aria-label", s"Round ${track.round} of 8; " +
       s"Visions Drawn ${track.visionsDrawn}; " +
       lock.fold("")(words => s"$words; ") +
+      endDieWords.fold("")(words => s"$words; ") +
       s"first player ${first.textContent}")
     val svg = svgElement("svg")
       .asInstanceOf[dom.svg.SVG]
@@ -495,6 +557,12 @@ private[frontend] object WorldBoardRenderer:
         group.appendChild(marker)
       svg.appendChild(group)
     }
+    // Over every segment, so the current round's wedge never hides one.
+    if empire then
+      val rolls = value.oathkeeper.flatMap(_.holderPlayerId)
+        .flatMap(id => value.players.find(_.playerId == id))
+        .exists(holder => RoleText.imperial(holder.role))
+      EndDieTargets.foreach(target => svg.appendChild(endDie(target, rolls)))
     section.appendChild(place(svg, MatLayout.roundWheel))
     // The tracker's words, in the clear band the mat leaves over the
     // Cradle's foot.
