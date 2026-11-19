@@ -192,3 +192,32 @@ class ChronicleDetailsOverlaySuite extends munit.FunSuite:
       assert(frames.zip(before).forall(_ != _), "the frames were redrawn")
       assertEquals(frames.map(_.scrollLeft), Vector(30.0, 12.0))
     }
+
+  test("the game-end save prompt closes the overlay and an inspector over " +
+      "it, and opens over a usable page with its name field focused " +
+      "(R21)"):
+    withShell { (browser, shell) =>
+      snapshot(shell, ashenCrownWithRedHoldingSeer)
+      click(detailsButton(browser))
+      click(one(content(browser), "button.legacy-chip"))
+      val inspector = one(browser.mount, ".card-overlay")
+      assert(!inspector.hasAttribute("hidden"))
+      // This browser keeps another Chronicle under the evolved one's name,
+      // so saving it asks.
+      val storage = new MemoryChronicleStorage()
+      new ChronicleShelf(storage, () => "earlier")
+        .put(ChronicleFixtures.entry("Ashen Crown", "d-9"))
+      val chronicle = new TableChronicle(browser.mount,
+        Some(new ChronicleShelf(storage, ChronicleFixtures.clock)),
+        ChronicleClient(ChronicleFixtures.convertingTransport()),
+        FakeChronicleFiles(), () => (), () => (), _ => (),
+        beforeAsking = () => shell.closeChronicleDetails())
+      chronicle.section(Some(ChronicleProjection("Ashen Crown", "d-1",
+        Some(ChronicleFixtures.entry("Ashen Crown", "d-2")))))
+      assert(inspector.hasAttribute("hidden"))
+      assert(overlay(browser).hasAttribute("hidden"))
+      assert(!table(browser).hasAttribute("inert"))
+      val prompt = one(browser.mount, ".chronicle-save-prompt")
+      assert(prompt.contains(dom.document.activeElement),
+        dom.document.activeElement.outerHTML)
+    }

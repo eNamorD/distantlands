@@ -230,6 +230,10 @@ private[frontend] final class GameTableShell(mount: dom.Element,
     * current. */
   def showChronicleDetails(projection: Option[GameProjection]): Unit =
     chronicleDetails.show(projection)
+
+  /** Closes Chronicle Details, and an inspector over it, so a dialog drawn
+    * under it can open (implementation ruling R21). */
+  def closeChronicleDetails(): Unit = chronicleDetails.hide()
   private var previousGame = ""
   private var previousDecision = ""
 
