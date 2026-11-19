@@ -52,7 +52,7 @@ private[frontend] object WorldBoardRenderer:
       // top of the table, so every line it spends is a line of card.
       val identity = element("h3", "player-identity")
       identity.appendChild(playerReference(value, player.playerId))
-      identity.appendChild(text("span", "player-role", player.role))
+      identity.appendChild(RoleText.span(player.role, "player-role"))
       if value.tracks.exists(_.firstPlayerId == player.playerId) then
         identity.appendChild(text("span", "player-first-badge", "First Player"))
       playerSummary.appendChild(identity)

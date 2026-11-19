@@ -78,8 +78,16 @@ private[frontend] object TrustedHostUi:
     // "Red Citizen": the color and the role its lineage starts the game
     // in. A lineage without an Imperial role, or a new one, is an Exile
     // (`GameStartRules` starts new lineages as Exiles).
-    def label(color: PlayerColor): String =
-      s"${name(color)} ${imperial.get(color).fold("Exile")(_.capitalize)}"
+    def role(color: PlayerColor): String =
+      imperial.get(color).fold("Exile")(_.capitalize)
+    def label(color: PlayerColor): String = s"${name(color)} ${role(color)}"
+    // The same phrase as an element, its role in its own span so an
+    // Imperial role can wear the Empire's purple.
+    def labelElement(className: String, color: PlayerColor): dom.Element =
+      val node = element("span", className)
+      node.appendChild(dom.document.createTextNode(s"${name(color)} "))
+      node.appendChild(RoleText.span(role(color)))
+      node
     val intro = text("p", "host-intro", openCreated match {
       case None => "Add one row per player, then send each player " +
         "their assigned link. Anyone with a seat link can control that seat. " +
@@ -146,7 +154,7 @@ private[frontend] object TrustedHostUi:
         option.setAttribute("type", "button")
         option.setAttribute("role", "option")
         option.appendChild(swatch(color))
-        option.appendChild(text("span", "", label(color)))
+        option.appendChild(labelElement("", color))
         option.onclick = event => {
           event.preventDefault(); closeMenu(); addRow(color); toggle.focus()
         }
@@ -164,7 +172,7 @@ private[frontend] object TrustedHostUi:
     def addRow(color: PlayerColor): Unit =
       val node = element("li", s"host-player host-player-${color.key}")
       node.appendChild(swatch(color))
-      node.appendChild(text("span", "host-player-color", label(color)))
+      node.appendChild(labelElement("host-player-color", color))
       val input = dom.document.createElement("input").asInstanceOf[dom.html.Input]
       input.className = "host-player-id"
       input.setAttribute("aria-label", s"${label(color)} player ID")
@@ -278,7 +286,7 @@ private[frontend] object TrustedHostUi:
                 row.appendChild(text("span", "seat-link-player", seat.playerId))
                 // The response holds no color; the seat's row chose it.
                 participants.find(_.playerId == seat.playerId).foreach(player =>
-                  row.appendChild(text("span", "seat-link-color", label(player.color))))
+                  row.appendChild(labelElement("seat-link-color", player.color)))
                 val link = dom.document.createElement("input").asInstanceOf[dom.html.Input]
                 link.className = "seat-link"
                 link.value = seat.url
