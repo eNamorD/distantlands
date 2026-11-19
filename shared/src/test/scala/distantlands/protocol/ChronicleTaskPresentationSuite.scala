@@ -42,6 +42,23 @@ class ChronicleTaskPresentationSuite extends munit.FunSuite:
         Vector(Vector("Write in the Stars", "Archive Rival Sites",
           "Clean Up", "Play Again or Store"))))
 
+  test("the Throne's Build Edifice and the Sun's Assign Tasks read as the " +
+      "card data words them, symbols left out (R6)"):
+    // Typed from OATH-CHRON02a-NF and OATH-CHRON01b-NF.
+    assertEquals(card("The Throne").faces(0).lines(2),
+      "**Build Edifice.** Draw the topmost edifice of each suit. You may " +
+        "bury a denizen at a site you rule to replace it with the matching " +
+        "drawn edifice. _Burying ignores the locked restriction and places " +
+        "the card on the bottom of its respective deck._ Reshuffle the " +
+        "edifice deck.")
+    assertEquals(card("The Sun").faces(1).lines(1),
+      "**Assign Tasks.** The winner takes the Throne task card. The player " +
+        "with the People's Favor takes the World task card. The player with " +
+        "the Darkest Secret takes the Beacon task card. **If no one holds a " +
+        "banner,** the winner may give its task to anyone. **If a player " +
+        "holds both the Beacon and the World tasks,** they must give away " +
+        "one of them.")
+
   test("the Sun's front lists the six legacy goals in words, one a line"):
     assertEquals(card("The Sun").faces.head.lines.tail, Vector(
       "Hold People's Favor.", "Hold Darkest Secret.", "Rule the most sites.",
