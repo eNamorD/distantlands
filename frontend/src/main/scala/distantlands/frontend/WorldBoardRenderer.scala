@@ -382,7 +382,20 @@ private[frontend] object WorldBoardRenderer:
     val edge = element("div", "table-edge")
     LegacyStrip.publicRow(value, options).foreach(edge.appendChild)
     edge.appendChild(sharedBank(value, options))
+    // Beside the Shared Bank, while the snapshot carries the Chronicle
+    // (Chronicle Details design, slice 4).
+    if value.chronicleDetails.nonEmpty then
+      edge.appendChild(chronicleDetailsButton)
     edge
+
+  /** Opens the Chronicle Details overlay through the shell's hook. */
+  private def chronicleDetailsButton: dom.Element =
+    val node = button("Chronicle Details", "chronicle-details-button")
+    node.`type` = "button"
+    node.setAttribute("aria-haspopup", "dialog")
+    node.setAttribute("aria-controls", "chronicle-details")
+    node.onclick = _ => ChronicleDetails.open(node)
+    node
 
   /** The festival marker over a site's cards (Foundations design, slice
     * 6): a pill naming it, its power in its hover note. It is a button, as
@@ -560,9 +573,4 @@ private[frontend] object WorldBoardRenderer:
         CardFace.render(card), card,
         Option.unless(card.hidden)(BoardOptions.cardKey(card)).toVector)))
       section.appendChild(reliquary)
-    // The setup cards close the bank: they are read once or twice a game,
-    // so they stand under what changes every turn.
-    if value.foundations.nonEmpty then
-      section.appendChild(FoundationStrip.render(
-        FoundationStrip.ofGame(value.foundations)))
     section
