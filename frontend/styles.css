@@ -556,8 +556,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    then the oath and the banners, then the Chronicle Details button. */
 .table-edge { display: flex; align-items: flex-start; gap: 16px;
   margin-top: 12px; }
-.table-edge .shared-bank { display: flex; flex: 1; align-items: flex-start;
-  gap: 16px; padding: 0; border: 0; }
+.table-edge .shared-bank { display: flex; flex: 0 1 auto;
+  align-items: flex-start; gap: 16px; padding: 0; border: 0; }
 .table-edge .shared-bank > h3 { margin: 0; font-size: 1rem; }
 /* A banner on the table's edge keeps its larger side (ruling R3, amended):
    the real banner is three card widths across. */
@@ -598,9 +598,10 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .table-edge .oathkeeper-status > .oathkeeper-goal { display: flex;
   align-items: center; min-height: calc(24px / var(--map-scale, 1)); }
 /* The Chronicle Details button beside the Shared Bank (Chronicle Details
-   design, slice 4): a wide Control at the edge's own sizes, its touch
-   floor set against the scale as the Oath goal's is (R17). */
-.table-edge .chronicle-details-button { flex: 0 0 auto; min-width: 12rem;
+   design, slice 4): a wide, rectangular Control filling the rest of the
+   edge and as tall as it (R18), at the edge's own sizes, its touch floor
+   set against the scale as the Oath goal's is (R17). */
+.table-edge .chronicle-details-button { flex: 1 1 12rem; align-self: stretch;
   min-height: calc(44px / var(--map-scale, 1)); padding: 8px 16px;
   color: #e8d9bb; background: var(--raised);
   border: 1px solid var(--brass-line); border-radius: 4px; font: inherit;
