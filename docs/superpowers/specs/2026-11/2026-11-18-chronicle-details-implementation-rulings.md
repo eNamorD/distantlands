@@ -100,3 +100,69 @@ overlay passes `Vector.empty`.
 Reason: `siteRow` needs no projection, and the change in marking order is
 invisible.
 Slice/files: 3; `WorldBoardRenderer.siteRow`, `pawnMarker`.
+
+## Slice 4
+
+**R11. Where the inspector returns focus after a redraw.**
+Question: a snapshot rebuilds a legacy chip while the inspector opened from
+it is open, and `CardInspectionOverlay` looks for a rebuilt opener only in
+its `.game-pane`.
+Decision: widen that container selector to
+`.game-pane, .chronicle-details`; the overlay's `.pane-heading` is the
+fallback.
+Reason: a one-selector change keeps focus on the rebuilt chip; holding
+redraws would leave the overlay stale.
+Slice/files: 4; `CardInspectionOverlay.open`.
+
+**R12. How the Atlas box gets the site rules.**
+Question: `siteRow`'s layout rules apply only under a `.mat-board`, which
+also brings the mat's ratio and background (slice 3 review).
+Decision: the Atlas box carries `mat-board chronicle-details-atlas-board`.
+One two-class rule replaces the width, ratio and background with
+`--atlas-w`, `--atlas-ratio` (set from `MatLayout`) and the Base fill.
+Reason: every site rule is reused unchanged with one ratio source;
+rewriting the map's selectors risks the map.
+Slice/files: 4; `ChronicleDetailsContent.atlas`, `styles.css`.
+
+**R13. The Atlas row at narrow widths.**
+Decision: the Atlas box keeps the row's width on the map at 100% (about
+742px) and scrolls sideways inside its own frame in a narrower panel. The
+page and the panel never scroll sideways.
+Reason: rem-sized text cannot shrink with the box, and a measured
+transform is more code than the case earns.
+Slice/files: 4; `ChronicleDetailsContent.atlas`, `styles.css`.
+
+**R14. The Chronicle Phase in the browser check.**
+Decision: check the overlay mid-game on a scratch database, on a game
+started from an imported Chronicle built for the check (six scored games,
+an unseated lineage with a dormant legacy, a denizen, an edifice and a
+relic stored at the Recent site). The Chronicle Phase reveal stays covered
+by the slice 1 projection tests, and the report says it was not seen in
+the browser.
+Reason: no route reaches the phase short of a whole game, and a seeding
+tool is out of scope.
+Slice/files: 4; the browser check.
+
+**R15. Light and dark themes.**
+Decision: screenshots in the one dark theme, at desktop and phone widths;
+the report notes that no light theme exists.
+Reason: the design's "both themes" assumed a light theme the app does not
+have.
+Slice/files: 4; the browser check.
+
+**R16. The panel's measure.**
+Decision: `min(50rem, 100%)`.
+Reason: the Atlas row and its padding fit a desktop panel without
+scrolling.
+Slice/files: 4; `styles.css`.
+
+**R17. Copy and placement the design leaves open.**
+Decision: the quiet line is the first line of the scrolling content, and
+the header stays the 39px pane header with the Chronicle's name as its
+heading. The scorepad section is headed "Era Scorepad". The button wears
+the Control face at the table edge's sizes (1rem, the glance size on the
+compact map), at least 12rem wide, with a 44px touch floor set against the
+map scale.
+Reason: this fits the pane header pattern and the table edge's sizing and
+title case.
+Slice/files: 4; `ChronicleDetailsContent`, `styles.css`.

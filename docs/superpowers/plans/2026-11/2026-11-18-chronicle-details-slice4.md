@@ -32,7 +32,7 @@ its painted background. The Atlas box takes the class
 `mat-board chronicle-details-atlas-board`, so every site rule applies as
 on the map. One rule with both classes (`.mat-board.chronicle-details-atlas-board`)
 gives the box the row's width and ratio, from custom properties the code
-sets from `MatLayout`, and a neutral fill (open question Q12).
+sets from `MatLayout`, and a neutral fill (R12).
 
 **Tech Stack:** Scala.js frontend, munit, jsdom (`TestBrowser`), CSS,
 `./sbtw` (sbt wrapper), `-Werror`.
@@ -108,79 +108,31 @@ new ones go there from R11. Read `DESIGN.md` ("Elevation & Depth",
 - Never write a bare `===` or `=word` in a shell command.
 - Claim evidence in reports: tag each claim *gate*, *read* or *UNKNOWN*.
 
-## Open questions (rulings pending)
+## Rulings
 
-The plan below is written with each recommendation applied. A different
-ruling changes only the steps named.
+Recorded in the
+[implementation rulings](../../specs/2026-11/2026-11-18-chronicle-details-implementation-rulings.md);
+the tasks below apply them.
 
-- **Q11. Where the inspector returns focus after a redraw.** A snapshot
-  while the inspector is open, over a chip, rebuilds the chip.
-  `CardInspectionOverlay` looks for a rebuilt opener only inside its
-  `.game-pane`, so focus would fall to the page.
-  (A, recommended) The inspector also treats `.chronicle-details` as a
-  container: one selector (`".game-pane, .chronicle-details"`). The
-  rebuilt chip is then found by its place; failing that, the overlay's
-  `.pane-heading` is used.
-  (B) The overlay skips redraws while the inspector is open and catches
-  up when it closes. That needs a close callback from the inspector.
-  (C) Accept the focus loss.
-  Affects Task 4.
-- **Q12. How the Atlas box gets the site rules** (the slice 3 reviewer's
-  second item). (A, recommended) The box carries
-  `mat-board chronicle-details-atlas-board`. One two-class rule replaces
-  the mat's width, ratio and painted background with `var(--atlas-w)`,
-  `var(--atlas-ratio)` and the Base fill. The code sets both custom
-  properties from `MatLayout.siteRow(0, 0)` and `MatLayout.DesignWidthPx`,
-  so the ratio has one source. The site rules keep their selectors.
-  (B) A new shared class on both the map board and the Atlas box, with
-  every `.mat-board .site*` selector rewritten to it. That is more CSS
-  churn, and it risks the map.
-  Affects Tasks 3 and 5.
-- **Q13. The Atlas row at narrow widths.** The site's words are sized in
-  rem, as they are on the map at 100%. (A, recommended) The box is the
-  width a row has on the map at 100%, about 742px, computed from
-  `MatLayout`. A panel narrower than that scrolls the box sideways inside
-  its frame, as the scoresheet's frame does. (B) The box shrinks to the
-  panel, and the words overflow the face at phone width. (C) The box is
-  scaled to fit with a measured transform, as the map viewport is. That
-  is more code.
-  Affects Tasks 3 and 5.
-- **Q14. The Chronicle Phase in the browser check.** No route in the app
-  reaches the Chronicle Phase short of playing a whole game (ROADMAP,
-  "Play-test Legacies' Chronicle Phase in a browser"). (A, recommended)
-  Check the overlay mid-game in the real app, on a game started from an
-  imported Chronicle built for the check. It would have a scorepad of six
-  games, an unseated lineage with a dormant legacy, and a Recent site
-  storing a denizen, an edifice and a relic. Leave the Chronicle Phase
-  faces to the projection tests (slice 1) and say so in the report. (B)
-  Write a test-scope tool that journals a game at the Chronicle Phase into
-  the scratch database. That is new code beyond the design.
-  Affects Task 7.
-- **Q15. Light and dark themes.** The app has one theme: `styles.css`
-  sets `color-scheme: dark`, and no rule reads `prefers-color-scheme`.
-  (A, recommended) Take screenshots in the one theme, at desktop and phone
-  widths, and record that no light theme exists. (B) Take each screenshot
-  under both emulated schemes, to show that nothing changes.
-  Affects Task 7.
-- **Q16. The panel's measure.** The log overlay's panel is
-  `min(46rem, 100%)`. The Atlas row at the map's 100% is about 742px wide,
-  plus 24px of padding. (A, recommended) `min(50rem, 100%)`, so the row
-  fits without scrolling on a desktop. (B) The log overlay's 46rem, with
-  the row scrolling sideways everywhere.
-  Affects Task 5.
-- **Q17. Copy and placement the design leaves open.** (A, recommended)
-  - The quiet line is the first line of the scrolling content, in Ink Dim
-    at 0.82rem. The header stays the 39px pane header, with the name as
-    the pane heading.
-  - The scorepad section is headed "Era Scorepad", in the title case of
-    "Shared Bank" and "Public Ambitions".
-  - "The Shared Bank's tokens" is read as the table edge's sizing: 1rem,
-    and the glance size on the compact map. The button wears the Control
-    face, wide (12rem at least), with a 44px floor set against the map
-    scale, as the Oath goal's 24px is.
-
-  (B) Name another reading for any of the three.
-  Affects Tasks 1, 3 and 5.
+- **R11.** `CardInspectionOverlay` looks for a rebuilt opener in
+  `.game-pane, .chronicle-details`; the overlay's `.pane-heading` is the
+  fallback. Task 4.
+- **R12.** The Atlas box carries `mat-board chronicle-details-atlas-board`;
+  one two-class rule sets `var(--atlas-w)`, `var(--atlas-ratio)` (from
+  `MatLayout`) and the Base fill. Tasks 3 and 5.
+- **R13.** The Atlas box keeps the row's width on the map at 100% (about
+  742px) and scrolls sideways inside its frame; the page and the panel
+  never scroll sideways. Tasks 3, 5 and 7.
+- **R14.** The browser check runs mid-game on an imported Chronicle built
+  for it; the Chronicle Phase reveal stays with the slice 1 projection
+  tests, and the report says it was not seen in the browser. Task 7.
+- **R15.** Screenshots in the one dark theme, at desktop and phone widths;
+  no light theme exists. Task 7.
+- **R16.** The panel is `min(50rem, 100%)`. Task 5.
+- **R17.** The quiet line opens the scrolling content under the 39px pane
+  header; the scorepad is headed "Era Scorepad"; the button wears the
+  Control face at the table edge's sizes, 12rem wide at least, with a 44px
+  floor set against the map scale. Tasks 1, 3 and 5.
 
 ## Deviations already made in this plan
 
@@ -1401,7 +1353,7 @@ the worktree:
 Wait until `curl -s -o /dev/null -w "%{http_code}" http://localhost:8081/health/ready`
 prints `200`. Never use `preview_start`.
 
-- [ ] **Step 3: Reach the states the check needs (Q14)**
+- [ ] **Step 3: Reach the states the check needs (R14)**
 
 Open `http://localhost:8081/?mode=server` with the built-in browser
 tools. Choose New Chronicle, and read (only read) the loaded Chronicle's
@@ -1440,7 +1392,9 @@ At 1440×900, then at the phone preset (375×812):
 
 Save one screenshot of the open overlay at each size, and one of the
 inspector over it at 1440×900, to the scratchpad. Give their full paths in
-the report. The app has one theme (Q15). Fix what the check finds as one
+the report. The app has one theme (R15); say so, and say the Chronicle
+Phase reveal was not seen in the browser (R14). At the phone size, check
+that neither the page nor the panel scrolls sideways (R13). Fix what the check finds as one
 batch of test-first commits, then run at most one confirming round.
 
 - [ ] **Step 5: Stop the server**
@@ -1469,9 +1423,9 @@ pkill -f "DistantLandsServer --port 8081"
   - Styles: the panel fills the pane and scrolls; one column; the button
     at phone width (Task 5).
   - Tests named by the design (Tasks 1 to 4).
-  - Browser check (Task 7; the Chronicle Phase and themes per Q14 and
-    Q15).
-  - The slice 3 reviewer's CSS item: Q12, Task 3's `.mat-board` test,
+  - Browser check (Task 7; the Chronicle Phase and themes per R14 and
+    R15).
+  - The slice 3 reviewer's CSS item: R12, Task 3's `.mat-board` test,
     Task 5's rule, and Task 7's check.
 - **Placeholder scan.** Every code step shows its code. Task 7's JSON
   edits name the fields to check, because the Chronicle JSON is read at
