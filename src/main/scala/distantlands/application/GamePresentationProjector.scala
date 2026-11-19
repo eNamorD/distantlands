@@ -204,22 +204,25 @@ private[application] final class GamePresentationProjector(
         banners(ready).filter(_.holderPlayerId.contains(player.player.value)),
         banked, printed, atSites, restBase, bands,
         AdviserLimit.drawn(catalog, ready, player.player),
-        legacies(ready, viewer, player.lineage))
+        ready.game.campaign.lineages.get(player.lineage).toVector
+          .flatMap(legacies(ready, viewer, _)))
     }
 
   /** `lineage`'s legacies as `viewer` may see them (Legacies design, ruling
-    * 1; implementation ruling R18): a face where `identifiesCard` names the
-    * legacy, a legacy back elsewhere. */
-  private def legacies(ready: ReadyGame, viewer: Option[PlayerId],
-      lineage: LineageId): Vector[CardDetailsProjection] =
-    ready.game.campaign.lineages.get(lineage).toVector.flatMap(_.legacies)
-      .map { legacy =>
-        val face = GamePresentationProjector.orientationOf(Some(legacy))
-        if identifiesCard(ready, viewer, legacy.id, face,
-            CardContainer.Lineage(lineage, LineageCardArea.Legacies)) then
-          cardDetails(legacy.id, face, hidden = false)
-        else hiddenCard("legacy")
-      }
+    * 1; implementation rulings R18 and R36): a face where `identifiesCard`
+    * names the legacy, a legacy back elsewhere. `lineage` is a seated
+    * lineage's live record or an unseated one's in the Chronicle the game
+    * started from (Chronicle Details design, slice 1). */
+  private[application] def legacies(ready: ReadyGame,
+      viewer: Option[PlayerId], lineage: LineageState)
+      : Vector[CardDetailsProjection] =
+    lineage.legacies.map { legacy =>
+      val face = GamePresentationProjector.orientationOf(Some(legacy))
+      if identifiesCard(ready, viewer, legacy.id, face,
+          CardContainer.Lineage(lineage.id, LineageCardArea.Legacies)) then
+        cardDetails(legacy.id, face, hidden = false)
+      else hiddenCard("legacy")
+    }
 
   /** The Public Ambitions row, faceup to every viewer. */
   def publicLegacies(ready: ReadyGame): Vector[CardDetailsProjection] =
