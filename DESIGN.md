@@ -539,8 +539,8 @@ site slot is the mat's frame, dashed. Each region's discard, the relic deck,
 the world deck, the round wheel, the Visions Drawn track with its marker and
 the six favor banks stand where the mat prints them. Under the mat, on the
 same zoom surface, the table's edge holds what the physical table keeps
-beside it: the Public Ambitions row, then the oath, the banners and the
-foundations in one row.
+beside it: the Public Ambitions row, then the oath and the banners, and the
+Chronicle Details button, in one row.
 
 The Players pane is a horizontal strip of player boards, each `flex: 1 0
 auto` from a 300px floor, divided by 1px Line-mid right borders. A board is a two-column grid:
@@ -593,14 +593,15 @@ host page.
   only, which floats above the table as a fixed aside.
 - **Note lift** (`box-shadow: 0 6px 18px #000b`): the hover note only, a
   small slip floating over everything, the overlays included.
-- **Overlay scrim** (`background: #0b0a08e8`): the card inspection overlay
-  and the log overlay darken the table instead of casting a shadow.
+- **Overlay scrim** (`background: #0b0a08e8`): the card inspection overlay,
+  the log overlay and Chronicle Details darken the table instead of casting
+  a shadow.
 
 ### Named Rules
 **The Flat Board Rule.** Board pieces never cast shadows. If something must
 read as above the table, it is a fixed overlay with a scrim or a lift, and
-there are four of those: the developer panel's lift, the hover note's lift,
-and the card and log overlays' scrim.
+there are five of those: the developer panel's lift, the hover note's lift,
+and the card, log and Chronicle Details overlays' scrim.
 
 **The No-Reflow Rule.** Every hover, focus and selection treatment fits in
 space reserved at rest: transparent borders, inset rings, negative-offset
@@ -886,6 +887,18 @@ height, at a 46rem measure, under a pane header with Close. Its list is the
 pane's list at the pane's 13px; the overlay adds room, not scale, and there
 the round headlines stick instead of the turns.
 
+The **Chronicle Details** overlay gathers the Chronicle's meta information
+over the table: the log overlay's scrim and layer, a Pane-fill panel at a
+50rem measure under a pane header naming the Chronicle, with Close. Its
+content scrolls in one column: a quiet Ink Dim line ("Chronicle Details ·
+Era target N"), the Foundations, the Era Scorepad with each lineage's
+legacy chips, the Atlas's Recent site drawn as one mat row at the map's
+100% (scrolling sideways in a narrower panel), and the Chronicle Phase
+aids in the Foundation Strip's face. It is read-only. The card overlay
+stacks one step above it and closes first on Escape. It opens from a wide
+Control-face button after the Shared Bank on the table's edge, which takes
+the edge's whole width on a phone.
+
 The **card list** shows cards in pile order: what Scryer or Oracular Pig
 looked at, or a log line's list of more than five cards. It is a count title
 in the Brass Label over a grid of ordinary card faces, each a face or a back
@@ -958,25 +971,20 @@ figure and a region's discard pile are buttons on the pill hover that open
 the text and card-list overlays: Supply at Rest and the pile's cards.
 
 ### Foundation Strip
-The six foundation setup cards, read-only (`FoundationStrip`). On the table
-they close the shared bank on the table's edge, after the banners, in three
-columns, one row a card: Base
+The six foundation setup cards, read-only (`FoundationStrip`, drawn by
+`SetupCardStrip`, which the Chronicle Phase aids share). In Chronicle
+Details they stand first, in three columns, one column at 620px wide and
+narrower, as the aids' strip does, one row a card: Base
 fill, 1px Line border, 4px radius, `4px 8px` padding, the numeral in Ink Dim
 700 and the name of the face in use in Georgia 700. The name holds one line
 and is cut with an ellipsis where the column is too narrow; the whole name
-stays in the hover note and, on the table, in the row's label. An altered
+stays in the hover note and in the row's label. An altered
 card adds the word "Altered" under its name, in Parchment Dim uppercase at
 `max(0.72em, 0.7rem)`, 700, 0.1em tracking. The word alone marks it: the
 frame stays Line, because brass on the board means an option. A row is a
 button that opens its face's rules in the text overlay, and answers hover as
-a Control does (Pressed fill, Bright Cream border). On the compact map the
-row takes the glance text size (`--glance-text`), as a site's details do. A
-table row never wraps, but its height is not fixed: on the compact map it
-follows the glance text size, and so the Fit scale. The strip must stay
-shorter than the regions beside it, whose height sets the map's (The Glance
-Layer Rule). The Chronicle page lists the same six under the loaded
-Chronicle's summary line, three abreast, as plain rows with nothing to open;
-there a name too long for its column wraps.
+a Control does (Pressed fill, Bright Cream border). The Chronicle Phase aids
+share the face, with no numeral.
 
 ## Do's and Don'ts
 
@@ -1001,7 +1009,8 @@ there a name too long for its column wraps.
 - **Don't** add `transition` or `animation`. State changes by color, ring and
   outline only.
 - **Don't** put a resting `box-shadow` on a board piece; only the developer
-  panel and the hover note lift, and only the card and log overlays scrim.
+  panel and the hover note lift, and only the card, log and Chronicle
+  Details overlays scrim.
 - **Don't** introduce grey or blue-tinted neutrals, blue-purple gradients,
   glassmorphism or translucent panels.
 - **Don't** add parchment textures, scrollwork, blackletter, bevels, gloss

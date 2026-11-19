@@ -178,7 +178,7 @@ private[protocol] object WorldProjectionCodec:
     }): Result[SiteForcesProjection]
   yield forces
 
-  private def encodeSite(value: SetupSiteProjection): ujson.Value = ujson.Obj(
+  def encodeSite(value: SetupSiteProjection): ujson.Value = ujson.Obj(
     "siteId" -> value.siteId, "label" -> value.label,
     "looseFavor" -> value.looseFavor, "looseSecrets" -> value.looseSecrets,
     "denizenCapacity" -> value.denizenCapacity, "relicCapacity" -> value.relicCapacity,
@@ -189,7 +189,7 @@ private[protocol] object WorldProjectionCodec:
     "forces" -> option(value.forces)(encodeForces),
     "festival" -> value.festival,
     "denizens" -> encoded(value.denizens)(encodeSiteCard), "relics" -> encodeRelics(value.relics))
-  private def decodeSite(raw: ujson.Value, path: String): Result[SetupSiteProjection] = for
+  def decodeSite(raw: ujson.Value, path: String): Result[SetupSiteProjection] = for
     value <- obj(raw, path)
     _ <- exact(value, Set("siteId", "label", "looseFavor", "looseSecrets",
       "denizenCapacity", "relicCapacity", "defense", "recoverDifficulty", "forgeCost",

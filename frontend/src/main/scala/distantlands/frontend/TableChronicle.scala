@@ -14,11 +14,13 @@ import ServerUiSupport.{button, element, text, textField}
   * outside the panes a redraw replaces, so what the player types survives
   * the poll. Beside the export it offers the way on: back to the Chronicle
   * page (`mainMenu`), or to player selection for the next game of the saved
-  * Chronicle (`nextGame` gets that page's address). */
+  * Chronicle (`nextGame` gets that page's address). `beforeAsking` runs
+  * before the dialog opens, so an overlay drawn above it closes first
+  * (Chronicle Details implementation ruling R21). */
 private[frontend] final class TableChronicle(mount: dom.Element,
     shelf: Option[ChronicleShelf], client: ChronicleClient,
     files: ChronicleFiles, repaint: () => Unit, mainMenu: () => Unit,
-    nextGame: String => Unit):
+    nextGame: String => Unit, beforeAsking: () => Unit = () => ()):
   private var handled = Set.empty[String]
   /** The name each evolved Chronicle, by digest, was saved under: not its
     * own when the player renamed it to resolve a clash. */
@@ -97,6 +99,7 @@ private[frontend] final class TableChronicle(mount: dom.Element,
 
   private def ask(kept: ChronicleShelf, evolved: ChronicleEntry,
       existing: SavedChronicle): Unit =
+    beforeAsking()
     val overlay = element("div", "chronicle-save-prompt")
     overlay.setAttribute("role", "dialog")
     overlay.setAttribute("aria-modal", "true")

@@ -53,6 +53,26 @@ class ChronicleRecordSuite extends munit.FunSuite:
     assertEquals(ChronicleRecord.campaignFields(ready).lineages.head,
       LineageState(boxed, None, Role.Exile, Vector(legacy), Vector.empty))
 
+  test("the record keeps the baseline's order, a boxed lineage before a " +
+      "seated one it lists first, then the lineages it lacks by id"):
+    val start = Table.start.ready
+    val boxedLast = LineageId("zz-boxed")
+    val seated = lineageOf(start, p2)
+    val ready = Table.start.update(_.updateCampaign(campaign => campaign.copy(
+      baseline = campaign.baseline.copy(lineages = Vector(
+        LineageState(boxedLast, Some(PlayerId("p9")), Role.Citizen,
+          Vector(legacy), Vector.empty),
+        LineageState(seated, None, Role.Citizen, Vector.empty,
+          Vector.empty))),
+      boxRoles = Map(boxedLast -> Role.Exile)))).ready
+    assertEquals(ChronicleRecord.campaignFields(ready).lineages, Vector(
+      LineageState(boxedLast, None, Role.Exile, Vector(legacy), Vector.empty),
+      LineageState(seated, Some(p2), Role.Exile, Vector.empty, Vector.empty),
+      LineageState(lineageOf(ready, p1), Some(p1), Role.Exile, Vector.empty,
+        Vector.empty),
+      LineageState(lineageOf(ready, p3), Some(p3), Role.Exile, Vector.empty,
+        Vector.empty)))
+
   test("a lineage that sat this game out is recorded with no previous " +
       "player (R39)"):
     val ready = Table.start.update(_.updateCampaign(campaign => campaign.copy(

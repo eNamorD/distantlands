@@ -22,7 +22,7 @@ object GameProjectionCodec:
     "supplyMaximum", "supplyBands", "undo", "redo", "logRevision",
     "consentWaiting", "consentPrompt", "consentPreferences", "chronicle",
     "planAidPrompt", "foundations", "publicLegacies", "reliquary",
-    "publicPreview")
+    "publicPreview", "chronicleDetails")
 
   def encode(value: GameProjection): String = ujson.write(encodeValue(value))
   def decode(json: String): Either[ProtocolDecodeFailure, GameProjection] =
@@ -85,7 +85,9 @@ object GameProjectionCodec:
     "publicLegacies" -> encoded(value.publicLegacies)(
       WorldProjectionCodec.encodeCard),
     "reliquary" -> encoded(value.reliquary)(WorldProjectionCodec.encodeCard),
-    "publicPreview" -> option(value.publicPreview)(encodePublicPreview))
+    "publicPreview" -> option(value.publicPreview)(encodePublicPreview),
+    "chronicleDetails" -> option(value.chronicleDetails)(
+      ChronicleDetailsCodec.encode))
     value.viewerPlayerId.foreach(player => result("viewerPlayerId") = ujson.Str(player))
     value.planAidPrompt.foreach(prompt => result("planAidPrompt") =
       PlanAidProjectionCodec.encodePrompt(prompt))
@@ -164,6 +166,10 @@ object GameProjectionCodec:
       WorldProjectionCodec.decodeCard)
     publicPreview <- optionalAbsent(value, "publicPreview", path)(
       decodePublicPreview)
+    // Required: a snapshot without it is refused (Chronicle Details
+    // design, slice 1).
+    chronicleDetails <- optional(value, "chronicleDetails", path)(
+      ChronicleDetailsCodec.decode)
   yield GameProjection(game, sequence, phase, active, players, world, pawns,
     ready, completed, resources, siteResources,
     deckCount, deckTop, boards, oathkeeper, banners,
@@ -171,7 +177,8 @@ object GameProjectionCodec:
     walkerDecision, walkerWaiting, viewer,
     supplyMaximum, bands, undo, redo, logRevision,
     consentWaiting, consentPrompt, consentPreferences, chronicle,
-    planAidPrompt, foundations, publicLegacies, reliquary, publicPreview)
+    planAidPrompt, foundations, publicLegacies, reliquary, publicPreview,
+    chronicleDetails)
 
   private def encodePublicPreview(value: PublicPreviewProjection): ujson.Value =
     ujson.Obj("sections" -> encoded(value.sections)(section =>

@@ -27,10 +27,12 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
   PowerMarks.mount(root)
 
   /** What opened the overlay, and where focus goes back to when it closes.
-    * `pane` is the opener's `.game-pane`: a poll rebuilds a pane's content
-    * but keeps the pane and its heading, so the pane is where a rebuilt
-    * opener is looked for, and its heading is the fallback when none is
-    * found -- the same fallback `PanelContent.replace` uses.
+    * `pane` is the opener's `.game-pane`, or Chronicle Details, which a
+    * snapshot also redraws (Chronicle Details implementation ruling R11):
+    * a poll rebuilds a pane's content but keeps the pane and its heading,
+    * so the pane is where a rebuilt opener is looked for, and its heading
+    * is the fallback when none is found -- the same fallback
+    * `PanelContent.replace` uses.
     */
   private final case class Opener(node: dom.html.Element,
       pane: Option[dom.Element], place: Option[PanelContent.Place])
@@ -170,7 +172,7 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     while body.firstChild != null do body.removeChild(body.firstChild)
 
   private def open(origin: dom.html.Element): Unit =
-    val pane = Option(origin.closest(".game-pane"))
+    val pane = Option(origin.closest(".game-pane, .chronicle-details"))
     opener = Some(Opener(origin, pane,
       pane.map(PanelContent.place(_, origin)).filter(_.index >= 0)))
     node.removeAttribute("hidden")
