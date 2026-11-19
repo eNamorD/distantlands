@@ -973,7 +973,8 @@ the text and card-list overlays: Supply at Rest and the pile's cards.
 ### Foundation Strip
 The six foundation setup cards, read-only (`FoundationStrip`, drawn by
 `SetupCardStrip`, which the Chronicle Phase aids share). In Chronicle
-Details they stand first, in three columns, one row a card: Base
+Details they stand first, in three columns, one column at 620px wide and
+narrower, as the aids' strip does, one row a card: Base
 fill, 1px Line border, 4px radius, `4px 8px` padding, the numeral in Ink Dim
 700 and the name of the face in use in Georgia 700. The name holds one line
 and is cut with an ellipsis where the column is too narrow; the whole name
