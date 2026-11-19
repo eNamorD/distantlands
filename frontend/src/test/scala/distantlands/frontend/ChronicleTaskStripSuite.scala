@@ -48,3 +48,12 @@ class ChronicleTaskStripSuite extends munit.FunSuite:
         sun.faces(1).lines, None),
       ("Chronicle task · The World",
         ChronicleTaskPresentation.world.faces.head.lines, None)))
+
+  test("every task line renders as one paragraph, its markup all read: no " +
+      "literal asterisk, underscore or backtick is left in its text"):
+    ChronicleTaskPresentation.all.flatMap(_.lines).foreach { line =>
+      val paragraphs = RulesTextRenderer.powers(line)
+      assertEquals(paragraphs.size, 1, line)
+      val words = paragraphs.head.textContent
+      assert(!words.exists(Set('*', '_', '`')), words)
+    }
