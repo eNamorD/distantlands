@@ -467,8 +467,8 @@ rightward over its own row. A
 decision's cost badge sits at the face's foot, over the name's tail, the
 one thing it may cover. A card holding three kinds of token or more gives
 its token band two lines, and on the mat the band wraps two kinds a line. Its
-powers, the wheel's numbers and a bank's favor glyph leave the board at
-that scale; the tracker's words, the slots' names and the track's label
+powers, the wheel's numbers and end dice and a bank's favor glyph leave
+the board at that scale; the tracker's words, the slots' names and the track's label
 leave the screen but stay in the accessibility tree, and the Usurper's
 lock is also in the round tracker's name and on the limiter mark's hover
 note. The table's edge is on the same zoom surface and holds
@@ -542,7 +542,11 @@ slot. The site and its slots are one option target, and the ring a decision
 draws on it, like a deck's, is laid over the pieces that fill it. An empty
 site slot is the mat's frame, dashed. Each region's discard, the relic deck,
 the world deck, the round wheel, the Visions Drawn track with its marker and
-the six favor banks stand where the mat prints them. Under the mat, on the
+the six favor banks stand where the mat prints them. In an Empire game the
+wheel also prints the end die's Stable Regime targets as the mat does: a
+die in the round die's purple with brass pips on the line after rounds 5, 6 and 7,
+showing 6, 5 and 3, its rule in its hover note. The dice dim while the
+Oathkeeper is neither the Chancellor nor a Citizen, since no roll is made. Under the mat, on the
 same zoom surface, the table's edge holds what the physical table keeps
 beside it: the Public Ambitions row, then the oath and the banners, and the
 Chronicle Details button, in one row.

@@ -422,6 +422,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .round-tracker text { fill: var(--cream-bright); font-weight: 700; }
 /* Qualified by the tracker so it outranks the tracker's text rule below. */
 .round-tracker .limiter-marker { fill: #ff8c7f; }
+/* The end die the mat prints on the wheel in an Empire game, in the round
+   die's own purple with brass pips. It stands down while no roll would be
+   made. */
+.end-die-face { fill: var(--die-round); stroke: var(--brass); stroke-width: 1.5; }
+.end-die-pip { fill: var(--brass-bright); }
+.end-die-idle { opacity: 0.4; }
 .target-detail-badge { display: inline-block; margin-left: 0.4rem; padding: 0.08rem 0.35rem;
   border: 1px solid #a98b58; border-radius: 999px; background: var(--base);
   color: var(--brass-bright); font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
@@ -701,10 +707,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    (implementation ruling R5). Its powers, the wheel's numbers and a bank's
    favor glyph would fall under a readable size and leave the board: the
    powers are read and opened on a zoom or in the overlay, the wheel's
-   numbers are in the tracker's name, and the bank's count says favor in
+   numbers and end dice are in the tracker's name, and the bank's count says favor in
    its own words. */
 .map-tiny .mat-board :is(.site-footer,
-  .round-tracker text:not(.limiter-marker), .favor-bank > .token-favor) {
+  .round-tracker text:not(.limiter-marker), .end-die,
+  .favor-bank > .token-favor) {
   display: none; }
 /* What carries a name or state steps out of sight without leaving the
    accessibility tree: the tracker's words, the slots' names and the track's
