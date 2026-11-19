@@ -166,3 +166,24 @@ map scale.
 Reason: this fits the pane header pattern and the table edge's sizing and
 title case.
 Slice/files: 4; `ChronicleDetailsContent`, `styles.css`.
+
+**R18. The button's size.**
+Question: R17 read "a wide rectangular button beside the Shared Bank" as a
+12rem Control, which the table's edge pushed to its far right.
+Decision: the button takes the width the foundation strip used to fill.
+`.table-edge .shared-bank` stops growing (`flex: 0 1 auto`), and
+`.table-edge .chronicle-details-button` grows to fill the rest of the
+table's edge and stretches to its height (`flex: 1 1 12rem;
+align-self: stretch`), so it sits directly after the bank's last item,
+wide and rectangular. R17's 44px floor on screen stays. This narrows R17.
+Reason: the design's goal asks for a wide rectangular button beside the
+Shared Bank.
+Slice/files: 4 (review); `styles.css`.
+
+**R19. An inspector open when the overlay closes.**
+Decision: `ChronicleDetailsOverlay.hide` closes a card inspector open over
+it before hiding, through a callback `GameTableShell` passes in.
+Reason: otherwise the inspector outlives its overlay and focus falls to
+the body; skipping hidden focus targets would still leave the inspector up
+over the table.
+Slice/files: 4 (review); `ChronicleDetailsOverlay`, `GameTableShell`.
