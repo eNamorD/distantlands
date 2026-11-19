@@ -17,6 +17,7 @@ import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
 import distantlands.model.OathState.Ready
+import distantlands.protocol.ChronicleScorepadEntry
 import distantlands.protocol.projection.{ChronicleDetailsProjection,
   GameProjectionCodec, LineageDetailsProjection}
 import distantlands.testkit.Table
@@ -171,12 +172,16 @@ class ChronicleDetailsProjectionSuite extends munit.FunSuite:
       TriggeredProcedureRef.ChronicleThrone,
       after = TriggeredProcedureRef.ChronicleSun)
     val after = detailsFor(run.ready, Some(p1))
-    assertEquals(after.scorepad.size, before.scorepad.size + 1)
-    val era = run.ready.game.campaign.era
+    // p1, the Chancellor, wins and keeps its 3 points; p2 and p3 are
+    // Exiles with none. The fixture's era is first to 20.
+    assertEquals(before.scorepad, Vector.empty)
+    assertEquals(after.scorepad, Vector(Vector(
+      ChronicleScorepadEntry("l1", 3, Some("chancellor")),
+      ChronicleScorepadEntry("l2", 0, None),
+      ChronicleScorepadEntry("l3", 0, None))))
     assertEquals(after.lineages.map(row => row.lineage -> row.score),
-      after.lineages.map(row => row.lineage ->
-        era.score(LineageId(row.lineage))))
-    assertEquals(after.eraTarget, era.targetScore)
+      Vector("l1" -> 3, "l2" -> 0, "l3" -> 0))
+    assertEquals(after.eraTarget, 20)
 
   test("the Recent site changes after an Explore takes it"):
     import DefenseDieFace.TwoShields
