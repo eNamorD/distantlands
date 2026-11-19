@@ -982,10 +982,8 @@ card adds the word "Altered" under its name, in Parchment Dim uppercase at
 `max(0.72em, 0.7rem)`, 700, 0.1em tracking. The word alone marks it: the
 frame stays Line, because brass on the board means an option. A row is a
 button that opens its face's rules in the text overlay, and answers hover as
-a Control does (Pressed fill, Bright Cream border). The Chronicle page lists
-the same six under the loaded Chronicle's summary line, three abreast, as
-plain rows with nothing to open; there a name too long for its column
-wraps. The Chronicle Phase aids share the face, with no numeral.
+a Control does (Pressed fill, Bright Cream border). The Chronicle Phase aids
+share the face, with no numeral.
 
 ## Do's and Don'ts
 
