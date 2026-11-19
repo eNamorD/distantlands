@@ -598,10 +598,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .table-edge .oathkeeper-status > .oathkeeper-goal { display: flex;
   align-items: center; min-height: calc(24px / var(--map-scale, 1)); }
 /* The Chronicle Details button beside the Shared Bank (Chronicle Details
-   design, slice 4): a wide, rectangular Control filling the rest of the
-   edge and as tall as it (R18), at the edge's own sizes, its touch floor
-   set against the scale as the Oath goal's is (R17). */
-.table-edge .chronicle-details-button { flex: 1 1 12rem; align-self: stretch;
+   design, slice 4): a rectangular Control as tall as the edge (R18) and as
+   wide as a site's three denizen slots (R23): 3 card widths and 2 slot gaps
+   from MatLayout, 1072 of the mat's 5787 units, are 445px of the map's 2400.
+   The map scales as one, so the button keeps that width at every screen
+   size. It takes the edge's own sizes, its touch floor set against the
+   scale as the Oath goal's is (R17). */
+.table-edge .chronicle-details-button { flex: 0 0 445px; align-self: stretch;
   min-height: calc(44px / var(--map-scale, 1)); padding: 8px 16px;
   color: #e8d9bb; background: var(--raised);
   border: 1px solid var(--brass-line); border-radius: 4px; font: inherit;
@@ -612,7 +615,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   font-size: var(--glance-text); }
 @media (max-width: 620px) {
   .table-edge { flex-wrap: wrap; }
-  .table-edge .chronicle-details-button { flex: 1 1 100%; }
 }
 
 /* The glance layer on the mat. A site's face is a fixed box, so each line

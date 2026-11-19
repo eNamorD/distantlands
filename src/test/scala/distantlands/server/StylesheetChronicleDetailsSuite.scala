@@ -43,18 +43,17 @@ class StylesheetChronicleDetailsSuite extends munit.FunSuite:
     assert(!css.contains(".table-edge .foundations"))
     assert(!css.contains(".map-compact .foundation-card"))
 
-  test("the button fills the edge after the Shared Bank, as tall as the " +
-      "edge, a Control full width on a phone (R18)"):
+  test("the button sits after the Shared Bank, three denizen slots wide " +
+      "and as tall as the edge, at every screen size (R18, R23)"):
     assert(rule(".table-edge .shared-bank").contains("flex: 0 1 auto;"))
     val button = rule(".table-edge .chronicle-details-button")
-    assert(button.contains("flex: 1 1 12rem;"), button)
+    assert(button.contains("flex: 0 0 445px;"), button)
     assert(button.contains("align-self: stretch;"), button)
     assert(button.contains("min-height: calc(44px / var(--map-scale, 1));"),
       button)
     assert(button.contains("border: 1px solid var(--brass-line);"), button)
     assert(css.contains("@media (max-width: 620px) {\n  .table-edge " +
-      "{ flex-wrap: wrap; }\n  .table-edge .chronicle-details-button " +
-      "{ flex: 1 1 100%; }\n}"))
+      "{ flex-wrap: wrap; }\n}"))
     assert(rule(".map-compact .table-edge .chronicle-details-button")
       .contains("font-size: var(--glance-text);"))
 
