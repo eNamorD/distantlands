@@ -48,8 +48,9 @@ class ChronicleDetailsContentSuite extends munit.FunSuite:
     assert(board.matches(".mat-board"), board.getAttribute("class"))
     val row = MatLayout.siteRow(0, 0)
     val style = board.asInstanceOf[dom.html.Element].style
-    assertEquals(style.getPropertyValue("--atlas-w"),
-      f"${row.w / MatLayout.Width * MatLayout.DesignWidthPx}%.2fpx")
+    // A row on the mat is 1789 of its 5787 pixels; the board is 2400px
+    // wide at 100%.
+    assertEquals(style.getPropertyValue("--atlas-w"), "742.00px")
     assertEquals(style.getPropertyValue("--atlas-ratio"),
       s"${row.w} / ${row.h}")
     val site = one(board, ":scope > article.site")
