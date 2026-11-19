@@ -219,3 +219,18 @@ R18)".
 Reason: readers implement from the design; its own rulings must be
 findable.
 Slice/files: review; the design.
+
+**R23. The button's width.**
+Question: R18's button filled the rest of the table's edge, about four
+times wider than its label needs.
+Decision: `.table-edge .chronicle-details-button` is as wide as a site's
+three denizen slots and does not grow (`flex: 0 0 445px`): three card
+widths and two slot gaps, 1072 of the mat's 5787 units, on the map's
+2400px. It still sits directly after the Shared Bank and stretches to the
+edge's height. The phone rule that set it to full width goes, because the
+table's edge lies on the map, which scales as one at every screen size.
+At the phone's fit zoom the label wraps to two lines above R17's floor.
+This narrows R18.
+Reason: the owner asked for a button about a quarter as wide, measured
+against the denizens on the mat.
+Slice/files: follow-up; `styles.css`.

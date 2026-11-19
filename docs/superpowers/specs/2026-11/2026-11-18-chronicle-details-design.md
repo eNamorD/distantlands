@@ -3,7 +3,7 @@
 **Status:** designed 2026-11-18. All four slices landed. The questions the
 slices raised were settled in the
 [implementation rulings](2026-11-18-chronicle-details-implementation-rulings.md)
-R1-R22; each line a ruling changed carries a note naming it (plans:
+R1-R23; each line a ruling changed carries a note naming it (plans:
 [slice 1](../../plans/2026-11/2026-11-18-chronicle-details-slice1.md),
 [slice 2](../../plans/2026-11/2026-11-18-chronicle-details-slice2.md),
 [slice 3](../../plans/2026-11/2026-11-18-chronicle-details-slice3.md),
@@ -238,7 +238,7 @@ over legacies stay on the player boards and the Public Ambitions row.
 
 The overlay panel fills the pane and scrolls inside itself; its sections
 stack in one column. The button uses the Shared Bank's tokens and is full
-width at phone widths. (Changed by R17 and R18.) Both themes are covered by
+width at phone widths. (Changed by R17, R18 and R23.) Both themes are covered by
 the existing tokens. (Changed by R15.)
 
 ### Tests
