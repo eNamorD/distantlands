@@ -56,10 +56,15 @@ class SiteRowSuite extends munit.FunSuite:
       woodsWithTwoDenizenSlotsAndAKnownRelic.copy(festival = true)),
       ".site-pawns > .festival-marker").size, 1)
 
-  test("on the mat, the row stands where world() places Deep Woods"):
+  test("on the mat, the row stands where world() places Deep Woods, and " +
+      "its face and cards still stand relative to the row"):
     val onMat = WorldBoardRenderer.siteRow(
       woodsWithTwoDenizenSlotsAndAKnownRelic, 1, 1, MatLayout.Mat,
       BoardOptions.none, SitePowerLinks.none, Vector.empty)
     assertEquals(box(onMat), row.percentOf(MatLayout.Mat))
-    assertEquals(one(onMat, ".site-face").getAttribute("aria-hidden"),
-      "true")
+    val face = one(onMat, ".site-face")
+    assertEquals(face.getAttribute("aria-hidden"), "true")
+    assertEquals(box(face), MatLayout.siteCard(1, 1).percentOf(row))
+    assertEquals(all(onMat, ".site-cards > *").map(box),
+      Vector(MatLayout.cardSlot(1, 1, 0), MatLayout.cardSlot(1, 1, 1),
+        MatLayout.relicSlot(1, 1, 2)).map(_.percentOf(row)))
