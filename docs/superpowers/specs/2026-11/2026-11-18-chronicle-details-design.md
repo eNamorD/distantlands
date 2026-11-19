@@ -1,6 +1,13 @@
 # Chronicle Details
 
-**Status:** designed 2026-11-18. All four slices have landed.
+**Status:** designed 2026-11-18. All four slices landed. The questions the
+slices raised were settled in the
+[implementation rulings](2026-11-18-chronicle-details-implementation-rulings.md)
+R1-R22; each line a ruling changed carries a note naming it (plans:
+[slice 1](../../plans/2026-11/2026-11-18-chronicle-details-slice1.md),
+[slice 2](../../plans/2026-11/2026-11-18-chronicle-details-slice2.md),
+[slice 3](../../plans/2026-11/2026-11-18-chronicle-details-slice3.md),
+[slice 4](../../plans/2026-11/2026-11-18-chronicle-details-slice4.md)).
 
 **Builds on** the [Chronicle browsing design](../2026-10/2026-10-28-chronicle-browsing-design.md)
 (its scoresheet and Chronicle projection), the
@@ -47,7 +54,8 @@ Each slice ships with its gates green and merges on its own.
 **D1. Who sees a dormant legacy in the overlay.**
 Decision: R36 holds unchanged. A dormant legacy shows its face to its
 lineage's player, with a "Dormant" tag; every other viewer sees an "L" back,
-except during the Chronicle Phase, where every viewer sees every face (R18).
+except during the Chronicle Phase, where every viewer sees every face
+(Legacies implementation ruling R18).
 A lineage nobody seated has no owner at the table, so outside the Chronicle
 Phase its dormant legacies are backs to every viewer. Active legacies are
 faceup for everyone.
@@ -85,7 +93,8 @@ final case class ChronicleDetailsProjection(
     eraTarget: Int,
     /** A column per game played, in order, as ChronicleSummary keeps it. */
     scorepad: Vector[Vector[ChronicleScorepadEntry]],
-    /** Every lineage in the Chronicle, seated or not, in PlayerColor order. */
+    /** Every lineage in the Chronicle, seated or not, in PlayerColor order.
+      * (Changed by R5.) */
     lineages: Vector[LineageDetailsProjection],
     /** The Atlas's Recent site; None once the Atlas holds no site. */
     atlasRecent: Option[SetupSiteProjection])
@@ -110,7 +119,8 @@ the game has a campaign.
   `"citizen"` or absent). A lineage's `score` is `era.score(lineage)`, which
   covers carried TTS scores. The era is live: Score Lineage Points adds this
   game's column during the Chronicle Phase.
-- **Role** is the lineage's current role in `campaign.lineages`.
+- **Role** is the lineage's current role in `campaign.lineages`. (Changed
+  by R1.)
 - **Legacies** come from `GamePresentationProjector`'s existing
   `legacies(ready, viewer, lineage)`, made reachable from `GameProjection`.
   It already hides by R36 and reveals in the Chronicle Phase, so no new
@@ -160,8 +170,8 @@ The existing foundation strip tests pass unchanged.
 in the mat's percentages. The per-site body is extracted into
 `siteRow(site, column, row, rowRect, options, links, pawns)`, which returns
 the `article.site` element with its face, heading, pawns, festival marker
-and cards placed relative to `rowRect`. `world()` calls it for each site and
-behaves as before.
+and cards placed relative to `rowRect`. (Changed by R9.) `world()` calls it
+for each site and behaves as before.
 
 Tests: `MatBoardSuite` and the other world-map suites pass unchanged. A new
 test renders one `siteRow` alone and checks that its card and relic slots
@@ -205,7 +215,8 @@ over legacies stay on the player boards and the Public Ambitions row.
 ### Content
 
 1. **Header.** The heading is `chronicle.name`, and it labels the dialog.
-   Under it, a quiet line: "Chronicle Details · Era target N", N being `eraTarget`.
+   Under it, a quiet line: "Chronicle Details · Era target N", N being
+   `eraTarget`. (Changed by R17.)
 2. **Foundations.** `SetupCardStrip` with the foundation cards, as the
    Shared Bank drew them.
 3. **Era scorepad.** `ChronicleScoresheet` gains `of(details:
@@ -227,7 +238,8 @@ over legacies stay on the player boards and the Public Ambitions row.
 
 The overlay panel fills the pane and scrolls inside itself; its sections
 stack in one column. The button uses the Shared Bank's tokens and is full
-width at phone widths. Both themes are covered by the existing tokens.
+width at phone widths. (Changed by R17 and R18.) Both themes are covered by
+the existing tokens. (Changed by R15.)
 
 ### Tests
 
@@ -242,4 +254,4 @@ width at phone widths. Both themes are covered by the existing tokens.
 Browser check: on a scratch DB server run through Bash on port 8081 (not
 `preview_start`, which opens the live DB), open the overlay mid-game and in
 the Chronicle Phase, and take screenshots at desktop and phone widths in
-light and dark themes.
+light and dark themes. (Changed by R14 and R15.)
