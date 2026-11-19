@@ -27,7 +27,7 @@ suites, `PanelPlacementSuite`, `ChroniclePageSuite` and `styles.css` read.
 `foundation-card`. The design requires those tests to pass unchanged, so a
 strip cannot add a shared class to its cards. Each strip instead gets its
 classes from a stem: `foundation` for the foundations, `chronicle-task` for
-the aids (open question Q6).
+the aids (R7).
 
 **Why the task cards are built in the frontend.** The design says
 `ChronicleTaskPresentation` builds the aid cards. A strip card is a
@@ -86,41 +86,23 @@ from R6.
 - Never write a bare `===` or `=word` in a shell command.
 - Claim evidence in reports: tag each claim *gate*, *read* or *UNKNOWN*.
 
-## Open questions (rulings pending)
+## Rulings
 
-The plan below is written with each recommendation applied. A different
-ruling changes only the steps named.
+Recorded in the
+[implementation rulings](../../specs/2026-11/2026-11-18-chronicle-details-implementation-rulings.md);
+the tasks below apply them.
 
-- **Q5. Symbols and the flip line.** The card data marks icons as
-  `` `symbol:legacy-favor` ``, `` `symbol:chancellor` `` and so on. The
-  frontend has no glyph for any of them (`TokenSprite` draws favor,
-  secrets, suits, dice and warbands). The Sun's and the Throne's fronts end
-  "**Now, flip this card over.**"
-  (A, recommended) Drop each symbol and keep its words. Give the Sun's
-  legacy goal legend one line per goal, as the game already words goals in
-  place of icons (Legacies rulings R34, R35, R42). Drop the flip line:
-  the "Back" line stands where the flip happens.
-  (B) Keep the flip line as printed. (C) Name each icon in words, for
-  example "Chancellor: the winner takes the Throne task card."
-  Affects Task 1.
-- **Q6. The aid strip's classes.** (A, recommended) A class stem per
-  strip: `foundation` keeps every foundation class; the aids use
-  `chronicle-tasks`, `chronicle-tasks-title`, `chronicle-task-strip`,
-  `chronicle-task-card`, `chronicle-task-name`. Slice 4 adds CSS selectors
-  for them beside the foundation ones. (B) One generic class set
-  (`setup-cards`, `setup-card`, ...) for both strips. This would change the
-  foundation DOM, `FoundationStripSuite`, `PanelPlacementSuite` and
-  `styles.css`, which the design says stay unchanged. Affects Tasks 2
-  and 3.
-- **Q7. A task card's names.** (A, recommended) The strip shows the
-  printed name without its step number ("The Sun"), as the design gives a
-  task card no mark. The inspector title and the hover note read
-  "Chronicle task · The Sun", in the pattern of
-  "Foundation I · Wide Horizons". The button's label reads "Chronicle
-  task, The Sun". No plate: no task card ratio token exists and no image is
-  drawn yet. (B) The printed heading "1. The Sun" as the inspector title,
-  with a `chronicle-task` plate and a new ratio token in slice 4.
-  Affects Task 3.
+- **R6.** Drop each card data symbol and keep its words; the Sun's
+  legacy-goal legend is one line per goal; drop "Now, flip this card
+  over", since the "Back" line marks the flip. The card images agree with
+  the card data, which wins over the printed sheet. Task 1.
+- **R7.** One class stem per strip: `foundation` keeps every foundation
+  class; the aids use `chronicle-task` (`chronicle-tasks`,
+  `chronicle-tasks-title`, `chronicle-task-strip`, `chronicle-task-card`,
+  `chronicle-task-name`). Slice 4 adds their CSS. Tasks 2 and 3.
+- **R8.** The strip shows "The Sun"; the inspector title and the hover
+  note read "Chronicle task · The Sun"; the button label reads "Chronicle
+  task, The Sun"; no plate. Task 3.
 
 ## Deviations already made in this plan
 
@@ -847,6 +829,4 @@ git log -3
   `FoundationStrip.ofGame`, `title(number, name)`,
   `label(number, name, altered)` and `ChronicleTaskStrip.cards` and
   `render()` carry the same names and types in every task.
-- **Ruling numbers.** The code cites R6 (Q5), R7 (Q6) and R8 (Q7), the
-  numbers these questions take once ruled. If the orchestrator numbers
-  them differently, the citations change with the rulings.
+- **Ruling numbers.** The code cites R6, R7 and R8 as recorded.

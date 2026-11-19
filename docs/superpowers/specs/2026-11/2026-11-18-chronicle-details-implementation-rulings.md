@@ -51,3 +51,32 @@ the colour the lineage id names, then any left by id.
 Reason: the design's "PlayerColor order" needs a colour for unseated and
 test lineages.
 Slice/files: 1; `application/GameProjection.scala`.
+
+## Slice 2
+
+**R6. Symbols and the flip line.**
+Question: the card data marks icons as `symbol:` tokens the frontend has no
+glyph for, and the Sun's and Throne's fronts end "Now, flip this card
+over."
+Decision: drop each symbol and keep its words. The Sun's legacy-goal legend
+is one line per goal. Drop "Now, flip this card over": the "Back" line
+marks the flip. Follow the card data where the printed sheet differs; the
+card images (`The Sun (NF).png`, `The Sun - Back (NF).png`) agree with it.
+Reason: the frontend has no glyphs for these icons, and the game already
+words goals in place of icons (Legacies R34, R35, R42).
+Slice/files: 2; `ChronicleTaskPresentation.scala`.
+
+**R7. The aid strip's classes.**
+Decision: one class stem per strip. The foundation DOM keeps every class;
+the aids use the `chronicle-task` stem.
+Reason: the design requires the foundation tests to pass unchanged.
+Slice/files: 2; `SetupCardStrip.scala`, `FoundationStrip.scala`,
+`ChronicleTaskStrip.scala`.
+
+**R8. A task card's names.**
+Decision: the strip shows "The Sun"; the inspector title and the hover note
+read "Chronicle task · The Sun"; the button label reads "Chronicle task,
+The Sun". No plate.
+Reason: this parallels the foundation wording, and no task card ratio token
+or image exists.
+Slice/files: 2; `ChronicleTaskStrip.scala`.
