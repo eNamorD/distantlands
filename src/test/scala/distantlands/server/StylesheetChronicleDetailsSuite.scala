@@ -68,3 +68,8 @@ class StylesheetChronicleDetailsSuite extends munit.FunSuite:
       "column in view"):
     assert(rule(".scoresheet-legacy-chips .legacy-chip")
       .contains("white-space: normal;"))
+
+  test("the foundation strip keeps no margin of its own, which the table's " +
+      "edge needed and the overlay's grid gap replaces"):
+    assert(!css.contains(".foundations { margin-top"))
+    assert(!css.contains(".chronicle-details .foundations {"))

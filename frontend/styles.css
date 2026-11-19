@@ -1573,18 +1573,17 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .shared-banners .banner-face { width: 100%; height: auto;
   aspect-ratio: var(--ratio-banner); }
 /* The six foundation setup cards (Foundations design, slice 1), a card a
-   row: its numeral, the name of the face in use in the serif that names
-   things, and on an altered card the word. The word alone marks it: brass
-   on the board means an option, so the frame stays the neutral line. On the
-   table a row is one line of name and at most one of mark and never wraps.
-   Its height is not fixed: on the compact map it follows the glance text
-   size, and so the Fit scale. The strip stays shorter than the regions
-   beside it, whose height sets the map's. The table's cards are buttons
-   that read the face's rules; the Chronicle page's are not. */
-.foundations { margin-top: 12px; }
-.foundations-title, .chronicle-tasks-title { margin: 0 0 6px; font-size: 1rem; }
-.foundation-strip, .chronicle-task-strip { list-style: none; margin: 0; padding: 0; display: grid;
-  gap: 4px; }
+   row, in Chronicle Details (Chronicle Details design, slice 4): its
+   numeral, the name of the face in use in the serif that names things, and
+   on an altered card the word. The word alone marks it: brass on the board
+   means an option, so the frame stays the neutral line. A row is one line
+   of name, cut rather than wrapped, and at most one of mark. Each card is a
+   button that reads the face's rules. The Chronicle Phase aids wear the
+   same face. */
+.foundations-title, .chronicle-tasks-title { margin: 0 0 6px;
+  font-size: 1rem; }
+.foundation-strip, .chronicle-task-strip { list-style: none; margin: 0;
+  padding: 0; display: grid; gap: 4px; }
 .foundation-card, .chronicle-task-card { box-sizing: border-box; display: grid;
   grid-template-columns: 1.8em minmax(0, 1fr); column-gap: 6px;
   align-items: baseline; width: 100%; padding: 4px 8px;
@@ -2344,7 +2343,6 @@ button.festival-marker:hover,
 .chronicle-details-subtitle { margin: 0; color: var(--ink-dim);
   font-size: 0.82rem; }
 .chronicle-details-title { margin: 0 0 6px; font-size: 1rem; }
-.chronicle-details .foundations { margin-top: 0; }
 .chronicle-details .foundation-strip, .chronicle-task-strip {
   grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .scoresheet-legacy-chips { display: flex; flex-wrap: wrap; gap: 4px;
