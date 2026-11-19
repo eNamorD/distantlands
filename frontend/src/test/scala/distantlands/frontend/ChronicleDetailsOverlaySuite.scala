@@ -144,6 +144,7 @@ class ChronicleDetailsOverlaySuite extends munit.FunSuite:
       click(detailsButton(browser))
       shell.showChronicleDetails(None)
       assert(overlay(browser).hasAttribute("hidden"))
+      assert(!table(browser).hasAttribute("inert"))
       snapshot(shell, ashenCrownWithRedHoldingSeer)
       click(detailsButton(browser))
       content(browser).scrollTop = 40
