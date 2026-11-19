@@ -129,3 +129,4 @@ private[frontend] final class TableScreen(
       view.viewedLog, projection.fold(Map.empty[String, String])(value =>
         value.players.map(player =>
           player.playerId -> PlayerColorCss.of(player.color)).toMap))
+    shell.showChronicleDetails(projection)
