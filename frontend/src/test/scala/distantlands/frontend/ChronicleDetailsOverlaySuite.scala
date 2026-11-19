@@ -151,3 +151,23 @@ class ChronicleDetailsOverlaySuite extends munit.FunSuite:
       click(detailsButton(browser))
       assertEquals(content(browser).scrollTop, 0.0)
     }
+
+  test("closing the overlay closes an inspector open over it, and leaves " +
+      "the table usable and focus on the button (R19)"):
+    Vector[(TestBrowser, GameTableShell) => Unit](
+      (_, shell) => shell.showChronicleDetails(None),
+      (browser, _) => click(one(browser.mount, ".chronicle-details-close")))
+      .foreach { closing =>
+        withShell { (browser, shell) =>
+          snapshot(shell, ashenCrownWithRedHoldingSeer)
+          click(detailsButton(browser))
+          click(one(content(browser), "button.legacy-chip"))
+          val inspector = one(browser.mount, ".card-overlay")
+          assert(!inspector.hasAttribute("hidden"))
+          closing(browser, shell)
+          assert(inspector.hasAttribute("hidden"))
+          assert(overlay(browser).hasAttribute("hidden"))
+          assert(!table(browser).hasAttribute("inert"))
+          assertEquals(dom.document.activeElement, detailsButton(browser))
+        }
+      }

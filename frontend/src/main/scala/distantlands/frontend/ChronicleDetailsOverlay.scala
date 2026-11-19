@@ -10,11 +10,14 @@ import ServerUiSupport._
   * close, or to the rebuilt Chronicle Details button when a snapshot has
   * replaced the opener. It is fed every snapshot and redraws while open,
   * keeping the reader's scroll and focus. The card inspector stacks above
-  * it and closes first: `inspectorOpen` says when it is open. `opened` and
-  * `closed` let the shell make the table inert behind it.
+  * it and closes first: `inspectorOpen` says when it is open, and
+  * `closeInspector` closes it when the overlay closes under it
+  * (implementation ruling R19). `opened` and `closed` let the shell make
+  * the table inert behind it.
   */
 private[frontend] final class ChronicleDetailsOverlay(root: dom.Element,
-    inspectorOpen: () => Boolean, opened: () => Unit, closed: () => Unit):
+    inspectorOpen: () => Boolean, closeInspector: () => Unit,
+    opened: () => Unit, closed: () => Unit):
   private val node = element("aside", "chronicle-details")
     .asInstanceOf[dom.html.Element]
   node.id = "chronicle-details"
@@ -66,6 +69,8 @@ private[frontend] final class ChronicleDetailsOverlay(root: dom.Element,
 
   def hide(): Unit =
     if isOpen then
+      // An inspector opened from a card here closes with it (R19).
+      if inspectorOpen() then closeInspector()
       node.setAttribute("hidden", "")
       // Before the focus moves: the owner makes the table usable again.
       closed()

@@ -219,7 +219,7 @@ private[frontend] final class GameTableShell(mount: dom.Element,
   // Chronicle Details (Chronicle Details design, slice 4): modal as the
   // log overlay is, one layer under the card overlay, which closes first.
   private val chronicleDetails = new ChronicleDetailsOverlay(mount,
-    () => inspector.isOpen, () => inertBehind(true),
+    () => inspector.isOpen, () => inspector.hide(), () => inertBehind(true),
     () => inertBehind(false))
   ChronicleDetails.onOpen { origin =>
     if inspector.isOpen then inspector.hide()
