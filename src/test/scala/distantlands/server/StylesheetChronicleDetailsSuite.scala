@@ -52,3 +52,9 @@ class StylesheetChronicleDetailsSuite extends munit.FunSuite:
       "{ flex: 1 1 100%; }\n}"))
     assert(rule(".map-compact .table-edge .chronicle-details-button")
       .contains("font-size: var(--glance-text);"))
+
+  test("the sections fit the panel's width, so only the Atlas and the " +
+      "scorepad frames scroll sideways (R13)"):
+    val body = rule(".chronicle-details-body")
+    assert(body.contains("grid-template-columns: minmax(0, 1fr);"), body)
+    assert(rule(".chronicle-details-body > *").contains("min-width: 0;"))

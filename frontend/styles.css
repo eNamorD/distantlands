@@ -2334,7 +2334,12 @@ button.festival-marker:hover,
 .chronicle-details button:focus-visible,
 .chronicle-details [tabindex]:focus-visible {
   outline: 2px solid var(--cream-focus); outline-offset: -3px; }
-.chronicle-details-body { display: grid; gap: 18px; }
+/* One column as wide as the panel: a section never takes the width of a
+   row it holds, so only the Atlas and the scorepad frames scroll sideways
+   (R13). */
+.chronicle-details-body { display: grid;
+  grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.chronicle-details-body > * { min-width: 0; }
 .chronicle-details-subtitle { margin: 0; color: var(--ink-dim);
   font-size: 0.82rem; }
 .chronicle-details-title { margin: 0 0 6px; font-size: 1rem; }
