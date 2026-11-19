@@ -14,19 +14,19 @@ role and the legacies the viewer may see, and the Atlas's Recent site.
 `context.ready.game.campaign`, through `GamePresentationProjector`: its
 existing `legacies` (R36 and R18 already applied) and a new `atlasSite`
 that shares the map site's catalog facts. No new visibility rule is
-written for legacies. One clause is added to `identifiesCard` so the Recent
+written for legacies. One arm is added to `identifiesCard` so the Recent
 site's denizens and edifice are named everywhere the overlay names them
-(open question Q2).
+(R2).
 
 **Why unseated lineages need more than `campaign.lineages`.** Game start
 fills `campaign.lineages` with the seated lineages only
 (`GameStartRules.evolve`). A lineage nobody seated lives in
 `campaign.baseline.lineages`, and a role this game gives it in the box is
 in `campaign.boxRoles` (`ChronicleStateOperations.roleChanged`). Crown
-Chancellor reads every lineage's role the same way (`ChronicleCrown.roles`),
-and so does the record of the evolved Chronicle
-(`ChronicleRecord.campaignFields`). The projection reads them that way
-too (open question Q1).
+Chancellor already reads every lineage's role that way, privately
+(`ChronicleCrown.roles`). R1 moves that rule to
+`CampaignState.standingLineages`, which the crown and the projection both
+read.
 
 **Tech Stack:** Scala 3.9.0, munit, Scala.js frontend, `./sbtw` (sbt
 wrapper), compiler flags
@@ -52,14 +52,15 @@ plan runs go in the
   without the key is refused. It is `null` before a game starts. Old
   journals and snapshots need not stay decodable.
 - Inside `chronicleDetails` every key is required. `role` and
-  `atlasRecent` are `null` when absent (Q4). Scorepad marks keep the
+  `atlasRecent` are `null` when absent (R4). Scorepad marks keep the
   existing `ChronicleScorepadEntry` wire, whose `role` is omitted for an
   Exile, so one codec serves both places.
 - A stored relic is `hiddenCard("relic")` to every viewer. A stored site
   has no loose favor, secrets, warbands or festival marker.
 - Protected (do not change): `identifiesCard`'s arms other than the new
-  `AtlasSite` arm; `ChronicleCrown`, `ChronicleRecord`, `GameStartRules`;
-  the `ChronicleEntry` wire format; every golden log.
+  `AtlasSite` arm; `ChronicleCrown`'s behaviour and its suites (only
+  `roles` changes, to read `standingLineages`); `ChronicleRecord`,
+  `GameStartRules`; the `ChronicleEntry` wire format; every golden log.
 - Work in `/Users/roman/projects/distantlands/.worktrees/chronicle-details`
   on branch `chronicle-details`. `.tooling` and `node_modules` are
   symlinks; never commit them. Never commit on `0.2.0-alpha` or `main`.
@@ -76,45 +77,30 @@ plan runs go in the
 - Never write a bare `===` or `=word` in a shell command.
 - Claim evidence in reports: tag each claim *gate*, *read* or *UNKNOWN*.
 
-## Open questions (rulings pending)
+## Rulings
 
-The plan below is written with each recommendation applied. A different
-ruling changes only the steps named.
+Recorded in the
+[implementation rulings](../../specs/2026-11/2026-11-18-chronicle-details-implementation-rulings.md);
+the tasks below apply them.
 
-- **Q1. Where unseated lineages come from.** (A, recommended) The
-  projection lists `campaign.lineages` plus the `campaign.baseline`
-  lineages not in it, each boxed one with
-  `campaign.boxRoles.getOrElse(id, role)`, the rule `ChronicleCrown.roles`
-  uses; written once, privately, in `GameProjection.scala`.
-  `GamePresentationProjector.legacies` takes the `LineageState` instead of
-  its id, so a boxed lineage's legacies are read from its baseline record.
-  (B) Add `CampaignState.standingLineages` to the model and switch
-  `ChronicleCrown.roles` to it as well: one rule in one place, but it
-  touches gameplay code the spec does not name. Affects Task 3.
-- **Q2. Naming the Recent site's cards outside the overlay.**
-  `identifiesCard`'s doc says atlas sites are never identified, and that
-  the world projection and it must be tightened "together or neither".
-  The rules make the front Recent site's denizens and edifices public, not
-  its relics (NF rulebook, "Public and Private Information": "In the Atlas
-  box, all information is private except the first site on the Recent
-  Sites side and denizens and edifices stored with it."). (A, recommended)
-  Add an arm naming `AtlasSite(_, site, Denizens)` cards to every viewer
-  while `site` is the Recent site, so the log (`identifiesAt`) and the
-  overlay agree. (B) Leave `identifiesCard` alone and note the overlay as
-  an exception in its doc. Affects Task 2, Steps 1 and 4.
-- **Q3. The side a stored edifice shows.** `AtlasEntry.StoredSite.edifice`
-  carries no side; `CardIndex` notes "it has no side until the site is
-  placed". (A, recommended) Show it intact: Archive Rival Sites stores
-  "intact edifices", and Empire setup returns them "on their intact side"
-  (NF rulebook). It goes after the stored denizens, the position
-  `CardIndex` gives it. (B) Show it with no side (a card with `side`
-  absent). Affects Task 2.
-- **Q4. The case class default.** On the wire the field is required.
-  (A, recommended) In Scala, `chronicleDetails` is the last
-  `GameProjection` parameter with `= None`, as `foundations` is required on
-  the wire and defaulted in Scala; the seven constructor calls in tests and
-  the `NoGame` projection compile unchanged. (B) No Scala default: every
-  constructor call names the field. Affects Task 1, Step 3.
+- **R1.** `CampaignState.standingLineages`: the seated lineages plus the
+  baseline lineages missing from `campaign.lineages`, each boxed one with
+  `boxRoles.getOrElse(id, role)`. `ChronicleCrown.roles` reads it with no
+  behaviour change; the projection reads it. Task 3, Task 4.
+- **R2.** `identifiesCard` names the denizens and edifices stored at the
+  Atlas's Recent site to every viewer, never relics; its doc cites the NF
+  rulebook's line "In the Atlas box, all information is private except
+  the first site on the Recent Sites side and denizens and edifices stored
+  with it." A changed golden log stops the work: report the diff, do not
+  re-record. Task 2.
+- **R3.** A stored edifice shows its intact side, after the stored
+  denizens, where `CardIndex` lays it. Task 2.
+- **R4.** `chronicleDetails = None` is the last `GameProjection` parameter
+  in Scala; the key is required on the wire. `role` and `atlasRecent` are
+  required and nullable. Task 1.
+- **R5.** Lineages sort by their seat's colour when seated, otherwise by
+  the colour the id names (`FirstGameBootstrapMapper.lineageOf`), then any
+  left by id. Task 4.
 
 ## Deviations already made in this plan
 
@@ -129,11 +115,8 @@ ruling changes only the steps named.
 - `GamePresentationProjector.siteProjection` is split: `siteCard` maps one
   site card, `siteShape` adds the catalog facts. The map site projection
   is unchanged.
-- "PlayerColor order" for a lineage with no colour: a seated lineage takes
-  its seat's colour, a boxed one the colour its id names
-  (`FirstGameBootstrapMapper.lineageOf`); a lineage with neither comes
-  last, by id. Test tables use lineage ids such as `l1`, so the seat's
-  colour is what orders them.
+- `GamePresentationProjector.legacies` takes a `LineageState` instead of
+  its id, so an unseated lineage's legacies are read from its record.
 
 ## Files
 
@@ -146,6 +129,11 @@ ruling changes only the steps named.
 - Create: `shared/src/test/scala/distantlands/protocol/ChronicleDetailsProtocolSuite.scala`
 - Modify: `frontend/src/test/scala/distantlands/frontend/HttpGameClientSuite.scala`
   (its hand-written snapshot JSON gains `"chronicleDetails":null`)
+- Modify: `src/main/scala/distantlands/model/GameState.scala`
+  (`CampaignState.standingLineages`)
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/ChronicleCrown.scala`
+  (`roles`)
+- Create: `src/test/scala/distantlands/model/StandingLineagesSuite.scala`
 - Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala`
 - Modify: `src/main/scala/distantlands/application/GameProjection.scala`
 - Modify: `src/main/scala/distantlands/application/chronicle/ChronicleEntries.scala`
@@ -679,11 +667,125 @@ git log -3
 
 ---
 
-### Task 3: Build `chronicleDetails` on every snapshot
+### Task 3: Every lineage as it stands, in the model (R1)
+
+**Files:**
+- Modify: `src/main/scala/distantlands/model/GameState.scala`
+  (`CampaignState.standingLineages`)
+- Modify: `src/main/scala/distantlands/gameplay/chronicle/ChronicleCrown.scala`
+  (`roles`)
+- Test: `src/test/scala/distantlands/model/StandingLineagesSuite.scala`
+
+**Interfaces:**
+- Produces: `CampaignState.standingLineages: Vector[LineageState]`, by id.
+
+- [ ] **Step 1: Re-inventory**
+
+Run:
+```bash
+git grep -n -E 'boxRoles\.getOrElse|baseline\.lineages' -- src/main
+```
+Expected: `ChronicleCrown.roles`, `ChronicleRecord.campaignFields` and the
+setup readers. Only `ChronicleCrown.roles` changes (R1).
+`ChronicleRecord.campaignFields` also resets `previousPlayer` and keeps the
+baseline's order for the saved Chronicle, so it is a different reading and
+stays.
+
+- [ ] **Step 2: Write the failing test**
+
+Create `src/test/scala/distantlands/model/StandingLineagesSuite.scala`:
+
+```scala
+package distantlands.model
+
+import distantlands.testkit.Table
+
+/** Every lineage in the Chronicle as it stands (Chronicle Details
+  * implementation ruling R1). */
+class StandingLineagesSuite extends munit.FunSuite:
+  private val boxedCitizenHoldingALegacy = LineageState(LineageId("a-boxed"),
+    None, Role.Citizen, Vector(LegacyState(LegacyId("L22"), active = false)),
+    Vector.empty)
+  private val boxedChancellor = LineageState(LineageId("z-boxed"), None,
+    Role.Chancellor, Vector.empty, Vector.empty)
+
+  test("the seated lineages' live records and the unseated ones' records " +
+      "in the Chronicle the game started from, each with the role this " +
+      "game gave it in the box, by id"):
+    val campaign = Table.start.ready.game.campaign
+    val seated = campaign.lineages.values.toVector.sortBy(_.id.value)
+    // A seated lineage's baseline record is stale: the live one wins.
+    val staleSeated = seated.head.copy(role = Role.Chancellor)
+    val standing = campaign.copy(
+      baseline = campaign.baseline.copy(lineages = campaign.baseline.lineages
+        ++ Vector(staleSeated, boxedCitizenHoldingALegacy, boxedChancellor)),
+      boxRoles = Map(boxedChancellor.id -> Role.Exile)).standingLineages
+    assertEquals(standing, boxedCitizenHoldingALegacy +: seated :+
+      boxedChancellor.copy(role = Role.Exile))
+```
+
+The test's seated ids are `l1`, `l2` and `l3`, so `a-boxed` sorts first
+and `z-boxed` last. If Table.start's baseline already lists `l1`, drop
+`staleSeated` from the appended lineages and say so in the report.
+
+- [ ] **Step 3: Run the test to verify it fails**
+
+Run: `./sbtw "testOnly distantlands.model.StandingLineagesSuite"`
+Expected: compilation fails with "value standingLineages is not a member
+of distantlands.model.CampaignState".
+
+- [ ] **Step 4: Add `standingLineages` and read it in the crown**
+
+In `GameState.scala`, in `CampaignState`, after `savedChronicle`:
+
+```scala
+  /** Every lineage in the Chronicle as it stands, by id (Chronicle Details
+    * implementation ruling R1): a seated lineage's live record, and each
+    * lineage nobody seated as the Chronicle the game started from records
+    * it, with the role this game gave it in the box (Crown Chancellor:
+    * "even in the box", CR p. 36). */
+  def standingLineages: Vector[LineageState] =
+    val boxed = baseline.lineages
+      .filterNot(lineage => lineages.contains(lineage.id))
+      .map(lineage => lineage.copy(role =
+        boxRoles.getOrElse(lineage.id, lineage.role)))
+    (lineages.values.toVector ++ boxed).sortBy(_.id.value)
+```
+
+In `ChronicleCrown.scala`, replace the body of `roles` and its doc:
+
+```scala
+  /** Every lineage's current role, seated or boxed, by id
+    * (`CampaignState.standingLineages`). */
+  private def roles(ready: ReadyGame): Vector[(LineageId, Role)] =
+    ready.game.campaign.standingLineages.map(lineage =>
+      lineage.id -> lineage.role)
+```
+
+- [ ] **Step 5: Run the tests to verify they pass**
+
+Run: `./sbtw "testOnly distantlands.model.StandingLineagesSuite distantlands.gameplay.chronicle.* distantlands.gameplay.operations.ChronicleStateOperationsSuite distantlands.gameplay.setup.NoEmpireSetupSuite distantlands.gameplay.setup.LaterGameSetupSuite"`
+Expected: all pass, the crown's suites unchanged.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/main/scala/distantlands/model/GameState.scala \
+  src/main/scala/distantlands/gameplay/chronicle/ChronicleCrown.scala \
+  src/test/scala/distantlands/model/StandingLineagesSuite.scala
+git commit -m "refactor(model): read every standing lineage in one place
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+git log -3
+```
+
+---
+
+### Task 4: Build `chronicleDetails` on every snapshot
 
 **Files:**
 - Modify: `src/main/scala/distantlands/application/GameProjection.scala`
-  (`readyProjection`, new `chronicleDetails` and `standingLineages`)
+  (`readyProjection`, new `chronicleDetails` and `inColorOrder`)
 - Modify: `src/main/scala/distantlands/application/GamePresentationProjector.scala`
   (`legacies` takes a `LineageState`, `private[application]`)
 - Modify: `src/main/scala/distantlands/application/chronicle/ChronicleEntries.scala`
@@ -692,7 +794,8 @@ git log -3
 
 **Interfaces:**
 - Consumes: `ChronicleDetailsProjection`, `LineageDetailsProjection`
-  (Task 1); `GamePresentationProjector.atlasSite` (Task 2).
+  (Task 1); `GamePresentationProjector.atlasSite` (Task 2);
+  `CampaignState.standingLineages` (Task 3).
 - Produces: `GamePresentationProjector.legacies(ready: ReadyGame, viewer: Option[PlayerId], lineage: LineageState): Vector[CardDetailsProjection]`;
   `ChronicleEntries.scorepad(era: EraState): Vector[Vector[ChronicleScorepadEntry]]`;
   `ChronicleEntries.roleName(role: Role): Option[String]`.
@@ -934,41 +1037,35 @@ and `distantlands.model._`, so no import is added), in
 ```scala
   /** The Chronicle as the table sees it mid-game (Chronicle Details design,
     * slice 1): the live era scorepad, which Score Lineage Points extends in
-    * the Chronicle Phase; every lineage, seated or not, with its total
-    * (carried TTS scores included), its role and the legacies `context`'s
-    * viewer may see (ruling D1); and the Atlas's Recent site. */
+    * the Chronicle Phase; every lineage, seated or not
+    * (`CampaignState.standingLineages`), with its total (carried TTS
+    * scores included), its role and the legacies `context`'s viewer may
+    * see (ruling D1); and the Atlas's Recent site. */
   private def chronicleDetails(context: ScopedProjectionContext)
       : ChronicleDetailsProjection =
     val ready = context.ready
     val campaign = ready.game.campaign
     ChronicleDetailsProjection(campaign.era.targetScore,
       ChronicleEntries.scorepad(campaign.era),
-      standingLineages(ready).map(lineage => LineageDetailsProjection(
-        lineage.id.value, campaign.era.score(lineage.id),
-        ChronicleEntries.roleName(lineage.role),
-        presentation.legacies(ready, context.viewer, lineage))),
+      inColorOrder(ready, campaign.standingLineages).map(lineage =>
+        LineageDetailsProjection(lineage.id.value,
+          campaign.era.score(lineage.id),
+          ChronicleEntries.roleName(lineage.role),
+          presentation.legacies(ready, context.viewer, lineage))),
       campaign.atlas.site(AtlasEnd.Recent).map(presentation.atlasSite))
 
-  /** Every lineage in the Chronicle as it stands, in PlayerColor order. A
-    * seated lineage is its live record; an unseated one is its record in
-    * the Chronicle the game started from, with the role this game gave it
-    * in the box, as Crown Chancellor reads it (`ChronicleCrown.roles`). A
-    * lineage takes its seat's colour, else the colour its id names; one
-    * with neither comes last, by id. */
-  private def standingLineages(ready: ReadyGame): Vector[LineageState] =
-    val campaign = ready.game.campaign
-    val boxed = campaign.baseline.lineages
-      .filterNot(lineage => campaign.lineages.contains(lineage.id))
-      .map(lineage => lineage.copy(role =
-        campaign.boxRoles.getOrElse(lineage.id, lineage.role)))
+  /** `lineages` in PlayerColor order (implementation ruling R5): a lineage
+    * takes its seat's colour, else the colour its id names; one with
+    * neither comes last, by id. */
+  private def inColorOrder(ready: ReadyGame, lineages: Vector[LineageState])
+      : Vector[LineageState] =
     val seatColors = ready.game.current.players.flatMap(seat =>
       ready.playerColors.get(seat.player).map(seat.lineage -> _)).toMap
     def colorIndex(lineage: LineageId): Int = seatColors.get(lineage)
       .orElse(PlayerColor.all.find(color =>
         FirstGameBootstrapMapper.lineageOf(color) == lineage))
       .fold(PlayerColor.all.size)(PlayerColor.all.indexOf)
-    (campaign.lineages.values.toVector ++ boxed).sortBy(lineage =>
-      (colorIndex(lineage.id), lineage.id.value))
+    lineages.sortBy(lineage => (colorIndex(lineage.id), lineage.id.value))
 ```
 
 - [ ] **Step 7: Run the tests to verify they pass**
@@ -992,7 +1089,7 @@ git log -3
 
 ---
 
-### Task 4: Docs and the full gate
+### Task 5: Docs and the full gate
 
 **Files:**
 - Modify: `docs/superpowers/specs/2026-11/2026-11-18-chronicle-details-design.md` (status line)
@@ -1042,17 +1139,17 @@ git log -3
 
 - **Spec coverage.** New types: Task 1. Required wire field, both types
   round-trip, a snapshot without it refused: Task 1. Built beside
-  `chronicleView`, present whenever the game has a campaign: Task 3.
+  `chronicleView`, present whenever the game has a campaign: Task 4.
   Scorepad, `eraTarget`, `era.score` with carried scores, the live column
-  Score Lineage Points adds: Task 3. Role from the campaign: Task 3
-  (boxed lineages per Q1). Legacies through the existing `legacies`, no
-  new legacy rule: Task 3. Atlas Recent site through the map site's path,
+  Score Lineage Points adds: Task 4. Role from the campaign, boxed
+  lineages through `standingLineages` (R1): Tasks 3 and 4. Legacies
+  through the existing `legacies`, no new legacy rule: Task 4. Atlas Recent site through the map site's path,
   denizens and edifices named, relics `hiddenCard("relic")`, zero counts:
   Task 2. Projector tests (dormant legacy own/other, unseated back to every
   seat, Chronicle Phase faces, active faceup, scorepad column, Explore,
-  empty Atlas, hidden relic): Tasks 2 and 3. Wire tests: Task 1.
-- **Placeholder scan.** No step defers code. Each open question names the
-  steps a different ruling changes.
+  empty Atlas, hidden relic): Tasks 2 and 4. Wire tests: Task 1.
+- **Placeholder scan.** No step defers code. Each ruling names the tasks
+  that apply it.
 - **Type consistency.** `ChronicleDetailsProjection`,
   `LineageDetailsProjection`, `atlasSite`, `legacies(ready, viewer,
   lineage: LineageState)`, `ChronicleEntries.scorepad` and `roleName`
