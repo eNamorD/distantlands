@@ -2349,6 +2349,9 @@ button.festival-marker:hover,
   grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .scoresheet-legacy-chips { display: flex; flex-wrap: wrap; gap: 4px;
   margin-top: 4px; }
+/* A chip in a scorepad row wraps its name rather than widening the lineage
+   column, so a phone keeps the Total column in view. */
+.scoresheet-legacy-chips .legacy-chip { white-space: normal; }
 /* The Atlas's Recent site: one mat row as the map draws it at 100%, in a
    .mat-board box so the site rules apply, at the row's width and ratio on
    the Base fill. The Atlas is a box, not a region (R12). A narrower panel

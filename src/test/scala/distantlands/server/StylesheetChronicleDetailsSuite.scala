@@ -63,3 +63,8 @@ class StylesheetChronicleDetailsSuite extends munit.FunSuite:
     val body = rule(".chronicle-details-body")
     assert(body.contains("grid-template-columns: minmax(0, 1fr);"), body)
     assert(rule(".chronicle-details-body > *").contains("min-width: 0;"))
+
+  test("a scorepad legacy chip wraps its name, so a phone keeps the Total " +
+      "column in view"):
+    assert(rule(".scoresheet-legacy-chips .legacy-chip")
+      .contains("white-space: normal;"))
