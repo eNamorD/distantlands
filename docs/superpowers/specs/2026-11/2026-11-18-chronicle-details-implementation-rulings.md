@@ -80,3 +80,23 @@ The Sun". No plate.
 Reason: this parallels the foundation wording, and no task card ratio token
 or image exists.
 Slice/files: 2; `ChronicleTaskStrip.scala`.
+
+## Slice 3
+
+**R9. Where the row is placed, and the design's `rowRect` argument.**
+Question: the design passes `rowRect`, which is always
+`MatLayout.siteRow(column, row)`, and the row must sit at its slot on the
+map but fill its box in the overlay.
+Decision: `siteRow(site, column, row, within, options, links, pawns)`.
+`siteRow` computes the row rectangle and places the article in `within`:
+`MatLayout.Mat` on the map, the row's own rectangle in the overlay.
+Reason: it removes a redundant argument that could mismatch, and keeps
+the map DOM identical.
+Slice/files: 3; `WorldBoardRenderer.siteRow`.
+
+**R10. The pawns argument.**
+Decision: `pawns: Vector[dom.Element]`, built by `pawnMarker`; the
+overlay passes `Vector.empty`.
+Reason: `siteRow` needs no projection, and the change in marking order is
+invisible.
+Slice/files: 3; `WorldBoardRenderer.siteRow`, `pawnMarker`.

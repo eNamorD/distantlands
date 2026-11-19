@@ -18,7 +18,7 @@ the overlay can pass `SitePowerLinks.none`. The pawn markers are built by
 overlay passes none. The one inline piece of `world()` that reads the
 projection per pawn moves to a private `pawnMarker`.
 
-**Where the row itself is placed (open question Q9).** `world()` places
+**Where the row itself is placed (R9).** `world()` places
 the article at the row inside the mat: `place(article, rowRect)`, whose
 parent defaults to `MatLayout.Mat`. The overlay needs the same article to
 fill a box of the row's own ratio, which is `place(article, rowRect,
@@ -66,41 +66,19 @@ from R9.
 - Never write a bare `===` or `=word` in a shell command.
 - Claim evidence in reports: tag each claim *gate*, *read* or *UNKNOWN*.
 
-## Open questions (rulings pending)
+## Rulings
 
-The plan below is written with each recommendation applied. A different
-ruling changes only the steps named.
+Recorded in the
+[implementation rulings](../../specs/2026-11/2026-11-18-chronicle-details-implementation-rulings.md);
+Task 1 applies them.
 
-- **Q9. Where the article is placed, and what the design's `rowRect`
-  argument is.** The design gives
-  `siteRow(site, column, row, rowRect, options, links, pawns)`. But the row
-  rectangle is always `MatLayout.siteRow(column, row)`, so passing it as
-  well only invites a mismatch. And the article must sit at its row on the
-  map but fill its box in the overlay.
-  (A, recommended) `siteRow(site, column, row, within, options, links,
-  pawns)`. `within` is the rectangle the row is placed in:
-  `MatLayout.Mat` on the map, the row's own rectangle in the overlay.
-  `siteRow` derives the row's rectangle and places the article first, as
-  `world()` does today, so the map's DOM keeps its class order.
-  (B) Keep the design's `rowRect`, and return the article unplaced; each
-  caller places it. On a site the board decision marks, `mat-slot` then
-  comes after the option classes in the `class` attribute. Nothing reads
-  that order, but the DOM is no longer the same. The redundant `rowRect`
-  stays.
-  Affects Task 1, Steps 2 and 4.
-- **Q10. The pawns argument.** (A, recommended)
-  `pawns: Vector[dom.Element]`: the markers `world()` builds with
-  `pawnMarker`, which reads player names and colours from the projection.
-  `siteRow` puts them in its `site-pawns` box, then the festival marker
-  when `site.festival` is set. The overlay passes `Vector.empty`, and the
-  Atlas site's `festival` is false (slice 1, `atlasSite`). One order
-  changes: each marker is now built, and its option marked, before the
-  site's own option is marked rather than after. Marking only sets
-  classes, attributes and a handler on its own element, so the result is
-  the same. (B) Pass the pawn locations and the projection, so `siteRow`
-  builds the markers in today's order. The overlay would then need a
-  projection to pass.
-  Affects Task 1, Step 4.
+- **R9.** `siteRow(site, column, row, within, options, links, pawns)`.
+  `siteRow` computes the row rectangle and places the article in
+  `within`: `MatLayout.Mat` on the map, the row's own rectangle in the
+  overlay. The map DOM stays identical.
+- **R10.** `pawns: Vector[dom.Element]`, built by `pawnMarker`; the
+  overlay passes `Vector.empty`. Each marker is now marked before the site
+  rather than after; marking touches only the marker itself.
 
 ## Files
 
@@ -313,7 +291,7 @@ After `world()`, add:
 
 Every statement of `siteRow` and `pawnMarker` is a statement of the old
 loop body, in its old order. The only differences are that the pawn
-markers are built before the site is marked (Q10), and the names `pawns`
+markers are built before the site is marked (R10), and the names `pawns`
 (the markers) and `pawnBox` (the `site-pawns` box, which the old code
 called `pawns`).
 
@@ -381,8 +359,8 @@ git log -3
 
 - **Spec coverage.** The per-site body extracted into `siteRow`, which
   returns the `article.site` with its face, heading, pawns, festival marker
-  and cards placed relative to the row: Task 1, Step 4 (the `rowRect`
-  argument per Q9). `world()` calls it for each site and behaves as
+  and cards placed relative to the row: Task 1, Step 4 (the `within`
+  argument per R9). `world()` calls it for each site and behaves as
   before: Task 1, Steps 4 and 5. `MatBoardSuite` and the other world map
   suites pass unchanged: Task 1, Step 5. A new test renders one `siteRow`
   alone and checks its card and relic slots against `MatLayout`: Task 1,
