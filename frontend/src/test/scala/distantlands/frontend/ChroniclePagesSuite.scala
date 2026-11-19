@@ -363,6 +363,22 @@ class ChroniclePagesSuite extends munit.FunSuite:
       browser.click("add-player-toggle")
       assertEquals(browser.byClass("add-player-option").head.textContent,
         "Yellow Exile")
+      // Only the Imperial roles wear the Empire's purple.
+      assertEquals(browser.byClass("role-imperial").map(_.textContent),
+        Vector("Chancellor", "Citizen"))
+
+  test("seat links show an Imperial role in the Empire's purple"):
+    TestBrowser.useSynchronously(): browser =>
+      startPages(browser, "/", ChronicleFixtures.devices(
+        Some(storageWithAnEmpire())))
+      browser.click("continue-chronicle")
+      browser.click("create-trusted-game")
+      browser.settle.map { _ =>
+        assertEquals(browser.byClass("seat-link-color").map(_.textContent),
+          Vector("Red Chancellor", "Blue Citizen"))
+        assertEquals(browser.byClass("role-imperial").map(_.textContent),
+          Vector("Chancellor", "Citizen"))
+      }
 
   test("player selection says the Chancellor goes first in an Empire game"):
     TestBrowser.useSynchronously(): browser =>

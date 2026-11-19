@@ -65,6 +65,14 @@ class PlayerBoardSuite extends munit.FunSuite:
       Some("player-first-badge"))
     assertEquals(all(identityOf("red"), ".player-first-badge"), Vector.empty)
 
+  test("an Imperial role reads in the Empire's purple, an Exile's does not"):
+    val node = renderWithFirstPlayer(None)
+    def roleOf(id: String) = firstMatch(node,
+      s""".player-board[data-player-id="$id"] .player-role""")
+      .getOrElse(fail(s"no role for $id"))
+    assert(roleOf("blue").classList.contains("role-imperial"))
+    assert(!roleOf("red").classList.contains("role-imperial"))
+
   test("without tracks no board carries the First Player badge"):
     assertEquals(all(renderWithFirstPlayer(None), ".player-first-badge"),
       Vector.empty)

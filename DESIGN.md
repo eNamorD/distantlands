@@ -276,6 +276,11 @@ reused for UI meaning.
   (`player-*`), plus bandit forces (`force-bandit`). White is pure white and
   underlined so it stays distinct from cream text. Black is ink on a
   **Black Pill** (`player-black-pill`) so it stays readable on the dark table.
+- **Imperial roles**: wherever a role is labelled (a player board's identity
+  line, game creation's color-and-role phrase), "Chancellor" and "Citizen"
+  read in Player Purple (`role-imperial`), the colour of the Empire's
+  warbands; "Exile" keeps the surrounding text colour. Rules text and log
+  prose that mention a role stay uncoloured.
 
 ### Neutral
 - **Table** (`table`): the gutter behind the four panes; the darkest surface.
