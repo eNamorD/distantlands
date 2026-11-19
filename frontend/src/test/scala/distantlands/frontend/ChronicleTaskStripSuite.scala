@@ -42,12 +42,21 @@ class ChronicleTaskStripSuite extends munit.FunSuite:
     val cards = all(ChronicleTaskStrip.render(), "button.chronicle-task-card")
     click(cards(0))
     click(cards(2))
-    val sun = ChronicleTaskPresentation.sun
-    assertEquals(opened, Vector(
-      ("Chronicle task · The Sun", sun.faces(0).lines ++ Vector("Back") ++
-        sun.faces(1).lines, None),
-      ("Chronicle task · The World",
-        ChronicleTaskPresentation.world.faces.head.lines, None)))
+    assertEquals(opened.map((title, _, plate) => (title, plate)), Vector(
+      ("Chronicle task · The Sun", None),
+      ("Chronicle task · The World", None)))
+    // The Sun: Resolve Legacies and the six goals, Back, then Crown
+    // Chancellor and Assign Tasks; the World: its three steps.
+    val sun = opened(0)._2
+    assertEquals((sun.size, sun.indexOf("Back")), (10, 7))
+    assert(sun.head.startsWith("**Resolve Legacies.** Reveal facedown " +
+      "relics held by players."), sun.head)
+    assert(sun.last.startsWith("**Assign Tasks.** The winner takes the " +
+      "Throne task card."), sun.last)
+    val world = opened(1)._2
+    assertEquals((world.size, world.head), (3,
+      "**Separate Visions.** Set aside all 5 Vision cards."))
+    assert(!world.contains("Back"), world)
 
   test("every task line renders as one paragraph, its markup all read: no " +
       "literal asterisk, underscore or backtick is left in its text"):
