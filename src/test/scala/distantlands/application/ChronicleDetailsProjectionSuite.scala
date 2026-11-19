@@ -151,6 +151,19 @@ class ChronicleDetailsProjectionSuite extends munit.FunSuite:
     assertEquals(detailsFor(ready, Some(p1)).lineages.map(_.lineage),
       Vector(p3, p2, p1).map(lineageOf(ready, _).value))
 
+  test("an unseated lineage whose id names no colour comes after every " +
+      "coloured one, by id (R5)"):
+    def boxed(id: String) =
+      LineageState(LineageId(id), None, Role.Exile, Vector.empty, Vector.empty)
+    val start = Table.start.ready
+    val ready = start.updateCampaign(campaign => campaign.copy(baseline =
+      campaign.baseline.copy(lineages = campaign.baseline.lineages ++
+        Vector(boxed("zz-boxed"), boxed("brown-lineage"), boxed("aa-boxed")))))
+    // Seats: l1 Red, l2 Blue, l3 Yellow; brown-lineage names Brown.
+    assertEquals(detailsFor(ready, Some(p1)).lineages.map(_.lineage),
+      Vector(lineageOf(ready, p1).value, lineageOf(ready, p2).value,
+        lineageOf(ready, p3).value, "brown-lineage", "aa-boxed", "zz-boxed"))
+
   test("in the Chronicle Phase every seat sees every legacy's face, " +
       "seated or not (R18)"):
     val ready = withUnseatedPurpleExileHoldingIronHandAndDormantArbiter(
