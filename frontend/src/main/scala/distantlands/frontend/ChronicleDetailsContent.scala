@@ -52,7 +52,9 @@ private[frontend] object ChronicleDetailsContent:
         val style = board.asInstanceOf[dom.html.Element].style
         val width = AtlasRow.w / MatLayout.Width * MatLayout.DesignWidthPx
         style.setProperty("--atlas-w", f"$width%.2fpx")
-        style.setProperty("--atlas-ratio", s"${AtlasRow.w} / ${AtlasRow.h}")
+        // Two decimals each, as the width: one form on every platform.
+        style.setProperty("--atlas-ratio",
+          f"${AtlasRow.w}%.2f / ${AtlasRow.h}%.2f")
         board.appendChild(WorldBoardRenderer.siteRow(site, 0, 0, AtlasRow,
           BoardOptions.none, SitePowerLinks.none, Vector.empty))
         frame.appendChild(board)

@@ -46,13 +46,11 @@ class ChronicleDetailsContentSuite extends munit.FunSuite:
       ".chronicle-details-atlas-frame > .chronicle-details-atlas-board")
     // The site rules apply under a .mat-board.
     assert(board.matches(".mat-board"), board.getAttribute("class"))
-    val row = MatLayout.siteRow(0, 0)
     val style = board.asInstanceOf[dom.html.Element].style
-    // A row on the mat is 1789 of its 5787 pixels; the board is 2400px
-    // wide at 100%.
+    // A row on the mat is 1789.15 of its 5787 pixels wide and a card's
+    // 509 tall; the board is 2400px wide at 100%.
     assertEquals(style.getPropertyValue("--atlas-w"), "742.00px")
-    assertEquals(style.getPropertyValue("--atlas-ratio"),
-      s"${row.w} / ${row.h}")
+    assertEquals(style.getPropertyValue("--atlas-ratio"), "1789.15 / 509.00")
     val site = one(board, ":scope > article.site")
     assertEquals(site.getAttribute("aria-label"), "Deep Woods")
     assertEquals(all(site, ".site-pawns > *").size, 0)
