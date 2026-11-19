@@ -187,3 +187,35 @@ Reason: otherwise the inspector outlives its overlay and focus falls to
 the body; skipping hidden focus targets would still leave the inspector up
 over the table.
 Slice/files: 4 (review); `ChronicleDetailsOverlay`, `GameTableShell`.
+
+## Whole-feature review
+
+**R20. The rules register on the Atlas and the Foundations.**
+Decision: amend the Foundations entry 8 in `docs/rules/ambiguities.md`
+("nothing else about the Atlas is shown before the fill"): Chronicle
+Details shows the Recent site's stored denizens and edifice to every
+viewer at all times, Setup included, per the rulebook's Atlas privacy line
+(R2); the Forgotten end stays unnamed. Mark entry 16 as superseded by the
+Chronicle Details design, since the Foundations now live in the overlay.
+Reason: the register must match shipped behaviour, and the rulebook makes
+those cards public.
+Slice/files: review; `docs/rules/ambiguities.md`.
+
+**R21. The game-end save prompt over Chronicle Details.**
+Decision: when `TableChronicle.ask` opens the game-end save prompt,
+Chronicle Details closes first, which also closes an inspector over it
+(R19).
+Reason: the prompt (z 60) is modal and was drawn under the overlay
+(z 300); closing beats re-layering, since the prompt then also clears any
+inspector.
+Slice/files: review; `TableChronicle`, `GameTableShell`.
+
+**R22. Annotating the design.**
+Decision: the design stays as approved, annotated rather than rewritten.
+Its status line links the four plans and says questions were settled in
+these rulings, R1-R22. At each line a ruling changed, a short "(Changed by
+Rn.)" note names it. D1's "(R18)" reads "(Legacies implementation ruling
+R18)".
+Reason: readers implement from the design; its own rulings must be
+findable.
+Slice/files: review; the design.
