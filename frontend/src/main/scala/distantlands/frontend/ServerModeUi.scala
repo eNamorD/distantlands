@@ -23,7 +23,7 @@ object ServerModeUi:
     lazy val chronicle = new TableChronicle(mount,
       devices.storage.map(new ChronicleShelf(_, devices.now)),
       new ChronicleClient(transport), devices.files, () => screen.render(),
-      () => startOver(), nextGame)
+      () => startOver(), nextGame, () => shell.closeChronicleDetails())
     lazy val screen: TableScreen = new TableScreen(shell, session, session,
       session, Some(chronicle))
 

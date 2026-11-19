@@ -21,15 +21,11 @@ object ChronicleCrown:
         setAsideReliquaryDiscarded(ready) ++ newDynasty(ready, player.lineage)
       case Role.Chancellor => setAsideReliquaryDiscarded(ready))
 
-  /** Every lineage's current role: seated ones from the live campaign, the
-    * rest from the baseline as this Chronicle has changed them. */
+  /** Every lineage's current role, seated or boxed, by id
+    * (`CampaignState.standingLineages`). */
   private def roles(ready: ReadyGame): Vector[(LineageId, Role)] =
-    val campaign = ready.game.campaign
-    val seated = campaign.lineages.values.toVector.map(l => l.id -> l.role)
-    val boxed = campaign.baseline.lineages
-      .filterNot(l => campaign.lineages.contains(l.id))
-      .map(l => l.id -> campaign.boxRoles.getOrElse(l.id, l.role))
-    (seated ++ boxed).sortBy(_._1.value)
+    ready.game.campaign.standingLineages.map(lineage =>
+      lineage.id -> lineage.role)
 
   /** The lineages holding an Imperial role, the Chancellor's and the
     * Citizens', seated or boxed: the Empire that stands. */

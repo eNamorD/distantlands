@@ -380,12 +380,28 @@ class ChroniclePagesSuite extends munit.FunSuite:
           Vector("Chancellor", "Citizen"))
       }
 
-  test("player selection says the Chancellor goes first in an Empire game"):
+  test("only the development start page tells how to switch players"):
+    val toolbarLine = "In dev-server mode, switch players using the toolbar."
+    TestBrowser.useSynchronously(): browser =>
+      Main.start(browser.mount, "/", trustedAlpha = false,
+        creatingTransport(ArrayBuffer.empty, None),
+        devices = ChronicleFixtures.devices())
+      browser.click("new-chronicle")
+      val intro = browser.byClass("host-intro").head
+      assert(intro.textContent.endsWith(toolbarLine), intro.textContent)
+      assertEquals(intro.querySelectorAll("br").length, 1)
+    TestBrowser.useSynchronously(): browser =>
+      startPages(browser, "/", ChronicleFixtures.devices())
+      browser.click("new-chronicle")
+      assert(!browser.byClass("host-intro").head.textContent
+        .contains("toolbar"))
+
+  test("player selection names the first player only when no Chancellor is seated"):
     TestBrowser.useSynchronously(): browser =>
       startPages(browser, "/", ChronicleFixtures.devices(
         Some(storageWithAnEmpire())))
       browser.click("continue-chronicle")
-      assert(browser.nodes.exists(_.textContent.contains(
+      assert(!browser.nodes.exists(_.textContent.contains(
         "The Chancellor goes first")))
       assert(!browser.nodes.exists(_.textContent.contains(
         "the first player are chosen at random")))

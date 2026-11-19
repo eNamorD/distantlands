@@ -232,59 +232,10 @@ private[frontend] object WorldBoardRenderer:
       section.appendChild(header)
       val sites = element("div", "sites")
       region.sites.zipWithIndex.foreach { (site, row) =>
-        val rowRect = MatLayout.siteRow(column, row)
-        val faceRect = MatLayout.siteCard(column, row)
-        val control = place(element("article", "site site-readonly"), rowRect)
-        control.setAttribute("aria-label", site.label)
-        // The site's words are laid over its face, so the stylesheet needs
-        // the face's extent in the row.
-        val faceBox = faceRect.percentOf(rowRect).toMap
-        val style = control.asInstanceOf[dom.html.Element].style
-        style.setProperty("--face-left", faceBox("left"))
-        style.setProperty("--face-w", faceBox("width"))
-        val siteKeys = Vector(BoardOptionViews.key("site", site.siteId))
-        options.decorate(control, siteKeys)
-        // The card itself: drawn until licensed art takes its place.
-        val face = place(element("div", "site-face"), faceRect, rowRect)
-        face.setAttribute("aria-hidden", "true")
-        control.appendChild(face)
-        control.appendChild(siteHeading(site))
-        // What reaching this site costs, or why it cannot be reached, comes
-        // from the decision that offers it.
-        badged(control, siteKeys, options)
-        val pawns = element("div", "site-pawns")
-        value.pawnLocations.filter(_.siteId == site.siteId).foreach { pawn =>
-          // Both forms are in the DOM and the map's scale picks one
-          // (ruling R6): the dot and the name at rest, the dot and the
-          // initial zoomed out, the dot alone further out. The dot and the
-          // initial are for the eye; the name stays the pawn's name.
-          val marker = element("span", "pawn")
-          val player = playerReference(value, pawn.playerId)
-          val colour = playerColorClass(value, pawn.playerId)
-          val dot = text("span", s"pawn-dot $colour", "●")
-          dot.setAttribute("aria-hidden", "true")
-          marker.appendChild(dot)
-          // The long form: the space and the name, as the pawn reads at rest.
-          val long = element("span", "pawn-long")
-          long.appendChild(dom.document.createTextNode(" "))
-          long.appendChild(player)
-          marker.appendChild(long)
-          val initial = text("span", s"pawn-initial $colour",
-            player.textContent.take(1))
-          initial.setAttribute("aria-hidden", "true")
-          marker.appendChild(initial)
-          HoverTip.set(marker, player.textContent)
-          options.decorate(marker,
-            Vector(BoardOptionViews.key("player", pawn.playerId)))
-          pawns.appendChild(marker)
-        }
-        if site.festival then pawns.appendChild(festivalMarker)
-        control.appendChild(pawns)
-        val details = siteDetails(site, options,
-          SitePowerLinks.of(value, submit))
-        placeCards(details, column, row, rowRect)
-        control.appendChild(details)
-        sites.appendChild(control)
+        val pawns = value.pawnLocations.filter(_.siteId == site.siteId)
+          .map(pawn => pawnMarker(value, pawn.playerId, options))
+        sites.appendChild(siteRow(site, column, row, MatLayout.Mat, options,
+          SitePowerLinks.of(value, submit), pawns))
       }
       // A slot no site fills is the frame the mat prints for it.
       (0 until region.emptySlots).foreach(extra =>
@@ -301,6 +252,71 @@ private[frontend] object WorldBoardRenderer:
     panel.appendChild(board)
     panel.appendChild(tableEdge(value, options))
     panel
+
+  /** One site's row on the mat (Chronicle Details design, slice 3): the
+    * `article.site` placed at its row inside `within`, then its face,
+    * heading, cost badge, `pawns`, festival marker and cards, each placed
+    * relative to the row `MatLayout.siteRow(column, row)`. `world()`
+    * passes the mat; the Chronicle Details overlay passes the row itself,
+    * so the row fills a box of its ratio. `links` opens the site's powers;
+    * `options` marks what the parked decision offers. */
+  private[frontend] def siteRow(site: GameSite, column: Int, row: Int,
+      within: MatRect, options: BoardOptions, links: SitePowerLinks,
+      pawns: Vector[dom.Element]): dom.Element =
+    val rowRect = MatLayout.siteRow(column, row)
+    val faceRect = MatLayout.siteCard(column, row)
+    val control = place(element("article", "site site-readonly"), rowRect,
+      within)
+    control.setAttribute("aria-label", site.label)
+    // The site's words are laid over its face, so the stylesheet needs
+    // the face's extent in the row.
+    val faceBox = faceRect.percentOf(rowRect).toMap
+    val style = control.asInstanceOf[dom.html.Element].style
+    style.setProperty("--face-left", faceBox("left"))
+    style.setProperty("--face-w", faceBox("width"))
+    val siteKeys = Vector(BoardOptionViews.key("site", site.siteId))
+    options.decorate(control, siteKeys)
+    // The card itself: drawn until licensed art takes its place.
+    val face = place(element("div", "site-face"), faceRect, rowRect)
+    face.setAttribute("aria-hidden", "true")
+    control.appendChild(face)
+    control.appendChild(siteHeading(site))
+    // What reaching this site costs, or why it cannot be reached, comes
+    // from the decision that offers it.
+    badged(control, siteKeys, options)
+    val pawnBox = element("div", "site-pawns")
+    pawns.foreach(pawnBox.appendChild)
+    if site.festival then pawnBox.appendChild(festivalMarker)
+    control.appendChild(pawnBox)
+    val details = siteDetails(site, options, links)
+    placeCards(details, column, row, rowRect)
+    control.appendChild(details)
+    control
+
+  /** A pawn on the map. Both forms are in the DOM and the map's scale picks
+    * one (ruling R6): the dot and the name at rest, the dot and the
+    * initial zoomed out, the dot alone further out. The dot and the
+    * initial are for the eye; the name stays the pawn's name. */
+  private def pawnMarker(value: GameProjection, playerId: String,
+      options: BoardOptions): dom.Element =
+    val marker = element("span", "pawn")
+    val player = playerReference(value, playerId)
+    val colour = playerColorClass(value, playerId)
+    val dot = text("span", s"pawn-dot $colour", "●")
+    dot.setAttribute("aria-hidden", "true")
+    marker.appendChild(dot)
+    // The long form: the space and the name, as the pawn reads at rest.
+    val long = element("span", "pawn-long")
+    long.appendChild(dom.document.createTextNode(" "))
+    long.appendChild(player)
+    marker.appendChild(long)
+    val initial = text("span", s"pawn-initial $colour",
+      player.textContent.take(1))
+    initial.setAttribute("aria-hidden", "true")
+    marker.appendChild(initial)
+    HoverTip.set(marker, player.textContent)
+    options.decorate(marker, Vector(BoardOptionViews.key("player", playerId)))
+    marker
 
   /** Places `node` at `rect`, each length a percentage of `parent`, which
     * is the rectangle of the element it is positioned in. */
@@ -366,7 +382,20 @@ private[frontend] object WorldBoardRenderer:
     val edge = element("div", "table-edge")
     LegacyStrip.publicRow(value, options).foreach(edge.appendChild)
     edge.appendChild(sharedBank(value, options))
+    // Beside the Shared Bank, while the snapshot carries the Chronicle
+    // (Chronicle Details design, slice 4).
+    if value.chronicleDetails.nonEmpty then
+      edge.appendChild(chronicleDetailsButton)
     edge
+
+  /** Opens the Chronicle Details overlay through the shell's hook. */
+  private def chronicleDetailsButton: dom.Element =
+    val node = button("Chronicle Details", "chronicle-details-button")
+    node.`type` = "button"
+    node.setAttribute("aria-haspopup", "dialog")
+    node.setAttribute("aria-controls", "chronicle-details")
+    node.onclick = _ => ChronicleDetails.open(node)
+    node
 
   /** The festival marker over a site's cards (Foundations design, slice
     * 6): a pill naming it, its power in its hover note. It is a button, as
@@ -544,9 +573,4 @@ private[frontend] object WorldBoardRenderer:
         CardFace.render(card), card,
         Option.unless(card.hidden)(BoardOptions.cardKey(card)).toVector)))
       section.appendChild(reliquary)
-    // The setup cards close the bank: they are read once or twice a game,
-    // so they stand under what changes every turn.
-    if value.foundations.nonEmpty then
-      section.appendChild(FoundationStrip.render(
-        FoundationStrip.ofGame(value.foundations)))
     section

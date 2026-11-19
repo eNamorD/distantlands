@@ -66,11 +66,7 @@ object ChronicleEntryCodec:
         ujson.Obj("number" -> foundation.number, "face" -> foundation.face,
           "name" -> foundation.name)),
       "scorepad" -> encoded(entry.summary.scorepad)(column =>
-        encoded(column) { mark =>
-          val row = ujson.Obj("lineage" -> mark.lineage, "score" -> mark.score)
-          mark.role.foreach(role => row("role") = role)
-          row
-        }))
+        encoded(column)(encodeScorepadEntry)))
     entry.summary.game.foreach(game => summary("game") = game)
     ujson.Obj("json" -> entry.json, "digest" -> entry.digest,
       "summary" -> summary)
@@ -135,20 +131,28 @@ object ChronicleEntryCodec:
       scorepad <- traverse(columnRaws, s"$summaryPath.scorepad") {
         (raw, column) =>
           array(raw, column).flatMap(markRaws =>
-            traverse(markRaws, column) { (raw, child) =>
-              for
-                row <- obj(raw, child)
-                _ <- exact(row, Set("lineage", "score", "role"), child)
-                lineage <- string(row, "lineage", child)
-                score <- int(row, "score", child)
-                role <- optionalAbsent(row, "role", child)(knownRole)
-              yield ChronicleScorepadEntry(lineage, score, role)
-            })
+            traverse(markRaws, column)(decodeScorepadEntry))
       }
     yield ChronicleEntry(json, digest, ChronicleSummary(name, game, target,
       scores, foundations, scorepad))
 
-  private def knownRole(raw: ujson.Value, at: String): Result[String] =
+  /** One mark on the era scorepad; its role is omitted for an Exile. */
+  def encodeScorepadEntry(mark: ChronicleScorepadEntry): ujson.Value =
+    val row = ujson.Obj("lineage" -> mark.lineage, "score" -> mark.score)
+    mark.role.foreach(role => row("role") = role)
+    row
+
+  def decodeScorepadEntry(raw: ujson.Value, path: String)
+      : Result[ChronicleScorepadEntry] = for
+    row <- obj(raw, path)
+    _ <- exact(row, Set("lineage", "score", "role"), path)
+    lineage <- string(row, "lineage", path)
+    score <- int(row, "score", path)
+    role <- optionalAbsent(row, "role", path)(knownRole)
+  yield ChronicleScorepadEntry(lineage, score, role)
+
+  /** An Imperial role as the wire spells it: chancellor or citizen. */
+  def knownRole(raw: ujson.Value, at: String): Result[String] =
     string(raw, at).filterOrElse(ChronicleScore.roles,
       ProtocolDecodeFailure.InvalidValue(at, "unknown role"))
 

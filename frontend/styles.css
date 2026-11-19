@@ -553,11 +553,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   white-space: nowrap; }
 
 /* Beside the mat, as the physical table has them: the Public Ambitions,
-   then the oath, the banners and the foundations in one row. */
+   then the oath and the banners, then the Chronicle Details button. */
 .table-edge { display: flex; align-items: flex-start; gap: 16px;
   margin-top: 12px; }
-.table-edge .shared-bank { display: flex; flex: 1; align-items: flex-start;
-  gap: 16px; padding: 0; border: 0; }
+.table-edge .shared-bank { display: flex; flex: 0 1 auto;
+  align-items: flex-start; gap: 16px; padding: 0; border: 0; }
 .table-edge .shared-bank > h3 { margin: 0; font-size: 1rem; }
 /* A banner on the table's edge keeps its larger side (ruling R3, amended):
    the real banner is three card widths across. */
@@ -568,9 +568,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    square as a relic is (Legacy in-play powers ruling 9). */
 .table-edge .shared-reliquary { --card-w: var(--banner-edge-side);
   margin-top: 0; }
-.table-edge .foundations { flex: 1; margin-top: 0; }
-.table-edge .foundation-strip {
-  grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .table-edge .public-legacies { margin: 0; }
 /* The edge is on the board's zoom surface, so its words hold the glance
    size as the board's do, and its rows wrap rather than run off the edge
@@ -580,11 +577,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .map-compact .table-edge, .map-compact .table-edge .shared-bank {
   flex-wrap: wrap; }
 .map-compact .table-edge :is(.shared-bank > h3, .oathkeeper-status,
-  .public-legacies-label, .shared-reliquary-label, .foundations-title) {
+  .public-legacies-label, .shared-reliquary-label) {
   font-size: var(--glance-text); }
-/* Set larger, the foundations take a row of their own, so their names
-   keep the room to be read. */
-.map-compact .table-edge .foundations { flex: 1 1 100%; }
 .map-compact .table-edge .public-legacies-cards { --card-h: 9.1rem;
   --card-w: calc(9.1rem * var(--ratio-denizen)); font-size: var(--glance-text); }
 .map-compact .table-edge .public-legacies-cards .card-face {
@@ -603,6 +597,23 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* The Oath goal is a control: a hit area of 24px on screen at any zoom. */
 .table-edge .oathkeeper-status > .oathkeeper-goal { display: flex;
   align-items: center; min-height: calc(24px / var(--map-scale, 1)); }
+/* The Chronicle Details button beside the Shared Bank (Chronicle Details
+   design, slice 4): a wide, rectangular Control filling the rest of the
+   edge and as tall as it (R18), at the edge's own sizes, its touch floor
+   set against the scale as the Oath goal's is (R17). */
+.table-edge .chronicle-details-button { flex: 1 1 12rem; align-self: stretch;
+  min-height: calc(44px / var(--map-scale, 1)); padding: 8px 16px;
+  color: #e8d9bb; background: var(--raised);
+  border: 1px solid var(--brass-line); border-radius: 4px; font: inherit;
+  font-size: 1rem; }
+.table-edge .chronicle-details-button:hover {
+  border-color: var(--cream-bright); background: var(--pressed); }
+.map-compact .table-edge .chronicle-details-button {
+  font-size: var(--glance-text); }
+@media (max-width: 620px) {
+  .table-edge { flex-wrap: wrap; }
+  .table-edge .chronicle-details-button { flex: 1 1 100%; }
+}
 
 /* The glance layer on the mat. A site's face is a fixed box, so each line
    it holds is set against the scale, its rows grow with it, and the name
@@ -1562,36 +1573,35 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .shared-banners .banner-face { width: 100%; height: auto;
   aspect-ratio: var(--ratio-banner); }
 /* The six foundation setup cards (Foundations design, slice 1), a card a
-   row: its numeral, the name of the face in use in the serif that names
-   things, and on an altered card the word. The word alone marks it: brass
-   on the board means an option, so the frame stays the neutral line. On the
-   table a row is one line of name and at most one of mark and never wraps.
-   Its height is not fixed: on the compact map it follows the glance text
-   size, and so the Fit scale. The strip stays shorter than the regions
-   beside it, whose height sets the map's. The table's cards are buttons
-   that read the face's rules; the Chronicle page's are not. */
-.foundations { margin-top: 12px; }
-.foundations-title { margin: 0 0 6px; font-size: 1rem; }
-.foundation-strip { list-style: none; margin: 0; padding: 0; display: grid;
-  gap: 4px; }
-.foundation-card { box-sizing: border-box; display: grid;
+   row, in Chronicle Details (Chronicle Details design, slice 4): its
+   numeral, the name of the face in use in the serif that names things, and
+   on an altered card the word. The word alone marks it: brass on the board
+   means an option, so the frame stays the neutral line. A row is one line
+   of name, cut rather than wrapped, and at most one of mark. Each card is a
+   button that reads the face's rules. The Chronicle Phase aids wear the
+   same face. */
+.foundations-title, .chronicle-tasks-title { margin: 0 0 6px;
+  font-size: 1rem; }
+.foundation-strip, .chronicle-task-strip { list-style: none; margin: 0;
+  padding: 0; display: grid; gap: 4px; }
+.foundation-card, .chronicle-task-card { box-sizing: border-box; display: grid;
   grid-template-columns: 1.8em minmax(0, 1fr); column-gap: 6px;
   align-items: baseline; width: 100%; padding: 4px 8px;
   border: 1px solid var(--line); border-radius: 4px; background: var(--base);
   color: var(--cream); font: inherit; text-align: left; }
-button.foundation-card { cursor: pointer; }
-button.foundation-card:hover { background: var(--pressed);
+button.foundation-card, button.chronicle-task-card { cursor: pointer; }
+button.foundation-card:hover, button.chronicle-task-card:hover {
+  background: var(--pressed);
   border-color: var(--cream-bright); }
 .foundation-number { color: var(--ink-dim); font-weight: 700;
   text-align: center; }
-.foundation-name { font-family: Georgia, serif; font-weight: 700;
+.foundation-name, .chronicle-task-name { font-family: Georgia, serif; font-weight: 700;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .foundation-mark { grid-column: 2; color: var(--parchment-dim);
   font-size: max(0.72em, 0.7rem); font-weight: 700; letter-spacing: 0.1em;
   text-transform: uppercase; }
-/* On the zoomed-out map the cards hold the glance text size, as a site's
-   details do; a name the row cannot hold is cut, never wrapped. */
-.map-compact .foundation-card { font-size: var(--glance-text); }
+/* A task card has no numeral: its name takes the whole row. */
+.chronicle-task-card { grid-template-columns: minmax(0, 1fr); }
 /* Under the regions, where the physical board keeps them. Their text is set
    larger than the map's own, as the map is drawn at about half size. */
 .favor-bank { display: flex; align-items: center; justify-content: center;
@@ -1802,7 +1812,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .player-board .board-cards { align-items: flex-start; font-size: 0.86em; }
 .game-table button, .development-panel button { cursor: pointer; }
 .map-controls { display: flex; align-items: center; gap: 5px; }
-.map-control, .dev-toggle, .dev-close, .log-new, .log-overlay-close {
+.map-control, .dev-toggle, .dev-close, .log-new, .log-overlay-close,
+.chronicle-details-close {
   color: #e8d9bb; background: var(--raised);
   border: 1px solid var(--brass-line); border-radius: 4px; padding: 4px 9px;
   min-width: 32px; min-height: 30px; font-size: .78rem; }
@@ -1810,7 +1821,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    fill, in the space the border already holds. */
 .map-control:hover, .dev-toggle:hover, .dev-close:hover,
 .card-overlay-close:hover, .log-new:hover,
-.log-overlay-close:hover { border-color: var(--cream-bright); background: var(--pressed); }
+.log-overlay-close:hover, .chronicle-details-close:hover {
+  border-color: var(--cream-bright); background: var(--pressed); }
 .player-title:hover, .player-slot-vision:hover, .supply-open:hover,
 button.festival-marker:hover,
 .pile-open:not(:disabled):hover { background: var(--raised); }
@@ -2310,6 +2322,51 @@ button.festival-marker:hover,
 .log-overlay .log-heading { margin: 0; font: inherit; }
 .log-overlay button { cursor: pointer; }
 .log-overlay button:focus-visible { outline: 2px solid var(--cream-focus); outline-offset: -3px; }
+/* Chronicle Details (Chronicle Details design, slice 4): the log
+   overlay's layer, scrim and pane-fill panel, full height, at a measure a
+   mat row fits in (R16). It sits outside the table, so it names its own
+   button cursor and focus ring. Its sections stack in one column and
+   scroll inside the panel. */
+.chronicle-details { position: fixed; z-index: 300; inset: 0;
+  display: flex; justify-content: center; padding: 4vmin 16px;
+  background: #0b0a08e8; }
+.chronicle-details[hidden] { display: none; }
+.chronicle-details-panel { display: flex; flex-direction: column;
+  min-height: 0; width: min(50rem, 100%); background: var(--pane);
+  border: 1px solid var(--line-pane); }
+.chronicle-details button { cursor: pointer; }
+.chronicle-details button:focus-visible,
+.chronicle-details [tabindex]:focus-visible {
+  outline: 2px solid var(--cream-focus); outline-offset: -3px; }
+/* One column as wide as the panel: a section never takes the width of a
+   row it holds, so only the Atlas and the scorepad frames scroll sideways
+   (R13). */
+.chronicle-details-body { display: grid;
+  grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.chronicle-details-body > * { min-width: 0; }
+.chronicle-details-subtitle { margin: 0; color: var(--ink-dim);
+  font-size: 0.82rem; }
+.chronicle-details-title { margin: 0 0 6px; font-size: 1rem; }
+.chronicle-details .foundation-strip, .chronicle-task-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.scoresheet-legacy-chips { display: flex; flex-wrap: wrap; gap: 4px;
+  margin-top: 4px; }
+/* A chip in a scorepad row wraps its name rather than widening the lineage
+   column, so a phone keeps the Total column in view. */
+.scoresheet-legacy-chips .legacy-chip { white-space: normal; }
+/* The Atlas's Recent site: one mat row as the map draws it at 100%, in a
+   .mat-board box so the site rules apply, at the row's width and ratio on
+   the Base fill. The Atlas is a box, not a region (R12). A narrower panel
+   scrolls the row sideways inside its frame (R13). */
+.chronicle-details-atlas-frame { overflow-x: auto;
+  scrollbar-width: thin; }
+.mat-board.chronicle-details-atlas-board { width: var(--atlas-w);
+  aspect-ratio: var(--atlas-ratio); background: var(--base); }
+/* A phone has room for one aid or foundation a row. */
+@media (max-width: 620px) {
+  .chronicle-details .foundation-strip, .chronicle-task-strip {
+    grid-template-columns: minmax(0, 1fr); }
+}
 /* A card list: cards in pile order, as the Inspect panel and a log line's
    "6 cards" show them. The grid holds dozens and scrolls inside itself; its
    cards take the one card box, so the container's font size alone sizes
@@ -2378,7 +2435,7 @@ button.festival-marker:hover,
    the 44px minimum wherever the main pointer is coarse, desktop or not. */
 @media (pointer: coarse) {
   .map-control, .dev-toggle, .dev-close, .log-new, .log-overlay-close,
-  .card-overlay-close, .pane-switch-option, .overlay-confirm button,
+  .chronicle-details-close, .card-overlay-close, .pane-switch-option, .overlay-confirm button,
   .consent-grid-choice { min-width: 44px; min-height: 44px; }
   .pane-header { min-height: 52px; }
 }

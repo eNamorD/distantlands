@@ -96,6 +96,18 @@ final case class CampaignState(
   /** The Chronicle the game was started from, as saved. */
   def savedChronicle: Chronicle = saved.getOrElse(baseline)
 
+  /** Every lineage in the Chronicle as it stands, by id (Chronicle Details
+    * implementation ruling R1): a seated lineage's live record, and each
+    * lineage nobody seated as the Chronicle the game started from records
+    * it, with the role this game gave it in the box (Crown Chancellor:
+    * "even in the box", CR p. 36). */
+  def standingLineages: Vector[LineageState] =
+    val boxed = baseline.lineages
+      .filterNot(lineage => lineages.contains(lineage.id))
+      .map(lineage => lineage.copy(role =
+        boxRoles.getOrElse(lineage.id, lineage.role)))
+    (lineages.values.toVector ++ boxed).sortBy(_.id.value)
+
   /** The Reliquary's relics a player may take in play: none while the
     * Reliquary is set aside. Every taker reads this, never `reliquary`,
     * which the card index and the Chronicle Phase read whole. */

@@ -81,41 +81,65 @@ private[application] final class GamePresentationProjector(
 
   private def siteProjection(siteId: SiteId, state: Option[SiteState],
       ready: ReadyGame, viewer: Option[PlayerId]): SetupSiteProjection =
-    val definition = catalog.site(siteId)
-    SetupSiteProjection(siteId.value, siteLabel(siteId),
-      state.fold(0)(_.tokens.favor), state.fold(0)(_.tokens.secrets),
-      definition.fold(0)(_.capacity), definition.fold(0)(_.relicSlots),
-      state.toVector.flatMap(_.denizens).map { denizen =>
-        val label = denizen match {
-          case value: DenizenState => denizenLabel(value.id)
-          case value: EdificeState => edificeLabel(value.id, value.side)
-        }
-        val details = denizen match {
-          case value: DenizenState => Some(cardDetails(value.id,
-            Some(value.orientation), hidden = false).copy(
-              favor = value.tokens.favor, secrets = value.tokens.secrets))
-          case value: EdificeState => Some(edificeCardDetails(value))
-        }
-        SiteCardProjection(denizen.id.value, label, details)
-      },
-      SiteRelicsProjection(state.toVector.flatMap(_.relics).map(relic =>
+    siteShape(siteId, state.fold(Tokens.empty)(_.tokens),
+      state.toVector.flatMap(_.denizens).map(siteCard),
+      state.toVector.flatMap(_.relics).map(relic =>
         val known = viewer.exists(player =>
           ready.knowledge.siteRelics.getOrElse(player, Map.empty)
             .getOrElse(siteId, Vector.empty).contains(relic.id))
         if known then
           cardDetails(relic.id, Some(Orientation.FaceDown), hidden = false)
-        else hiddenCard("relic"))),
+        else hiddenCard("relic")),
+      state.flatMap(_.forces match {
+        case value: SiteForces.Occupied => Some(forceProjection(value, ready))
+        case SiteForces.Empty => None
+      }),
+      ready.game.current.banners.darkestSecret.festival.contains(siteId))
+
+  /** The Atlas's stored `site` as every viewer sees it (Chronicle Details
+    * design, slice 1; NF rulebook, "Public and Private Information"): its
+    * denizens faceup and named, its edifice on its intact side after them,
+    * where `CardIndex` lays it (implementation ruling R3), and each relic
+    * facedown and hidden. A stored site holds no loose favor or secrets,
+    * no warbands and no festival marker. */
+  private[application] def atlasSite(site: AtlasEntry.StoredSite)
+      : SetupSiteProjection =
+    val cards = site.denizens.map {
+      case denizen: DenizenState =>
+        denizen.copy(orientation = Orientation.FaceUp)
+      case edifice: EdificeState => edifice
+    } ++ site.edifice.map(EdificeState(_, EdificeSide.Intact, Tokens.empty))
+    siteShape(site.id, Tokens.empty, cards.map(siteCard),
+      site.relics.map(_ => hiddenCard("relic")), forces = None,
+      festival = false)
+
+  /** One card in a site's denizen slots, named, with its tokens. */
+  private def siteCard(card: SiteDenizenState): SiteCardProjection =
+    card match
+      case value: DenizenState => SiteCardProjection(value.id.value,
+        denizenLabel(value.id), Some(cardDetails(value.id,
+          Some(value.orientation), hidden = false).copy(
+            favor = value.tokens.favor, secrets = value.tokens.secrets)))
+      case value: EdificeState => SiteCardProjection(value.id.value,
+        edificeLabel(value.id, value.side), Some(edificeCardDetails(value)))
+
+  /** A site's projection: `cards`, `relics`, `forces` and `festival` as
+    * given, with its printed facts from the catalog. */
+  private def siteShape(siteId: SiteId, loose: Tokens,
+      cards: Vector[SiteCardProjection], relics: Vector[CardDetailsProjection],
+      forces: Option[SiteForcesProjection], festival: Boolean)
+      : SetupSiteProjection =
+    val definition = catalog.site(siteId)
+    SetupSiteProjection(siteId.value, siteLabel(siteId), loose.favor,
+      loose.secrets, definition.fold(0)(_.capacity),
+      definition.fold(0)(_.relicSlots), cards, SiteRelicsProjection(relics),
       definition.fold(0)(_.defense),
       definition.flatMap(site => Option.when(site.forgeRequirements.isEmpty)(
         site.recoverDifficulty).flatten),
       definition.flatMap(_.forgeRequirements).map(tokens =>
         ForgeCostProjection(tokens.favor, tokens.secrets)),
       definition.toVector.flatMap(_.handlers).map(sitePower),
-      state.flatMap(_.forces match {
-        case value: SiteForces.Occupied => Some(forceProjection(value, ready))
-        case SiteForces.Empty => None
-      }),
-      ready.game.current.banners.darkestSecret.festival.contains(siteId))
+      forces, festival)
 
   private def forceProjection(forces: SiteForces.Occupied,
       ready: ReadyGame): SiteForcesProjection =
@@ -180,22 +204,25 @@ private[application] final class GamePresentationProjector(
         banners(ready).filter(_.holderPlayerId.contains(player.player.value)),
         banked, printed, atSites, restBase, bands,
         AdviserLimit.drawn(catalog, ready, player.player),
-        legacies(ready, viewer, player.lineage))
+        ready.game.campaign.lineages.get(player.lineage).toVector
+          .flatMap(legacies(ready, viewer, _)))
     }
 
   /** `lineage`'s legacies as `viewer` may see them (Legacies design, ruling
-    * 1; implementation ruling R18): a face where `identifiesCard` names the
-    * legacy, a legacy back elsewhere. */
-  private def legacies(ready: ReadyGame, viewer: Option[PlayerId],
-      lineage: LineageId): Vector[CardDetailsProjection] =
-    ready.game.campaign.lineages.get(lineage).toVector.flatMap(_.legacies)
-      .map { legacy =>
-        val face = GamePresentationProjector.orientationOf(Some(legacy))
-        if identifiesCard(ready, viewer, legacy.id, face,
-            CardContainer.Lineage(lineage, LineageCardArea.Legacies)) then
-          cardDetails(legacy.id, face, hidden = false)
-        else hiddenCard("legacy")
-      }
+    * 1; implementation rulings R18 and R36): a face where `identifiesCard`
+    * names the legacy, a legacy back elsewhere. `lineage` is a seated
+    * lineage's live record or an unseated one's in the Chronicle the game
+    * started from (Chronicle Details design, slice 1). */
+  private[application] def legacies(ready: ReadyGame,
+      viewer: Option[PlayerId], lineage: LineageState)
+      : Vector[CardDetailsProjection] =
+    lineage.legacies.map { legacy =>
+      val face = GamePresentationProjector.orientationOf(Some(legacy))
+      if identifiesCard(ready, viewer, legacy.id, face,
+          CardContainer.Lineage(lineage.id, LineageCardArea.Legacies)) then
+        cardDetails(legacy.id, face, hidden = false)
+      else hiddenCard("legacy")
+    }
 
   /** The Public Ambitions row, faceup to every viewer. */
   def publicLegacies(ready: ReadyGame): Vector[CardDetailsProjection] =
@@ -322,10 +349,16 @@ private[application] final class GamePresentationProjector(
     *    one of its relics (Empire ruling R29), and to Golden Key's Imperial
     *    holder whenever they look (Legacy in-play powers ruling 10;
     *    implementation ruling R1).
+    *  - The Atlas's Recent site's denizens and edifices are named to every
+    *    viewer, as the NF rulebook makes them public: "In the Atlas box,
+    *    all information is private except the first site on the Recent
+    *    Sites side and denizens and edifices stored with it. Not relics!"
+    *    (Chronicle Details implementation ruling R2).
     *  - Everything else -- other decks, set-aside relics, the
-    *    dispossessed pile, suited reserves, atlas sites -- is never
-    *    identified. A card in a deck has no orientation at all, so it must be
-    *    rejected by its container rather than by being facedown.
+    *    dispossessed pile, suited reserves, the other atlas sites, every
+    *    atlas relic -- is never identified. A card in a deck has no
+    *    orientation at all, so it must be rejected by its container rather
+    *    than by being facedown.
     */
   def identifiesCard(ready: ReadyGame, viewer: Option[PlayerId], id: CardId,
       orientation: Option[Orientation], container: CardContainer): Boolean =
@@ -406,6 +439,12 @@ private[application] final class GamePresentationProjector(
           (ready.game.current.turn.phase == Phase.Setup &&
             Imperials.chancellor(ready).contains(player)) ||
             GoldenKey.peeker(ready).contains(player))
+      // The Atlas's front site on its Recent side, with the denizens and
+      // edifices stored with it, is public; its relics, and every other
+      // Atlas site's cards, are not (NF rulebook, "Public and Private
+      // Information"; Chronicle Details implementation ruling R2).
+      case CardContainer.AtlasSite(_, site, SiteCardArea.Denizens) =>
+        ready.game.campaign.atlas.site(AtlasEnd.Recent).exists(_.id == site)
       case _ => false
 
   /** The full walker catalog, for reading Setup's open decisions. */
