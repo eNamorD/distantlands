@@ -48,6 +48,9 @@ final case class GameProjection(
       * as Build Edifice's available edifices. Unlike
       * `temporaryHandPreview` they are no one's hand. */
     ,publicPreview: Option[PublicPreviewProjection] = None
+    /** The Chronicle Details overlay's data (Chronicle Details design,
+      * slice 1); none before a game. Required on the wire. */
+    ,chronicleDetails: Option[ChronicleDetailsProjection] = None
 )
 
 /** The cards shown to the whole table beside a decision ([[GameProjection]]'s
