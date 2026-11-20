@@ -41,4 +41,36 @@ the shared Control-face rule is untouched. The browser check measures it.
 If "Case-by-case" still clips or wraps at 360px, the work stops and
 reports the measured widths; it does not choose another fix.
 Reason: equal thirds must hold at 360px.
+Limit (R5): above a root font size of about 18px, "Case-by-case" wraps
+inside its setting at 360px.
 Slice/files: 1; `frontend/styles.css`.
+
+**R4. The face of a disabled setting.**
+Question: slice 1's review found that a disabled setting has no disabled
+face: full opacity, a pointer cursor, and a border that still brightens
+on hover. The fault predates this work. Fix it now?
+Decision: yes. `.consent-grid-choice:disabled { opacity: 0.5; cursor:
+not-allowed; }`, the hover rule scoped with `:not(:disabled)`, and a
+stylesheet suite line for each.
+Reason: `DESIGN.md`'s Disabled face already requires it, the new Consent
+Column section claims it, and slice 3 adds more disabled and withheld
+buttons to this column that must read as unavailable.
+Slice/files: 1 (review fix); `frontend/styles.css`,
+`StylesheetConsentGridSuite.scala`, `DESIGN.md`.
+
+**R5. "Case-by-case" at a large root font size.**
+Question: with the browser's root font size above about 18px,
+"Case-by-case" wraps inside its setting at 360px. Is that accepted?
+Decision: yes.
+Reason: it degrades to two lines without clipping, and it is outside the
+spec's default case at 360px.
+Slice/files: 1; none.
+
+**R6. The settings group's name is spoken twice.**
+Question: with `aria-label` on the settings group (R2), a screen reader
+says the player's name twice: once as the row's text and once as the
+group's name. Change it to `aria-labelledby`?
+Decision: no; `aria-label` stays as R2 ruled.
+Reason: `aria-labelledby` would announce the same name twice too, so the
+change buys nothing.
+Slice/files: 1; none.
