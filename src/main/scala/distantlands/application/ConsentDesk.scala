@@ -1,7 +1,6 @@
 package distantlands.application
 
 import distantlands.gameplay.OathRules
-import distantlands.gameplay.consent.ConsentUseMarks
 import distantlands.gameplay.powerresolver.PowerUseStep
 import distantlands.gameplay.powers.ConsentPowers
 import distantlands.model._
@@ -136,24 +135,21 @@ private[application] final class ConsentDesk(rules: OathRules,
       // First, so a refuser whose request still waits on another granter
       // reads why (implementation ruling R14): their refusal joins the
       // history only when the request ends.
-      _ <- Either.cond(!ready.consent.pending.exists(waiting =>
-          waiting.requester == requester &&
-            waiting.decisionId == decisionId && waiting.target == target),
-        (), refuse("a consent request about that option is waiting"))
+      _ <- Either.cond(!ConsentChange.waiting(ready, requester, decisionId,
+        target), (), refuse("a consent request about that option is waiting"))
       found <- ready.consent.asked(granter, requester, decisionId, target,
         ConsentTurn.of(ready)).toRight(refuse(s"${granter.value} answered " +
         "no consent request about that option this turn"))
       entry = found._1
       ask = found._2
-      _ <- Either.cond(entry.use.isEmpty, (),
-        refuse("an automatic power's answer cannot be changed"))
-      _ <- ask.powers.find(power =>
-          !powers.granter(ready, power).contains(granter))
-        .map(power => refuse(
-          s"${granter.value} no longer rules ${power.value}")).toLeft(())
-      _ <- Either.cond(!ConsentUseMarks.locked(ready, requester, decisionId,
-        target), (),
-        refuse(s"${requester.value} has acted on this consent"))
+      _ <- (ConsentChange.of(ready, powers, granter, entry, ask) match
+        case ConsentChange.Automatic => Some(refuse(
+          "an automatic power's answer cannot be changed"))
+        case ConsentChange.Lapsed(power) => Some(refuse(
+          s"${granter.value} no longer rules ${power.value}"))
+        case ConsentChange.Used => Some(refuse(
+          s"${requester.value} has acted on this consent"))
+        case _ => None).toLeft(())
       _ <- Either.cond(!ask.answer.contains(allow), (),
         refuse(s"${granter.value}'s answer is already that"))
     yield Vector(ConsentReconsidered(granter, requester, decisionId, target,
