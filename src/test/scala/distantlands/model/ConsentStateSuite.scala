@@ -90,6 +90,57 @@ class ConsentStateSuite extends munit.FunSuite:
       .answered(green, granted = false, later))
     assertEquals(next.answers.keySet, Set(key(police)))
 
+  test("a settled request joins the turn's history with its asks as " +
+      "answered, granted or refused"):
+    val granted = accepted(waitingOn(redOnPass).answered(red, granted = true,
+      turn))
+    assertEquals(granted.historyAt(turn),
+      Vector(request(redOnPass.copy(answer = Some(true)))))
+    val refused = accepted(waitingOn(redOnPass, greenOnPolice)
+      .answered(red, granted = false, turn))
+    assertEquals(refused.historyAt(turn), Vector(request(
+      redOnPass.copy(answer = Some(false)), greenOnPolice)))
+
+  test("a request joins the history only once it settles, and a " +
+      "withdrawn one never does"):
+    val partial = accepted(waitingOn(redOnPass, greenOnPolice)
+      .answered(red, granted = true, turn))
+    assertEquals(partial.historyAt(turn), Vector.empty)
+    assertEquals(accepted(partial.withdrawn(blue)).historyAt(turn),
+      Vector.empty)
+
+  test("the history belongs to its turn: another turn reads none, and a " +
+      "request settling in a new turn starts it empty"):
+    val granted = accepted(waitingOn(redOnPass).answered(red, granted = true,
+      turn))
+    val later = ConsentTurn(1, red)
+    assertEquals(granted.historyAt(later), Vector.empty)
+    val next = accepted(accepted(granted.requested(request(greenOnPolice)))
+      .answered(green, granted = false, later))
+    assertEquals(next.historyAt(later),
+      Vector(request(greenOnPolice.copy(answer = Some(false)))))
+
+  test("a later request about the same option takes over the asks its " +
+      "granters answered before, and leaves another granter's entry"):
+    val both = accepted(accepted(waitingOn(redOnPass, greenOnPolice)
+      .answered(red, granted = true, turn)).answered(green, granted = true,
+      turn))
+    val again = accepted(accepted(both.requested(request(greenOnPolice)))
+      .answered(green, granted = false, turn))
+    assertEquals(again.historyAt(turn), Vector(
+      request(redOnPass.copy(answer = Some(true))),
+      request(greenOnPolice.copy(answer = Some(false)))))
+    val alone = accepted(accepted(again.requested(request(redOnPass)))
+      .answered(red, granted = false, turn))
+    assertEquals(alone.historyAt(turn), Vector(
+      request(greenOnPolice.copy(answer = Some(false))),
+      request(redOnPass.copy(answer = Some(false)))))
+
+  test("an undo or a redo carries the history with the answers"):
+    val granted = accepted(waitingOn(redOnPass).answered(red, granted = true,
+      turn))
+    assertEquals(granted.carried.historyAt(turn), granted.historyAt(turn))
+
   test("only an asked granter answers, and only the requester withdraws"):
     val open = waitingOn(redOnPass)
     assert(open.answered(green, granted = true, turn).isLeft)
