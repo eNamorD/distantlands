@@ -133,7 +133,11 @@ may refuse waits at a `PowerUseStep` (`walker/AutomaticUses.scala`).
 `ConsentPowers` lists every waivable power for the consent grid, the
 preference check and the Game Log. Consent commands go to the application's
 `ConsentDesk`, not to the rules. Their events evolve through
-`gameplay/consent/ConsentEvolution.scala`.
+`gameplay/consent/ConsentEvolution.scala`. A granter may change an answer
+of the turn until the requester acts on it (`ConsentState.reconsidered`,
+`ConsentDesk.reconsider`). The lock is a use mark the fold of a recorded
+answer sets in the game (`gameplay/consent/ConsentUseMarks.scala`), so an
+undo of that answer removes it.
 
 ## Unregistered powers
 

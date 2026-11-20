@@ -2,9 +2,10 @@
 
 **Status:** designed 2026-11-20. It extends the
 [consent system](../2026-10/2026-10-08-consent-system-design.md) and amends
-its rulings 12 and 13. Slice 1 is implemented
-([plan](../../plans/2026-11/2026-11-20-consent-reconsider-slice1.md));
-slices 2 and 3 are not.
+its rulings 12 and 13. Slices 1 and 2 are implemented
+([slice 1 plan](../../plans/2026-11/2026-11-20-consent-reconsider-slice1.md),
+[slice 2 plan](../../plans/2026-11/2026-11-20-consent-reconsider-slice2.md));
+slice 3 is not.
 
 Vocabulary: the consent design defines **granter**, **consent request**,
 **consent answer**, **consent preference** and **consent ledger**. The

@@ -104,8 +104,10 @@ Pass blocks.
 
 12. **Answers last the turn.** An answer is remembered for the rest of the
     turn for its exact key: power, requester, decision and target. A refused
-    target stays unavailable. A granted target can be selected again without
-    asking. A preference set later in the same turn does not change a
+    target stays unavailable, and a granted target stays selectable without
+    asking, until its granter reconsiders (amended by the
+    [reconsider design](../2026-11/2026-11-20-consent-reconsider-design.md),
+    rulings 20 to 26). A preference set later in the same turn does not change a
     remembered answer; it applies only to targets nobody has asked about yet.
     An answer binds its granter: it counts only while the player who gave it
     may still answer that key. A ruler who loses the site, to another player
@@ -114,7 +116,10 @@ Pass blocks.
     the whole request, is the refuser's for every key it settles.
 13. **Answers never block undo.** The requester may undo past a consent
     answer, as far as the ordinary barriers allow. The answer stays
-    remembered and its log lines are never struck through.
+    remembered and its log lines are never struck through. An undo may
+    unlock an answer: one is locked while the move it decided stands, and
+    its granter may change it again once the requester undoes that move
+    (amended by the reconsider design, ruling 21).
 14. **Withdrawing.** The requester may undo while a request is unanswered.
     The request is withdrawn, its log line is struck through, and nothing is
     remembered.
