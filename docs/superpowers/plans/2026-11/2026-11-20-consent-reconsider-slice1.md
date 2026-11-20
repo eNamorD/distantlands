@@ -596,6 +596,22 @@ snapshot the page polls. Take the first route that works:
 If neither route shows the column, stop. Say plainly in the report that
 the browser check was not made and why; do not claim it.
 
+What the run found: neither route works in a new Chronicle. It seats two
+Exiles, the bandits rule every site, the map holds no Narrow Pass, and
+no card with a waivable power is in the world deck. The route that
+worked, for slice 3 to reuse:
+
+1. Read the loaded Chronicle's JSON from `localStorage`
+   (`distantlands.chronicles`). In a copy, give it a new name and move
+   `site:narrow-pass` to the front of `atlasBox`, so it is the Cradle's
+   first site.
+2. Import the copy through the Import Chronicle dialog's file input (the
+   server checks it), choose Continue Chronicle and create the game.
+3. Red starts at the Narrow Pass. On Red's first turn, Campaign against
+   the bandits there with all three warbands, sacrifice two, and place
+   the survivor on the site. Red then rules the Pass, and its "Pass"
+   label opens the column with a row for Blue.
+
 - [ ] **Step 4: Check the column once at each width**
 
 At 1440×900, then at a 360×800 window, with the overlay open:
