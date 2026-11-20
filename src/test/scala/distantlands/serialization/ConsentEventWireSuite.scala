@@ -61,6 +61,18 @@ class ConsentEventWireSuite extends munit.FunSuite:
         assert(encoded.flatMap(GameEventWire.decode(_)).isLeft, field)
       }
 
+  test("a changed answer refuses a field of the wrong type"):
+    val change = ConsentReconsidered(p2, p1, "travel.destination",
+      DecisionOptionRef.Site(SiteId("site:dunes")), granted = true)
+    Vector[(String, ujson.Value)]("granter" -> ujson.Num(1),
+      "requester" -> ujson.Bool(true), "decisionId" -> ujson.Num(2),
+      "target" -> ujson.Str("site:dunes"), "granted" -> ujson.Str("yes"))
+      .foreach { (field, wrong) =>
+        val encoded = GameEventWire.encodeEvent("g", 0L, change)
+          .map(value => { value("payload")(field) = wrong; value })
+        assert(encoded.flatMap(GameEventWire.decode(_)).isLeft, field)
+      }
+
   test("a request's covers round-trip, and a request without them writes " +
       "none"):
     val covered = ConsentRequested(request.copy(covers = Vector(ConsentKey(

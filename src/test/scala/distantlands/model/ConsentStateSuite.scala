@@ -123,6 +123,18 @@ class ConsentStateSuite extends munit.FunSuite:
     assertEquals(changed.answers.get(key(pass)),
       Some(ConsentAnswer.Granted.by(red)))
 
+  test("an alternative's refusal in a new turn starts the history " +
+      "empty, though its request still waits"):
+    val earlier = accepted(waitingOn(redOnPass).answered(red, granted = true,
+      turn))
+    val later = ConsentTurn(1, red)
+    val waiting = accepted(earlier.requested(request(
+      redOnPass.copy(alternative = true),
+      greenOnPolice.copy(alternative = true))))
+    val refused = accepted(waiting.answered(red, granted = false, later))
+    assert(refused.pending.nonEmpty)
+    assertEquals(refused.historyAt(later), Vector.empty)
+
   test("the history belongs to its turn: another turn reads none, and a " +
       "request settling in a new turn starts it empty"):
     val granted = accepted(waitingOn(redOnPass).answered(red, granted = true,

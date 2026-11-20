@@ -6,11 +6,13 @@ import distantlands.gameplay.cards.NarrowPassSite
 import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.powers.action.GreatClock
 import distantlands.gameplay.powers.setup.GreatClockCard
-import distantlands.gameplay.powers.travel.{TravelFixture, TyrantCard}
+import distantlands.gameplay.powers.travel.{ForbiddenForest, TravelFixture,
+  TyrantCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.WalkerPowers
 import distantlands.model._
-import distantlands.model.OathEvent.{CommandAccepted, ConsentReconsidered}
+import distantlands.model.OathEvent.{CommandAccepted, ConsentReconsidered,
+  ConsentRequested}
 import distantlands.testkit.{Commands, Look, MenuPlay, Outcomes,
   PlacementPicks}
 import distantlands.testkit.Table.{p1, p2, p3}
@@ -203,6 +205,65 @@ class ConsentReconsiderServiceSuite extends munit.FunSuite:
     val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
     assertEquals(reloaded.load(gameId).map(_.map(_.state)),
       Right(Some(refused.state)))
+
+  test("a redo restores the mark and the lock"):
+    val (service, _) = ConsentFixture.service()
+    val yes = answeredBy(service, ConsentChoice.Yes)
+    val undone = accepted(service.handle(gameId, yes.nextSequence,
+      Commands.undo(p1)))
+    assertEquals(marks(undone), Set.empty)
+    val redone = accepted(service.handle(gameId, undone.nextSequence,
+      Commands.redo(p1)))
+    assertEquals(marks(redone), marks(yes))
+    assertEquals(service.handle(gameId, redone.nextSequence,
+      change(allow = false)), unavailable("p1 has acted on this consent"))
+
+  /** p1 starts a Travel on the board with two rulers and asks about
+    * Dunes: p3 about the Forest, p2 about the Pass. */
+  private def askingTwoRulers(service: GameApplicationService)(
+      using munit.Location): GameAccepted =
+    val started = startTravel(service)
+    accepted(service.handle(gameId, started.nextSequence, requestDunes))
+
+  private def answering(service: GameApplicationService, at: GameAccepted,
+      granter: PlayerId, choice: ConsentChoice)(using munit.Location)
+      : GameAccepted = accepted(service.handle(gameId, at.nextSequence,
+    Commands.answerConsent(granter, choice)))
+
+  test("with two rulers, a refusal changed to a grant leaves only the " +
+      "other ruler to ask, and cannot be changed back while they are " +
+      "asked (ruling 23, R8)"):
+    val (service, _) = ConsentFixture.service(dunesBehindTwoRulers)
+    val no = answering(service, askingTwoRulers(service), p2,
+      ConsentChoice.No)
+    val granted = changing(service, no, allow = true)
+    val again = accepted(service.handle(gameId, granted.nextSequence,
+      requestDunes))
+    assertEquals(again.events, Vector(ConsentRequested(ConsentRequest(p1,
+      destination, dunes, Vector(ConsentAsk(p3,
+        Vector(ForbiddenForest.id)))))))
+    assertEquals(service.handle(gameId, again.nextSequence,
+      change(allow = false)),
+      unavailable("a consent request about that option is waiting"))
+    val yes = answering(service, again, p3, ConsentChoice.Yes)
+    assertEquals(pawnOfP1(yes), Some(TravelFixture.provincePlains))
+
+  test("with two rulers, a change that completes the grants needs no " +
+      "second ask of the ruler who already allowed (R9)"):
+    val (service, _) = ConsentFixture.service(dunesBehindTwoRulers)
+    val allowed = answering(service, askingTwoRulers(service), p3,
+      ConsentChoice.Yes)
+    val no = answering(service, allowed, p2, ConsentChoice.No)
+    assert(refusedPlainly(dunesOffered(no)))
+    val granted = changing(service, no, allow = true)
+    assert(dunesOffered(granted).available)
+    val picked = accepted(service.handle(gameId, granted.nextSequence,
+      ParkedServiceFixture.pickTravelDestination(p1,
+        TravelFixture.provincePlains)))
+    assertEquals(pawnOfP1(picked), Some(TravelFixture.provincePlains))
+    assertEquals(service.handle(gameId, picked.nextSequence,
+      Commands.reconsiderConsent(p3, p1, destination, dunes,
+        allow = false)), unavailable("p1 has acted on this consent"))
 
   test("a change needs an answer the issuer gave this turn, and one that " +
       "differs"):

@@ -2,7 +2,8 @@ package distantlands.application
 
 import distantlands.application.gamelog.LogScripts.{formatter, texts}
 import distantlands.gameplay.powers.action.{Palanquin, PalanquinCard}
-import distantlands.gameplay.powers.travel.{TollRoadsCard, TravelFixture}
+import distantlands.gameplay.powers.travel.{TollRoads, TollRoadsCard,
+  TravelFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.protocol.projection._
@@ -158,6 +159,28 @@ class PalanquinConsentServiceSuite extends munit.FunSuite:
     val after = Look(Outcomes.ready(sent.state))
     assertEquals(after.pawn(p3), coast)
     assertEquals(after.favor(p3), 1)
+
+  test("the ruler's refusal locks with the payer's grant once the " +
+      "target is sent, and the payer's own answer stays final"):
+    val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
+    val no = answering(service, asking(service, Vector.empty), p2,
+      ConsentChoice.No)
+    val yes = answering(service, no, p3, ConsentChoice.Yes)
+    def change(granter: PlayerId, allow: Boolean): GameCommand =
+      Commands.reconsiderConsent(granter, p1,
+        Palanquin.destinationDecisionId, coastRef, allow)
+    def unavailable(reason: String) = Left(
+      GameApplicationError.CommandRejected(
+        OathViolation.ConsentUnavailable(reason)))
+    // Ruling 21: every answer of one request locks together.
+    assertEquals(service.handle(gameId, yes.nextSequence,
+      change(p2, allow = true)), unavailable("p1 has acted on this consent"))
+    val undone = accepted(service.handle(gameId, yes.nextSequence,
+      Commands.undo(p1)))
+    // A payer rules nothing, so their agreement cannot be changed.
+    assertEquals(service.handle(gameId, undone.nextSequence,
+      change(p3, allow = false)),
+      unavailable(s"p3 no longer rules ${TollRoads.payerId.value}"))
 
   test("the log writes one line per kind of ask"):
     val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
