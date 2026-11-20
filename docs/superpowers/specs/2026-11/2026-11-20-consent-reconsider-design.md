@@ -75,7 +75,9 @@ These continue the consent design's numbering.
     Always Allow gave does not change the preference. The preference rows
     sit directly above the list.
 25. **Undo.** A change is never a command batch and is never undone, like
-    every consent event (ruling 13). The requester may undo past it.
+    every consent event (ruling 13). The requester may undo past it. A
+    change ends redo, as a new command does: a taken-back step may rest
+    on the answer as it was (implementation ruling R29).
 26. **No limit.** A granter may change an unlocked answer any number of
     times. Each change writes a public log line.
 
@@ -145,6 +147,10 @@ field; old journals need no support.
 - the answer is locked;
 - the answer is already what the command asks for.
 
+Before all but the first of these, it is refused while a request about
+the same option still waits on an answer (implementation rulings R8 and
+R14).
+
 It resumes nothing: a late grant does not answer the parked decision
 (ruling 22).
 
@@ -208,7 +214,14 @@ preference rows. It is absent when the power has no requests this turn.
   consent. It unlocks if Blue undoes that."
 - An automatic power's entry reads "Blue's Tyrant: deactivated" or "Blue's
   Tyrant: let work". Its button is withheld with the hover note "This
-  answer cannot be changed."
+  answer cannot be changed." The button stands alone on the second line
+  and reads the prompt's word for the other answer: "Let it work" on a
+  deactivation, "Deactivate" on a let-work (R18).
+- Three more entries keep a withheld button, each with its hover note
+  (R8, R17, R24): one whose option a waiting request names, "A request
+  about this option is waiting for an answer."; one that covers a power
+  the viewer has lost, "You no longer rule every power this answer
+  covers."; and any entry once the game is over, "The game is over."
 - Without control, the buttons are disabled, as the settings are.
 - The list uses no accent color. Consent amber stays reserved for "ask
   first", and selection blue for the pressed setting.
@@ -221,7 +234,9 @@ redraw shows the locked entry.
 
 **Prompt notice.** The granter's prompt notice becomes "You can change this
 answer, and your consent preferences, by clicking on the Narrow Pass
-power." An automatic power's prompt keeps the old notice.
+power." An automatic power's prompt keeps the old notice. A prompt for
+an ask nobody rules, a payer's or an Imperial law's, shows no notice
+(R21).
 
 ## Testing
 
