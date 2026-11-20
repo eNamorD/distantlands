@@ -971,10 +971,12 @@ wears the system's chrome. An element asks for one with `HoverTip.set`
 
 ### Consent Column
 A power the viewer rules opens in the card overlay with their consent
-column after the details (consent design, ruling 16; reconsider design).
-It reads at the details column's size, `0.82em`.
-- **Heading:** "Who may ignore this power", in Brass Label, 16px under
-  what stands above it and 12px over the first row.
+column after the details (consent design, ruling 16; reconsider design):
+beside them where the overlay is wide enough, under them where it is
+not. The column carries a 16px top margin on top of the overlay body's
+gap, and reads at the details column's size, `0.82em`.
+- **Heading:** "Who may ignore this power", in Brass Label, 12px over
+  the first row.
 - **Preference row:** one per other player, 12px apart. The player's name
   has its own line. Under it, 4px down, stand that player's three
   settings, "Never Allow", "Case-by-case" and "Always Allow", in equal
