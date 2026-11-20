@@ -2338,13 +2338,16 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   min-height: 30px; padding: 4px 9px; color: var(--parchment-muted); background: var(--raised);
   border: 1px solid var(--brass-line); border-radius: 4px; font-size: 0.78rem;
   cursor: pointer; }
-.overlay-confirm button:hover, .consent-grid-choice:hover {
+.overlay-confirm button:hover, .consent-grid-choice:hover:not(:disabled) {
   border-color: var(--cream-bright); }
 .overlay-confirm button:focus-visible, .consent-grid-choice:focus-visible {
   outline: 2px solid var(--cream-focus); }
 .consent-grid-choice[aria-pressed="true"] { border-color: var(--selection);
   background: var(--selection-fill); }
 .consent-grid-choices .consent-grid-choice { padding: 4px 6px; }
+/* A setting the viewer cannot change, without control of the seat, wears
+   the Disabled face and answers no hover. */
+.consent-grid-choice:disabled { opacity: 0.5; cursor: not-allowed; }
 .card-overlay-close { position: absolute; top: 2vmin; right: 2vmin;
   min-width: 32px; min-height: 30px; padding: 4px 9px; color: #e8d9bb;
   background: var(--raised); border: 1px solid var(--brass-line); border-radius: 4px;

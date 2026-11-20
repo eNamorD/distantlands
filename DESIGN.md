@@ -983,8 +983,9 @@ It reads at the details column's size, `0.82em`.
 - **Setting:** the compact Control face. In thirds it takes 6px of side
   padding, because the third sets its width. The setting in force is
   pressed (`aria-pressed="true"`): a Selection border on Selection Fill,
-  the column's one selected thing. Without control the settings are
-  disabled. Where the main pointer is coarse they grow to 44px.
+  the column's one selected thing. Without control the settings wear
+  the Disabled face and answer no hover; the setting in force stays
+  pressed under it. Where the main pointer is coarse they grow to 44px.
 - The column uses no amber: consent amber stays on the option a player
   may ask about.
 

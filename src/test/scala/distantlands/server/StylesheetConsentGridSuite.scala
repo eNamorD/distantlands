@@ -92,6 +92,15 @@ class StylesheetConsentGridSuite extends munit.FunSuite:
     assert(pressed.contains("background: var(--selection-fill);"), pressed)
     assert(!consentRules.contains("consent-amber"))
 
+  test("a disabled setting wears the Disabled face and does not answer " +
+      "hover (R4)"):
+    val disabled = rule(".consent-grid-choice:disabled")
+    assert(disabled.contains("opacity: 0.5;"), disabled)
+    assert(disabled.contains("cursor: not-allowed;"), disabled)
+    assert(css.contains(".overlay-confirm button:hover, " +
+      ".consent-grid-choice:hover:not(:disabled) {"))
+    assert(!css.contains(".consent-grid-choice:hover {"))
+
   test("a finger gets a 44px setting"):
     val coarse = css.substring(css.indexOf("@media (pointer: coarse) {"))
     assert(coarse.contains(
