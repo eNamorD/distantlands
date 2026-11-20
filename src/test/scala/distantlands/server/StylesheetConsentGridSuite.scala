@@ -46,7 +46,9 @@ class StylesheetConsentGridSuite extends munit.FunSuite:
       "what this suite reads"):
     Vector(".consent-grid", ".consent-grid-heading", ".consent-grid-row",
       ".consent-grid-player", ".consent-grid-choices",
-      ".consent-grid-choices .consent-grid-choice").foreach(selector =>
+      ".consent-grid-choices .consent-grid-choice", ".consent-requests",
+      ".consent-request-list", ".consent-request", ".consent-request-asked",
+      ".consent-request-also", ".consent-request-answer").foreach(selector =>
       assertEquals(rulesOpenedBy(selector), 1, selector))
 
   test("a row stacks the player's name over the settings"):
@@ -64,7 +66,8 @@ class StylesheetConsentGridSuite extends munit.FunSuite:
   test("a setting keeps the compact Control face, with the side padding " +
       "a third leaves room for at 360px (R3)"):
     assert(consentRules.contains(
-      ".overlay-confirm button, .consent-grid-choice { min-width: 32px;\n" +
+      ".overlay-confirm button, .consent-grid-choice,\n" +
+      ".consent-request-change { min-width: 32px;\n" +
       "  min-height: 30px; padding: 4px 9px;"), consentRules)
     assert(rule(".consent-grid-choices .consent-grid-choice")
       .contains("padding: 4px 6px;"))
@@ -94,17 +97,63 @@ class StylesheetConsentGridSuite extends munit.FunSuite:
 
   test("a disabled setting wears the Disabled face and does not answer " +
       "hover (R4)"):
-    val disabled = rule(".consent-grid-choice:disabled")
+    val disabled = rule(".consent-request-change[aria-disabled=\"true\"]")
     assert(disabled.contains("opacity: 0.5;"), disabled)
     assert(disabled.contains("cursor: not-allowed;"), disabled)
+    // One rule gives the face to a disabled setting, a disabled change
+    // and a withheld change.
+    assert(css.contains(".consent-grid-choice:disabled, " +
+      ".consent-request-change:disabled,\n" +
+      ".consent-request-change[aria-disabled=\"true\"] {"))
     assert(css.contains(".overlay-confirm button:hover, " +
-      ".consent-grid-choice:hover:not(:disabled) {"))
+      ".consent-grid-choice:hover:not(:disabled),\n" +
+      ".consent-request-change:hover:not(:disabled, " +
+      "[aria-disabled=\"true\"]) {"))
     assert(!css.contains(".consent-grid-choice:hover {"))
+    assert(!css.contains(".consent-request-change:hover {"))
+
+  test("the requests block stands under the rows with more space above " +
+      "its heading than below, and takes no room while hidden"):
+    val block = rule(".consent-requests")
+    assert(block.contains("display: grid;"), block)
+    assert(block.contains("gap: 8px;"), block)
+    assert(block.contains("margin-top: 8px;"), block)
+    assert(css.contains(".consent-requests[hidden] { display: none; }"))
+
+  test("entries stand apart as the rows do, and an entry's lines stand " +
+      "close"):
+    assert(rule(".consent-request-list").contains("gap: 12px;"))
+    assert(rule(".consent-request").contains("gap: 4px;"))
+    assert(rule(".consent-request-asked")
+      .contains("overflow-wrap: anywhere;"))
+
+  test("the second line is quiet and never under the Eleven-Pixel Floor"):
+    val also = rule(".consent-request-also")
+    assert(also.contains("color: var(--ink-dim);"), also)
+    assert(also.contains("font-size: max(0.85em, 0.7rem);"), also)
+
+  test("the state stands before its button on one line"):
+    val answer = rule(".consent-request-answer")
+    assert(answer.contains("display: flex;"), answer)
+    assert(answer.contains("align-items: center;"), answer)
+    assert(answer.contains("gap: 8px;"), answer)
+
+  test("alone on its line the column fills it, up to a reading measure " +
+      "(R16)"):
+    val column = rule(".consent-grid")
+    assert(column.contains("flex: 1 1 17rem;"), column)
+    assert(column.contains("max-width: 22rem;"), column)
+
+  test("the change button keeps the focus ring of the settings"):
+    assert(css.contains(".overlay-confirm button:focus-visible, " +
+      ".consent-grid-choice:focus-visible,\n" +
+      ".consent-request-change:focus-visible {"))
 
   test("a finger gets a 44px setting"):
     val coarse = css.substring(css.indexOf("@media (pointer: coarse) {"))
     assert(coarse.contains(
-      ".consent-grid-choice { min-width: 44px; min-height: 44px; }"))
+      ".consent-grid-choice, .consent-request-change { min-width: 44px; " +
+        "min-height: 44px; }"))
 
   test("the consent rules move nothing"):
     assert(!consentRules.contains("transition"))
