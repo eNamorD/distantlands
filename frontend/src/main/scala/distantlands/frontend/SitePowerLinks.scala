@@ -28,6 +28,16 @@ private[frontend] final class SitePowerLinks(value: Option[GameProjection],
     value.flatMap(_.consentPreferences.find(_.cardId.contains(card.cardId)))
       .flatMap(gridOf)
 
+  /** The viewer's grid for the power the banner keyed `key` prints, when
+    * they rule it: the Darkest Secret's Festival, while its holder. */
+  def bannerGrid(key: String): Option[ConsentGrid] =
+    value.flatMap(_.consentPreferences.find(_.bannerKey.contains(key)))
+      .flatMap(gridOf)
+
+  /** The festival marker's power is the Darkest Secret's Festival face, so
+    * the marker opens that banner's grid. */
+  def festivalGrid: Option[ConsentGrid] = bannerGrid("darkest-secret")
+
   private def gridOf(preferences: ConsentPreferencesState)
       : Option[ConsentGrid] =
     value.map(projection => ConsentGrid(preferences.rows.map(row =>

@@ -27,8 +27,10 @@ private[frontend] object WorldBoardRenderer:
       .fold(players)(at => players.drop(at) ++ players.take(at))
 
   def playerBoards(value: GameProjection, playerId: String,
-      options: BoardOptions = BoardOptions.none): dom.Element =
+      options: BoardOptions = BoardOptions.none,
+      submit: Option[GameCommand => Unit] = None): dom.Element =
     val panel = element("section", "panel player-boards")
+    val links = SitePowerLinks.of(value, submit)
     // The seat the client holds, not the projection's viewer: a trusted
     // session adopts its seat from that viewer before it renders and refuses
     // to display a projection that disagrees with it (`ServerModeUi.store`),
@@ -151,7 +153,7 @@ private[frontend] object WorldBoardRenderer:
       // A banner matters more than a relic, so it comes first of the two.
       board.banners.foreach(banner =>
         cards.appendChild(BannerFace.place(banner, options,
-          BannerFace.festivalSite(value))))
+          BannerFace.festivalSite(value), links)))
       board.relics.zipWithIndex.foreach((card, at) => cards.appendChild(
         options.card(CardFace.render(card), card,
           boardCardKeys("relic-slot", player.playerId, at, card))))
@@ -199,6 +201,9 @@ private[frontend] object WorldBoardRenderer:
   ): dom.Element =
     val panel = element("section", "panel world")
     panel.setAttribute("aria-label", "The World")
+    // The viewer's consent grids, which site powers, the festival marker and
+    // the shared banners open.
+    val links = SitePowerLinks.of(value, submit)
     panel.appendChild(text("h2", "", "The World"))
     // The world deck is a Search's source and Clay Rattle's pile.
     val deckKeys = Vector(BoardOptionViews.key("deck", "world"))
@@ -235,7 +240,7 @@ private[frontend] object WorldBoardRenderer:
         val pawns = value.pawnLocations.filter(_.siteId == site.siteId)
           .map(pawn => pawnMarker(value, pawn.playerId, options))
         sites.appendChild(siteRow(site, column, row, MatLayout.Mat, options,
-          SitePowerLinks.of(value, submit), pawns))
+          links, pawns))
       }
       // A slot no site fills is the frame the mat prints for it.
       (0 until region.emptySlots).foreach(extra =>
@@ -250,7 +255,7 @@ private[frontend] object WorldBoardRenderer:
     board.appendChild(regions)
     board.appendChild(favorBanks(value, options))
     panel.appendChild(board)
-    panel.appendChild(tableEdge(value, options))
+    panel.appendChild(tableEdge(value, options, links))
     panel
 
   /** One site's row on the mat (Chronicle Details design, slice 3): the
@@ -293,7 +298,8 @@ private[frontend] object WorldBoardRenderer:
     // Last, so it lies over the cards.
     if site.festival then
       val band = MatLayout.festivalMarker(column, row)
-      control.appendChild(place(FestivalMarker.band(band), band, rowRect))
+      control.appendChild(place(FestivalMarker.band(band, links.festivalGrid),
+        band, rowRect))
     control
 
   /** A pawn on the map. Both forms are in the DOM and the map's scale picks
@@ -380,11 +386,11 @@ private[frontend] object WorldBoardRenderer:
     track
 
   /** What the physical table keeps beside the mat. */
-  private def tableEdge(value: GameProjection, options: BoardOptions)
-      : dom.Element =
+  private def tableEdge(value: GameProjection, options: BoardOptions,
+      links: SitePowerLinks): dom.Element =
     val edge = element("div", "table-edge")
     LegacyStrip.publicRow(value, options).foreach(edge.appendChild)
-    edge.appendChild(sharedBank(value, options))
+    edge.appendChild(sharedBank(value, options, links))
     // Beside the Shared Bank, while the snapshot carries the Chronicle
     // (Chronicle Details design, slice 4).
     if value.chronicleDetails.nonEmpty then
@@ -588,7 +594,7 @@ private[frontend] object WorldBoardRenderer:
     banks
 
   private def sharedBank(value: GameProjection,
-      options: BoardOptions): dom.Element =
+      options: BoardOptions, links: SitePowerLinks): dom.Element =
     val section = element("section", "shared-bank")
     section.appendChild(text("h3", "", "Shared Bank"))
     // The oath and its holder on lines of their own: run together, the
@@ -614,7 +620,7 @@ private[frontend] object WorldBoardRenderer:
       val banners = element("div", "shared-banners")
       value.banners.foreach(banner =>
         banners.appendChild(BannerFace.place(banner, options,
-          BannerFace.festivalSite(value))))
+          BannerFace.festivalSite(value), links)))
       section.appendChild(banners)
     // The Reliquary, facedown, while it holds a relic (Legacy in-play
     // powers ruling 9): a face only where its viewer may peek. Each relic

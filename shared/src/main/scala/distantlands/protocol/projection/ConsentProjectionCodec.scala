@@ -82,12 +82,14 @@ private[projection] object ConsentProjectionCodec:
     ujson.Obj("powerId" -> value.powerId, "power" -> value.power,
       "rows" -> encoded(value.rows)(row => ujson.Obj(
         "playerId" -> row.playerId, "setting" -> row.setting)),
-      "cardId" -> stringOption(value.cardId))
+      "cardId" -> stringOption(value.cardId),
+      "bannerKey" -> stringOption(value.bannerKey))
 
   def decodePreferences(raw: ujson.Value, path: String)
       : Result[ConsentPreferencesProjection] = for
     row <- obj(raw, path)
-    _ <- exact(row, Set("powerId", "power", "rows", "cardId"), path)
+    _ <- exact(row, Set("powerId", "power", "rows", "cardId", "bannerKey"),
+      path)
     powerId <- string(row, "powerId", path)
     power <- string(row, "power", path)
     rowRaws <- array(row, "rows", path)
@@ -98,4 +100,5 @@ private[projection] object ConsentProjectionCodec:
       setting <- string(entry, "setting", child)
     yield ConsentPreferenceRowProjection(player, setting) }
     cardId <- optionalAbsent(row, "cardId", path)(string)
-  yield ConsentPreferencesProjection(powerId, power, rows, cardId)
+    bannerKey <- optionalAbsent(row, "bannerKey", path)(string)
+  yield ConsentPreferencesProjection(powerId, power, rows, cardId, bannerKey)

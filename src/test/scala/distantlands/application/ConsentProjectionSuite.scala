@@ -139,6 +139,17 @@ class ConsentProjectionSuite extends munit.FunSuite:
       0L), p2).consentPreferences.map(entry => (entry.powerId, entry.cardId)),
       Vector(("denizen.secret-police", Some(police.value))))
 
+  test("the Festival's holder sees its preferences keyed by the banner, " +
+      "and no card"):
+    val ready = Table.start
+      .darkestSecret(Some(p2), 1, face = DarkestSecretFace.Festival).ready
+    assertEquals(projector.project(gameId, LoadedGame(OathState.Ready(ready),
+      0L), p2).consentPreferences.map(entry =>
+        (entry.power, entry.cardId, entry.bannerKey)),
+      Vector(("Darkest Secret", None, Some("darkest-secret"))))
+    assertEquals(projector.project(gameId, LoadedGame(OathState.Ready(ready),
+      0L), p1).consentPreferences, Vector.empty)
+
   test("City Wall's ruler is asked whether to deactivate the traveller's " +
       "Tyrant, and the traveller waits on that decision"):
     val (service, _) = ConsentFixture.service(tyrantBesideAWalledCoast)

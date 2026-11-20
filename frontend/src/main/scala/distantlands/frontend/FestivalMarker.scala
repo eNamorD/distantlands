@@ -92,8 +92,10 @@ private[frontend] object FestivalMarker:
   /** The marker lying over a site's cards, in the band `rect`: the plate
     * with its title. It is a button, so a keyboard reaches it and its note
     * shows on focus, and pressing it opens the printed marker in the
-    * inspector. It is no board option. */
-  def band(rect: MatRect): dom.html.Button =
+    * inspector, with `grid`, the holder's consent preferences, when the
+    * viewer holds the Festival. It is no board option. */
+  def band(rect: MatRect, grid: Option[ConsentGrid] = None)
+      : dom.html.Button =
     val node = dom.document.createElement("button")
       .asInstanceOf[dom.html.Button]
     node.className = "festival-marker festival-plate"
@@ -102,5 +104,5 @@ private[frontend] object FestivalMarker:
     node.appendChild(shape(rect.w, rect.h))
     node.appendChild(text("span", "festival-plate-title", Title))
     HoverTip.set(node, Rule)
-    node.onclick = _ => CardInspection.openFestivalMarker(node)
+    node.onclick = _ => CardInspection.openFestivalMarker(grid, node)
     node
