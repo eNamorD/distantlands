@@ -107,13 +107,16 @@ object PricedOptions:
   def badge(outcome: PreviewOutcome, actor: PlayerId): String =
     paths(outcome).map(spent(_, actor).words()).distinct.mkString(" or ")
 
-  /** What an answer takes from `actor`. A `Give` and a `PayCost` are walked
-    * as their moves, so the moves are read: favor or secrets that leave the
+  /** What an answer takes from `actor`. A `PayCost` is walked as its moves,
+    * and a `Give` is read as its own move: favor or secrets that leave the
     * actor's play area for the shared bank are burnt, and for anywhere else,
     * a card included, paid. */
   private[walker] def spent(operations: Vector[CoreOperation],
       actor: PlayerId): Spent =
-    operations.foldLeft(Spent()):
+    operations.map:
+      case give: Give => give.move
+      case other => other
+    .foldLeft(Spent()):
       case (total, SpendSupply(player, amount, _)) if player == actor =>
         total.copy(supply = total.supply + amount)
       case (total, Move(piece,
