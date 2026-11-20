@@ -72,7 +72,7 @@ case object TollRoads extends ContributingPower:
     Vector(NotePart.Text("Cannot travel to its ruler's sites without " +
       "giving favor or ruler's consent.")))
   val step: PayOrAsk = PayOrAsk(id, TollRoadsCard.id, decisionId,
-    noFreeTravel, noFreeTravelConsent)
+    noFreeTravel, noFreeTravelConsent, "Travel without paying")
 
   /** The free option of a Travel to `destination`. */
   def free(destination: SiteId): DecisionOptionRef.Button =
@@ -283,7 +283,7 @@ case object TollRoads extends ContributingPower:
             s"Toll Roads: ${RulerToll.paying(ruler)} to travel there?",
             RulerToll.payOption(ctx.state, route.player, ruler,
               RulerToll.favorTaken(operations, route.player)),
-            "Travel without paying") +:
+            TollRoads.step.freeLabel) +:
             TravelRoute.beforeMove(operations, Vector(TollRoads.step.outcome(
               paid, Vector(Note(id, _ => Some(TollRoads.waived(
                 PowerSourceRef.Card(cardId), NoteArg.Player(route.player),

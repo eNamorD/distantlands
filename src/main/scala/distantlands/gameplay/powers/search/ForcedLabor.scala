@@ -44,7 +44,7 @@ case object ForcedLabor extends ContributingPower:
       "giving favor or ruler's consent.")))
   notes.include(RulerToll.notes)
   val step: PayOrAsk = PayOrAsk(id, ForcedLaborCard.id, decisionId,
-    noFreeSearch, noFreeSearchConsent)
+    noFreeSearch, noFreeSearchConsent, "Search without paying")
 
   /** The free option of a Search from `site`. */
   def free(site: SiteId): DecisionOptionRef.Button = PayOrAsk.free(site.value)
@@ -74,4 +74,4 @@ case object ForcedLabor extends ContributingPower:
   yield RulerToll.owed(ForcedLabor.step, ctx.state, ctx.actor, ruler,
     operations, site.value,
     s"Forced Labor: ${RulerToll.paying(ruler)} to search here?",
-    "Search without paying")
+    ForcedLabor.step.freeLabel)

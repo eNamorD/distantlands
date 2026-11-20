@@ -48,7 +48,7 @@ case object Curfew extends ContributingPower:
       "giving favor or ruler's consent.")))
   notes.include(RulerToll.notes)
   val step: PayOrAsk = PayOrAsk(id, CurfewCard.id, decisionId, noFreeTrade,
-    noFreeTradeConsent)
+    noFreeTradeConsent, "Trade without paying")
 
   /** The free option of a Trade with `source`. */
   def free(source: DecisionOptionRef): DecisionOptionRef.Button =
@@ -90,7 +90,7 @@ case object Curfew extends ContributingPower:
             s"Curfew: ${RulerToll.paying(ruler)} to trade with this card?",
             RulerToll.payOption(ready, trader, ruler,
               RulerToll.favorTaken(operations, trader)),
-            "Trade without paying"))) +: operations :+
+            Curfew.step.freeLabel))) +: operations :+
           Curfew.step.outcome(paid, waived)
       case None => operations ++ Vector(
         BuildOps((ready, pending) => Right(

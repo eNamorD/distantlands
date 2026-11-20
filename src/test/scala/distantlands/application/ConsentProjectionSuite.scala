@@ -6,7 +6,9 @@ import distantlands.gameplay.cards.{AncientCitySite, NarrowPassSite}
 import distantlands.gameplay.powers.cardplay.SecretPoliceCard
 import distantlands.gameplay.powers.poweruse.{CityWall, CityWallCard}
 import distantlands.gameplay.powers.recover.RelicPatrolsCard
-import distantlands.gameplay.powers.travel.{TravelFixture, TyrantCard}
+import distantlands.gameplay.powers.PayOrAsk
+import distantlands.gameplay.powers.travel.{TollRoads, TravelFixture,
+  TyrantCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.protocol.projection._
@@ -222,6 +224,21 @@ class ConsentProjectionSuite extends munit.FunSuite:
       base, decisionId = "not-parked")
     assertEquals(shownToP2With(base, answered).consentPreferences
       .flatMap(_.requests).map(_.label), Vector("Give Way"))
+
+  test("a toll's free option keeps its own words in the list after the " +
+      "traveller has paid and the step is gone"):
+    val (service, _) = ConsentFixture.service(TollConsentFixture.tolled)
+    val asked = accepted(service.handle(gameId,
+      TollConsentFixture.atTheStep(service).nextSequence,
+      TollConsentFixture.requestFree))
+    val no = answering(service, asked, ConsentChoice.No)
+    assertEquals(requestsShownTo(p2, no).map(_.label),
+      Vector("Travel without paying"))
+    val paid = accepted(service.handle(gameId, no.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(TollRoads.decisionId,
+        DecisionAnswer.ChooseOneAnswer(PayOrAsk.pay)))))
+    assertEquals(requestsShownTo(p2, paid).map(_.label),
+      Vector("Travel without paying"))
 
   test("an entry whose option the viewer may not identify is not listed, " +
       "so its id never leaves the server (R19)"):

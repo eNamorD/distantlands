@@ -1,7 +1,10 @@
 package distantlands.application
 
 import distantlands.gameplay.actions.{BannerRules, ImperialLaws}
-import distantlands.gameplay.powers.ConsentPowers
+import distantlands.gameplay.powers.{ConsentPowers, PayOrAsk}
+import distantlands.gameplay.powers.economy.Curfew
+import distantlands.gameplay.powers.search.ForcedLabor
+import distantlands.gameplay.powers.travel.{GraspingVines, TollRoads}
 import distantlands.model._
 import distantlands.protocol.projection._
 
@@ -122,6 +125,11 @@ private[application] final class ConsentProjector(
   private def optionLabel(context: ScopedProjectionContext,
       request: ConsentRequest): Option[String] =
     named(context, request).orElse(request.target match
+      // A pay-or-ask step's free option keeps the label its step gave it.
+      case button: DecisionOptionRef.Button if PayOrAsk.isFree(button) =>
+        ConsentProjector.payOrAskSteps
+          .find(_.decisionId == request.decisionId).map(_.freeLabel)
+          .orElse(Some(presentation.safeLabel(button.key)))
       case DecisionOptionRef.Button(key) => Some(presentation.safeLabel(key))
       case _ => None)
 
@@ -150,4 +158,8 @@ private[application] final class ConsentProjector(
       case _ => Vector.empty
 
 private[application] object ConsentProjector:
+  /** Every pay-or-ask step: each offers a free option its ruler may be
+    * asked about. */
+  val payOrAskSteps: Vector[PayOrAsk] = Vector(TollRoads.step,
+    GraspingVines.step, Curfew.step, ForcedLabor.step)
   val withdrawNote = "Withdraw your consent request"
