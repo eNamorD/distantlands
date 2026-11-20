@@ -78,17 +78,10 @@ Slice/files: 1; none.
 ## Slice 2
 
 **R7. Redo after a changed answer.**
-Question: the requester selects an option on a grant and undoes it; the
-granter then refuses. A Redo would restore the move under a ledger that
-now refuses it. Only a new command batch empties the redo stack. What
-does a changed answer do to it?
-Decision: only a `ConsentReconsidered` whose `granted` is false empties
-the redo stack. A change to a grant leaves it, and the redo then
-succeeds.
-Reason: a redo restores a state that was legal under the ledger when it
-was saved. A change to a grant only makes the ledger more permissive and
-cannot invalidate that state, so it must not cost the requester their
-redo steps.
+Superseded by R29. R7 let a change to a grant keep the redo stack, on the
+reasoning that a grant only makes the ledger more permissive. With R12 a
+grant also changes what a saved state should hold (who paid a toll), so
+that reasoning no longer holds.
 Slice/files: 2; `application/JournalFold.scala`.
 
 **R8. A change while a request about the same option waits.**
@@ -195,9 +188,12 @@ Slice/files: 2; the design's Deferred section.
 ## Slice 3
 
 **R16. The consent column's width.**
-Decision: `.consent-grid { flex: 1 1 17rem; max-width: 22rem; }`. The
-browser check measures the settings' thirds again at both widths; beside
-the details at desktop width the column must keep its content width.
+Decision: under 620px, where the column stands alone on its line, it
+fills the line up to a reading measure: `@media (max-width: 620px) {
+.consent-grid { flex: 1 1 17rem; max-width: 22rem; } }`. Beside the
+details at desktop width it keeps its content width. The bare rule, as
+first ruled, grew the column beside the details too, which the browser
+check measured, so it ships inside the media query.
 Reason: sentence lines need the line's width on a phone.
 Slice/files: 3; `frontend/styles.css`.
 
@@ -227,11 +223,15 @@ Confidence: low that the case is reachable today.
 Slice/files: 3; `application/ConsentProjector.scala`.
 
 **R20. What a refused change shows.**
-Decision: nothing beyond the redraw. After a click the entry's button is
-disabled until the next snapshot redraws the list.
-Reason: the design asks for the redraw only.
+Decision: nothing beyond the redraw. After a click the entry's button
+waits, as `aria-disabled` so it keeps keyboard focus, until the server
+has answered: until the snapshot's position or the failure the table
+shows is new. A repaint of the same position, such as a log page
+landing, leaves it waiting.
+Reason: the design asks for the redraw only, and a button live again
+while its command is in flight sends the command twice.
 Slice/files: 3; `ConsentRequestsView.scala`,
-`CardInspectionOverlay.scala`.
+`CardInspectionOverlay.scala`, `TableScreen.scala`.
 
 **R21. The prompt's notice.**
 Decision: `ConsentPromptProjection` gains one required field, `adjust`,
@@ -301,3 +301,21 @@ are verified by suites and a hand-built layout check only.
 Reason: no short route reaches them in a scratch game, and each has a
 view test.
 Slice/files: 3; none.
+
+**R28. The change line's lookup of its request.**
+Question: the log's change line reads its option and powers from the
+latest matching `ConsentRequested`; a mutant that reads the earliest
+passes every suite.
+Decision: accepted as it is.
+Reason: no reachable flow was found where the two differ, and a
+constructed journal would pin an unreachable case.
+Slice/files: 2; none.
+
+**R29. Redo after any changed answer.**
+Question: a change to a grant kept the redo stack (R7). With R12 a Redo
+could then restore a toll payment that the ruler's new waiver spares.
+Decision: every `ConsentReconsidered`, to a grant or to a refusal,
+empties the redo stack. This amends R7.
+Reason: a grant can change what a saved state should contain, and
+emptying on every change is one rule that inspects no saved state.
+Slice/files: 2 (whole-feature review); `application/JournalFold.scala`.

@@ -1009,8 +1009,9 @@ top of the overlay body's gap, and reads at the details column's size,
 - **Live:** the list is the one part of the card overlay redrawn from
   each snapshot, and only when it changed, so an open hover note is left
   alone. Focus stays on the entry's button, whatever it now reads. A
-  clicked button waits for the next snapshot in the Disabled face, as
-  `aria-disabled`, so it keeps the focus.
+  clicked button waits in the Disabled face, as `aria-disabled`, so it
+  keeps the focus, until the table's position or its shown failure
+  changes; a repaint of the same position leaves it waiting.
 - The column uses no amber and no second blue: consent amber stays on
   the option a player may ask about, and selection blue on the pressed
   setting.
