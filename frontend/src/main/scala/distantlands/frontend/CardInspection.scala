@@ -25,12 +25,16 @@ private[frontend] object CardInspection:
         extends Request
     /** The Darkest Secret on its Festival face: its printed lines, then a
       * copy of the festival marker and the site it lies at, `None` while
-      * it lies beside the map. */
+      * it lies beside the map, and the viewer's consent preferences for
+      * the Festival when they hold it. */
     final case class Festival(title: String, lines: Vector[String],
-        at: Option[String], origin: dom.html.Element) extends Request
+        at: Option[String], grid: Option[ConsentGrid],
+        origin: dom.html.Element) extends Request
     /** The festival marker as printed: its title and its text on the
-      * plate. */
-    final case class FestivalMarker(origin: dom.html.Element) extends Request
+      * plate, and the holder's consent preferences, as the banner shows
+      * them. */
+    final case class FestivalMarker(grid: Option[ConsentGrid],
+        origin: dom.html.Element) extends Request
     /** A board's Supply: the bank, the Supply track, then the Rest. */
     final case class Supply(panel: SupplyAtRest.Panel,
         origin: dom.html.Element) extends Request
@@ -69,11 +73,12 @@ private[frontend] object CardInspection:
     handler.foreach(_(Request.Text(title, lines, origin, plate)))
 
   def openFestival(title: String, lines: Vector[String], at: Option[String],
-      origin: dom.html.Element): Unit =
-    handler.foreach(_(Request.Festival(title, lines, at, origin)))
+      grid: Option[ConsentGrid], origin: dom.html.Element): Unit =
+    handler.foreach(_(Request.Festival(title, lines, at, grid, origin)))
 
-  def openFestivalMarker(origin: dom.html.Element): Unit =
-    handler.foreach(_(Request.FestivalMarker(origin)))
+  def openFestivalMarker(grid: Option[ConsentGrid],
+      origin: dom.html.Element): Unit =
+    handler.foreach(_(Request.FestivalMarker(grid, origin)))
 
   def openSupply(panel: SupplyAtRest.Panel, origin: dom.html.Element): Unit =
     handler.foreach(_(Request.Supply(panel, origin)))

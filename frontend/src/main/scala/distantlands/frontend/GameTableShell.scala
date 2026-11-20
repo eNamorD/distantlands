@@ -202,10 +202,10 @@ private[frontend] final class GameTableShell(mount: dom.Element,
     case CardInspection.Request.Card(card, origin) => inspector.show(card, origin)
     case CardInspection.Request.Text(title, lines, origin, plate) =>
       inspector.showText(title, lines, origin, plate)
-    case CardInspection.Request.Festival(title, lines, at, origin) =>
-      inspector.showFestival(title, lines, at, origin)
-    case CardInspection.Request.FestivalMarker(origin) =>
-      inspector.showFestivalMarker(origin)
+    case CardInspection.Request.Festival(title, lines, at, grid, origin) =>
+      inspector.showFestival(title, lines, at, grid, origin)
+    case CardInspection.Request.FestivalMarker(grid, origin) =>
+      inspector.showFestivalMarker(grid, origin)
     case CardInspection.Request.Supply(panel, origin) =>
       inspector.showSupply(panel, origin)
     case CardInspection.Request.Cards(title, cards, origin) =>

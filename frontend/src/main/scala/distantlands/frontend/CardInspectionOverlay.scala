@@ -79,9 +79,10 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
   /** The Darkest Secret's Festival face: its printed lines, then a
     * picture of the festival marker and where it lies, so players see it
     * while it is off the map without its being in the shared bank. The
-    * picture is not the map's control, and the words beside it name it. */
+    * picture is not the map's control, and the words beside it name it.
+    * Below, the holder's consent preferences for the Festival (ruling 16). */
   def showFestival(title: String, lines: Vector[String], at: Option[String],
-      origin: dom.html.Element): Unit =
+      grid: Option[ConsentGrid], origin: dom.html.Element): Unit =
     showText(title, lines, origin)
     val copy = element("div", "rules-power festival-copy")
     val plate = FestivalMarker.plate(withRule = false)
@@ -90,12 +91,16 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     copy.appendChild(text("p", "festival-copy-where",
       "Festival marker: " + at.fold("beside the map")(site => s"at $site")))
     body.querySelector(".card-overlay-details").appendChild(copy)
+    grid.foreach(value => body.appendChild(ConsentGridView.render(value)))
 
-  /** The festival marker as printed: the plate, its title and its text. */
-  def showFestivalMarker(origin: dom.html.Element): Unit =
+  /** The festival marker as printed: the plate, its title and its text,
+    * then the holder's consent preferences for it. */
+  def showFestivalMarker(grid: Option[ConsentGrid],
+      origin: dom.html.Element): Unit =
     clear()
     node.setAttribute("aria-label", "Festival marker")
     body.appendChild(FestivalMarker.plate(withRule = true))
+    grid.foreach(value => body.appendChild(ConsentGridView.render(value)))
     open(origin)
 
   /** A board's Supply: the bank above the track, as the physical board

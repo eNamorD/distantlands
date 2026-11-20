@@ -52,7 +52,7 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
     val MountedOverlay(root, overlay) = mountedOverlay()
     overlay.showFestival("Banner of the Darkest Secret · Festival",
       Vector("**Action:** Place [secret] on the banner."), Some("Deep Woods"),
-      focusableOpener())
+      None, focusableOpener())
     assertEquals(
       all(root, ".card-overlay-details .festival-copy-where")
         .map(_.textContent),
@@ -67,14 +67,14 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
   test("before the first Rest the copy says the marker lies beside the map"):
     val MountedOverlay(root, overlay) = mountedOverlay()
     overlay.showFestival("Banner of the Darkest Secret · Festival",
-      Vector.empty, None, focusableOpener())
+      Vector.empty, None, None, focusableOpener())
     assertEquals(all(root, ".festival-copy-where").map(_.textContent),
       Vector("Festival marker: beside the map"))
 
   test("the festival marker opens as printed: its title and its text on " +
       "the plate, named for a screen reader"):
     val MountedOverlay(root, overlay) = mountedOverlay()
-    overlay.showFestivalMarker(focusableOpener())
+    overlay.showFestivalMarker(None, focusableOpener())
     assertEquals(
       all(root, ".card-overlay-body > .festival-plate .festival-plate-title")
         .map(_.textContent),

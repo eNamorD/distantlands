@@ -76,7 +76,9 @@ private[application] final class ConsentProjector(
           ready.consent.preference(viewer, power, other)
             .fold(ConsentSetting.CaseByCase.key)(_.key))),
       powers.source(power).collect { case PowerSourceRef.Card(card) =>
-        card.value }))
+        card.value },
+      powers.source(power).collect { case PowerSourceRef.Banner(banner) =>
+        banner.key }))
 
   /** The option asked about, named as its decision row names it
     * ([[DecisionOptionRows]]). A button has no name of its own, so its

@@ -114,7 +114,8 @@ private[frontend] final class TableScreen(
           controls.stage(Draft.Aid(Some(draft.toggled(prompt,
             BoardOptionViews.key(chosen)))))))
           .getOrElse(BoardOptions.none)
-        (WorldBoardRenderer.playerBoards(value, selectedPlayer, options),
+        (WorldBoardRenderer.playerBoards(value, selectedPlayer, options,
+          Option.when(view.controlsAvailable)(controls.submitCommand)),
           WorldBoardRenderer.world(value, options,
             Option.when(view.controlsAvailable)(controls.submitCommand)),
           decisionKey)
