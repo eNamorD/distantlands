@@ -151,8 +151,10 @@ It resumes nothing: a late grant does not answer the parked decision
 ### Projection
 
 `ConsentPreferencesProjection` gains `requests`, newest first: the turn's
-history entries in which the viewer answered an ask naming this power. Each
-row carries:
+history entries in which the viewer answered an ask naming this power. An
+answer the viewer gave to a request that still waits is listed first, as
+a row that cannot be changed yet (implementation ruling R26). Each row
+carries:
 
 - the requester's player id, the decision id and the option's wire id,
   which the command sends back;
@@ -162,6 +164,9 @@ row carries:
 - the names of the viewer's other powers the same ask covered;
 - the card name, when the request was about an automatic power;
 - `change`: `open`, `used` (locked) or `automatic` (never changeable).
+  The implementation adds `waiting`, `lapsed` and `over` (implementation
+  rulings R8, R17 and R24), and leaves out an entry whose option the
+  viewer may not identify (R19).
 
 Only the viewer's own answers leave the server, as with preferences
 (ruling 16).

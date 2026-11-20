@@ -261,3 +261,43 @@ Recorded in the design's Deferred section.
 Reason: the projector has no journal, and carrying wording in the ledger
 would put presentation text in the model.
 Slice/files: 3; the design's Deferred section.
+
+**R24. An entry once the game is over.**
+Question: the desk refuses every change once the game is over, but the
+projection still called the entry `open`.
+Decision: the entry stays listed and is not changeable: `change` value
+`over`, button withheld, hover note "The game is over." `ConsentChange`
+judges it first, as the desk does.
+Reason: one judgement for the button and the command, and an unavailable
+option keeps its reason.
+Slice/files: 3 (review fix); `application/ConsentChange.scala`,
+`ConsentRequestsView.scala`.
+
+**R25. The prompt's target for a card the viewer may not identify.**
+Decision: it reads "a hidden card", and the card's catalog id is not in
+the encoded projection. Every other fallback is unchanged. This fallback
+predates this work, so it is listed as existing behaviour changed.
+Reason: R19's leak, on the prompt.
+Confidence: low that the case is reachable today; a staged state covers
+it.
+Slice/files: 3 (review fix); `application/ConsentProjector.scala`.
+
+**R26. An answer given while its request still waits.**
+Question: a ruler whose alternative refusal is given while the request
+still waits has no entry until the request ends, though their prompt's
+notice said the answer can be changed from the power.
+Decision: a pending request's already answered asks are projected to
+their giver as rows with `change` `waiting` (R8's hover note). The
+ledger's history is unchanged; only the projection adds the rows. The
+design's Projection section is amended.
+Reason: the notice told that ruler the answer can be changed from the
+power, so the power must show it and say why not yet.
+Slice/files: 3 (review fix); `application/ConsentProjector.scala`, the
+design's Projection section.
+
+**R27. Entries not seen in a played game.**
+Decision: the automatic, waiting, lapsed, over and "Also answers" entries
+are verified by suites and a hand-built layout check only.
+Reason: no short route reaches them in a scratch game, and each has a
+view test.
+Slice/files: 3; none.
