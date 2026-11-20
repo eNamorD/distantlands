@@ -93,7 +93,9 @@ with its button unavailable. See "Deferred".
 
 - `history: Vector[ConsentRequest]`, each with its asks as answered. A
   request joins it when it settles, granted or refused. A withdrawn request
-  never joins it (ruling 14). It belongs to `turn`, like `answers`: a
+  joins it only with the asks already refused, because those refusals are
+  remembered (ruling 14) and must be their granter's to change
+  (implementation ruling R14). It belongs to `turn`, like `answers`: a
   request settling in a new turn starts it empty.
 - At most one entry per requester, decision, option and answering granter.
   A later request with the same four replaces the earlier one. This happens
@@ -258,6 +260,17 @@ amends rulings 12 and 13 in the consent design when slice 2 lands.
   - A Palanquin target and a Toll Roads payer could get their controls on
     the Palanquin and Toll Roads cards.
   - The Chancellor's Eye could get its controls at each site it concerns.
+- **A mark from an earlier use of the same option.** A use mark names a
+  requester, a decision and an option, so an earlier use locks a later
+  request about the same three. This is reachable only where one target
+  carries different covered keys twice in a turn, such as the same Hall
+  of Ministers slot. Unlocking it would need entry ids in the ledger
+  (implementation ruling R15).
+- **The list's wording of an option.** The list words an option from the
+  current state; the log's line words it from the request's own state. A
+  positional option (an adviser or relic slot) names what sits there now.
+  The projector has no journal, and the ledger holds no wording
+  (implementation ruling R23).
 - **A turn-long grant first used through another choice.** A grant that
   lasts the turn (the Festival's "use this card") is marked only when the
   requester chooses the option it was asked from. If a late grant is first

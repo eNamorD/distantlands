@@ -140,3 +140,124 @@ and there is no second place to forget.
 Slice/files: 2; `model/Consent.scala` (`UseMark`),
 `gameplay/consent/ConsentUseMarks.scala`,
 `gameplay/operations/TurnStateOperations.scala`.
+
+**R12. The ruler's waiver and the payer's agreement, both granted.**
+Question: slice 2's review found that a sent Travel charges the toll when
+the payer agreed, even when the ruler's waiver is also granted. That can
+now happen: the ruler refuses, the payer agrees, the traveller undoes,
+and the ruler changes to a grant.
+Decision: when both are granted for one sent Travel, the waiver wins and
+nobody pays.
+Reason: consent to ignore Toll Roads skips the payment (consent design,
+ruling 1), and the log has just told every player that the ruler gives
+that consent.
+Confidence: low. Which grant wins is a rules question for the owner.
+Slice/files: 2 (review fix); `gameplay/powers/travel/TollRoads.scala`.
+
+**R13. The ledger's turn across an undo of a round change.**
+Question: undoing a Great Clock returns the game to the old round while
+the carried ledger keeps the new one, so the turn's answers and history
+read empty and a change is refused.
+Decision: on an undo or a redo, the carried ledger's turn, and nothing
+else in it, is renamed to the target state's turn when both name the
+same active player and the ledger's turn is the current game's turn.
+This rests on an undo never crossing a turn end, which is confirmed in
+the undo design and code before the rename is applied.
+Reason: the Great Clock moves the round within a turn (consent design,
+ruling 9), and its undo must not end the turn for the ledger.
+Slice/files: 2 (review fix); `application/JournalFold.scala`.
+
+**R14. A refusal given before a withdrawal.**
+Question: an alternative's refusal is remembered when it is given, but
+joined the history only when the request settled. After a withdrawal it
+blocked for the turn and could never be changed; while the request still
+waited, the desk gave the wrong reason.
+Decision: a withdrawn request's refused asks join the history, as an
+entry holding only its answered asks. The desk checks the waiting-request
+case before the "answered no request" case, so the reason is R8's. The
+design's State section, which said a withdrawn request never joins, is
+amended.
+Reason: a remembered refusal must be the refuser's to change (ruling 20).
+Slice/files: 2 (review fix); `model/Consent.scala`,
+`application/ConsentDesk.scala`, the design's State section.
+
+**R15. A use mark from an earlier use of the same option.**
+Question: a mark names a requester, a decision and an option, so an
+earlier use locks a later request about the same three. That is reachable
+only where one target carries different `covers` twice in a turn, such
+as the same Hall of Ministers slot.
+Decision: accepted as it is, and recorded in the design's Deferred
+section.
+Reason: tying a mark to an entry needs entry ids in the ledger, for a
+case that costs only the right to change one answer.
+Slice/files: 2; the design's Deferred section.
+
+## Slice 3
+
+**R16. The consent column's width.**
+Decision: `.consent-grid { flex: 1 1 17rem; max-width: 22rem; }`. The
+browser check measures the settings' thirds again at both widths; beside
+the details at desktop width the column must keep its content width.
+Reason: sentence lines need the line's width on a phone.
+Slice/files: 3; `frontend/styles.css`.
+
+**R17. An answer that covers a power the viewer no longer rules.**
+Decision: a fifth `change` value, `lapsed`. Its button is withheld with
+the hover note "You no longer rule every power this answer covers."
+Reason: an unavailable option is shown with its reason, not hidden and
+not left to fail on a click.
+Slice/files: 3; the projection, `ConsentRequestsView.scala`.
+
+**R18. An automatic power's entry.**
+Decision: its sentence is line 1 ("Blue's Tyrant: deactivated" or "Blue's
+Tyrant: let work") and the withheld button stands alone on line 2,
+labelled with the prompt's word for the other answer: "Let it work" on a
+deactivation, "Deactivate" on a let-work.
+Reason: "Refused" and "Allow" are not the words that prompt used.
+Slice/files: 3; `ConsentRequestsView.scala`.
+
+**R19. An option the viewer may not identify.**
+Decision: an entry whose option the viewer may not identify is not
+listed, so no id for it leaves the server. A staged entry in the
+projector's test covers it.
+Reason: a hidden card's catalog id on the wire is a leak whether or not
+the label hides it, and the cost is only that such an answer cannot be
+changed from the overlay.
+Confidence: low that the case is reachable today.
+Slice/files: 3; `application/ConsentProjector.scala`.
+
+**R20. What a refused change shows.**
+Decision: nothing beyond the redraw. After a click the entry's button is
+disabled until the next snapshot redraws the list.
+Reason: the design asks for the redraw only.
+Slice/files: 3; `ConsentRequestsView.scala`,
+`CardInspectionOverlay.scala`.
+
+**R21. The prompt's notice.**
+Decision: `ConsentPromptProjection` gains one required field, `adjust`,
+with three values. `answer`: the viewer rules every power of the ask and
+the request is not about an automatic power; the new notice shows.
+`preferences`: the viewer rules every power of the ask and the request is
+about an automatic power; the old notice shows. `none`: some power of the
+ask has no granter, as for a payer or an Imperial law; no notice element
+is drawn. This changes those four prompts, which showed the old notice.
+Reason: the old notice is already untrue for those four asks, which is
+the kind of promise this work began by fixing.
+Slice/files: 3; the prompt projection and codec,
+`ConsentProjector.scala`, `ConsentPanels.scala`.
+
+**R22. Telling the entries' buttons apart.**
+Decision: each entry is a `role="group"` whose `aria-label` is its line 1
+text, as R2 did for a player's settings.
+Reason: a list of buttons all named "Allow" or "Refuse" cannot be told
+apart by a screen reader.
+Slice/files: 3; `ConsentRequestsView.scala`.
+
+**R23. The list's wording of an option.**
+Decision: the list words an option from the current state, as the design
+says, although the log's line words it from the request's own state. A
+positional option (an adviser or relic slot) names what sits there now.
+Recorded in the design's Deferred section.
+Reason: the projector has no journal, and carrying wording in the ledger
+would put presentation text in the model.
+Slice/files: 3; the design's Deferred section.
