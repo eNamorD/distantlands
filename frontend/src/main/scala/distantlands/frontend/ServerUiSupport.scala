@@ -52,6 +52,18 @@ private[frontend] object ServerUiSupport:
     Vector(RulesTextRenderer.glyph(token),
       text("span", "site-token-count", count.toString))
 
+  /** A card's face and what opening it does: a card printing a power the
+    * viewer rules opens with their consent grid (consent slice 3), on a
+    * site or on a board (Ancient Bloodline); any other opens as itself. */
+  private[frontend] def ruledCard(details: CardDetails, links: SitePowerLinks)
+      : (dom.html.Button, Option[dom.html.Element => Unit]) =
+    val face = CardFace.render(details)
+    val ruled = links.cardGrid(details).map(grid =>
+      (origin: dom.html.Element) =>
+        CardInspection.openRuled(details, grid, origin))
+    ruled.foreach(open => face.onclick = _ => open(face))
+    (face, ruled)
+
   private[frontend] def siteDetails(site: GameSite,
       options: BoardOptions = BoardOptions.none,
       links: SitePowerLinks = SitePowerLinks.none): dom.Element =
@@ -63,14 +75,8 @@ private[frontend] object ServerUiSupport:
     site.denizens.zipWithIndex.foreach { (denizen, at) =>
       denizen.details match
         case Some(details) =>
-          val face = CardFace.render(details)
+          val (face, ruled) = ruledCard(details, links)
           face.setAttribute("data-denizen-id", denizen.denizenId)
-          // A card printing a power the viewer rules opens with their
-          // consent grid (consent slice 3).
-          val ruled = links.cardGrid(details).map(grid =>
-            (origin: dom.html.Element) =>
-              CardInspection.openRuled(details, grid, origin))
-          ruled.foreach(open => face.onclick = _ => open(face))
           cards.appendChild(options.card(face, details,
             Vector(BoardOptions.cardKey(details), siteSlot(site, at)), ruled))
         case None =>

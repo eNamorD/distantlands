@@ -144,9 +144,11 @@ private[frontend] object WorldBoardRenderer:
       // has, and a relic's square box already says which card is which.
       val cards = element("div", "board-cards")
       cards.setAttribute("aria-label", "Cards in play")
-      board.advisers.zipWithIndex.foreach((card, at) => cards.appendChild(
-        options.card(CardFace.render(card), card,
-          boardCardKeys("adviser-slot", player.playerId, at, card))))
+      board.advisers.zipWithIndex.foreach { (card, at) =>
+        val (face, ruled) = ruledCard(card, links)
+        cards.appendChild(options.card(face, card,
+          boardCardKeys("adviser-slot", player.playerId, at, card), ruled))
+      }
       (board.advisers.size until board.adviserLimit).foreach(at =>
         cards.appendChild(openSlot(options, "denizen", "Empty adviser slot",
           at, BoardOptionViews.key("adviser-slot", s"${player.playerId}:$at"))))
@@ -154,9 +156,11 @@ private[frontend] object WorldBoardRenderer:
       board.banners.foreach(banner =>
         cards.appendChild(BannerFace.place(banner, options,
           BannerFace.festivalSite(value), links)))
-      board.relics.zipWithIndex.foreach((card, at) => cards.appendChild(
-        options.card(CardFace.render(card), card,
-          boardCardKeys("relic-slot", player.playerId, at, card))))
+      board.relics.zipWithIndex.foreach { (card, at) =>
+        val (face, ruled) = ruledCard(card, links)
+        cards.appendChild(options.card(face, card,
+          boardCardKeys("relic-slot", player.playerId, at, card), ruled))
+      }
       section.appendChild(cards)
       LegacyStrip.board(board, options).foreach(section.appendChild)
       }

@@ -27,6 +27,12 @@ private[application] final class GamePresentationProjector(
       side match
         case EdificeSide.Intact => edifice.intact.name
         case EdificeSide.Ruined => edifice.ruined.name
+  /** The name of the face of edifice `id` that prints `power`: the ruined
+    * face's when it prints it (Bandit Patrols), else the intact face's. */
+  def edificePowerLabel(id: EdificeId, power: PowerId): String =
+    catalog.edifice(id).fold(safeLabel(id.value)): edifice =>
+      if edifice.ruined.powers.exists(_.id == power) then edifice.ruined.name
+      else edifice.intact.name
   /** A player's display name: their ID exactly as the host typed it. It is
     * the one label the Players strip and the game log both use, so the two
     * never disagree. */
