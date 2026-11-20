@@ -3,6 +3,7 @@ package distantlands.application
 import distantlands.gameplay.cards.{AncientCitySite, NarrowPassSite}
 import distantlands.gameplay.powers.cardplay.SecretPoliceCard
 import distantlands.gameplay.powers.poweruse.{CityWall, CityWallCard}
+import distantlands.gameplay.powers.recover.RelicPatrolsCard
 import distantlands.gameplay.powers.travel.{TravelFixture, TyrantCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -138,6 +139,16 @@ class ConsentProjectionSuite extends munit.FunSuite:
     assertEquals(projector.project(gameId, LoadedGame(OathState.Ready(ready),
       0L), p2).consentPreferences.map(entry => (entry.powerId, entry.cardId)),
       Vector(("denizen.secret-police", Some(police.value))))
+
+  test("a ruined edifice's waivable power is named for its ruined face"):
+    val home = AncientCitySite.id
+    def named(side: EdificeSide): Vector[String] =
+      val ready = Table.start.edifice(RelicPatrolsCard, side, at = home)
+        .warbandsAt(home, p2, 2).ready
+      projector.project(gameId, LoadedGame(OathState.Ready(ready), 0L), p2)
+        .consentPreferences.map(_.power)
+    assertEquals(named(EdificeSide.Ruined), Vector("Bandit Patrols"))
+    assertEquals(named(EdificeSide.Intact), Vector("Relic Patrols"))
 
   test("the Festival's holder sees its preferences keyed by the banner, " +
       "and no card"):

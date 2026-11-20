@@ -11,10 +11,10 @@ private[application] final class ConsentNames(
     presentation: GamePresentationProjector, powers: ConsentPowers):
   def power(id: PowerId): String = powers.source(id) match
     case Some(PowerSourceRef.Site(site)) => presentation.siteLabel(site)
-    // A waivable edifice power is printed on its intact face (the Hall of
-    // Ministers), so the power is named for that face.
+    // A waivable edifice power is named for the face that prints it: the
+    // Hall of Ministers on its intact face, Bandit Patrols on its ruined.
     case Some(PowerSourceRef.Card(edifice: EdificeId)) =>
-      presentation.edificeLabel(edifice, EdificeSide.Intact)
+      presentation.edificePowerLabel(edifice, id)
     case Some(PowerSourceRef.Card(card)) =>
       presentation.cardDetails(card, None, hidden = false).name
     case Some(PowerSourceRef.Banner(banner)) => BannerRules.displayName(banner)
