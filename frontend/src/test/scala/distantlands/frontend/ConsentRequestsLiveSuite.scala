@@ -127,11 +127,11 @@ class ConsentRequestsLiveSuite extends munit.FunSuite:
       open.snapshot(tableWhereRedAnswered(row("refused", "open")))
       assert(open.change eq before)
       before.click()
-      assert(open.change.disabled)
+      assertEquals(open.change.getAttribute("aria-disabled"), "true")
       // The server refused: the same rows come back, and the button with
       // them.
       open.snapshot(tableWhereRedAnswered(row("refused", "open")))
-      assert(!open.change.disabled)
+      assertEquals(open.change.getAttribute("aria-disabled"), null)
       assertEquals(open.sent.size, 1)
     }
 

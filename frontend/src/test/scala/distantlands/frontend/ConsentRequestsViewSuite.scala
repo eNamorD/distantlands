@@ -85,13 +85,21 @@ class ConsentRequestsViewSuite extends munit.FunSuite:
       case other => fail(s"unexpected $other")
     }, Vector(false))
 
-  test("a click sends once: the button is disabled until the list is " +
-      "redrawn (R20)"):
+  test("a click sends once: the button waits, without losing keyboard " +
+      "focus, until the list is redrawn (R20)"):
     val (block, sent) = blockOf(Vector(row("refused", "open")))
+    dom.document.body.appendChild(block)
+    button(block).focus()
     button(block).click()
     button(block).click()
     assertEquals(sent().size, 1)
-    assert(button(block).disabled)
+    // A disabled button would drop focus to the page in a browser, and
+    // the redraw could not find the reader's place again.
+    assert(!button(block).disabled)
+    assertEquals(button(block).getAttribute("aria-disabled"), "true")
+    assertEquals(button(block).getAttribute("data-tip"), null)
+    assert(dom.document.activeElement eq button(block))
+    block.remove()
 
   test("an ask that covered other powers names them on a second line"):
     val (block, _) = blockOf(Vector(row("refused", "open",

@@ -92,9 +92,12 @@ private[frontend] object ConsentRequestsView:
     row.change match
       case "open" => change match
         case Some(send) => other.onclick = _ =>
-          // One command a click: the next redraw brings the button back
-          // (implementation ruling R20).
-          other.disabled = true
+          // One command a click: the button waits for the next redraw
+          // (implementation ruling R20). It waits as `aria-disabled`, not
+          // `disabled`: a browser takes focus from a disabled button, and
+          // the redraw finds the reader's place by the focused entry.
+          other.setAttribute("aria-disabled", "true")
+          other.onclick = null
           send(entry, !allowed)
         case None => other.disabled = true
       case "used" => HoverTip.withhold(other, s"${entry.requester} has " +
