@@ -25,6 +25,19 @@ class SelfExileSuite extends munit.FunSuite:
     assertEquals(SelfExile.price(citizen(1, 5).ready, p2), 3)
     assertEquals(SelfExile.price(citizen(5, 5).ready, p2), 5)
 
+  /** The cost the Act menu prints on a Citizen's self-exile button. */
+  private def badge(table: Table): Option[String] =
+    def read(option: DecisionOption): Option[String] = option match
+      case DecisionOption.Badged(_, words) => Some(words)
+      case DecisionOption.Grouped(inner, _) => read(inner)
+      case DecisionOption.Warned(inner, _) => read(inner)
+      case _ => None
+    read(MenuPlay.menuOptionFor(catalog, table.ready, ActionRef.SelfExile))
+
+  test("the menu button names the favor it costs"):
+    assertEquals(badge(citizen(1, 5)), Some("3 [favor]"))
+    assertEquals(badge(citizen(5, 5)), Some("5 [favor]"))
+
   test("a Citizen pays the Chancellor and becomes an Exile"):
     val table = citizen(4, 6)
     val before = Look(table.ready).player(p1).board.favor
