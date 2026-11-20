@@ -75,7 +75,6 @@ private[frontend] object ConsentRequestsView:
     item.setAttribute("role", "group")
     item.setAttribute("aria-label", asked)
     item.setAttribute("data-request-key", key(row))
-    item.setAttribute("data-change", row.change)
     item.appendChild(text("p", "consent-request-asked", asked))
     if row.alsoPowers.nonEmpty then
       item.appendChild(text("p", "consent-request-also",
