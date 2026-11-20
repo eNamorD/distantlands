@@ -204,6 +204,8 @@ private[frontend] final class GameTableShell(mount: dom.Element,
       inspector.showText(title, lines, origin, plate)
     case CardInspection.Request.Festival(title, lines, at, origin) =>
       inspector.showFestival(title, lines, at, origin)
+    case CardInspection.Request.FestivalMarker(origin) =>
+      inspector.showFestivalMarker(origin)
     case CardInspection.Request.Supply(panel, origin) =>
       inspector.showSupply(panel, origin)
     case CardInspection.Request.Cards(title, cards, origin) =>

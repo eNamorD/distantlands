@@ -46,15 +46,20 @@ class SiteRowSuite extends munit.FunSuite:
       Vector(MatLayout.cardSlot(1, 1, 0), MatLayout.cardSlot(1, 1, 1),
         MatLayout.relicSlot(1, 1, 2)).map(_.percentOf(row)))
 
-  test("it draws the pawns it is given, and the festival marker only on " +
-      "a festival site"):
+  test("it draws the pawns it is given"):
     assertEquals(all(woodsRowFillingItsBox(), ".site-pawns > *").size, 0)
     val pawn = ServerUiSupport.element("span", "pawn")
     assertEquals(all(woodsRowFillingItsBox(Vector(pawn)), ".site-pawns > *"),
       Vector(pawn))
-    assertEquals(all(woodsRowFillingItsBox(site =
+
+  test("only a festival site draws the festival marker, where MatLayout " +
+      "lays it over the cards in the row"):
+    assertEquals(all(woodsRowFillingItsBox(), ".festival-marker").size, 0)
+    val markers = all(woodsRowFillingItsBox(site =
       woodsWithTwoDenizenSlotsAndAKnownRelic.copy(festival = true)),
-      ".site-pawns > .festival-marker").size, 1)
+      ":scope > .festival-marker")
+    assertEquals(markers.map(box),
+      Vector(MatLayout.festivalMarker(1, 1).percentOf(row)))
 
   test("on the mat, the row stands where world() places Deep Woods, and " +
       "its face and cards still stand relative to the row"):

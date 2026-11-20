@@ -63,6 +63,8 @@ colors:
   die-attack: "#c0392b"
   die-defense: "#3d6fb4"
   die-round: "#9b59b6"
+  festival-teal: "#0f8285"
+  festival-rim: "#062b2c"
   player-purple: "#d9b8ff"
   player-blue: "#8ecbff"
   player-red: "#ffaaa5"
@@ -706,11 +708,19 @@ controls are 30px.
 - **First player badge**: the target detail badge's pill (`#a98b58` border,
   Bright Brass 0.72rem 700) with no fill, inline after the role on the first
   player's identity line, with no separator dot before it.
-- **Festival marker**: the first player badge's pill, at the end of a site's
-  pawn row (Sites). The Darkest Secret's Festival inspection repeats it, as
-  a picture with no hover, after the face's rules: "Festival marker: at Deep
-  Woods", or "beside the map" before the holder's first Rest and after a
-  ribbon removes it (a Challenge, a Raid or the Conspiracy).
+- **Festival marker**: the printed marker's plate: Festival Teal
+  (`festival-teal`) with a 2px Festival Rim (`festival-rim`) and a soft
+  drop shadow, its corners rounded and both side edges leaning right, the
+  right one more. Its title, "Festival Underway", is Georgia 400 in Bright
+  Cream capitals tracked 0.08em. On the map it is a band over a site's
+  cards (Sites). In the inspector it is the whole printed marker, about
+  three to one, or taller on a phone to hold its text: the title on two
+  lines, then its text at 0.85em. The
+  Darkest Secret's Festival inspection repeats it, as a 16em picture of the
+  title alone with no hover, after the face's rules, and under it "Festival
+  marker: at Deep Woods", or "beside the map" before the holder's first
+  Rest and after a ribbon removes it (a Challenge, a Raid or the
+  Conspiracy).
 - **Vision slot**: pill, `currentColor` border, 0.85em, no fill.
 - **Plan side**: 1em pill, `0 0.6em` padding, 0.75em; Discord fill for attack,
   Order fill for defense, a Discord-to-Order gradient for both; white text.
@@ -839,14 +849,19 @@ Fill. A slot of a region that holds no site is an empty frame after the
 region's sites (`.site-slot-empty`): the frame the mat prints, a 1px dashed
 Line-mid border, no fill and nothing inside. It is not an option and
 answers nothing; its label names it for a screen reader. The festival
-marker, on the site whose cards it lies over, ends the pawn row as a pill
-(`.festival-marker`): the First player badge's `#a98b58` border, no fill,
-Bright Brass 0.72rem 700, reading "Festival", with the Festival's power in
-its hover note. The pawn row keeps its line, so the marker moves nothing; on
-the zoomed-out map it shrinks to its initial, "F", its name kept as its
-label. It is a button,
-as a player's title pill is, so a keyboard reaches it and its note shows on
-focus; pressing it opens the power in the inspector. It is no board option.
+marker (`.festival-marker`) lies over the cards of the site it is at: a
+band across the middle of the three card slots, half a slot gap short of
+their ends and 18% of a card tall, where a denizen prints nothing. It
+covers the lower part of a relic. The title fills half the band's height,
+and the marker's text is its hover note. The tops and feet of the cards
+stay uncovered and open the cards. Zoomed out, a card's name grows to fill
+most of the card, so at a festival site the name moves to the card's top
+and the band thins to a bare strip 40% as tall, below the name and above
+the tokens; at the smallest scale the strip runs across the middle, above
+the card's initials. Its label names it there. It is a button, as a
+player's title pill is, so a keyboard reaches it and its note shows on
+focus; pressing it opens the printed marker in the inspector. It is no
+board option.
 
 ### Panes
 Four `section`s with a header strip (Pane Header fill, Line-pane bottom

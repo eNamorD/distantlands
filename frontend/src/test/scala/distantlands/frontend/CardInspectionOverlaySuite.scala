@@ -47,26 +47,42 @@ class CardInspectionOverlaySuite extends munit.FunSuite:
     dom.document.body.appendChild(node)
     node
 
-  test("the Festival's inspection shows a copy of the map's Festival pill " +
-      "and the site the marker lies at"):
+  test("the Festival's inspection shows a picture of the marker and the " +
+      "site it lies at"):
     val MountedOverlay(root, overlay) = mountedOverlay()
     overlay.showFestival("Banner of the Darkest Secret · Festival",
       Vector("**Action:** Place [secret] on the banner."), Some("Deep Woods"),
       focusableOpener())
-    val copies = all(root, ".card-overlay-details .festival-copy")
-    assertEquals(copies.map(_.textContent),
+    assertEquals(
+      all(root, ".card-overlay-details .festival-copy-where")
+        .map(_.textContent),
       Vector("Festival marker: at Deep Woods"))
-    val pill = all(root, ".festival-copy .festival-marker")
-    assertEquals(pill.map(_.textContent), Vector("Festival"))
-    // A copy to look at, not the map's control.
-    assertEquals(pill.map(_.tagName), Vector("SPAN"))
+    val plate = all(root, ".festival-copy .festival-plate")
+    assertEquals(plate.map(_.textContent), Vector("Festival Underway"))
+    // A picture to look at, not the map's control: the words beside it
+    // name it.
+    assertEquals(plate.map(_.tagName), Vector("DIV"))
+    assertEquals(plate.map(_.getAttribute("aria-hidden")), Vector("true"))
 
   test("before the first Rest the copy says the marker lies beside the map"):
     val MountedOverlay(root, overlay) = mountedOverlay()
     overlay.showFestival("Banner of the Darkest Secret · Festival",
       Vector.empty, None, focusableOpener())
-    assertEquals(all(root, ".festival-copy").map(_.textContent),
+    assertEquals(all(root, ".festival-copy-where").map(_.textContent),
       Vector("Festival marker: beside the map"))
+
+  test("the festival marker opens as printed: its title and its text on " +
+      "the plate, named for a screen reader"):
+    val MountedOverlay(root, overlay) = mountedOverlay()
+    overlay.showFestivalMarker(focusableOpener())
+    assertEquals(
+      all(root, ".card-overlay-body > .festival-plate .festival-plate-title")
+        .map(_.textContent),
+      Vector("Festival Underway"))
+    assertEquals(all(root, ".festival-plate .festival-plate-rule")
+      .map(_.textContent), Vector(FestivalMarker.Rule))
+    assertEquals(all(root, ".card-overlay").map(_.getAttribute("aria-label")),
+      Vector("Festival marker"))
 
   test("each power sits under its braid, with its modifier tab and its cost"):
     val waystation = CardDetails("169", "denizen", "Way Station",
