@@ -4,10 +4,14 @@ import distantlands.frontend.Dom.{all, one}
 import distantlands.model.PlayerColor
 import distantlands.protocol.{GameIntent => Intent}
 import org.scalajs.dom
+import scala.scalajs.js
 
 /** The requests list stays live while the overlay is open (reconsider
   * design, "Live while open"): redrawn from each projection, while the
-  * rest of the overlay ignores polls. Red rules the Narrow Pass. */
+  * rest of the overlay ignores polls. Red rules the Narrow Pass. jsdom
+  * lays nothing out, so the scroll test checks that the redraw writes the
+  * scroll back; that the reader's place holds on screen is the browser
+  * check's. */
 class ConsentRequestsLiveSuite extends munit.FunSuite:
   private val red = GamePlayer("red", "Red", "Exile", PlayerColor.Red)
   private val blue = GamePlayer("blue", "Blue", "Exile", PlayerColor.Blue)
@@ -113,12 +117,61 @@ class ConsentRequestsLiveSuite extends munit.FunSuite:
       assert(one(open.root, ".consent-requests").hasAttribute("hidden"))
     }
 
-  test("the reader's scroll is kept across a redraw"):
+  test("a redraw puts the reader's scroll back after it rebuilds the " +
+      "list"):
     withOverlay(tableWhereRedAnswered(row("refused", "open"))) { open =>
       val body = one(open.root, ".card-overlay-body")
-      body.scrollTop = 40
+      // jsdom lays nothing out and never moves a scroll, so the test
+      // watches the writes: the browser drops the scroll when the list is
+      // emptied, and the redraw must write it back.
+      var top = 40.0
+      var writes = Vector.empty[Double]
+      js.Dynamic.global.Object.defineProperty(body, "scrollTop",
+        js.Dynamic.literal(configurable = true,
+          get = (() => top): js.Function0[Double],
+          set = ((value: Double) => { writes :+= value; top = value })
+            : js.Function1[Double, Unit]))
       open.snapshot(tableWhereRedAnswered(row("allowed", "open")))
-      assertEquals(body.scrollTop, 40.0)
+      assertEquals(writes, Vector(40.0))
+    }
+
+  test("each overlay that draws the column keeps its list live: a ruled " +
+      "card, the Festival banner and the festival marker"):
+    val later = tableWhereRedAnswered(row("refused", "open"))
+    def shownAfterASnapshot(show: (CardInspectionOverlay, ConsentGrid,
+        dom.html.Element) => Unit): Vector[String] =
+      val root = dom.document.createElement("div")
+      dom.document.body.appendChild(root)
+      val overlay = new CardInspectionOverlay(root)
+      val opener = dom.document.createElement("button")
+        .asInstanceOf[dom.html.Element]
+      dom.document.body.appendChild(opener)
+      val grid = SitePowerLinks.of(tableWhereRedAnswered(), None).grid(pass)
+        .getOrElse(fail("no grid"))
+      show(overlay, grid, opener)
+      overlay.showConsentRequests(SitePowerLinks.of(later, None), 1L, None)
+      val asked = all(root, ".consent-request-asked").map(_.textContent)
+      overlay.dispose()
+      root.remove()
+      opener.remove()
+      asked
+    val expected = Vector("Blue asked to select Deep Woods")
+    assertEquals(shownAfterASnapshot((overlay, grid, opener) =>
+      overlay.showRuled(CardDetails("113", "denizen", "Secret Police"), grid,
+        opener)), expected)
+    assertEquals(shownAfterASnapshot((overlay, grid, opener) =>
+      overlay.showFestival("Festival", Vector("Printed text."), None,
+        Some(grid), opener)), expected)
+    assertEquals(shownAfterASnapshot((overlay, grid, opener) =>
+      overlay.showFestivalMarker(Some(grid), opener)), expected)
+
+  test("control lost while the overlay is open disables the open " +
+      "entry's button, though the rows are the same"):
+    withOverlay(tableWhereRedAnswered(row("refused", "open"))) { open =>
+      assert(!open.change.disabled)
+      open.overlay.showConsentRequests(SitePowerLinks.of(
+        tableWhereRedAnswered(row("refused", "open")), None), 1L, None)
+      assert(open.change.disabled)
     }
 
   test("the same rows are not redrawn, so an open hover note survives a " +
