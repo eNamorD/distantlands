@@ -12,15 +12,15 @@ private[frontend] object WalkerSelectionPanels:
     * own case says which draft shape to expect, and a draft of another shape
     * (which `WalkerSelectionDraft.reconcile` never builds) renders nothing.
     */
-  def render(surface: ParkedDecision.Surface.Selection,
+  def render(surface: ParkedDecision.Surface.Selection, value: GameProjection,
       selection: Option[WalkerSelectionDraft], canControl: Boolean,
       panel: dom.Element, controls: TableControls): Unit =
     val draft = selection.filter(_.decisionId == surface.decision.decisionId)
     surface.query match
       case many: DecisionQueryState.ChooseMany => draft
         .collect { case value: WalkerChooseManyDraft => value }
-        .foreach(renderMany(surface.decision, many, _, canControl, panel,
-          controls))
+        .foreach(renderMany(surface.decision, many, _, value, canControl,
+          panel, controls))
       case amount: DecisionQueryState.ChooseAmount => draft
         .collect { case value: WalkerAmountDraft => value }
         .foreach(renderAmount(surface.decision, amount, _, canControl,
@@ -28,7 +28,10 @@ private[frontend] object WalkerSelectionPanels:
 
   private def renderMany(decision: WalkerDecisionState,
       query: DecisionQueryState.ChooseMany, draft: WalkerChooseManyDraft,
-      canControl: Boolean, panel: dom.Element, controls: TableControls): Unit =
+      value: GameProjection, canControl: Boolean, panel: dom.Element,
+      controls: TableControls): Unit =
+    val ask = ConsentAsking.asker(decision.decisionId, value, canControl,
+      controls)
     // The roll first, as the choose-amount panel draws it: a reroll or
     // modifier question is about the dice already rolled.
     WalkerPanelSupport.rollFeedback(decision, panel)
@@ -52,7 +55,13 @@ private[frontend] object WalkerSelectionPanels:
       toggle.setAttribute("data-option-id", item)
       toggle.setAttribute("aria-pressed", draft.selected.contains(item).toString)
       toggle.disabled = !canControl
-      toggle.onclick = _ => controls.stage(Draft.Selection(draft.toggle(item)))
+      // An askable option cannot be toggled yet: pressing it asks its
+      // granter, and a grant opens it as a choosable one.
+      if option.state == "askable" then
+        toggle.classList.add("walker-choice-askable")
+        toggle.onclick = _ => ask(option, toggle)
+      else toggle.onclick = _ =>
+        controls.stage(Draft.Selection(draft.toggle(item)))
       rows.appendChild(toggle)
       option.state match
         case "locked" =>

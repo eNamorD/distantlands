@@ -70,8 +70,8 @@ class SuitGlyphSuite extends munit.FunSuite:
       BoardSelectionContext("game", "red", 9), Some(parked))
     val panel = dom.document.createElement("div")
     WalkerSelectionPanels.render(
-      ParkedDecision.Surface.Selection(parked, query), draft,
-      canControl = true, panel, new RecordingControls())
+      ParkedDecision.Surface.Selection(parked, query),
+      TestProjections.actingProjection(), draft, canControl = true, panel, new RecordingControls())
     val toggles = Dom.all(panel, ".walker-many-option")
     assertEquals(toggles.map(_.textContent), Vector("Discord", "Beast"))
     assertEquals(toggles.flatMap(glyphs),
