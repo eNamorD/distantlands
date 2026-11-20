@@ -128,8 +128,8 @@ private[frontend] object ParkedDecision:
         surface, value, canControl, panel, controls)
       case surface: Surface.ChooseOne => WalkerPanelSupport.renderChooseOnePanel(
         surface, value, canControl, panel, controls)
-      case surface: Surface.Menu => MenuPanel.render(surface, canControl,
-        panel, controls)
+      case surface: Surface.Menu => MenuPanel.render(surface, value,
+        canControl, panel, controls)
       case surface: Surface.Partition => WalkerPanelSupport.renderPartitionPanel(
         surface, drafts.partition, presentation.playerId, canControl, panel,
         controls)
