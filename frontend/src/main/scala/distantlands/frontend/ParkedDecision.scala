@@ -142,7 +142,7 @@ private[frontend] object ParkedDecision:
       case surface: Surface.Gathering => GatheringPanel.render(surface,
         presentation.playerId, canControl, panel, controls)
       case surface: Surface.Selection => WalkerSelectionPanels.render(
-        surface, drafts.selection, canControl, panel, controls)
+        surface, value, drafts.selection, canControl, panel, controls)
       case surface: Surface.Inspect => InspectPanel.render(
         surface, canControl, panel, controls)
       case surface: Surface.BoardDecision => BoardDecisionPanel.render(
