@@ -102,12 +102,26 @@ class ConsentStateSuite extends munit.FunSuite:
       redOnPass.copy(answer = Some(false)), greenOnPolice)))
 
   test("a request joins the history only once it settles, and a " +
-      "withdrawn one never does"):
+      "withdrawn one that nobody refused joins nothing"):
     val partial = accepted(waitingOn(redOnPass, greenOnPolice)
       .answered(red, granted = true, turn))
     assertEquals(partial.historyAt(turn), Vector.empty)
     assertEquals(accepted(partial.withdrawn(blue)).historyAt(turn),
       Vector.empty)
+
+  test("a withdrawn request leaves its refused alternative in the " +
+      "history, as that refuser's to change (R14)"):
+    val redOrGreen = waitingOn(redOnPass.copy(alternative = true),
+      greenOnPolice.copy(alternative = true))
+    val refused = accepted(redOrGreen.answered(red, granted = false, turn))
+    assertEquals(refused.historyAt(turn), Vector.empty)
+    val withdrawn = accepted(refused.withdrawn(blue))
+    assertEquals(withdrawn.historyAt(turn), Vector(request(
+      redOnPass.copy(alternative = true, answer = Some(false)))))
+    val changed = accepted(withdrawn.reconsidered(red, blue,
+      "travel.destination", woods, granted = true, turn))
+    assertEquals(changed.answers.get(key(pass)),
+      Some(ConsentAnswer.Granted.by(red)))
 
   test("the history belongs to its turn: another turn reads none, and a " +
       "request settling in a new turn starts it empty"):

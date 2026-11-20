@@ -243,11 +243,17 @@ final case class ConsentState(
 
   /** The requester takes their unanswered request back; no grant is
     * remembered (ruling 14). An alternative's refusal given before it
-    * stays. */
+    * stays, and joins the history as an entry of the refused asks alone,
+    * so it is its refuser's to change (reconsider design, implementation
+    * ruling R14). It was remembered in `turn`, which is the turn it joins. */
   def withdrawn(requester: PlayerId): Either[OathViolation, ConsentState] =
-    if pending.exists(_.requester == requester) then Right(copy(pending = None))
-    else Left(OathViolation.InvalidEventOrder(
-      s"${requester.value} has no consent request to withdraw"))
+    pending.filter(_.requester == requester) match
+      case Some(request) =>
+        val refused = refusals(request)
+        Right(copy(pending = None, history = turn.filter(_ =>
+          refused.asks.nonEmpty).fold(history)(joined(refused, _))))
+      case None => Left(OathViolation.InvalidEventOrder(
+        s"${requester.value} has no consent request to withdraw"))
 
   /** `granter` changes the answer they gave about `requester` choosing
     * `target` at `decisionId` this turn (reconsider design, rulings 20 and

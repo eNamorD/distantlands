@@ -123,8 +123,9 @@ private[application] final class ConsentDesk(rules: OathRules,
     * request this turn; for an automatic power's answer; when `granter`
     * no longer rules a power they were asked about, which also refuses
     * the asks nobody rules (a payer's, an Imperial law's); while the
-    * answer is locked; when the answer is already that; and while a
-    * request about the same option waits (implementation ruling R8). */
+    * answer is locked; and when the answer is already that. Before all
+    * but the first of these, it is refused while a request about the same
+    * option waits (implementation rulings R8 and R14). */
   def reconsider(state: OathState, granter: PlayerId, requester: PlayerId,
       decisionId: String, target: DecisionOptionRef, allow: Boolean)
       : Result =
@@ -132,6 +133,13 @@ private[application] final class ConsentDesk(rules: OathRules,
       OathViolation.ConsentUnavailable(reason)
     for
       ready <- playing(state)
+      // First, so a refuser whose request still waits on another granter
+      // reads why (implementation ruling R14): their refusal joins the
+      // history only when the request ends.
+      _ <- Either.cond(!ready.consent.pending.exists(waiting =>
+          waiting.requester == requester &&
+            waiting.decisionId == decisionId && waiting.target == target),
+        (), refuse("a consent request about that option is waiting"))
       found <- ready.consent.asked(granter, requester, decisionId, target,
         ConsentTurn.of(ready)).toRight(refuse(s"${granter.value} answered " +
         "no consent request about that option this turn"))
@@ -148,10 +156,6 @@ private[application] final class ConsentDesk(rules: OathRules,
         refuse(s"${requester.value} has acted on this consent"))
       _ <- Either.cond(!ask.answer.contains(allow), (),
         refuse(s"${granter.value}'s answer is already that"))
-      _ <- Either.cond(!ready.consent.pending.exists(waiting =>
-          waiting.requester == requester &&
-            waiting.decisionId == decisionId && waiting.target == target),
-        (), refuse("a consent request about that option is waiting"))
     yield Vector(ConsentReconsidered(granter, requester, decisionId, target,
       allow))
 

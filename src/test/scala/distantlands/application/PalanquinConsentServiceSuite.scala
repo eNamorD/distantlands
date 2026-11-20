@@ -135,6 +135,30 @@ class PalanquinConsentServiceSuite extends munit.FunSuite:
     assertEquals(after.pawn(p3), coast)
     assertEquals(after.favor(p3), 1)
 
+  test("a ruler who refused while the target is still asked cannot " +
+      "change it until the request ends; after a withdrawal the refusal " +
+      "is theirs to change (reconsider rulings R8 and R14)"):
+    val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
+    val no = answering(service, asking(service, Vector.empty), p2,
+      ConsentChoice.No)
+    val allow = Commands.reconsiderConsent(p2, p1,
+      Palanquin.destinationDecisionId, coastRef, allow = true)
+    assertEquals(service.handle(gameId, no.nextSequence, allow),
+      Left(GameApplicationError.CommandRejected(
+        OathViolation.ConsentUnavailable(
+          "a consent request about that option is waiting"))))
+    val withdrawn = accepted(service.handle(gameId, no.nextSequence,
+      Commands.undo(p1)))
+    val waived = accepted(service.handle(gameId, withdrawn.nextSequence,
+      allow))
+    val sent = accepted(service.handle(gameId, waived.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(
+        Palanquin.destinationDecisionId,
+        DecisionAnswer.ChooseOneAnswer(coastRef)))))
+    val after = Look(Outcomes.ready(sent.state))
+    assertEquals(after.pawn(p3), coast)
+    assertEquals(after.favor(p3), 1)
+
   test("the log writes one line per kind of ask"):
     val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
     asking(service, Vector.empty)
