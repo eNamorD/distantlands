@@ -44,7 +44,9 @@ class StylesheetConsentGridSuite extends munit.FunSuite:
 
   test("each layout selector opens one rule, so no later rule overrides " +
       "what this suite reads"):
-    Vector(".consent-grid", ".consent-grid-heading", ".consent-grid-row",
+    // The column itself has a second rule, for a phone's width (R16).
+    assertEquals(rulesOpenedBy(".consent-grid"), 2)
+    Vector(".consent-grid-heading", ".consent-grid-row",
       ".consent-grid-player", ".consent-grid-choices",
       ".consent-grid-choices .consent-grid-choice", ".consent-requests",
       ".consent-request-list", ".consent-request", ".consent-request-asked",
@@ -138,11 +140,14 @@ class StylesheetConsentGridSuite extends munit.FunSuite:
     assert(answer.contains("align-items: center;"), answer)
     assert(answer.contains("gap: 8px;"), answer)
 
-  test("alone on its line the column fills it, up to a reading measure " +
+  test("on a phone, alone on its line, the column fills it up to a " +
+      "reading measure; beside the details it keeps its content's width " +
       "(R16)"):
     val column = rule(".consent-grid")
-    assert(column.contains("flex: 1 1 17rem;"), column)
-    assert(column.contains("max-width: 22rem;"), column)
+    assert(!column.contains("flex:"), column)
+    assert(!column.contains("max-width"), column)
+    assert(css.contains("@media (max-width: 620px) {\n" +
+      "  .consent-grid { flex: 1 1 17rem; max-width: 22rem; }\n}"))
 
   test("the change button keeps the focus ring of the settings"):
     assert(css.contains(".overlay-confirm button:focus-visible, " +

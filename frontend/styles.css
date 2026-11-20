@@ -2323,9 +2323,14 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .overlay-confirm { display: grid; grid-template-columns: auto auto;
   justify-content: start; gap: 12px; }
 .overlay-question { grid-column: 1 / -1; margin: 0; }
-.consent-grid { margin-top: 16px; display: grid; flex: 1 1 17rem;
-  max-width: 22rem; grid-template-columns: minmax(0, 1fr); gap: 12px;
-  font-size: 0.82em; }
+.consent-grid { margin-top: 16px; display: grid;
+  grid-template-columns: minmax(0, 1fr); gap: 12px; font-size: 0.82em; }
+/* Beside the details the column keeps its content's width. On a phone it
+   stands alone on its line, and fills it up to a reading measure, so the
+   requests' sentences have the line's width (implementation ruling R16). */
+@media (max-width: 620px) {
+  .consent-grid { flex: 1 1 17rem; max-width: 22rem; }
+}
 .consent-grid-heading { margin: 0; color: var(--brass-label); }
 /* A row is a player's name over that player's three settings (reconsider
    design, slice 1). The settings are equal thirds of the column, so the
