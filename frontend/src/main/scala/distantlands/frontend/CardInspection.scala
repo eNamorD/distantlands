@@ -28,6 +28,9 @@ private[frontend] object CardInspection:
       * it lies beside the map. */
     final case class Festival(title: String, lines: Vector[String],
         at: Option[String], origin: dom.html.Element) extends Request
+    /** The festival marker as printed: its title and its text on the
+      * plate. */
+    final case class FestivalMarker(origin: dom.html.Element) extends Request
     /** A board's Supply: the bank, the Supply track, then the Rest. */
     final case class Supply(panel: SupplyAtRest.Panel,
         origin: dom.html.Element) extends Request
@@ -68,6 +71,9 @@ private[frontend] object CardInspection:
   def openFestival(title: String, lines: Vector[String], at: Option[String],
       origin: dom.html.Element): Unit =
     handler.foreach(_(Request.Festival(title, lines, at, origin)))
+
+  def openFestivalMarker(origin: dom.html.Element): Unit =
+    handler.foreach(_(Request.FestivalMarker(origin)))
 
   def openSupply(panel: SupplyAtRest.Panel, origin: dom.html.Element): Unit =
     handler.foreach(_(Request.Supply(panel, origin)))

@@ -255,7 +255,7 @@ private[frontend] object WorldBoardRenderer:
 
   /** One site's row on the mat (Chronicle Details design, slice 3): the
     * `article.site` placed at its row inside `within`, then its face,
-    * heading, cost badge, `pawns`, festival marker and cards, each placed
+    * heading, cost badge, `pawns`, cards and festival marker, each placed
     * relative to the row `MatLayout.siteRow(column, row)`. `world()`
     * passes the mat; the Chronicle Details overlay passes the row itself,
     * so the row fills a box of its ratio. `links` opens the site's powers;
@@ -286,11 +286,14 @@ private[frontend] object WorldBoardRenderer:
     badged(control, siteKeys, options)
     val pawnBox = element("div", "site-pawns")
     pawns.foreach(pawnBox.appendChild)
-    if site.festival then pawnBox.appendChild(festivalMarker)
     control.appendChild(pawnBox)
     val details = siteDetails(site, options, links)
     placeCards(details, column, row, rowRect)
     control.appendChild(details)
+    // Last, so it lies over the cards.
+    if site.festival then
+      val band = MatLayout.festivalMarker(column, row)
+      control.appendChild(place(FestivalMarker.band(band), band, rowRect))
     control
 
   /** A pawn on the map. Both forms are in the DOM and the map's scale picks
@@ -396,23 +399,6 @@ private[frontend] object WorldBoardRenderer:
     node.setAttribute("aria-controls", "chronicle-details")
     node.onclick = _ => ChronicleDetails.open(node)
     node
-
-  /** The festival marker over a site's cards (Foundations design, slice
-    * 6): a pill naming it, its power in its hover note. It is a button, as
-    * a player's title pill is, so a keyboard reaches it and its note shows
-    * on focus, and pressing it opens the power in the inspector. It is no
-    * board option. */
-  private def festivalMarker: dom.Element =
-    val marker = button("Festival", "festival-marker")
-    marker.setAttribute("aria-label", "Festival marker")
-    HoverTip.set(marker, festivalNote)
-    marker.onclick = _ => CardInspection.openText("Festival marker",
-      Vector(festivalNote), marker)
-    marker
-
-  private[frontend] val festivalNote: String = "Festival: enemies of the " +
-    "Darkest Secret's holder cannot place resources on these cards or use " +
-    "their powers, unless they're persistent powers."
 
   /** A site slot of the region `regionName` that holds no site: a frame
     * with nothing in it, and nothing to choose or inspect. */

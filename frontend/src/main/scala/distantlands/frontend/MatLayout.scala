@@ -82,6 +82,17 @@ private[frontend] object MatLayout:
   def relicSlot(column: Int, row: Int, slot: Int): MatRect =
     cardSlot(column, row, slot).copy(h = CardW)
 
+  /** The festival marker lying over a site's cards: a band across the
+    * middle of its three slots, half a gap short of their ends, where a
+    * denizen prints nothing (its name and marks are at its top, its tokens
+    * at its foot). */
+  def festivalMarker(column: Int, row: Int): MatRect =
+    val first = cardSlot(column, row, 0)
+    val last = cardSlot(column, row, SlotsPerSite - 1)
+    val h = CardH * 0.18
+    MatRect(first.x + SlotGap / 2, first.y + (CardH - h) / 2,
+      last.right - first.x - SlotGap, h)
+
   /** A site's frame and its three slots together: one site's whole row. */
   def siteRow(column: Int, row: Int): MatRect =
     val frame = siteFrame(column, row)

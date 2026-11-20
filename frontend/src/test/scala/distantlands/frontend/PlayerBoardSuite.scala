@@ -268,6 +268,8 @@ class PlayerBoardSuite extends munit.FunSuite:
       case CardInspection.Request.Text(title, _, _, _) => opened = opened :+ title
       case CardInspection.Request.Festival(title, _, _, _) =>
         opened = opened :+ title
+      case CardInspection.Request.FestivalMarker(_) =>
+        opened = opened :+ FestivalMarker.Title
       case CardInspection.Request.Supply(_, _) =>
         opened = opened :+ SupplyAtRest.title
       case CardInspection.Request.Card(card, _) => opened = opened :+ card.name
