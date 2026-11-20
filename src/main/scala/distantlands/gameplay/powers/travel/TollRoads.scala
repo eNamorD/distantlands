@@ -264,11 +264,15 @@ case object TollRoads extends ContributingPower:
       // A sent Travel asks nothing (catalog batch 8, slice 15, ruling 11):
       // its sender settled the toll before sending it. A sender who may
       // let the traveller off and waived it says so in the entry. With
-      // nobody to let them off, the traveller agreed to burn.
+      // nobody to let them off, the traveller agreed to burn. When the
+      // traveller agreed to pay and the one who may let them off also
+      // gave consent, as a changed answer can, the waiver wins and nobody
+      // pays (reconsider design, implementation ruling R12).
       case _ if sent(ctx.state, route) =>
         PayOrAsk.letOffBy(ctx.state, ruler, route.player) match
           case Some(owner) if !agreed(ctx.state, route) ||
-              waivedBySender(ctx.state, route) =>
+              waivedBySender(ctx.state, route) ||
+              waivedBy(ctx.state, route, owner) =>
             TravelRoute.beforeMove(operations, Vector(Note(id, _ =>
               Some(TollRoads.waived(PowerSourceRef.Card(cardId),
                 NoteArg.Player(route.player), NoteArg.Player(owner))))))
@@ -301,6 +305,13 @@ case object TollRoads extends ContributingPower:
   private def waivedBySender(ready: ReadyGame, route: TravelRoute.PawnMove)
       : Boolean = ready.game.current.walkerEntry.exists(
     _.startArgs.contains(TollRoads.free(route.destination)))
+
+  /** Whether `owner`, who may let the traveller off, gave consent to this
+    * Travel without paying this turn. */
+  private def waivedBy(ready: ReadyGame, route: TravelRoute.PawnMove,
+      owner: PlayerId): Boolean =
+    ready.consent.answer(TollRoads.freeKey(route.player, route.destination),
+      Some(owner), ConsentTurn.of(ready)).contains(ConsentAnswer.Granted)
 
   private def agreed(ready: ReadyGame, route: TravelRoute.PawnMove)
       : Boolean =

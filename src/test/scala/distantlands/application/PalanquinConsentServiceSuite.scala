@@ -114,6 +114,27 @@ class PalanquinConsentServiceSuite extends munit.FunSuite:
     assertEquals(projector.project(gameId, no.loaded, p1).consentWaiting,
       Some(ConsentWaitingProjection(Vector("p2"))))
 
+  test("after the payer agreed and the move was undone, the ruler's late " +
+      "waiver wins: nobody pays (reconsider ruling R12)"):
+    val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
+    val no = answering(service, asking(service, Vector.empty), p2,
+      ConsentChoice.No)
+    val yes = answering(service, no, p3, ConsentChoice.Yes)
+    assertEquals(Look(Outcomes.ready(yes.state)).favor(p3), 0)
+    val undone = accepted(service.handle(gameId, yes.nextSequence,
+      Commands.undo(p1)))
+    assertEquals(Look(Outcomes.ready(undone.state)).favor(p3), 1)
+    val waived = accepted(service.handle(gameId, undone.nextSequence,
+      Commands.reconsiderConsent(p2, p1, Palanquin.destinationDecisionId,
+        coastRef, allow = true)))
+    val sent = accepted(service.handle(gameId, waived.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(
+        Palanquin.destinationDecisionId,
+        DecisionAnswer.ChooseOneAnswer(coastRef)))))
+    val after = Look(Outcomes.ready(sent.state))
+    assertEquals(after.pawn(p3), coast)
+    assertEquals(after.favor(p3), 1)
+
   test("the log writes one line per kind of ask"):
     val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
     asking(service, Vector.empty)
