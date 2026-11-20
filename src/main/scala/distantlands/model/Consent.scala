@@ -167,6 +167,25 @@ final case class ConsentState(
   def historyAt(now: ConsentTurn): Vector[ConsentRequest] =
     if turn.contains(now) then history else Vector.empty
 
+  /** The settled request of this turn in which `granter` answered about
+    * `requester` choosing `target` at `decisionId`, with their ask
+    * (reconsider design, "State"). `joined` keeps it the only one. */
+  def asked(granter: PlayerId, requester: PlayerId, decisionId: String,
+      target: DecisionOptionRef, now: ConsentTurn)
+      : Option[(ConsentRequest, ConsentAsk)] =
+    historyAt(now).iterator
+      .filter(about(_, requester, decisionId, target))
+      .flatMap(entry => entry.asks.find(ask => ask.granter == granter &&
+        ask.answer.nonEmpty).map(entry -> _)).nextOption()
+
+  /** Whether a request settled this turn granted `requester` `target` at
+    * `decisionId`: what a use mark is set on (reconsider design, ruling
+    * 21). */
+  def grantedTo(requester: PlayerId, decisionId: String,
+      target: DecisionOptionRef, now: ConsentTurn): Boolean =
+    historyAt(now).exists(entry =>
+      about(entry, requester, decisionId, target) && entry.granted)
+
   def requested(request: ConsentRequest): Either[OathViolation, ConsentState] =
     if pending.nonEmpty then Left(OathViolation.InvalidEventOrder(
       "a consent request is already waiting"))
@@ -214,6 +233,42 @@ final case class ConsentState(
     if pending.exists(_.requester == requester) then Right(copy(pending = None))
     else Left(OathViolation.InvalidEventOrder(
       s"${requester.value} has no consent request to withdraw"))
+
+  /** `granter` changes the answer they gave about `requester` choosing
+    * `target` at `decisionId` this turn (reconsider design, rulings 20 and
+    * 22). The entry's ask takes the new answer, and the keys of that
+    * ask's powers are remembered as `granter` now answers them.
+    *
+    * A required refusal wrote every key of its request as the refuser's
+    * (ruling 9), so a change to a grant takes that refusal off the
+    * request's other keys. When the change makes the request granted, a
+    * co-granter's grant that the refusal kept from being remembered is
+    * remembered for its keys, unless one already holds an answer
+    * (implementation ruling R9). Preferences and a waiting request are
+    * untouched (ruling 24). Fails when `granter` answered no such request
+    * at `now`. */
+  def reconsidered(granter: PlayerId, requester: PlayerId,
+      decisionId: String, target: DecisionOptionRef, granted: Boolean,
+      now: ConsentTurn): Either[OathViolation, ConsentState] =
+    asked(granter, requester, decisionId, target, now) match
+      case None => Left(OathViolation.InvalidEventOrder(
+        s"${granter.value} answered no such consent request this turn"))
+      case Some((entry, ask)) =>
+        val changed = entry.copy(asks = entry.asks.map(other =>
+          if other.granter == granter then other.copy(answer = Some(granted))
+          else other))
+        val own = entry.keysOf(ask)
+        val mine = (if granted then ConsentAnswer.Granted
+          else ConsentAnswer.Refused).by(granter)
+        val kept = if !granted then answers else answers.filterNot(
+          (key, answer) => entry.keys.contains(key) && !own.contains(key) &&
+            answer == ConsentAnswer.Refused.by(granter))
+        val restored = if granted && changed.granted then
+          answersOf(changed).filterNot((key, _) => kept.contains(key))
+        else Vector.empty
+        Right(copy(answers = kept ++ restored ++ own.map(_ -> mine),
+          history = history.map(other =>
+            if other == entry then changed else other)))
 
   def preferenceSet(granter: PlayerId, power: PowerId, requester: PlayerId,
       setting: ConsentSetting): ConsentState =

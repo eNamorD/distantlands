@@ -141,6 +141,116 @@ class ConsentStateSuite extends munit.FunSuite:
       turn))
     assertEquals(granted.carried.historyAt(turn), granted.historyAt(turn))
 
+  private val destination = "travel.destination"
+  private def refusedByRedAlone: ConsentState =
+    accepted(waitingOn(redOnPass).answered(red, granted = false, turn))
+  private def grantedByRedAndGreen: ConsentState =
+    accepted(accepted(waitingOn(redOnPass, greenOnPolice)
+      .answered(red, granted = true, turn)).answered(green, granted = true,
+      turn))
+
+  test("a refusal changed to a grant is remembered as the changer's " +
+      "grant, in the answers and in the history"):
+    val changed = accepted(refusedByRedAlone.reconsidered(red, blue,
+      destination, woods, granted = true, turn))
+    assertEquals(changed.answer(key(pass), Some(red), turn),
+      Some(ConsentAnswer.Granted))
+    assertEquals(changed.historyAt(turn),
+      Vector(request(redOnPass.copy(answer = Some(true)))))
+    assert(changed.grantedTo(blue, destination, woods, turn))
+
+  test("a grant changed to a refusal rewrites the changer's own keys " +
+      "only"):
+    val changed = accepted(grantedByRedAndGreen.reconsidered(red, blue,
+      destination, woods, granted = false, turn))
+    assertEquals(changed.answers.get(key(pass)),
+      Some(ConsentAnswer.Refused.by(red)))
+    assertEquals(changed.answers.get(key(police)),
+      Some(ConsentAnswer.Granted.by(green)))
+    assertEquals(changed.historyAt(turn).map(_.asks.map(_.answer)),
+      Vector(Vector(Some(false), Some(true))))
+    assert(!changed.grantedTo(blue, destination, woods, turn))
+
+  test("with several granters, a change to a grant takes the changer's " +
+      "refusal off the other granter's keys, so only that granter is " +
+      "still to ask"):
+    val refused = accepted(waitingOn(redOnPass, greenOnPolice)
+      .answered(red, granted = false, turn))
+    assertEquals(refused.answers.get(key(police)),
+      Some(ConsentAnswer.Refused.by(red)))
+    val changed = accepted(refused.reconsidered(red, blue, destination,
+      woods, granted = true, turn))
+    assertEquals(changed.answers.get(key(pass)),
+      Some(ConsentAnswer.Granted.by(red)))
+    assertEquals(changed.answers.get(key(police)), None)
+    assertEquals(changed.historyAt(turn).map(_.asks.map(_.answer)),
+      Vector(Vector(Some(true), None)))
+    assert(!changed.grantedTo(blue, destination, woods, turn))
+
+  test("a change that makes the request granted remembers a co-granter's " +
+      "grant that the refusal had kept back"):
+    val refused = accepted(accepted(waitingOn(redOnPass, greenOnPolice)
+      .answered(green, granted = true, turn)).answered(red, granted = false,
+      turn))
+    assertEquals(refused.answers.get(key(police)),
+      Some(ConsentAnswer.Refused.by(red)))
+    val changed = accepted(refused.reconsidered(red, blue, destination,
+      woods, granted = true, turn))
+    assertEquals(changed.answers.get(key(pass)),
+      Some(ConsentAnswer.Granted.by(red)))
+    assertEquals(changed.answers.get(key(police)),
+      Some(ConsentAnswer.Granted.by(green)))
+    assert(changed.grantedTo(blue, destination, woods, turn))
+    // The remembered grant is Green's own to change (R9).
+    val greenRefuses = accepted(changed.reconsidered(green, blue,
+      destination, woods, granted = false, turn))
+    assertEquals(greenRefuses.answers.get(key(police)),
+      Some(ConsentAnswer.Refused.by(green)))
+    assertEquals(greenRefuses.answers.get(key(pass)),
+      Some(ConsentAnswer.Granted.by(red)))
+
+  test("a change leaves the preferences and the waiting request alone"):
+    val set = refusedByRedAlone.preferenceSet(red, pass, blue,
+      ConsentSetting.Never)
+    val changed = accepted(set.reconsidered(red, blue, destination, woods,
+      granted = true, turn))
+    assertEquals(changed.preferences, set.preferences)
+    assertEquals(changed.pending, set.pending)
+
+  test("only the granter who answered changes an entry, for that " +
+      "requester, decision and option, and nothing is found once the " +
+      "turn has ended"):
+    val refused = refusedByRedAlone
+    val other = DecisionOptionRef.Site(SiteId("site:dunes"))
+    assert(refused.reconsidered(green, blue, destination, woods,
+      granted = true, turn).isLeft)
+    assert(refused.reconsidered(red, green, destination, woods,
+      granted = true, turn).isLeft)
+    assert(refused.reconsidered(red, blue, "campaign.targets", woods,
+      granted = true, turn).isLeft)
+    assert(refused.reconsidered(red, blue, destination, other,
+      granted = true, turn).isLeft)
+    assert(refused.reconsidered(red, blue, destination, woods,
+      granted = true, ConsentTurn(1, red)).isLeft)
+    assertEquals(refused.asked(red, blue, destination, woods,
+      ConsentTurn(1, red)), None)
+
+  test("a granter whose ask closed unanswered has no entry to change"):
+    val refused = accepted(waitingOn(redOnPass, greenOnPolice)
+      .answered(red, granted = false, turn))
+    assertEquals(refused.asked(green, blue, destination, woods, turn), None)
+
+  test("after a later request took over a granter's ask, a change " +
+      "reaches the later entry"):
+    val first = accepted(waitingOn(redOnPass).answered(red, granted = true,
+      turn))
+    val second = accepted(accepted(first.requested(request(redOnPass)))
+      .answered(red, granted = false, turn))
+    val changed = accepted(second.reconsidered(red, blue, destination,
+      woods, granted = true, turn))
+    assertEquals(changed.historyAt(turn),
+      Vector(request(redOnPass.copy(answer = Some(true)))))
+
   test("only an asked granter answers, and only the requester withdraws"):
     val open = waitingOn(redOnPass)
     assert(open.answered(green, granted = true, turn).isLeft)
