@@ -973,8 +973,10 @@ wears the system's chrome. An element asks for one with `HoverTip.set`
 A power the viewer rules opens in the card overlay with their consent
 column after the details (consent design, ruling 16; reconsider design):
 beside them where the overlay is wide enough, under them where it is
-not. The column carries a 16px top margin on top of the overlay body's
-gap, and reads at the details column's size, `0.82em`.
+not. Beside the details it keeps its content's width; alone on its line
+it fills the line up to 22rem. The column carries a 16px top margin on
+top of the overlay body's gap, and reads at the details column's size,
+`0.82em`.
 - **Heading:** "Who may ignore this power", in Brass Label, 12px over
   the first row.
 - **Preference row:** one per other player, 12px apart. The player's name
@@ -988,8 +990,28 @@ gap, and reads at the details column's size, `0.82em`.
   the column's one selected thing. Without control the settings wear
   the Disabled face and answer no hover; the setting in force stays
   pressed under it. Where the main pointer is coarse they grow to 44px.
-- The column uses no amber: consent amber stays on the option a player
-  may ask about.
+- **Requests list:** under the rows, absent while the power has no
+  requests this turn. Its heading, "Requests this turn", is the rows'
+  heading again, 20px under the last row and 8px over the first entry.
+  Entries stand 12px apart, newest first. An entry is one line saying
+  what was asked ("Blue asked to select Deep Woods"), a quiet second line
+  in Ink Dim for the other powers the answer covers ("Also answers Secret
+  Police"), and a line with the state as a word ("Refused", "Allowed",
+  "Allowed, used") before one compact Control button, "Allow" or
+  "Refuse". An automatic power's entry says what happened in its first
+  line ("Blue's Tyrant: deactivated") and shows its button alone. Each
+  entry is a group named by its first line.
+- **A change that cannot be made** keeps its button, in the Withheld
+  face: the Disabled face with `aria-disabled="true"`, so it takes focus
+  and a tap, and the hover note gives the reason. The reason is never
+  printed in the list. Without control an open button is disabled.
+- **Live:** the list is the one part of the card overlay redrawn from
+  each snapshot, and only when it changed, so an open hover note is left
+  alone. Focus stays on the entry's button, whatever it now reads. A
+  clicked button waits, disabled, for the next snapshot.
+- The column uses no amber and no second blue: consent amber stays on
+  the option a player may ask about, and selection blue on the pressed
+  setting.
 
 ### Inputs / Fields
 - **Style:** Base fill, white text, Line-mid border, 6px radius, 8px padding,
