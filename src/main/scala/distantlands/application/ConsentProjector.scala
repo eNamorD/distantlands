@@ -116,7 +116,13 @@ private[application] final class ConsentProjector(
     * the one thing this still needs the walker projector for. */
   private def target(context: ScopedProjectionContext,
       request: ConsentRequest): String =
-    named(context, request).getOrElse(request.target.wireId)
+    named(context, request).getOrElse(request.target match
+      // A card this viewer may not identify: its wire id is its catalog
+      // id, so it is not shown (implementation ruling R25).
+      case _: DecisionOptionRef.Denizen | _: DecisionOptionRef.Relic |
+          _: DecisionOptionRef.Vision | _: DecisionOptionRef.Legacy =>
+        "a hidden card"
+      case other => other.wireId)
 
   /** The option of a settled request, for the requests list, worded from
     * the state now (implementation ruling R23). Its decision may be parked

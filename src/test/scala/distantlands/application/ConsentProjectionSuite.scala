@@ -250,6 +250,19 @@ class ConsentProjectionSuite extends munit.FunSuite:
     assertEquals(shownToP2With(over, answered).consentPreferences
       .flatMap(_.requests).map(_.change), Vector("over"))
 
+  test("the prompt names a card its granter may not identify as a hidden " +
+      "card, and its id stays on the server (R25)"):
+    val base = TravelFixture.on(passRuledByP2)(_.adviser(p1, TyrantCard,
+      facedown = true))
+    val asked = base.copy(consent = accepted(base.consent.requested(
+      ConsentRequest(p1, "not-parked",
+        DecisionOptionRef.Denizen(TyrantCard.id), passAsk))))
+    val shown = projector.project(gameId, LoadedGame(OathState.Ready(asked),
+      0L), p2)
+    assertEquals(shown.consentPrompt.map(_.target), Some("a hidden card"))
+    assert(!GameProjectionCodec.encode(shown).contains(
+      "\"" + TyrantCard.id.value + "\""))
+
   test("an entry whose option the viewer may not identify is not listed, " +
       "so its id never leaves the server (R19)"):
     // p1 holds Tyrant facedown: p2 may not name it.
