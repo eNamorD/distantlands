@@ -177,8 +177,9 @@ final case class ConsentState(
     else None
 
   /** The requests settled this turn, oldest first: none once the turn
-    * they belong to has ended. A withdrawn request is never among them
-    * (ruling 14). */
+    * they belong to has ended. A withdrawn request is among them only as
+    * its refused asks, which stay remembered (ruling 14; reconsider
+    * design, implementation ruling R14). */
   def historyAt(now: ConsentTurn): Vector[ConsentRequest] =
     if turn.contains(now) then history else Vector.empty
 
