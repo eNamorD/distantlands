@@ -73,36 +73,22 @@ the CSS task.
 - Never write a bare `===` or `=word` in a shell command. Quote globs.
 - Claim evidence in reports: tag each claim *gate*, *read* or *UNKNOWN*.
 
-## Open questions
+## Rulings
 
-The tasks below are written for the recommended answer to each question.
-Production code waits for the rulings. When a ruling differs, the listed
-steps change as stated, and this section becomes "Rulings".
+Recorded in the
+[implementation rulings](../../specs/2026-11/2026-11-20-consent-reconsider-design-implementation-rulings.md);
+the tasks below apply them.
 
-- **Q1. The consent column's type size.** Today `.consent-grid` sets no
-  font size, so the heading and the players' names take the overlay's own
-  size, `clamp(1rem, 2.6vmin, 1.9rem)`: about 23px at 1440×900 and 28px at
-  1080p (*read*). The details column beside it reads at `0.82em` of that,
-  and the settings are 0.78rem (12.5px). With the name on its own line,
-  the name is the largest text in the row.
-  - A: leave the size as it is. The slice changes the heading's words and
-    the row's layout only.
-  - B (recommended): `.consent-grid { font-size: 0.82em; }`, the details
-    column's size, so the two columns read as a pair. At 360px a name is
-    13.1px, above the Eleven-Pixel Floor.
-  - If A: delete `font-size: 0.82em;` from Task 2 Step 3, the test "the
-    column reads at the details column's size" from Task 2 Step 1, and the
-    sentence about the size from Task 3 Step 1.
-- **Q2. Naming the three settings for a screen reader.** Today a row's
-  three buttons are siblings of the name with nothing tying them to it, so
-  a screen reader announces "Never Allow, button" with no player (*read*).
-  The new wrapper is the place to say whose settings these are.
-  - A: the wrapper is a plain `div`.
-  - B (recommended): the wrapper carries `role="group"` and
-    `aria-label` set to the player's name, as `BoardDecisionPanel` groups
-    a toggle.
-  - If A: delete the two `setAttribute` lines for `role` and `aria-label`
-    from Task 1 Step 4 and the two matching assertions from Task 1 Step 2.
+- **R1.** `.consent-grid { font-size: 0.82em; }`, the details column's
+  size. If Task 4 finds a name or a setting under the Eleven-Pixel Floor
+  at 360px, stop and report; do not shrink further. Task 2, Task 4.
+- **R2.** The settings' wrapper carries `role="group"` and `aria-label`
+  set to the player's name. Task 1.
+- **R3.** `4px 6px` padding on `.consent-grid-choices
+  .consent-grid-choice` only; the shared Control-face rule is untouched.
+  Task 4 measures it. If "Case-by-case" still clips or wraps at 360px,
+  stop and report the measured widths; do not choose another fix. Task 2,
+  Task 4.
 
 ## Decisions already made in this plan
 
@@ -112,10 +98,10 @@ the reviewer can reject it.
 - A row's three settings sit in a new `div.consent-grid-choices`. The
   existing class names stay, so the other consent suites' selectors still
   match.
-- A setting in thirds takes `4px 6px` padding where the Control face says
-  `4px 9px`. The third sets the button's width, so side padding only
-  matters at the narrowest width. The reasoning, to be confirmed by
-  measurement in Task 4: at 360px the overlay's body is about 305px wide
+- R3's reasoning, to be confirmed by measurement in Task 4. A setting in
+  thirds takes `4px 6px` padding where the Control face says `4px 9px`.
+  The third sets the button's width, so side padding only matters at the
+  narrowest width: at 360px the overlay's body is about 305px wide
   inside (360 less `4vmin` twice, the 1px border twice and `1.5ex`
   twice). Three settings and two 6px gaps leave about 97px a setting. The
   widest label, "Case-by-case" at 0.78rem, is about 77px. With 9px sides
@@ -626,7 +612,10 @@ At 1440×900, then at a 360×800 window, with the overlay open:
    settings share one `top`, have equal widths within 1px and equal
    heights (30px, or 44px where the window reports a coarse pointer); no
    label is cut or wrapped; neither the page nor the overlay's body
-   scrolls sideways.
+   scrolls sideways. At 360px also read the computed font size of a name
+   and of a setting: each is 11px or more (R1). A name or a setting
+   under 11px, or a "Case-by-case" that clips or wraps (R3), stops the
+   work: report the measured sizes and widths and change nothing.
 3. Click a setting that is not pressed: the pressed state moves, and the
    viewer's log shows the preference line. Tab to a setting: the Cream
    Focus outline shows.
