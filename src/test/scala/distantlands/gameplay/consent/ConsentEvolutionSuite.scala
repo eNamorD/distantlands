@@ -5,7 +5,8 @@ import distantlands.gameplay.powers.search.ErrandBoyCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
-  ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
+  ConsentPreferencesCleared, ConsentReconsidered, ConsentRequestWithdrawn,
+  ConsentRequested}
 import distantlands.testkit.{Outcomes, Table}
 import distantlands.testkit.Table.{p1, p2}
 import distantlands.testkit.Unwrap.accepted
@@ -40,6 +41,20 @@ class ConsentEvolutionSuite extends munit.FunSuite:
     assertEquals(folded(ConsentPreferenceSet(p2, pass, p1,
       ConsentSetting.Always), ConsentPreferencesCleared(p2, pass)).consent,
       ConsentState())
+
+  test("a changed answer rewrites the ledger and nothing else"):
+    val key = ConsentKey(pass, p1, "travel.destination", dunes)
+    val after = folded(ConsentRequested(request),
+      ConsentAnswered(p2, granted = false),
+      ConsentReconsidered(p2, p1, "travel.destination", dunes,
+        granted = true))
+    assertEquals(after.consent.answer(key, Some(p2), ConsentTurn.of(after)),
+      Some(ConsentAnswer.Granted))
+    assertEquals(after.game, Outcomes.ready(table).game)
+
+  test("a change of an answer nobody gave is refused"):
+    assert(rules.evolve(table, ConsentReconsidered(p2, p1,
+      "travel.destination", dunes, granted = true)).isLeft)
 
   test("an answer with no request waiting is refused"):
     assert(rules.evolve(table, ConsentAnswered(p2, true)).isLeft)
