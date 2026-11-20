@@ -250,6 +250,26 @@ class ConsentProjectionSuite extends munit.FunSuite:
     assertEquals(shownToP2With(over, answered).consentPreferences
       .flatMap(_.requests).map(_.change), Vector("over"))
 
+  test("an answer given to a request that still waits is listed to its " +
+      "giver first, as waiting (R26)"):
+    val base = passRuledByP2
+    val earlier = answeredByP2(passAsk, dunes, granted = true,
+      base.consent, base)
+    val coast = DecisionOptionRef.Site(TravelFixture.coast)
+    val waiting = accepted(accepted(earlier.requested(ConsentRequest(p1,
+      destination, coast, Vector(
+        ConsentAsk(p2, Vector(NarrowPassSite.pass), alternative = true),
+        ConsentAsk(p3, Vector(NarrowPassSite.pass), alternative = true)))))
+      .answered(p2, granted = false, ConsentTurn.of(base)))
+    assert(waiting.pending.nonEmpty)
+    assertEquals(shownToP2With(base, waiting).consentPreferences
+      .flatMap(_.requests).map(row =>
+        (row.optionId, row.answer, row.change)), Vector(
+      (coast.wireId, "refused", "waiting"), (dunes.wireId, "allowed", "open")))
+    assertEquals(projector.project(gameId, LoadedGame(OathState.Ready(
+      base.copy(consent = waiting)), 0L), p3).consentPreferences
+      .flatMap(_.requests), Vector.empty)
+
   test("the prompt names a card its granter may not identify as a hidden " +
       "card, and its id stays on the server (R25)"):
     val base = TravelFixture.on(passRuledByP2)(_.adviser(p1, TyrantCard,

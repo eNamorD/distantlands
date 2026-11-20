@@ -98,8 +98,12 @@ private[application] final class ConsentProjector(
   private def requests(context: ScopedProjectionContext, viewer: PlayerId,
       power: PowerId): Vector[ConsentRequestRowProjection] =
     val ready = context.ready
+    // An answer given to a request that still waits is not in the history
+    // yet; its giver sees it first, as waiting (implementation ruling
+    // R26).
     for
-      entry <- ready.consent.historyAt(ConsentTurn.of(ready)).reverse
+      entry <- ready.consent.pending.toVector ++
+        ready.consent.historyAt(ConsentTurn.of(ready)).reverse
       ask <- entry.asks.find(ask => ask.granter == viewer &&
         ask.answer.nonEmpty && ask.powers.contains(power))
       label <- optionLabel(context, entry)
