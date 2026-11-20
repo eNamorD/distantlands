@@ -1023,18 +1023,19 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   stroke: var(--cream-bright); }
 .mat-board .festival-marker:focus-visible { outline: 2px solid
   var(--cream-bright); outline-offset: 3px; }
-/* Zoomed out, a card's name grows to fill most of the card, so at a
-   festival site the name moves to the card's top and the marker thins to
-   a bare strip: below the name, above the tokens, and at the smallest
-   scale across the middle, above the initials. Its title is too small to
-   read there; its label still names it. */
+/* Zoomed out, the title keeps the glance layer's size, as a site's name
+   does, so it reads at every scale. The band grows around it, centred on
+   the cards' middle, and the title wraps to two lines where one line no
+   longer fits the band's width. A card's name moves to the card's top,
+   above the band. The placement is inline, so the band's top and height
+   are overridden here. */
 .map-compact .mat-board .site:has(> .festival-marker) .site-cards
   .card-face { justify-content: flex-start; }
-.map-compact .mat-board .festival-marker {
-  transform: translateY(90%) scaleY(0.4); }
-.map-tiny .mat-board .festival-marker { transform: scaleY(0.4); }
+.map-compact .mat-board .festival-marker { top: 50% !important;
+  height: auto !important; min-height: 18%; transform: translateY(-50%);
+  container-type: normal; padding: 0.3em 6%; font-size: var(--glance-text); }
 .map-compact .mat-board .festival-marker .festival-plate-title {
-  visibility: hidden; }
+  font-size: 1em; line-height: 1.05; white-space: normal; }
 /* The printed marker in the inspector: its title on two lines, its text
    beneath, at the overlay's reading size. Its ratio is its least height:
    on a phone the text needs more, and the plate grows to hold it. */

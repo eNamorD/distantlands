@@ -854,11 +854,12 @@ band across the middle of the three card slots, half a slot gap short of
 their ends and 18% of a card tall, where a denizen prints nothing. It
 covers the lower part of a relic. The title fills half the band's height,
 and the marker's text is its hover note. The tops and feet of the cards
-stay uncovered and open the cards. Zoomed out, a card's name grows to fill
-most of the card, so at a festival site the name moves to the card's top
-and the band thins to a bare strip 40% as tall, below the name and above
-the tokens; at the smallest scale the strip runs across the middle, above
-the card's initials. Its label names it there. It is a button, as a
+stay uncovered and open the cards. Zoomed out, the title keeps the glance
+layer's size, as a site's name does, so it reads at every scale: the band
+grows around it, centred on the cards' middle, and the title wraps to two
+lines where one no longer fits. At the smallest scales the band covers
+the middle half of the cards; the title matters more than what it hides.
+A card's name moves to the card's top, above the band. It is a button, as a
 player's title pill is, so a keyboard reaches it and its note shows on
 focus; pressing it opens the printed marker in the inspector. It is no
 board option.
