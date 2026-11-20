@@ -61,7 +61,7 @@ private[projection] object ConsentProjectionCodec:
     val row = ujson.Obj(
       "requesterPlayerId" -> value.requesterPlayerId,
       "powers" -> encoded(value.powers)(ujson.Str(_)),
-      "target" -> value.target)
+      "target" -> value.target, "adjust" -> value.adjust)
     if value.paying then row("paying") = true
     value.use.foreach(row("use") = _)
     row
@@ -70,26 +70,39 @@ private[projection] object ConsentProjectionCodec:
       : Result[ConsentPromptProjection] = for
     row <- obj(raw, path)
     _ <- exact(row, Set("requesterPlayerId", "powers", "target", "paying",
-      "use"), path)
+      "use", "adjust"), path)
     requester <- string(row, "requesterPlayerId", path)
     powers <- strings(row, "powers", path)
     target <- string(row, "target", path)
     paying <- boolOr(row, "paying", path, false)
     use <- optionalAbsent(row, "use", path)(string)
-  yield ConsentPromptProjection(requester, powers, target, paying, use)
+    adjust <- string(row, "adjust", path).flatMap(value => Either.cond(
+      ConsentPromptProjection.adjustments(value), value,
+      distantlands.protocol.ProtocolDecodeFailure.InvalidValue(
+        s"$path.adjust",
+        s"unknown adjustment '$value'")))
+  yield ConsentPromptProjection(requester, powers, target, paying, use,
+    adjust)
 
   def encodePreferences(value: ConsentPreferencesProjection): ujson.Value =
     ujson.Obj("powerId" -> value.powerId, "power" -> value.power,
       "rows" -> encoded(value.rows)(row => ujson.Obj(
         "playerId" -> row.playerId, "setting" -> row.setting)),
       "cardId" -> stringOption(value.cardId),
-      "bannerKey" -> stringOption(value.bannerKey))
+      "bannerKey" -> stringOption(value.bannerKey),
+      "requests" -> encoded(value.requests)(row => ujson.Obj(
+        "requesterPlayerId" -> row.requesterPlayerId,
+        "decisionId" -> row.decisionId, "optionKind" -> row.optionKind,
+        "optionId" -> row.optionId, "label" -> row.label,
+        "answer" -> row.answer,
+        "alsoPowers" -> encoded(row.alsoPowers)(ujson.Str(_)),
+        "use" -> stringOption(row.use), "change" -> row.change)))
 
   def decodePreferences(raw: ujson.Value, path: String)
       : Result[ConsentPreferencesProjection] = for
     row <- obj(raw, path)
-    _ <- exact(row, Set("powerId", "power", "rows", "cardId", "bannerKey"),
-      path)
+    _ <- exact(row, Set("powerId", "power", "rows", "cardId", "bannerKey",
+      "requests"), path)
     powerId <- string(row, "powerId", path)
     power <- string(row, "power", path)
     rowRaws <- array(row, "rows", path)
@@ -101,4 +114,26 @@ private[projection] object ConsentProjectionCodec:
     yield ConsentPreferenceRowProjection(player, setting) }
     cardId <- optionalAbsent(row, "cardId", path)(string)
     bannerKey <- optionalAbsent(row, "bannerKey", path)(string)
-  yield ConsentPreferencesProjection(powerId, power, rows, cardId, bannerKey)
+    requestRaws <- array(row, "requests", path)
+    requests <- traverse(requestRaws, s"$path.requests")(decodeRequest)
+  yield ConsentPreferencesProjection(powerId, power, rows, cardId, bannerKey,
+    requests)
+
+  /** Every key is required; `use` is null when the request was about no
+    * automatic power. */
+  private def decodeRequest(raw: ujson.Value, path: String)
+      : Result[ConsentRequestRowProjection] = for
+    row <- obj(raw, path)
+    _ <- exact(row, Set("requesterPlayerId", "decisionId", "optionKind",
+      "optionId", "label", "answer", "alsoPowers", "use", "change"), path)
+    requester <- string(row, "requesterPlayerId", path)
+    decisionId <- string(row, "decisionId", path)
+    kind <- string(row, "optionKind", path)
+    id <- string(row, "optionId", path)
+    label <- string(row, "label", path)
+    answer <- string(row, "answer", path)
+    also <- strings(row, "alsoPowers", path)
+    use <- optional(row, "use", path)(string)
+    change <- string(row, "change", path)
+  yield ConsentRequestRowProjection(requester, decisionId, kind, id, label,
+    answer, also, use, change)

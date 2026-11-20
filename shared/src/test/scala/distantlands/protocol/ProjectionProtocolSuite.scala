@@ -119,16 +119,54 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       consentWaiting = Some(ConsentWaitingProjection(Vector("p2"),
         use = Some("Tyrant"))),
       consentPrompt = Some(ConsentPromptProjection("p1",
-        Vector("Narrow Pass"), "Dunes", use = Some("Tyrant"))),
+        Vector("Narrow Pass"), "Dunes", use = Some("Tyrant"),
+        adjust = "preferences")),
       consentPreferences = Vector(ConsentPreferencesProjection(
         "site.narrow-pass.pass", "Narrow Pass",
-        Vector(ConsentPreferenceRowProjection("p1", "always"))),
+        Vector(ConsentPreferenceRowProjection("p1", "always")),
+        requests = Vector(
+          ConsentRequestRowProjection("p1", "travel.destination", "site",
+            "site:dunes", "Dunes", "refused", Vector("Secret Police"), None,
+            "open"),
+          ConsentRequestRowProjection("p1", "power-use.tyrant", "button",
+            "use", "Use", "allowed", Vector.empty, Some("Tyrant"),
+            "automatic"))),
         ConsentPreferencesProjection("denizen.secret-police",
           "Secret Police", Vector(ConsentPreferenceRowProjection("p1",
             "never")), Some("113")),
         ConsentPreferencesProjection("banner.darkest-secret.festival",
           "Darkest Secret", Vector(ConsentPreferenceRowProjection("p1",
             "case-by-case")), bannerKey = Some("darkest-secret")))))
+
+  test("a preferences entry requires its requests, and a row every key"):
+    val whole = ujson.read(GameProjectionCodec.encode(projection.copy(
+      consentPreferences = Vector(ConsentPreferencesProjection(
+        "site.narrow-pass.pass", "Narrow Pass", Vector.empty,
+        requests = Vector(ConsentRequestRowProjection("p1",
+          "travel.destination", "site", "site:dunes", "Dunes", "refused",
+          Vector.empty, None, "open")))))))
+    def refused(edit: ujson.Value => Unit): Boolean =
+      val raw = ujson.read(ujson.write(whole))
+      edit(raw("consentPreferences")(0))
+      GameProjectionCodec.decode(ujson.write(raw)).isLeft
+    assert(refused(_.obj.remove("requests")))
+    Vector("requesterPlayerId", "decisionId", "optionKind", "optionId",
+      "label", "answer", "alsoPowers", "use", "change").foreach(key =>
+      assert(refused(_("requests")(0).obj.remove(key)), key))
+    assert(refused(_("requests")(0)("extra") = 1))
+
+  test("a prompt requires what the granter may adjust later, one of " +
+      "three values"):
+    def decoded(edit: ujson.Value => Unit) =
+      val raw = ujson.read(GameProjectionCodec.encode(projection.copy(
+        consentPrompt = Some(ConsentPromptProjection("p1",
+          Vector("Narrow Pass"), "Dunes", adjust = "answer")))))
+      edit(raw("consentPrompt"))
+      GameProjectionCodec.decode(ujson.write(raw)).map(
+        _.consentPrompt.map(_.adjust))
+    assertEquals(decoded(_ => ()), Right(Some("answer")))
+    assert(decoded(_.obj.remove("adjust")).isLeft)
+    assert(decoded(_("adjust") = "sometimes").isLeft)
 
   test("an askable option's consent ask and a site power's id round-trip"):
     assertRoundTrips(projection.copy(
