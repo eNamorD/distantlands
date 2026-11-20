@@ -66,6 +66,36 @@ class HallOfMinistersConsentServiceSuite extends munit.FunSuite:
     assertEquals(reloaded.load(gameId).map(_.map(game =>
       (game.state, game.undo))), Right(Some((yes.state, yes.undo))))
 
+  test("a refusal about a covered discard can be changed back and " +
+      "forth, and the grant locks once Roving Terror takes the card"):
+    val (service, _) = board.service()
+    val covered = ConsentKey(HallOfMinisters.id, p1,
+      HallOfMinisters.discardKey, errandBoyRef)
+    def remembered(at: GameAccepted): Option[ConsentAnswer] =
+      val ready = Outcomes.ready(at.state)
+      ready.consent.answer(covered, Some(p2), ConsentTurn.of(ready))
+    def change(allow: Boolean): GameCommand = Commands.reconsiderConsent(p2,
+      p1, RovingTerror.decisionId, errandBoySlot, allow)
+    val no = accepted(service.handle(gameId, asking(service).nextSequence,
+      Commands.answerConsent(p2, ConsentChoice.No)))
+    assertEquals(remembered(no), Some(ConsentAnswer.Refused))
+    val granted = accepted(service.handle(gameId, no.nextSequence,
+      change(allow = true)))
+    assertEquals(remembered(granted), Some(ConsentAnswer.Granted))
+    val refused = accepted(service.handle(gameId, granted.nextSequence,
+      change(allow = false)))
+    assertEquals(remembered(refused), Some(ConsentAnswer.Refused))
+    val again = accepted(service.handle(gameId, refused.nextSequence,
+      change(allow = true)))
+    val taken = accepted(service.handle(gameId, again.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(RovingTerror.decisionId,
+        DecisionAnswer.ChooseOneAnswer(errandBoySlot)))))
+    assert(Look(Outcomes.ready(taken.state)).discardAfter(woods)
+      .contains(errandBoy))
+    assertEquals(service.handle(gameId, taken.nextSequence,
+      change(allow = false)), Left(GameApplicationError.CommandRejected(
+        OathViolation.ConsentUnavailable("p1 has acted on this consent"))))
+
   test("No leaves the card where it is, and p1 still chooses"):
     val (service, _) = board.service()
     val no = accepted(service.handle(gameId, asking(service).nextSequence,

@@ -17,14 +17,14 @@ class ConsentPromptPanelSuite extends munit.FunSuite:
     walkerWaiting = Some(WalkerWaitingProjection(Vector("blue"),
       Some("Choose a Travel destination"))),
     consentPrompt = Some(ConsentPromptState("blue", Vector("Narrow Pass"),
-      "Deep Woods")))
+      "Deep Woods", adjust = "answer")))
   private val waiting = table.copy(
     consentWaiting = Some(ConsentWaitingState(Vector("red"))))
   /** Red rules City Wall, and decides on Blue's Tyrant. */
   private val deactivating = table.copy(
     walkerWaiting = Some(WalkerWaitingProjection(Vector("blue"), None)),
     consentPrompt = Some(ConsentPromptState("blue", Vector("City Wall"),
-      "Let it work", use = Some("Tyrant"))))
+      "Let it work", use = Some("Tyrant"), adjust = "preferences")))
   /** Blue waits on Red's decision on Tyrant. */
   private val deciding = table.copy(consentWaiting = Some(
     ConsentWaitingState(Vector("red"), use = Some("Tyrant"))))
@@ -46,8 +46,8 @@ class ConsentPromptPanelSuite extends munit.FunSuite:
     assertEquals(all(panel, ".consent-answer").map(_.textContent),
       Vector("Never Allow", "No", "Yes", "Always Allow"))
     assertEquals(panel.querySelector(".consent-notice").textContent,
-      "You can adjust your consent preferences by clicking on the Narrow " +
-        "Pass power.")
+      "You can change this answer, and your consent preferences, by " +
+        "clicking on the Narrow Pass power.")
     assertEquals(all(panel, ".walker-waiting"), Vector.empty)
 
   test("each answer sends its choice"):
@@ -77,6 +77,17 @@ class ConsentPromptPanelSuite extends munit.FunSuite:
     assertEquals(all(panel, ".walker-waiting").map(_.textContent),
       Vector("Waiting for Red's consent…"))
     assertEquals(all(panel, ".consent-prompt"), Vector.empty)
+
+  test("an automatic power's prompt keeps the old notice, and a prompt " +
+      "whose answer nobody can adjust shows none (R21)"):
+    val automatic = pane(deactivating, "red", new RecordingControls())
+    assertEquals(all(automatic, ".consent-notice").map(_.textContent),
+      Vector("You can adjust your consent preferences by clicking on the " +
+        "City Wall power."))
+    val paying = table.copy(consentPrompt = Some(ConsentPromptState("blue",
+      Vector("Toll Roads"), "Coast", paying = true, adjust = "none")))
+    assertEquals(all(pane(paying, "red", new RecordingControls()),
+      ".consent-notice"), Vector.empty)
 
   test("a payer reads where they are sent, and what they pay"):
     val paying = table.copy(consentPrompt = Some(ConsentPromptState("blue",

@@ -51,6 +51,7 @@ object GameEventWire extends GameEventJsonSupport with LifecycleEventCodec
   val ConsentRequestWithdrawnType = "consent.request-withdrawn"
   val ConsentPreferenceSetType = "consent.preference-set"
   val ConsentPreferencesClearedType = "consent.preferences-cleared"
+  val ConsentReconsideredType = "consent.reconsidered"
   val PlanAidSavedType = "plan-aid.saved"
   val PlanAidClearedType = "plan-aid.cleared"
 

@@ -364,7 +364,9 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
       PlayerIntent.SetConsentPreference(MinesSite.mountain,
         p2, ConsentSetting.Always),
       PlayerIntent.RequestConsent("any", DecisionOptionRef.Button("go")),
-      PlayerIntent.AnswerConsent(ConsentChoice.Yes))
+      PlayerIntent.AnswerConsent(ConsentChoice.Yes),
+      PlayerIntent.ReconsiderConsent(p2, "any",
+        DecisionOptionRef.Button("go"), allow = true))
     assertEquals(intents.filter(_.opensBatch).map(_.productPrefix),
       Vector("ResolveWalker"))
     assertEquals(GameCommand.issuer(GameCommand.Issued(p1, intents(2))),

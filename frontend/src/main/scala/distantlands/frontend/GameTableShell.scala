@@ -233,6 +233,13 @@ private[frontend] final class GameTableShell(mount: dom.Element,
   def showChronicleDetails(projection: Option[GameProjection]): Unit =
     chronicleDetails.show(projection)
 
+  /** Every snapshot's consent requests reach the inspector, so an open
+    * consent column's list stays current (reconsider design, "Live while
+    * open"). */
+  def showConsentRequests(links: SitePowerLinks, position: Long,
+      failure: Option[AnyRef]): Unit =
+    inspector.showConsentRequests(links, position, failure)
+
   /** Closes Chronicle Details, and an inspector over it, so a dialog drawn
     * under it can open (implementation ruling R21). */
   def closeChronicleDetails(): Unit = chronicleDetails.hide()

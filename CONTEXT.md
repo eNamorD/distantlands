@@ -165,8 +165,26 @@ _Avoid_: consent prompt (that is what a granter sees)
 
 **Consent answer**:
 A granter's yes or no to a consent request, remembered for the rest of the
-turn for its power, requester, decision and option.
+turn for its power, requester, decision and option, unless its granter
+reconsiders it.
 _Avoid_: consent, permission
+
+**Reconsidering**:
+A granter changing a consent answer they gave this turn, from a refusal to
+a grant or back, while the answer is not locked.
+_Avoid_: revoking, overriding
+
+**Locked answer**:
+A consent answer that cannot be reconsidered because the requester chose
+the option it decided and that choice still stands. Undoing the choice
+unlocks it.
+_Avoid_: final answer, used consent
+
+**Use mark**:
+The record, kept in the game so that undo removes it, that a requester
+chose an option on a granted consent request this turn. It is what locks
+the answers about that option.
+_Avoid_: lock flag
 
 **Consent preference**:
 A granter's private standing answer for one requester on one power: never,
@@ -174,8 +192,8 @@ always, or case by case (no entry).
 _Avoid_: permission, auto-consent
 
 **Consent ledger**:
-The preferences, the turn's answers and the waiting request, kept beside the
-game so that undo leaves them be.
+The preferences, the turn's answers, the turn's settled requests and the
+waiting request, kept beside the game so that undo leaves them be.
 _Avoid_: consent state (the type's name, not the concept)
 
 **Pay-or-ask step**:

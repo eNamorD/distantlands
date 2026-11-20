@@ -131,3 +131,6 @@ private[frontend] final class TableScreen(
         value.players.map(player =>
           player.playerId -> PlayerColorCss.of(player.color)).toMap))
     shell.showChronicleDetails(projection)
+    projection.foreach(value => shell.showConsentRequests(SitePowerLinks.of(
+      value, Option.when(view.controlsAvailable)(controls.submitCommand)),
+      value.nextSequence, failure))

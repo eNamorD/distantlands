@@ -18,6 +18,11 @@ private[protocol] object CommandIntentCodec:
     case SetConsentPreference(power, requester, setting) =>
       tagged("setConsentPreference", "powerId" -> power,
         "requesterId" -> requester, "setting" -> setting)
+    case ReconsiderConsent(requester, id, target, allow) =>
+      tagged("reconsiderConsent", "requesterId" -> requester,
+        "decisionId" -> id,
+        "target" -> CommandNestedCodecs.encodeStartArgWire(target),
+        "allow" -> allow)
     case SavePlanAid(plans, requirements, favor, secrets, favorBurnt,
         secretsBurnt) => tagged("savePlanAid",
       "plans" -> ujson.Arr.from(

@@ -24,5 +24,9 @@ object Commands:
       PlayerIntent.RequestConsent(decisionId, target, granters))
   def answerConsent(granter: PlayerId, choice: ConsentChoice): GameCommand =
     GameCommand.Issued(granter, PlayerIntent.AnswerConsent(choice))
+  def reconsiderConsent(granter: PlayerId, requester: PlayerId,
+      decisionId: String, target: DecisionOptionRef, allow: Boolean)
+      : GameCommand = GameCommand.Issued(granter,
+    PlayerIntent.ReconsiderConsent(requester, decisionId, target, allow))
   def savePlanAid(ally: PlayerId, offer: AidOffer): GameCommand =
     GameCommand.Issued(ally, PlayerIntent.SavePlanAid(offer))

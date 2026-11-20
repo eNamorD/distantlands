@@ -117,17 +117,34 @@ object ConsentTurn:
   def of(ready: ReadyGame): ConsentTurn = ConsentTurn(
     ready.game.current.tracks.round, ready.game.current.turn.activePlayer)
 
+/** A use mark (reconsider design, "State"; ruling 21): in `turn`,
+  * `requester` chose `target` at `decisionId` on a granted request, and
+  * that choice stands. It is kept in the game, which undo rewinds, so
+  * undoing the choice removes the mark and unlocks the answer. */
+final case class UseMark(turn: ConsentTurn, requester: PlayerId,
+    decisionId: String, target: DecisionOptionRef)
+object UseMark:
+  /** `marks` with the marks of turn `from` kept as `to`'s, when the
+    * round marker moves within a turn (Great Clock), as the ledger's
+    * answers are (`ConsentState.turnRenamed`). */
+  def renamed(marks: Set[UseMark], from: ConsentTurn, to: ConsentTurn)
+      : Set[UseMark] =
+    marks.map(mark => if mark.turn == from then mark.copy(turn = to)
+      else mark)
+
 /** The consent ledger (consent design, "State"): preferences keyed by
-  * granter, power and requester; the answers of `turn`; and the request
-  * waiting on its granters, if any. It lives beside the game, not in it,
-  * because undo rewinds the game to a saved state and the ledger must
-  * outlive that. */
+  * granter, power and requester; the answers of `turn`; the request
+  * waiting on its granters, if any; and `history`, the requests settled
+  * in `turn`, each with its asks as answered (reconsider design,
+  * "State"). It lives beside the game, not in it, because undo rewinds
+  * the game to a saved state and the ledger must outlive that. */
 final case class ConsentState(
     preferences: Map[(PlayerId, PowerId, PlayerId), ConsentPreference] =
       Map.empty,
     answers: Map[ConsentKey, Remembered] = Map.empty,
     pending: Option[ConsentRequest] = None,
-    turn: Option[ConsentTurn] = None):
+    turn: Option[ConsentTurn] = None,
+    history: Vector[ConsentRequest] = Vector.empty):
 
   def preference(granter: PlayerId, power: PowerId, requester: PlayerId)
       : Option[ConsentPreference] = preferences.get((granter, power, requester))
@@ -158,6 +175,32 @@ final case class ConsentState(
   private def rememberedAt(key: ConsentKey, now: ConsentTurn)
       : Option[Remembered] = if turn.contains(now) then answers.get(key)
     else None
+
+  /** The requests settled this turn, oldest first: none once the turn
+    * they belong to has ended. A withdrawn request is among them only as
+    * its refused asks, which stay remembered (ruling 14; reconsider
+    * design, implementation ruling R14). */
+  def historyAt(now: ConsentTurn): Vector[ConsentRequest] =
+    if turn.contains(now) then history else Vector.empty
+
+  /** The settled request of this turn in which `granter` answered about
+    * `requester` choosing `target` at `decisionId`, with their ask
+    * (reconsider design, "State"). `joined` keeps it the only one. */
+  def asked(granter: PlayerId, requester: PlayerId, decisionId: String,
+      target: DecisionOptionRef, now: ConsentTurn)
+      : Option[(ConsentRequest, ConsentAsk)] =
+    historyAt(now).iterator
+      .filter(about(_, requester, decisionId, target))
+      .flatMap(entry => entry.asks.find(ask => ask.granter == granter &&
+        ask.answer.nonEmpty).map(entry -> _)).nextOption()
+
+  /** Whether a request settled this turn granted `requester` `target` at
+    * `decisionId`: what a use mark is set on (reconsider design, ruling
+    * 21). */
+  def grantedTo(requester: PlayerId, decisionId: String,
+      target: DecisionOptionRef, now: ConsentTurn): Boolean =
+    historyAt(now).exists(entry =>
+      about(entry, requester, decisionId, target) && entry.granted)
 
   def requested(request: ConsentRequest): Either[OathViolation, ConsentState] =
     if pending.nonEmpty then Left(OathViolation.InvalidEventOrder(
@@ -196,16 +239,58 @@ final case class ConsentState(
           Right(settledBy(updated, now))
         else if !granted then Right(copy(
           answers = answersAt(now) ++ answersOf(refusals(updated)), pending =
-            Some(updated), turn = Some(now)))
+            Some(updated), turn = Some(now), history = historyAt(now)))
         else Right(copy(pending = Some(updated)))
 
   /** The requester takes their unanswered request back; no grant is
     * remembered (ruling 14). An alternative's refusal given before it
-    * stays. */
+    * stays, and joins the history as an entry of the refused asks alone,
+    * so it is its refuser's to change (reconsider design, implementation
+    * ruling R14). It was remembered in `turn`, which is the turn it joins. */
   def withdrawn(requester: PlayerId): Either[OathViolation, ConsentState] =
-    if pending.exists(_.requester == requester) then Right(copy(pending = None))
-    else Left(OathViolation.InvalidEventOrder(
-      s"${requester.value} has no consent request to withdraw"))
+    pending.filter(_.requester == requester) match
+      case Some(request) =>
+        val refused = refusals(request)
+        Right(copy(pending = None, history = turn.filter(_ =>
+          refused.asks.nonEmpty).fold(history)(joined(refused, _))))
+      case None => Left(OathViolation.InvalidEventOrder(
+        s"${requester.value} has no consent request to withdraw"))
+
+  /** `granter` changes the answer they gave about `requester` choosing
+    * `target` at `decisionId` this turn (reconsider design, rulings 20 and
+    * 22). The entry's ask takes the new answer, and the keys of that
+    * ask's powers are remembered as `granter` now answers them.
+    *
+    * A required refusal wrote every key of its request as the refuser's
+    * (ruling 9), so a change to a grant takes that refusal off the
+    * request's other keys. When the change makes the request granted, a
+    * co-granter's grant that the refusal kept from being remembered is
+    * remembered for its keys, unless one already holds an answer
+    * (implementation ruling R9). Preferences and a waiting request are
+    * untouched (ruling 24). Fails when `granter` answered no such request
+    * at `now`. */
+  def reconsidered(granter: PlayerId, requester: PlayerId,
+      decisionId: String, target: DecisionOptionRef, granted: Boolean,
+      now: ConsentTurn): Either[OathViolation, ConsentState] =
+    asked(granter, requester, decisionId, target, now) match
+      case None => Left(OathViolation.InvalidEventOrder(
+        s"${granter.value} answered no such consent request this turn"))
+      case Some((entry, ask)) =>
+        val changed = entry.copy(asks = entry.asks.map(other =>
+          if other.granter == granter then other.copy(answer = Some(granted))
+          else other))
+        val own = entry.keysOf(ask)
+        val mine = (if granted then ConsentAnswer.Granted
+          else ConsentAnswer.Refused).by(granter)
+        val kept = if !granted then answers else answers.filterNot(
+          (key, answer) => entry.keys.contains(key) && !own.contains(key) &&
+            answer == ConsentAnswer.Refused.by(granter))
+        val restored = if granted && changed.granted then
+          answersOf(changed).filterNot((key, _) => kept.contains(key))
+        else Vector.empty
+        Right(copy(answers = kept ++ restored ++ own.map(_ -> mine),
+          history = history.map(other =>
+            if other == entry then changed else other)))
 
   def preferenceSet(granter: PlayerId, power: PowerId, requester: PlayerId,
       setting: ConsentSetting): ConsentState =
@@ -223,7 +308,8 @@ final case class ConsentState(
     * never askable. */
   def granting(keys: Vector[ConsentKey], now: ConsentTurn): ConsentState =
     copy(answers = answersAt(now) ++ keys.map(_ ->
-      Remembered(ConsentAnswer.Granted, Granter.Supposed)), turn = Some(now))
+      Remembered(ConsentAnswer.Granted, Granter.Supposed)), turn = Some(now),
+      history = historyAt(now))
 
   /** What survives an undo or a redo: everything but a waiting request
     * (consent design, "Undo"). */
@@ -250,7 +336,7 @@ final case class ConsentState(
       : ConsentState =
     val kept = if request.granted then request else refusals(request)
     copy(answers = answersAt(now) ++ answersOf(kept), pending = None,
-      turn = Some(now))
+      turn = Some(now), history = joined(request, now))
 
   /** Every key `request` settles, refused by `refuser`: their refusal
     * settles the whole request (ruling 9), and it lapses for every key once
@@ -258,8 +344,34 @@ final case class ConsentState(
   private def refusedBy(refuser: PlayerId, request: ConsentRequest,
       now: ConsentTurn): ConsentState =
     copy(answers = answersAt(now) ++ request.keys.map(_ ->
-      ConsentAnswer.Refused.by(refuser)), pending = None, turn = Some(now))
+      ConsentAnswer.Refused.by(refuser)), pending = None, turn = Some(now),
+      history = joined(request, now))
 
   /** The answers still standing at `now`: none once their turn has ended. */
   private def answersAt(now: ConsentTurn): Map[ConsentKey, Remembered] =
     if turn.contains(now) then answers else Map.empty
+
+  /** Whether `entry` is about `requester` choosing `target` at
+    * `decisionId`. */
+  private def about(entry: ConsentRequest, requester: PlayerId,
+      decisionId: String, target: DecisionOptionRef): Boolean =
+    entry.requester == requester && entry.decisionId == decisionId &&
+      entry.target == target
+
+  /** The turn's history with the settled `request` joined to it
+    * (reconsider design, "State"; implementation ruling R10). A granter
+    * answers a requester's option in one entry at most: an ask of an
+    * earlier entry about the same option whose granter answers again in
+    * `request` leaves that entry, and an entry left with no answered ask
+    * goes. */
+  private def joined(request: ConsentRequest, now: ConsentTurn)
+      : Vector[ConsentRequest] =
+    val answering = request.asks.filter(_.answer.nonEmpty).map(_.granter)
+    historyAt(now).flatMap { entry =>
+      if !about(entry, request.requester, request.decisionId,
+          request.target) then Some(entry)
+      else
+        val left = entry.copy(asks = entry.asks.filterNot(ask =>
+          ask.answer.nonEmpty && answering.contains(ask.granter)))
+        Option.when(left.asks.exists(_.answer.nonEmpty))(left)
+    } :+ request

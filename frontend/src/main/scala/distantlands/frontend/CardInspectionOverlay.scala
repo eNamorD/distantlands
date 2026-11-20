@@ -10,7 +10,10 @@ import ServerUiSupport._
   * control. It ignores projection changes while open -- what a card does does
   * not change when the card moves, and closing on every poll tick would yank
   * the card out from under a reader mid-sentence, which is the interruption
-  * this whole design exists to remove.
+  * this whole design exists to remove. There is one exception: the consent
+  * column's requests list is redrawn from each projection
+  * (`showConsentRequests`; reconsider design, "Live while open"), so an
+  * entry locks in place when the requester acts.
   */
 private[frontend] final class CardInspectionOverlay(root: dom.Element):
   private val node = element("aside", "card-overlay").asInstanceOf[dom.html.Element]
@@ -38,6 +41,66 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
       pane: Option[dom.Element], place: Option[PanelContent.Place])
 
   private var opener = Option.empty[Opener]
+
+  /** The requests the open column shows, to tell a changed list from the
+    * same one. `None` while no column is drawn. */
+  private var shownRequests = Option.empty[ConsentRequests]
+  /** Whether a click since the last redraw waits on the server's word. */
+  private var changeSent = false
+  /** The position and the failure the last repaint showed, and those
+    * shown when the waiting click was made. The server's word on a click
+    * is a new position or a new failure; any other repaint, such as a log
+    * page landing, leaves the button waiting (implementation ruling
+    * R20). */
+  private var shownStamp = Option.empty[(Long, Option[AnyRef])]
+  private var sentStamp = Option.empty[(Long, Option[AnyRef])]
+
+  private def sameStamp(one: (Long, Option[AnyRef]),
+      other: (Long, Option[AnyRef])): Boolean =
+    one._1 == other._1 && ((one._2, other._2) match
+      case (Some(first), Some(second)) => first eq second
+      case (None, None) => true
+      case _ => false)
+
+  /** `requests` with each click noted, so the next snapshot redraws the
+    * list even when the server refused and the rows are the same
+    * (implementation ruling R20). */
+  private def noting(requests: ConsentRequests): ConsentRequests =
+    requests.copy(change = requests.change.map(send => (entry, allow) =>
+      changeSent = true
+      sentStamp = shownStamp
+      send(entry, allow)))
+
+  /** The consent column for `grid`, with its requests remembered. */
+  private def drawColumn(grid: ConsentGrid): Unit =
+    val noted = noting(grid.requests)
+    body.appendChild(ConsentGridView.render(grid.copy(requests = noted)))
+    shownRequests = Some(noted)
+    changeSent = false
+
+  /** Each snapshot's requests for the power the open column is about
+    * (reconsider design, "Live while open"): the list is redrawn when it
+    * differs from what is drawn, or when the server has answered a click:
+    * `position`, the snapshot's next sequence, or `failure`, the failure
+    * the table shows, is new since the click. The preference rows are
+    * left as the reader set them. A power the viewer no longer rules
+    * lists nothing. */
+  def showConsentRequests(links: SitePowerLinks, position: Long,
+      failure: Option[AnyRef]): Unit =
+    val stamp = (position, failure)
+    val answered = changeSent && sentStamp.forall(!sameStamp(_, stamp))
+    shownStamp = Some(stamp)
+    if isOpen then shownRequests.foreach { shown =>
+      val next = links.requests(shown.powerId).getOrElse(
+        ConsentRequests(shown.powerId, Vector.empty, None))
+      if answered || next.entries != shown.entries ||
+          next.change.isEmpty != shown.change.isEmpty then
+        changeSent = false
+        val noted = noting(next)
+        Option(body.querySelector(".consent-requests")).foreach(block =>
+          ConsentRequestsView.redraw(block, noted, body, close))
+        shownRequests = Some(noted)
+    }
 
   def isOpen: Boolean = !node.hasAttribute("hidden")
 
@@ -91,7 +154,7 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     copy.appendChild(text("p", "festival-copy-where",
       "Festival marker: " + at.fold("beside the map")(site => s"at $site")))
     body.querySelector(".card-overlay-details").appendChild(copy)
-    grid.foreach(value => body.appendChild(ConsentGridView.render(value)))
+    grid.foreach(drawColumn)
 
   /** The festival marker as printed: the plate, its title and its text,
     * then the holder's consent preferences for it. */
@@ -100,7 +163,7 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     clear()
     node.setAttribute("aria-label", "Festival marker")
     body.appendChild(FestivalMarker.plate(withRule = true))
-    grid.foreach(value => body.appendChild(ConsentGridView.render(value)))
+    grid.foreach(drawColumn)
     open(origin)
 
   /** A board's Supply: the bank above the track, as the physical board
@@ -121,14 +184,14 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
   def showPower(title: String, lines: Vector[String],
       grid: Option[ConsentGrid], origin: dom.html.Element): Unit =
     showText(title, lines, origin)
-    grid.foreach(value => body.appendChild(ConsentGridView.render(value)))
+    grid.foreach(drawColumn)
 
   /** A card, and below it the viewer's consent preferences for the power it
     * prints that they rule (consent slice 3). */
   def showRuled(card: CardDetails, grid: ConsentGrid,
       origin: dom.html.Element): Unit =
     show(card, origin)
-    body.appendChild(ConsentGridView.render(grid))
+    drawColumn(grid)
 
   /** Cards in the order given, as a card list (catalog batch 2, N5): a log
     * line's "6 cards". Each is its face or its back as projected; a face
@@ -184,6 +247,8 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
 
   private def clear(): Unit =
     while body.firstChild != null do body.removeChild(body.firstChild)
+    shownRequests = None
+    changeSent = false
 
   private def open(origin: dom.html.Element): Unit =
     val pane = Option(origin.closest(".game-pane, .chronicle-details"))

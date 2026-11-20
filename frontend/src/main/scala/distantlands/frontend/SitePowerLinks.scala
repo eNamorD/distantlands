@@ -1,16 +1,33 @@
 package distantlands.frontend
 
-import distantlands.protocol.{GameIntent => GameCommand}
+import distantlands.protocol.{GameIntent => GameCommand, WalkerStartArgWire}
 import org.scalajs.dom
 import ServerUiSupport.{button, element, playerDisplayName, text}
 
-/** The viewer's consent preferences for one power they rule (ruling 16):
-  * a row per other player, and what choosing a setting does. Without
-  * control (`choose` is `None`) the grid only shows the settings. */
+/** The viewer's consent column for one power they rule (ruling 16): a
+  * row per other player and what choosing a setting does, and the turn's
+  * requests about the power. Without control (`choose` is `None`) the
+  * grid only shows the settings. */
 private[frontend] final case class ConsentGrid(rows: Vector[ConsentGridRow],
-    choose: Option[(String, String) => Unit])
+    choose: Option[(String, String) => Unit],
+    requests: ConsentRequests = ConsentRequests.none)
 private[frontend] final case class ConsentGridRow(playerId: String,
     name: String, setting: String)
+
+/** One request of the turn that the viewer answered, with the
+  * requester's display name. */
+private[frontend] final case class ConsentRequestEntry(requester: String,
+    row: ConsentRequestRowState)
+
+/** The turn's requests about one power (reconsider design, "Requests
+  * list"), newest first. `powerId` finds the power again in a later
+  * projection. `change` sends an entry's new answer, and is `None` without
+  * control. */
+private[frontend] final case class ConsentRequests(powerId: String,
+    entries: Vector[ConsentRequestEntry],
+    change: Option[(ConsentRequestEntry, Boolean) => Unit])
+private[frontend] object ConsentRequests:
+  val none: ConsentRequests = ConsentRequests("", Vector.empty, None)
 
 /** What a site power's label, or a site card, opens (consent design,
   * "Frontend"; slice 3): the power's printed text, and the viewer's grid
@@ -38,6 +55,23 @@ private[frontend] final class SitePowerLinks(value: Option[GameProjection],
     * the marker opens that banner's grid. */
   def festivalGrid: Option[ConsentGrid] = bannerGrid("darkest-secret")
 
+  /** The turn's requests about the power `powerId`, when the viewer still
+    * rules it: what an open overlay redraws its list from. */
+  def requests(powerId: String): Option[ConsentRequests] = for
+    projection <- value
+    preferences <- projection.consentPreferences.find(_.powerId == powerId)
+  yield requestsOf(projection, preferences)
+
+  private def requestsOf(projection: GameProjection,
+      preferences: ConsentPreferencesState): ConsentRequests =
+    ConsentRequests(preferences.powerId, preferences.requests.map(row =>
+        ConsentRequestEntry(playerDisplayName(projection,
+          row.requesterPlayerId), row)),
+      submit.map(send => (entry, allow) => send(GameCommand.ReconsiderConsent(
+        entry.row.requesterPlayerId, entry.row.decisionId,
+        WalkerStartArgWire(entry.row.optionKind, entry.row.optionId),
+        allow))))
+
   private def gridOf(preferences: ConsentPreferencesState)
       : Option[ConsentGrid] =
     value.map(projection => ConsentGrid(preferences.rows.map(row =>
@@ -45,7 +79,8 @@ private[frontend] final class SitePowerLinks(value: Option[GameProjection],
           row.playerId), row.setting)),
       submit.map(send => (requester, setting) =>
         send(GameCommand.SetConsentPreference(preferences.powerId, requester,
-          setting)))))
+          setting))),
+      requestsOf(projection, preferences)))
 
 private[frontend] object SitePowerLinks:
   val none: SitePowerLinks = new SitePowerLinks(None, None)
@@ -53,9 +88,12 @@ private[frontend] object SitePowerLinks:
       : SitePowerLinks =
     new SitePowerLinks(Some(value), submit)
 
-/** The grid as the overlay draws it. A choice is shown at once and sent; the
-  * overlay ignores polls while open, so it keeps what was chosen, and a
-  * choice already shown sends nothing. */
+/** The grid as the overlay draws it (reconsider design, slice 1): the
+  * heading says what the viewer consents to, and each row is a player's
+  * name on its own line over that player's three settings, which the
+  * stylesheet lays in equal thirds. A choice is shown at once and sent;
+  * the overlay ignores polls while open, so it keeps what was chosen, and
+  * a choice already shown sends nothing. */
 private[frontend] object ConsentGridView:
   private val settings = Vector("never" -> "Never Allow",
     "case-by-case" -> "Case-by-case", "always" -> "Always Allow")
@@ -63,11 +101,16 @@ private[frontend] object ConsentGridView:
   def render(grid: ConsentGrid): dom.Element =
     val section = element("section", "consent-grid")
     section.appendChild(text("h4", "consent-grid-heading",
-      "Consent preferences"))
+      "Who may ignore this power"))
     grid.rows.foreach { row =>
       val line = element("div", "consent-grid-row")
       line.setAttribute("data-player-id", row.playerId)
       line.appendChild(text("span", "consent-grid-player", row.name))
+      // The three settings stand together under the name, and are named
+      // for the player they answer (implementation ruling R2).
+      val group = element("div", "consent-grid-choices")
+      group.setAttribute("role", "group")
+      group.setAttribute("aria-label", row.name)
       val choices = settings.map { (key, label) =>
         val choice = button(label, "consent-grid-choice")
         choice.setAttribute("data-setting", key)
@@ -81,8 +124,10 @@ private[frontend] object ConsentGridView:
             choices.foreach((_, other) => other.setAttribute("aria-pressed",
               (other eq choice).toString))
             grid.choose.foreach(_(row.playerId, key))
-        line.appendChild(choice)
+        group.appendChild(choice)
       }
+      line.appendChild(group)
       section.appendChild(line)
     }
+    section.appendChild(ConsentRequestsView.mount(grid.requests))
     section

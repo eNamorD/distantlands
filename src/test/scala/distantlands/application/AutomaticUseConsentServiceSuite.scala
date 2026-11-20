@@ -62,6 +62,20 @@ class AutomaticUseConsentServiceSuite extends munit.FunSuite:
     assertEquals(Look(readyAfter(waiting)).pawn(p1), coast)
     assertEquals(coastWarbands(waiting), 2)
 
+  test("an automatic power's answer stays final, either way (reconsider " +
+      "design, \"Not reconsidered\")"):
+    for (choice, allow) <- Vector((ConsentChoice.No, true),
+        (ConsentChoice.Yes, false)) do
+      val (service, _) = ConsentFixture.service(tyrantBesideAWalledCoast)
+      val answered = answering(service, travelling(service, 0L, coast),
+        choice)
+      assertEquals(service.handle(gameId, answered.nextSequence,
+        Commands.reconsiderConsent(p2, p1,
+          PowerUseStep.decisionId(Tyrant.id), PowerUseStep.use, allow)),
+        Left(GameApplicationError.CommandRejected(
+          OathViolation.ConsentUnavailable(
+            "an automatic power's answer cannot be changed"))))
+
   test("Deactivate kills nothing, and the refusal is remembered"):
     val (service, _) = ConsentFixture.service(tyrantBesideAWalledCoast)
     val no = answering(service, travelling(service, 0L, coast),

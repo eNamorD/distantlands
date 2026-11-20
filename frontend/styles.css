@@ -2323,21 +2323,56 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .overlay-confirm { display: grid; grid-template-columns: auto auto;
   justify-content: start; gap: 12px; }
 .overlay-question { grid-column: 1 / -1; margin: 0; }
-.consent-grid { margin-top: 16px; display: grid; gap: 8px; }
+.consent-grid { margin-top: 16px; display: grid;
+  grid-template-columns: minmax(0, 1fr); gap: 12px; font-size: 0.82em; }
+/* Beside the details the column keeps its content's width. On a phone it
+   stands alone on its line, and fills it up to a reading measure, so the
+   requests' sentences have the line's width (implementation ruling R16). */
+@media (max-width: 620px) {
+  .consent-grid { flex: 1 1 17rem; max-width: 22rem; }
+}
 .consent-grid-heading { margin: 0; color: var(--brass-label); }
-.consent-grid-row { display: flex; flex-wrap: wrap; align-items: center;
-  gap: 6px; }
-.consent-grid-player { flex: 1 1 6rem; min-width: 0; }
-.overlay-confirm button, .consent-grid-choice { min-width: 32px;
+/* A row is a player's name over that player's three settings (reconsider
+   design, slice 1). The settings are equal thirds of the column, so the
+   three always share a line. A third sets a setting's width, so its side
+   padding is 6px, which keeps every label on one line at 360px. */
+.consent-grid-row { display: grid; gap: 4px; }
+.consent-grid-player { overflow-wrap: anywhere; }
+.consent-grid-choices { display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+/* The turn's requests about the power (reconsider design, "Requests
+   list"), under the rows: a heading with more room above than below, then
+   one entry a request. An entry is what was asked, a quiet line for the
+   other powers the answer covers, and its state before one button. The
+   block takes no room while the power has no requests. */
+.consent-requests { display: grid; gap: 8px; margin-top: 8px; }
+.consent-requests[hidden] { display: none; }
+.consent-request-list { display: grid; gap: 12px; }
+.consent-request { display: grid; gap: 4px; }
+.consent-request-asked { margin: 0; overflow-wrap: anywhere; }
+.consent-request-also { margin: 0; color: var(--ink-dim);
+  font-size: max(0.85em, 0.7rem); overflow-wrap: anywhere; }
+.consent-request-answer { display: flex; align-items: center; gap: 8px; }
+.overlay-confirm button, .consent-grid-choice,
+.consent-request-change { min-width: 32px;
   min-height: 30px; padding: 4px 9px; color: var(--parchment-muted); background: var(--raised);
   border: 1px solid var(--brass-line); border-radius: 4px; font-size: 0.78rem;
   cursor: pointer; }
-.overlay-confirm button:hover, .consent-grid-choice:hover {
+.overlay-confirm button:hover, .consent-grid-choice:hover:not(:disabled),
+.consent-request-change:hover:not(:disabled, [aria-disabled="true"]) {
   border-color: var(--cream-bright); }
-.overlay-confirm button:focus-visible, .consent-grid-choice:focus-visible {
+.overlay-confirm button:focus-visible, .consent-grid-choice:focus-visible,
+.consent-request-change:focus-visible {
   outline: 2px solid var(--cream-focus); }
 .consent-grid-choice[aria-pressed="true"] { border-color: var(--selection);
   background: var(--selection-fill); }
+.consent-grid-choices .consent-grid-choice { padding: 4px 6px; }
+/* A setting the viewer cannot change, without control of the seat, wears
+   the Disabled face and answers no hover. So does a change that is
+   withheld: it keeps focus and a tap, and its hover note says why. */
+.consent-grid-choice:disabled, .consent-request-change:disabled,
+.consent-request-change[aria-disabled="true"] { opacity: 0.5;
+  cursor: not-allowed; }
 .card-overlay-close { position: absolute; top: 2vmin; right: 2vmin;
   min-width: 32px; min-height: 30px; padding: 4px 9px; color: #e8d9bb;
   background: var(--raised); border: 1px solid var(--brass-line); border-radius: 4px;
@@ -2468,6 +2503,6 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 @media (pointer: coarse) {
   .map-control, .dev-toggle, .dev-close, .log-new, .log-overlay-close,
   .chronicle-details-close, .card-overlay-close, .pane-switch-option, .overlay-confirm button,
-  .consent-grid-choice { min-width: 44px; min-height: 44px; }
+  .consent-grid-choice, .consent-request-change { min-width: 44px; min-height: 44px; }
   .pane-header { min-height: 52px; }
 }

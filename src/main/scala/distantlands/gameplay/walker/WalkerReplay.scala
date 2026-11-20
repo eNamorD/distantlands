@@ -1,5 +1,6 @@
 package distantlands.gameplay.walker
 
+import distantlands.gameplay.consent.ConsentUseMarks
 import distantlands.gameplay.operations.{OperationExecutor, PayCostSettlement}
 import distantlands.model.{ActionRef, Answered, CoreOperation, OathState, OathViolation, PendingTree, ReadyGame, WalkerEvent}
 
@@ -104,8 +105,12 @@ private[walker] object WalkerReplay:
             else validateParkedStep(step)
           answered = pending.copy(answered = pending.answered :+
             Answered(decisionId, payload, by))
-        yield ready.copy(game = ready.game.copy(current =
-          ready.game.current.copy(walkerPending = Some(answered))))
+        // The answer may act on a granted consent request: the mark is
+        // set here, from the ledger this replay position holds
+        // (reconsider design, "State").
+        yield ConsentUseMarks.answered(ready.copy(game = ready.game.copy(
+          current = ready.game.current.copy(walkerPending =
+            Some(answered)))), decisionId, payload, by)
 
       case step @ WalkerStepRecorded(_, DeltaPayload(ops), _) =>
         for

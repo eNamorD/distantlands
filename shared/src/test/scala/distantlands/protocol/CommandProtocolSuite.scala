@@ -42,6 +42,10 @@ class CommandProtocolSuite extends munit.FunSuite:
       Vector("p2")),
     AnswerConsent("always"),
     SetConsentPreference("site.narrow-pass.pass", "blue", "case-by-case"),
+    ReconsiderConsent("blue", "travel.destination",
+      WalkerStartArgWire("site", "site:deep-woods"), allow = true),
+    ReconsiderConsent("blue", "campaign.targets",
+      WalkerStartArgWire("button", "confirm"), allow = false),
     SavePlanAid(Vector(WalkerStartArgWire("denizen", "108"),
       WalkerStartArgWire("button", "title")),
       Vector(WalkerStartArgWire("banner", "darkest-secret"),
@@ -56,6 +60,29 @@ class CommandProtocolSuite extends munit.FunSuite:
     assertEquals(rejected(ActorlessCommandCodec.decode(json)),
       ProtocolDecodeFailure.InvalidValue("$.intent.favor",
         "expected a non-negative 32-bit integer"))
+
+  test("a change of answer needs every field, and a true or false"):
+    val whole = ujson.Obj("type" -> "reconsiderConsent",
+      "requesterId" -> "blue", "decisionId" -> "travel.destination",
+      "target" -> ujson.Obj("optionKind" -> "site",
+        "optionId" -> "site:deep-woods"), "allow" -> true)
+    def decoded(intent: ujson.Obj) = ActorlessCommandCodec.decode(
+      ujson.Obj("expectedNextSequence" -> 0, "intent" -> intent).toString)
+    assertEquals(decoded(whole), Right(ActorlessCommandRequest(0L,
+      ReconsiderConsent("blue", "travel.destination",
+        WalkerStartArgWire("site", "site:deep-woods"), allow = true))))
+    Vector("requesterId", "decisionId", "target", "allow").foreach { field =>
+      val partial = ujson.Obj.from(whole.value.filterNot(_._1 == field))
+      assert(decoded(partial).isLeft, field)
+    }
+    val worded = ujson.Obj.from(whole.value.toMap.updated("allow",
+      ujson.Str("yes")))
+    assertEquals(rejected(decoded(worded)),
+      ProtocolDecodeFailure.InvalidValue("$.intent.allow",
+        "expected boolean"))
+    val extra = ujson.Obj.from(whole.value.toMap.updated("granterId",
+      ujson.Str("red")))
+    assert(decoded(extra).isLeft)
 
   test("a walker answer carrying a deleted legacy tag is rejected"):
     val legacy = ujson.Obj("kind" -> "recover-choice", "choice" -> "continue")

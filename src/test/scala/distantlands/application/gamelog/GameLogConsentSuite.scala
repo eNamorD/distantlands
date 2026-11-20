@@ -1,9 +1,11 @@
 package distantlands.application.gamelog
 
 import distantlands.application.{ConsentFixture, GameAccepted,
-  GameApplicationService, TollConsentFixture}
+  GameApplicationService, TollConsentFixture, TreeDecision}
+import distantlands.gameplay.actions.travel.TravelProcedure
 import distantlands.gameplay.cards.NarrowPassSite
-import distantlands.gameplay.powers.travel.TravelFixture
+import distantlands.gameplay.powers.PayOrAsk
+import distantlands.gameplay.powers.travel.{TollRoads, TravelFixture}
 import distantlands.model._
 import distantlands.protocol.projection.{LogEntry, LogTakenBack}
 import distantlands.testkit.Table.{p1, p2, p3}
@@ -41,6 +43,73 @@ class GameLogConsentSuite extends munit.FunSuite:
       assert(lines.contains(asked), lines)
       assert(lines.contains("p2 gave consent."), lines)
     }
+
+  private def changing(service: GameApplicationService, at: GameAccepted,
+      allow: Boolean)(using munit.Location): GameAccepted =
+    accepted(service.handle(gameId, at.nextSequence,
+      Commands.reconsiderConsent(p2, p1,
+        TravelProcedure.destinationDecisionId, dunes, allow)))
+
+  test("a changed answer is written for every player, in both " +
+      "directions, and names the granter"):
+    val (service, _) = ConsentFixture.service()
+    val no = answering(service, asking(service), ConsentChoice.No)
+    val granted = changing(service, no, allow = true)
+    changing(service, granted, allow = false)
+    Vector(p1, p2, p3).foreach { viewer =>
+      val lines = texts(log(service, viewer))
+      val gives = lines.indexOf(
+        "p2 now gives consent to ignore Narrow Pass and select Dunes.")
+      val withdraws = lines.indexOf("p2 no longer gives consent to " +
+        "ignore Narrow Pass and select Dunes.")
+      assert(gives >= 0, lines)
+      assert(withdraws > gives, lines)
+      assert(lines.indexOf("p2 gave no consent.") < gives, lines)
+    }
+
+  test("a changed answer words its option as its request's line did, " +
+      "after the decision is gone"):
+    val (service, _) = ConsentFixture.service(TollConsentFixture.tolled)
+    val asked = accepted(service.handle(gameId,
+      TollConsentFixture.atTheStep(service).nextSequence,
+      TollConsentFixture.requestFree))
+    val no = answering(service, asked, ConsentChoice.No)
+    val paid = accepted(service.handle(gameId, no.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(TollRoads.decisionId,
+        DecisionAnswer.ChooseOneAnswer(PayOrAsk.pay)))))
+    accepted(service.handle(gameId, paid.nextSequence,
+      Commands.reconsiderConsent(p2, p1, TollRoads.decisionId,
+        TollRoads.free(TravelFixture.coast), allow = true)))
+    val lines = texts(log(service, p1))
+    assert(lines.contains("Asked p2 for consent to ignore Toll Roads and " +
+      "select Travel without paying."), lines)
+    assert(lines.contains("p2 now gives consent to ignore Toll Roads and " +
+      "select Travel without paying."), lines)
+
+  test("with two rulers asked, a changed answer names the changer's own " +
+      "power alone"):
+    val (service, _) = ConsentFixture.service(dunesBehindTwoRulers)
+    val no = answering(service, asking(service), ConsentChoice.No)
+    changing(service, no, allow = true)
+    val lines = texts(log(service, p3))
+    assert(lines.contains("Asked p3 and p2 for consent to ignore " +
+      "Forbidden Forest and Narrow Pass and select Dunes."), lines)
+    assert(lines.contains(
+      "p2 now gives consent to ignore Narrow Pass and select Dunes."), lines)
+
+  test("a changed answer's line is never struck through by the " +
+      "requester's undo"):
+    val (service, _) = ConsentFixture.service()
+    val yes = answering(service, asking(service), ConsentChoice.Yes)
+    val undone = accepted(service.handle(gameId, yes.nextSequence,
+      Commands.undo(p1)))
+    val refused = changing(service, undone, allow = false)
+    accepted(service.handle(gameId, refused.nextSequence,
+      Commands.undo(p1)))
+    val line = present(log(service, p1).find(entry =>
+      entry.spans.map(_.text).mkString == "p2 no longer gives consent " +
+        "to ignore Narrow Pass and select Dunes."), "the change's line")
+    assertEquals(line.takenBack, None)
 
   test("a refusal names the ruler"):
     val (service, _) = ConsentFixture.service()

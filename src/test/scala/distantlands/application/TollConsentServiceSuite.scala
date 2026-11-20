@@ -53,7 +53,7 @@ class TollConsentServiceSuite extends munit.FunSuite:
     val (service, _) = ConsentFixture.service(tolled)
     assertEquals(projector.project(gameId, asking(service).loaded, p2)
       .consentPrompt, Some(ConsentPromptProjection("p1",
-        Vector("Toll Roads"), "Travel without paying")))
+        Vector("Toll Roads"), "Travel without paying", adjust = "answer")))
 
   test("Yes travels without paying, as p1's own undoable step"):
     val (service, repository) = ConsentFixture.service(tolled)

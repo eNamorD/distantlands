@@ -21,6 +21,18 @@ class ConsentIntentMapperSuite extends munit.FunSuite:
     assertEquals(GameIntentMapper.map(GameIntent.AnswerConsent("maybe")),
       failure("$.intent.choice", "invalid consent choice 'maybe'"))
 
+  test("a change of answer maps its requester, decision, option and " +
+      "answer"):
+    assertEquals(GameIntentMapper.map(GameIntent.ReconsiderConsent("blue",
+      "travel.destination", WalkerStartArgWire("site", "site:deep-woods"),
+      allow = false)),
+      Right(PlayerIntent.ReconsiderConsent(PlayerId("blue"),
+        "travel.destination",
+        DecisionOptionRef.Site(SiteId("site:deep-woods")), allow = false)))
+    assertEquals(GameIntentMapper.map(GameIntent.ReconsiderConsent("blue",
+      "travel.destination", WalkerStartArgWire("moon", "x"), allow = true)),
+      failure("$.intent.target", "unknown decision option 'moon/x'"))
+
   test("a preference maps its power, requester and setting"):
     assertEquals(GameIntentMapper.map(GameIntent.SetConsentPreference(
       "site.narrow-pass.pass", "blue", "case-by-case")),

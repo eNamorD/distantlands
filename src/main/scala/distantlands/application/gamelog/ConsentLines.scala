@@ -5,7 +5,7 @@ import distantlands.gameplay.actions.minor.WarbandTransfers
 import distantlands.gameplay.powers.ConsentPowers
 import distantlands.model._
 import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
-  ConsentPreferencesCleared, ConsentRequested}
+  ConsentPreferencesCleared, ConsentReconsidered, ConsentRequested}
 import distantlands.protocol.projection.{LogKind, LogSpan}
 import LogSpan.Text
 
@@ -14,7 +14,9 @@ import LogSpan.Text
   * acts off turn. A preference line, and a reset, are formatted for their
   * granter alone. An automatic power's request names its refusing cards
   * and their rulers, and its answers say whether the power worked
-  * (automatic power consent design, "Game Log"). */
+  * (automatic power consent design, "Game Log"). A changed answer is
+  * public and names its granter, in two parallel wordings (reconsider
+  * design, "Game Log"). */
 private[gamelog] final class ConsentLines(words: LogWords,
     choices: ChoiceWords, powers: ConsentPowers):
   def lines(journal: LogJournal, at: Int, viewer: Option[PlayerId])
@@ -94,6 +96,34 @@ private[gamelog] final class ConsentLines(words: LogWords,
             case None => line(Vector(words.player(granter),
               Text(if granted then " gave consent."
                 else " gave no consent.")))
+        // "{Red} now gives consent to ignore {Narrow Pass} and select
+        // {Deep Woods}." or "{Red} no longer gives consent to ignore
+        // {Narrow Pass} and select {Deep Woods}." The powers are the
+        // changer's own on that request. The option reads as the
+        // request's line read it: from the states around the request the
+        // answer was given to, the latest one before here about that
+        // option that asked the granter. By now its decision may be gone.
+        case ConsentReconsidered(granter, requester, decisionId, target,
+            granted) =>
+          val asked = (at - 1 to 0 by -1).iterator.flatMap(index =>
+            journal.event(index) match
+              case ConsentRequested(request)
+                  if request.requester == requester &&
+                    request.decisionId == decisionId &&
+                    request.target == target =>
+                request.asks.find(_.granter == granter).map(index -> _)
+              case _ => None).nextOption()
+          val own = asked.toVector.flatMap(_._2.powers)
+          val option = (for
+            (index, _) <- asked
+            earlier <- journal.readyBefore(index)
+            later <- journal.readyAfter(index)
+          yield choices.option(target, earlier, later, viewer)).getOrElse(
+            choices.option(target, before, after, viewer))
+          line((words.player(granter) +: Text(
+            if granted then " now gives consent to ignore "
+            else " no longer gives consent to ignore ") +: named(own)) ++
+            (Text(" and select ") +: option) :+ Text("."))
         case ConsentPreferenceSet(granter, power, requester, setting)
             if viewer.contains(granter) =>
           val (verb, linking) = setting match

@@ -51,7 +51,7 @@ case object GraspingVines extends ContributingPower:
     NotePart.Text("Must kill a warband when traveling from its ruler's " +
       "sites, unless ruler consents.")))
   val step: PayOrAsk = PayOrAsk(id, GraspingVinesCard.id, decisionId,
-    mustKill, mustKillConsent)
+    mustKill, mustKillConsent, "Travel without killing")
 
   /** The free option of a Travel out of `site`. */
   def free(site: SiteId): DecisionOptionRef.Button = PayOrAsk.free(site.value)
@@ -97,7 +97,7 @@ case object GraspingVines extends ContributingPower:
         GraspingVines.step.question(route.player, route.source.value,
           "Grasping Vines: kill 1 warband to travel on?",
           DecisionOption.Button(PayOrAsk.pay, "Kill 1 warband"),
-          "Travel without killing") +:
+          GraspingVines.step.freeLabel) +:
           TravelRoute.beforeMove(operations, Vector(GraspingVines.step.outcome(
             killed, Vector(Note(id, _ => Some(GraspingVines.spared(
               PowerSourceRef.Card(cardId), NoteArg.Player(granter))))))))

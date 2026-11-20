@@ -11,7 +11,7 @@ import distantlands.model._
 import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
   ConsentRequested}
 import distantlands.protocol.projection.ConsentAskProjection
-import distantlands.testkit.Table
+import distantlands.testkit.{Outcomes, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.{accepted, present}
 import distantlands.testkit.Commands
@@ -71,6 +71,29 @@ class CampaignConsentServiceSuite extends munit.FunSuite:
     val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
     assertEquals(reloaded.load(gameId).map(_.map(game =>
       (game.state, game.undo))), Right(Some((chosen.state, chosen.undo))))
+
+  test("after a late refusal a pick that includes Deep Woods is " +
+      "refused; a pick on a grant marks it and locks the answer"):
+    val (service, _) = Table.from(passRuledByP2).service()
+    val yes = answering(service, asking(service), ConsentChoice.Yes)
+    def change(allow: Boolean): GameCommand = Commands.reconsiderConsent(p2,
+      p1, CampaignIds.targets, deepWoodsRef, allow)
+    val pickWoods = Commands.resolveWalker(p1, TreeDecision(
+      CampaignIds.targets,
+      DecisionAnswer.ChooseManyAnswer(Vector(deepWoodsRef))))
+    val refused = accepted(service.handle(gameId, yes.nextSequence,
+      change(allow = false)))
+    assert(service.handle(gameId, refused.nextSequence, pickWoods).isLeft)
+    val granted = accepted(service.handle(gameId, refused.nextSequence,
+      change(allow = true)))
+    val chosen = accepted(service.handle(gameId, granted.nextSequence,
+      pickWoods))
+    assertEquals(Outcomes.ready(chosen.state).game.current.useMarks
+      .map(mark => (mark.requester, mark.decisionId, mark.target)),
+      Set((p1, CampaignIds.targets, deepWoodsRef: DecisionOptionRef)))
+    assertEquals(service.handle(gameId, chosen.nextSequence,
+      change(allow = false)), Left(GameApplicationError.CommandRejected(
+        OathViolation.ConsentUnavailable("p1 has acted on this consent"))))
 
   test("No leaves Deep Woods with the ordinary reason"):
     val (service, _) = Table.from(passRuledByP2).service()

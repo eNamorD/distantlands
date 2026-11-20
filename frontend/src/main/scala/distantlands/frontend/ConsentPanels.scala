@@ -44,6 +44,21 @@ private[frontend] object ConsentPanels:
     s"Waiting for ${names.mkString(if wait.either then " or " else " and ")}" +
       awaited
 
+  /** Where the granter can come back to this (reconsider design, "Prompt
+    * notice"; implementation ruling R21): "You can change this answer,
+    * and your consent preferences, by clicking on the Narrow Pass power."
+    * An automatic power's answer stays final, so its prompt keeps the
+    * older words about preferences. An ask nobody rules, a payer's or an
+    * Imperial law's, has no power to click and reads no notice. */
+  def notice(asked: ConsentPromptState): Option[String] =
+    val powers = ConsentAsking.listed(asked.powers)
+    asked.adjust match
+      case "answer" => Some("You can change this answer, and your " +
+        s"consent preferences, by clicking on the $powers power.")
+      case "preferences" => Some("You can adjust your consent " +
+        s"preferences by clicking on the $powers power.")
+      case _ => None
+
   /** The prompt, when the viewer is asked. */
   def render(value: GameProjection, canControl: Boolean, panel: dom.Element,
       controls: TableControls): Unit =
@@ -60,8 +75,7 @@ private[frontend] object ConsentPanels:
         row.appendChild(answer)
       }
       section.appendChild(row)
-      section.appendChild(text("p", "consent-notice",
-        "You can adjust your consent preferences by clicking on the " +
-          s"${ConsentAsking.listed(asked.powers)} power."))
+      notice(asked).foreach(words =>
+        section.appendChild(text("p", "consent-notice", words)))
       panel.appendChild(section)
     }
