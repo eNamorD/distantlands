@@ -40,8 +40,9 @@ class ConsentRequestsLiveSuite extends munit.FunSuite:
       SitePowerLinks.of(value, Some(command => sent :+= command))
     overlay.showPower("Pass", Vector("Printed text."),
       links(first).grid(pass), opener)
-    def snapshot(value: GameProjection): Unit =
-      overlay.showConsentRequests(links(value))
+    def snapshot(value: GameProjection, position: Long = 1L,
+        failure: Option[AnyRef] = None): Unit =
+      overlay.showConsentRequests(links(value), position, failure)
     def change: dom.html.Button =
       one(root, ".consent-request-change").asInstanceOf[dom.html.Button]
     def states: Vector[String] =
@@ -121,18 +122,44 @@ class ConsentRequestsLiveSuite extends munit.FunSuite:
     }
 
   test("the same rows are not redrawn, so an open hover note survives a " +
-      "poll; a click is redrawn at the next snapshot (R20)"):
+      "poll"):
     withOverlay(tableWhereRedAnswered(row("refused", "open"))) { open =>
       val before = open.change
       open.snapshot(tableWhereRedAnswered(row("refused", "open")))
       assert(open.change eq before)
-      before.click()
+    }
+
+  test("a clicked button waits through a repaint of the same position, " +
+      "so a second click sends nothing (R20)"):
+    withOverlay(tableWhereRedAnswered(row("refused", "open"))) { open =>
+      val same = tableWhereRedAnswered(row("refused", "open"))
+      open.snapshot(same, position = 7L)
+      open.change.click()
+      // A log page lands and repaints the same position.
+      open.snapshot(same, position = 7L)
       assertEquals(open.change.getAttribute("aria-disabled"), "true")
-      // The server refused: the same rows come back, and the button with
-      // them.
-      open.snapshot(tableWhereRedAnswered(row("refused", "open")))
-      assertEquals(open.change.getAttribute("aria-disabled"), null)
+      open.change.click()
       assertEquals(open.sent.size, 1)
+    }
+
+  test("a clicked button comes back when the server answers: with a new " +
+      "position, or with a failure"):
+    withOverlay(tableWhereRedAnswered(row("refused", "open"))) { open =>
+      val same = tableWhereRedAnswered(row("refused", "open"))
+      open.snapshot(same, position = 7L)
+      open.change.click()
+      open.snapshot(same, position = 8L)
+      assertEquals(open.change.getAttribute("aria-disabled"), null)
+      open.change.click()
+      val refusal = new Object
+      open.snapshot(same, position = 8L, failure = Some(refusal))
+      assertEquals(open.change.getAttribute("aria-disabled"), null)
+      // The same failure, still shown, answers no later click.
+      open.change.click()
+      open.snapshot(same, position = 8L, failure = Some(refusal))
+      assertEquals(open.change.getAttribute("aria-disabled"), "true")
+      open.snapshot(same, position = 8L, failure = Some(new Object))
+      assertEquals(open.change.getAttribute("aria-disabled"), null)
     }
 
   test("a closed overlay, and one showing no column, ignore snapshots"):
@@ -144,9 +171,9 @@ class ConsentRequestsLiveSuite extends munit.FunSuite:
     dom.document.body.appendChild(opener)
     val links = SitePowerLinks.of(tableWhereRedAnswered(
       row("refused", "open")), None)
-    overlay.showConsentRequests(links)
+    overlay.showConsentRequests(links, 1L, None)
     overlay.showText("Oath", Vector("Rules the most sites"), opener)
-    overlay.showConsentRequests(links)
+    overlay.showConsentRequests(links, 1L, None)
     assertEquals(all(root, ".consent-requests"), Vector.empty)
     overlay.dispose()
     root.remove()
@@ -163,7 +190,7 @@ class ConsentRequestsLiveSuite extends munit.FunSuite:
       CardInspection.openPower("Pass", Vector("Printed text."),
         SitePowerLinks.of(tableWhereRedAnswered(), None).grid(pass), origin)
       shell.showConsentRequests(SitePowerLinks.of(tableWhereRedAnswered(
-        row("refused", "open")), None))
+        row("refused", "open")), None), 1L, None)
       assertEquals(all(browser.mount, ".consent-request-asked")
         .map(_.textContent), Vector("Blue asked to select Deep Woods"))
     finally

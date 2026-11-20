@@ -47,6 +47,20 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
   private var shownRequests = Option.empty[ConsentRequests]
   /** Whether a click since the last redraw waits on the server's word. */
   private var changeSent = false
+  /** The position and the failure the last repaint showed, and those
+    * shown when the waiting click was made. The server's word on a click
+    * is a new position or a new failure; any other repaint, such as a log
+    * page landing, leaves the button waiting (implementation ruling
+    * R20). */
+  private var shownStamp = Option.empty[(Long, Option[AnyRef])]
+  private var sentStamp = Option.empty[(Long, Option[AnyRef])]
+
+  private def sameStamp(one: (Long, Option[AnyRef]),
+      other: (Long, Option[AnyRef])): Boolean =
+    one._1 == other._1 && ((one._2, other._2) match
+      case (Some(first), Some(second)) => first eq second
+      case (None, None) => true
+      case _ => false)
 
   /** `requests` with each click noted, so the next snapshot redraws the
     * list even when the server refused and the rows are the same
@@ -54,6 +68,7 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
   private def noting(requests: ConsentRequests): ConsentRequests =
     requests.copy(change = requests.change.map(send => (entry, allow) =>
       changeSent = true
+      sentStamp = shownStamp
       send(entry, allow)))
 
   /** The consent column for `grid`, with its requests remembered. */
@@ -65,14 +80,20 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
 
   /** Each snapshot's requests for the power the open column is about
     * (reconsider design, "Live while open"): the list is redrawn when it
-    * differs from what is drawn, or after a click. The preference rows
-    * are left as the reader set them. A power the viewer no longer rules
+    * differs from what is drawn, or when the server has answered a click:
+    * `position`, the snapshot's next sequence, or `failure`, the failure
+    * the table shows, is new since the click. The preference rows are
+    * left as the reader set them. A power the viewer no longer rules
     * lists nothing. */
-  def showConsentRequests(links: SitePowerLinks): Unit =
+  def showConsentRequests(links: SitePowerLinks, position: Long,
+      failure: Option[AnyRef]): Unit =
+    val stamp = (position, failure)
+    val answered = changeSent && sentStamp.forall(!sameStamp(_, stamp))
+    shownStamp = Some(stamp)
     if isOpen then shownRequests.foreach { shown =>
       val next = links.requests(shown.powerId).getOrElse(
         ConsentRequests(shown.powerId, Vector.empty, None))
-      if changeSent || next.entries != shown.entries ||
+      if answered || next.entries != shown.entries ||
           next.change.isEmpty != shown.change.isEmpty then
         changeSent = false
         val noted = noting(next)
