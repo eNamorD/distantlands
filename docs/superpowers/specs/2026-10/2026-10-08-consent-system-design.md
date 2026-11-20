@@ -167,6 +167,11 @@ stack. The walker gains one new thing: options in an askable state.
   `ConsentAsk` is a granter, its powers and an optional answer. Slice 1 has
   one ask at most.
 - `turn`: the turn `answers` belongs to.
+- `history`: the requests settled in `turn`, each with its asks as
+  answered, which a granter changes an answer through. The use mark that
+  locks an answer lives in the game. Both are described in the
+  [reconsider design](../2026-11/2026-11-20-consent-reconsider-design.md),
+  "State".
 
 The state sits outside `CurrentGameState` because undo rewinds to a saved
 `CommandBatch.before`. Consent state has to be carried across that rewind.
@@ -184,6 +189,8 @@ consent stays off the undo stack.
 - `ConsentPreferenceSet(granter, power, requester, setting)`, where
   `setting` is `Never | CaseByCase | Always`. Case-by-case removes the entry.
 - `ConsentPreferencesCleared(granter, power)`
+- `ConsentReconsidered(granter, requester, decisionId, target, granted)`,
+  a granter's changed answer (reconsider design, "Events").
 
 A manual Never Allow or Always Allow emits `ConsentAnswered`, anything it
 settles, and then `ConsentPreferenceSet` in the same append, so the
@@ -255,7 +262,9 @@ Validate that `granter` rules the power's card now, the power is waivable,
 **While a request is pending,** `ResolveWalker` and `RollWalker` are
 rejected with a new `OathViolation.ConsentPending`. Accepted: `AnswerConsent`
 from an asked granter, `Undo` from the requester, and
-`SetConsentPreference` from anyone.
+`SetConsentPreference` from anyone. `ReconsiderConsent` is accepted too,
+except about the option the waiting request names (reconsider design,
+"Commands").
 
 **After every command,** the application compares each stored preference
 with the current ruler of its card. Where they differ it appends
