@@ -138,6 +138,15 @@ class ConsentRequestsViewSuite extends munit.FunSuite:
       "You no longer rule every power this answer covers.")
     assertEquals(button(lapsed).getAttribute("aria-disabled"), "true")
 
+  test("once the game is over an entry is withheld with that reason " +
+      "(R24)"):
+    val (block, sent) = blockOf(Vector(row("allowed", "over")))
+    assertEquals(button(block).getAttribute("aria-disabled"), "true")
+    assertEquals(button(block).getAttribute("data-tip"),
+      "The game is over.")
+    button(block).click()
+    assertEquals(sent(), Vector.empty)
+
   test("an automatic power's entry reads what happened, with the other " +
       "answer's button withheld (R18)"):
     val (stopped, sent) = blockOf(Vector(row("refused", "automatic",

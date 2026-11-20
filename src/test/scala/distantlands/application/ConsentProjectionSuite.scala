@@ -240,6 +240,16 @@ class ConsentProjectionSuite extends munit.FunSuite:
     assertEquals(requestsShownTo(p2, paid).map(_.label),
       Vector("Travel without paying"))
 
+  test("once the game is over an entry stays listed and cannot be " +
+      "changed (R24)"):
+    val base = passRuledByP2
+    val answered = answeredByP2(passAsk, dunes, granted = true,
+      base.consent, base)
+    val over = base.updateCurrent(_.copy(result =
+      Some(GameResult(p1, VictoryKind.Usurper))))
+    assertEquals(shownToP2With(over, answered).consentPreferences
+      .flatMap(_.requests).map(_.change), Vector("over"))
+
   test("an entry whose option the viewer may not identify is not listed, " +
       "so its id never leaves the server (R19)"):
     // p1 holds Tyrant facedown: p2 may not name it.

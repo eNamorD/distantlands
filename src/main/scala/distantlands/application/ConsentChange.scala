@@ -12,6 +12,8 @@ import distantlands.model._
 private[application] enum ConsentChange(val key: String):
   /** Nothing stands in the way. */
   case Open extends ConsentChange("open")
+  /** The game is over (implementation ruling R24). */
+  case Over extends ConsentChange("over")
   /** A request about the same option waits on an answer (implementation
     * rulings R8 and R14). */
   case Waiting extends ConsentChange("waiting")
@@ -37,8 +39,9 @@ private[application] object ConsentChange:
       entry: ConsentRequest, ask: ConsentAsk): ConsentChange =
     val lost = ask.powers.find(power =>
       !powers.granter(ready, power).contains(granter))
-    if waiting(ready, entry.requester, entry.decisionId, entry.target) then
-      Waiting
+    if ready.game.current.result.nonEmpty then Over
+    else if waiting(ready, entry.requester, entry.decisionId,
+        entry.target) then Waiting
     else if entry.use.nonEmpty then Automatic
     else lost match
       case Some(power) => Lapsed(power)

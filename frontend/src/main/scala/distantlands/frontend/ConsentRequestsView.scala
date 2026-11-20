@@ -107,6 +107,7 @@ private[frontend] object ConsentRequestsView:
         "A request about this option is waiting for an answer.")
       case "lapsed" => HoverTip.withhold(other,
         "You no longer rule every power this answer covers.")
+      case "over" => HoverTip.withhold(other, "The game is over.")
       // An automatic power's answer, and any value a newer server sends.
       case _ => HoverTip.withhold(other, "This answer cannot be changed.")
     answer.appendChild(other)

@@ -61,8 +61,8 @@ final case class ConsentPreferenceRowProjection(playerId: String,
   * `use` is the card whose automatic power the request was about.
   * `change` says whether the answer may be changed now: `open`, `used`
   * (the requester acted on it), `automatic`, `waiting` (a request about
-  * the same option waits) or `lapsed` (the viewer lost a power the answer
-  * covers). */
+  * the same option waits), `lapsed` (the viewer lost a power the answer
+  * covers) or `over` (the game is over). */
 final case class ConsentRequestRowProjection(requesterPlayerId: String,
     decisionId: String, optionKind: String, optionId: String, label: String,
     answer: String, alsoPowers: Vector[String], use: Option[String],
