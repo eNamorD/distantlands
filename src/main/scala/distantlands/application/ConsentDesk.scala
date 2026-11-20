@@ -1,12 +1,13 @@
 package distantlands.application
 
 import distantlands.gameplay.OathRules
+import distantlands.gameplay.consent.ConsentUseMarks
 import distantlands.gameplay.powerresolver.PowerUseStep
 import distantlands.gameplay.powers.ConsentPowers
 import distantlands.model._
 import distantlands.model.OathEvent.{CommandAccepted, ConsentAnswered,
-  ConsentPreferenceSet, ConsentPreferencesCleared, ConsentRequestWithdrawn,
-  ConsentRequested}
+  ConsentPreferenceSet, ConsentPreferencesCleared, ConsentReconsidered,
+  ConsentRequestWithdrawn, ConsentRequested}
 
 /** The consent commands (consent design, "Commands"). Each answers with the
   * events to append as one batch, or why it cannot run. Consent events open
@@ -114,6 +115,45 @@ private[application] final class ConsentDesk(rules: OathRules,
     events <- settled(state, Vector(ConsentAnswered(granter,
       choice.granted)), preferences)
   yield events
+
+  /** `granter` changes the answer they gave `requester` about `target`
+    * at `decisionId` this turn (reconsider design, "Commands"; rulings 20
+    * to 22). It resumes nothing: a late grant only reopens the option.
+    * Refused once the game is over; when `granter` answered no such
+    * request this turn; for an automatic power's answer; when `granter`
+    * no longer rules a power they were asked about, which also refuses
+    * the asks nobody rules (a payer's, an Imperial law's); while the
+    * answer is locked; when the answer is already that; and while a
+    * request about the same option waits (implementation ruling R8). */
+  def reconsider(state: OathState, granter: PlayerId, requester: PlayerId,
+      decisionId: String, target: DecisionOptionRef, allow: Boolean)
+      : Result =
+    def refuse(reason: String): OathViolation =
+      OathViolation.ConsentUnavailable(reason)
+    for
+      ready <- playing(state)
+      found <- ready.consent.asked(granter, requester, decisionId, target,
+        ConsentTurn.of(ready)).toRight(refuse(s"${granter.value} answered " +
+        "no consent request about that option this turn"))
+      entry = found._1
+      ask = found._2
+      _ <- Either.cond(entry.use.isEmpty, (),
+        refuse("an automatic power's answer cannot be changed"))
+      _ <- ask.powers.find(power =>
+          !powers.granter(ready, power).contains(granter))
+        .map(power => refuse(
+          s"${granter.value} no longer rules ${power.value}")).toLeft(())
+      _ <- Either.cond(!ConsentUseMarks.locked(ready, requester, decisionId,
+        target), (),
+        refuse(s"${requester.value} has acted on this consent"))
+      _ <- Either.cond(!ask.answer.contains(allow), (),
+        refuse(s"${granter.value}'s answer is already that"))
+      _ <- Either.cond(!ready.consent.pending.exists(waiting =>
+          waiting.requester == requester &&
+            waiting.decisionId == decisionId && waiting.target == target),
+        (), refuse("a consent request about that option is waiting"))
+    yield Vector(ConsentReconsidered(granter, requester, decisionId, target,
+      allow))
 
   /** The requester's Undo while their request waits (ruling 14). Anyone
     * else's Undo waits for the answer. */

@@ -225,6 +225,11 @@ final class GameApplicationService(
           setting)) =>
         consentBatch(gameId, journal, consent.setPreference(journal.state,
           granter, power, requester, setting), expected, nextSequence)
+      case Issued(granter, PlayerIntent.ReconsiderConsent(requester,
+          decisionId, target, allow)) =>
+        consentBatch(gameId, journal, consent.reconsider(journal.state,
+          granter, requester, decisionId, target, allow), expected,
+          nextSequence)
       case Issued(ally, PlayerIntent.SavePlanAid(offer)) =>
         consentBatch(gameId, journal, aid.save(journal.state, ally, offer),
           expected, nextSequence)

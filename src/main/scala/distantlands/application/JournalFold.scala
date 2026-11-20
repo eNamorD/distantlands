@@ -104,7 +104,17 @@ private[application] final class JournalFold(
           val settled = closedAt(record.index)
           evolve(settled.state, event).left
             .map(EventReplayFailure(record.index, _))
-            .map(after => Progress(settled.recorded(record, after), None))
+            .map { after =>
+              val recorded = settled.recorded(record, after)
+              // An answer changed to a refusal ends redo, as a new batch
+              // does: a taken-back choice may have relied on the grant.
+              // A change to a grant only permits more, so it leaves redo
+              // (reconsider design, implementation ruling R7).
+              Progress(event match
+                case OathEvent.ConsentReconsidered(_, _, _, _, false) =>
+                  recorded.copy(redo = Nil)
+                case _ => recorded, None)
+            }
         case event => evolve(journal.state, event).left
           .map(EventReplayFailure(record.index, _))
           .map(after => copy(journal = journal.recorded(record, after)))
