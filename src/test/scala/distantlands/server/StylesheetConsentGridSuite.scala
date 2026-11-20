@@ -4,7 +4,11 @@ import java.nio.file.{Files, Path}
 
 /** The consent column's preference rows (reconsider design, slice 1): a
   * player's name on its own line, and that player's three settings below
-  * it in equal thirds, so no setting wraps alone. */
+  * it in equal thirds, so no setting wraps alone.
+  *
+  * The suite pins declarations, and that no second rule overrides them.
+  * The layout itself, three settings on one line with every label whole,
+  * is covered only by the browser check at desktop width and at 360px. */
 class StylesheetConsentGridSuite extends munit.FunSuite:
   private val css = Files.readString(Path.of("frontend", "styles.css"))
 
@@ -21,6 +25,29 @@ class StylesheetConsentGridSuite extends munit.FunSuite:
     val to = css.indexOf(".card-overlay-close {", from)
     assert(from >= 0 && to > from, "the consent rules were not found")
     css.substring(from, to)
+
+  /** How many rules name `selector` as a whole selector of their list. */
+  private def rulesOpenedBy(selector: String): Int =
+    (java.util.regex.Pattern.quote(selector) + "\\s*[,{]").r
+      .findAllIn(css).size
+
+  /** Each rule whose selector names a setting, as its selector list and
+    * its declarations: the shared Control face, its states, the thirds'
+    * padding and the touch size. */
+  private def settingRules: Vector[(String, String)] =
+    val rule = """([^{}]+)\{([^{}]*)\}""".r
+    val setting = """\.consent-grid-choice(?![\w-])""".r
+    rule.findAllMatchIn(css).map(found =>
+        found.group(1).trim -> found.group(2))
+      .filter((selector, _) => setting.findFirstIn(selector).nonEmpty)
+      .toVector
+
+  test("each layout selector opens one rule, so no later rule overrides " +
+      "what this suite reads"):
+    Vector(".consent-grid", ".consent-grid-heading", ".consent-grid-row",
+      ".consent-grid-player", ".consent-grid-choices",
+      ".consent-grid-choices .consent-grid-choice").foreach(selector =>
+      assertEquals(rulesOpenedBy(selector), 1, selector))
 
   test("a row stacks the player's name over the settings"):
     val row = rule(".consent-grid-row")
@@ -41,6 +68,10 @@ class StylesheetConsentGridSuite extends munit.FunSuite:
       "  min-height: 30px; padding: 4px 9px;"), consentRules)
     assert(rule(".consent-grid-choices .consent-grid-choice")
       .contains("padding: 4px 6px;"))
+    // The thirds were measured with the label at this size: one rule sets
+    // a setting's font size, and it is the shared face's 0.78rem.
+    assertEquals(settingRules.map(_._2).filter(_.contains("font-size")).map(
+      _.contains("font-size: 0.78rem;")), Vector(true))
 
   test("rows stand further apart than a name stands from its settings"):
     assert(rule(".consent-grid").contains("gap: 12px;"))
