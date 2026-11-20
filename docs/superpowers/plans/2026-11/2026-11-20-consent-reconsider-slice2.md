@@ -84,7 +84,7 @@ from R7.
 ## What the code says (read at `00caaa079`)
 
 The spec leaves five points to the code. This is what the code says about
-each; the open questions follow.
+each; the rulings follow.
 
 **The event that records an answer.** Every answer to a parked decision
 is journalled as `WalkerStepRecorded(nodeId, ChoicePayload(decisionId,
@@ -140,85 +140,31 @@ calls `appendBatch`: the events are folded, then `consent.stale` and
 takes the same path. Nothing else runs after it: no `consent.opened`, no
 resume.
 
-## Open questions
+## Rulings
 
-The tasks below are written for the recommended answer to each question.
-Production code waits for the rulings. When a ruling differs, the listed
-steps change as stated, and this section becomes "Rulings".
+Recorded in the
+[implementation rulings](../../specs/2026-11/2026-11-20-consent-reconsider-design-implementation-rulings.md);
+the tasks below apply them.
 
-- **Q1. Redo after a change.** Blue selects Deep Woods on Red's grant,
-  then undoes it. The answer unlocks and Red refuses. Blue's Redo would
-  restore the batch's saved `after` state: Blue at Deep Woods and the
-  mark set, under a ledger that now says refused. The redo stack is
-  emptied only by a `CommandAccepted` today, and a consent event writes
-  none. The spec does not mention Redo.
-  - A (recommended): a `ConsentReconsidered` empties the redo stack, as a
-    new command batch does. One line in `JournalFold`; the same in live
-    play and replay.
-  - B: only a change to a refusal empties it.
-  - C: leave Redo alone, and accept a refused answer whose move stands.
-  - If B: in Task 5 Step 4 the fold empties `redo` only when
-    `granted` is false, and Step 2's redo test changes its first change
-    to a refusal only. If C: delete the `JournalFold` edit from Task 5
-    Step 4 and the redo test from Task 5 Step 2.
-- **Q2. A change while a request about the same option waits.** Red
-  refused, Green's ask closed unanswered. Red changes to a grant, Blue
-  asks again, and the new request waits on Green (ruling 23). If Red now
-  changes back to a refusal and Green then grants, `ConsentDesk.settled`
-  tries to answer Blue's parked decision with an option Red's refusal
-  blocks, and Green's answer is rejected with a walker error.
-  - A (recommended): the desk refuses a change while the waiting request
-    names the same requester, decision and option. Any other change is
-    still accepted while a request waits.
-  - B: the desk refuses every change while any request waits
-    (`ConsentPending`).
-  - C: accept the change; `settled` learns to settle without resuming.
-  - If B: Task 5 Step 4's last check becomes
-    `ready.consent.pending.isEmpty` with `OathViolation.ConsentPending`,
-    and Step 2's test expects that. If C: a new task, not planned here.
-- **Q3. A co-granter's Yes that the refusal kept back.** Green grants
-  first, then Red refuses. The request settles refused and Green's grant
-  is never remembered (ruling 14: a grant is remembered only once the
-  request settles granted). The history entry holds both answers. Red
-  then changes to a grant, so the entry reads granted by both.
-  - A: literal spec. Only Red's own keys are rewritten. The ledger holds
-    no grant from Green, the option is askable again, and Green is asked
-    a second time, although Green's entry already reads "Allowed".
-  - B (recommended): when a change makes the entry granted, each other
-    answered grant in it is remembered for its keys, as when a request
-    settles granted, unless the key already holds an answer. Green is not
-    asked twice. Ruling 23's case (Green's ask unanswered) is unchanged:
-    the entry is not granted, and a new request asks Green.
-  - If A: delete `restored` from Task 2 Step 3 and the test "a change
-    that makes the request granted remembers a co-granter's grant" from
-    Task 2 Step 1.
-- **Q4. The entry when a granter is asked again about the same option.**
-  The spec: "At most one entry per requester, decision, option and
-  answering granter. A later request with the same four replaces the
-  earlier one." An earlier entry can hold a second granter's answer too.
-  - A: a later request removes the whole earlier entry in which one of
-    its answering granters answered. The second granter of that entry
-    loses their entry and can no longer change their answer, though the
-    ledger still holds it.
-  - B (recommended): a later request takes over only the asks its own
-    granters answered before. Those asks leave the earlier entry; the
-    entry stays while another answered ask is left in it.
-  - If A: in Task 1 Step 3 `joined` filters out every earlier entry
-    about the option that shares an answering granter, and Step 1's test
-    "a later request takes over..." expects the single later entry.
-- **Q5. How a mark is scoped to a turn.** Decision ids repeat across
-  turns, and the ledger's answers and history belong to
-  `ConsentTurn(round, activePlayer)`.
-  - A (recommended): a mark carries its `ConsentTurn`. It is set only
-    when the ledger's turn is the turn of the game the fold meets, and an
-    answer is locked when a mark for the current turn names it. Setting a
-    mark drops the marks of other turns, so the set stays small. Great
-    Clock moves the round marker inside a turn; `advanceRound` already
-    renames the ledger's turn there and now renames the marks with it.
-  - B: marks carry no turn and the turn-end operation clears them. That
-    adds a second place that must not be forgotten, and a missed clear
-    locks next turn's answer.
-  - If B: a different Task 4, not planned here.
+- **R7.** Only a `ConsentReconsidered` whose `granted` is false empties
+  the redo stack. A change to a grant leaves it, and the redo then
+  succeeds. Tests cover both directions. Task 5.
+- **R8.** The desk refuses a change while a waiting request names the
+  same requester, decision and option. Slice 3's projection gives such an
+  entry the `change` value `waiting`, with the hover note "A request
+  about this option is waiting for an answer." Task 5.
+- **R9.** When a change makes the entry granted, each other answered
+  grant in it is remembered for its keys, unless the key already holds an
+  answer. That grant stays its granter's own to reconsider, which a test
+  shows. Task 2.
+- **R10.** A later request takes over only the asks its own granters
+  answered before; the earlier entry stays while another answered ask is
+  left in it. Task 1.
+- **R11.** A mark carries its `ConsentTurn`; it is set only when the
+  ledger's turn is the game's turn; setting one drops other turns' marks;
+  a round rename renames the marks with the ledger's turn. Task 4.
+- The orchestrator also asked for one test of a deferred ask the "still
+  rules" check refuses. Task 5 tests the Chancellor's Eye.
 
 ## Decisions already made in this plan
 
@@ -244,7 +190,7 @@ reviewer can reject it.
   "the game is over"; "p2 answered no consent request about that option
   this turn"; "an automatic power's answer cannot be changed"; "p2 no
   longer rules site.narrow-pass.pass"; "p1 has acted on this consent";
-  "p2's answer is already that"; and for Q2 "a consent request about
+  "p2's answer is already that"; and for R8 "a consent request about
   that option is waiting".
 - The wire names: event type `consent.reconsidered` with the fields
   `granter`, `requester`, `decisionId`, `target` and `granted`; intent
@@ -475,7 +421,7 @@ Add after `answersAt`:
       entry.target == target
 
   /** The turn's history with the settled `request` joined to it
-    * (reconsider design, "State"; implementation ruling on Q4). A granter
+    * (reconsider design, "State"; implementation ruling R10). A granter
     * answers a requester's option in one entry at most: an ask of an
     * earlier entry about the same option whose granter answers again in
     * `request` leaves that entry, and an entry left with no answered ask
@@ -594,6 +540,13 @@ Add to `ConsentStateSuite`, after Task 1's tests:
     assertEquals(changed.answers.get(key(police)),
       Some(ConsentAnswer.Granted.by(green)))
     assert(changed.grantedTo(blue, destination, woods, turn))
+    // The remembered grant is Green's own to change (R9).
+    val greenRefuses = accepted(changed.reconsidered(green, blue,
+      destination, woods, granted = false, turn))
+    assertEquals(greenRefuses.answers.get(key(police)),
+      Some(ConsentAnswer.Refused.by(green)))
+    assertEquals(greenRefuses.answers.get(key(pass)),
+      Some(ConsentAnswer.Granted.by(red)))
 
   test("a change leaves the preferences and the waiting request alone"):
     val set = refusedByRedAlone.preferenceSet(red, pass, blue,
@@ -682,7 +635,7 @@ Add after `withdrawn`:
     * request's other keys. When the change makes the request granted, a
     * co-granter's grant that the refusal kept from being remembered is
     * remembered for its keys, unless one already holds an answer
-    * (implementation ruling on Q3). Preferences and a waiting request are
+    * (implementation ruling R9). Preferences and a waiting request are
     * untouched (ruling 24). Fails when `granter` answered no such request
     * at `now`. */
   def reconsidered(granter: PlayerId, requester: PlayerId,
@@ -1286,6 +1239,7 @@ Create `src/test/scala/distantlands/application/ConsentReconsiderServiceSuite.sc
 ```scala
 package distantlands.application
 
+import distantlands.gameplay.actions.ImperialLaws
 import distantlands.gameplay.actions.travel.TravelProcedure
 import distantlands.gameplay.cards.NarrowPassSite
 import distantlands.gameplay.powers.WalkerPowerCatalog
@@ -1352,9 +1306,9 @@ class ConsentReconsiderServiceSuite extends munit.FunSuite:
   /** `base` with p2's answer to p1's request about Dunes already in the
     * ledger: a position the service cannot be played to. */
   private def withP2sAnswerInTheLedger(base: ReadyGame, granted: Boolean,
-      use: Option[ConsentUse] = None): ReadyGame =
+      use: Option[ConsentUse] = None, power: PowerId = pass): ReadyGame =
     val request = ConsentRequest(p1, destination, dunes,
-      Vector(ConsentAsk(p2, Vector(pass))), use = use)
+      Vector(ConsentAsk(p2, Vector(power))), use = use)
     base.copy(consent = accepted(accepted(base.consent.requested(request))
       .answered(p2, granted, ConsentTurn.of(base))))
 
@@ -1410,7 +1364,7 @@ class ConsentReconsiderServiceSuite extends munit.FunSuite:
       (game.state, game.undo, game.redo))),
       Right(Some((refused.state, refused.undo, refused.redo))))
 
-  test("a change of answer ends redo, as a new command does"):
+  test("a change to a refusal ends redo, as a new command does"):
     val (service, _) = ConsentFixture.service()
     val yes = answeredBy(service, ConsentChoice.Yes)
     val undone = accepted(service.handle(gameId, yes.nextSequence,
@@ -1421,6 +1375,24 @@ class ConsentReconsiderServiceSuite extends munit.FunSuite:
     assertEquals(service.handle(gameId, refused.nextSequence,
       Commands.redo(p1)), Left(GameApplicationError.CommandRejected(
         OathViolation.NothingToRedo)))
+
+  test("a change to a grant leaves redo, and the redo then succeeds"):
+    val (service, repository) = ConsentFixture.service()
+    val no = answeredBy(service, ConsentChoice.No)
+    // p1 takes back the Travel's start; the refusal stays in the ledger.
+    val undone = accepted(service.handle(gameId, no.nextSequence,
+      Commands.undo(p1)))
+    assert(undone.redo.nonEmpty)
+    val granted = changing(service, undone, allow = true)
+    assertEquals(granted.redo, undone.redo)
+    val redone = accepted(service.handle(gameId, granted.nextSequence,
+      Commands.redo(p1)))
+    assert(parked(redone))
+    assert(dunesOffered(redone).available)
+    val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
+    assertEquals(reloaded.load(gameId).map(_.map(game =>
+      (game.state, game.undo, game.redo))),
+      Right(Some((redone.state, redone.undo, redone.redo))))
 
   test("a replay of a journal with a taken-back choice sets the same " +
       "marks as live play"):
@@ -1483,6 +1455,13 @@ class ConsentReconsiderServiceSuite extends munit.FunSuite:
       change(allow = true)),
       unavailable("p2 no longer rules site.narrow-pass.pass"))
 
+  test("an ask nobody rules stays final: the Chancellor's Eye"):
+    val law = withP2sAnswerInTheLedger(passRuledByP2, granted = false,
+      power = ImperialLaws.chancellorsEye)
+    assertEquals(ConsentFixture.service(law)._1.handle(gameId, 0L,
+      change(allow = true)),
+      unavailable("p2 no longer rules rule.chancellors-eye"))
+
   test("a change waits while a request about the same option does"):
     val answered = withP2sAnswerInTheLedger(passRuledByP2, granted = true)
     val waiting = answered.copy(consent = answered.consent.copy(pending =
@@ -1525,7 +1504,7 @@ add after `answer`:
     * no longer rules a power they were asked about, which also refuses
     * the asks nobody rules (a payer's, an Imperial law's); while the
     * answer is locked; when the answer is already that; and while a
-    * request about the same option waits (implementation ruling on Q2). */
+    * request about the same option waits (implementation ruling R8). */
   def reconsider(state: OathState, granter: PlayerId, requester: PlayerId,
       decisionId: String, target: DecisionOptionRef, allow: Boolean)
       : Result =
@@ -1587,11 +1566,12 @@ with
             .map(EventReplayFailure(record.index, _))
             .map { after =>
               val recorded = settled.recorded(record, after)
-              // A changed answer ends redo, as a new batch does: a
-              // taken-back choice may have relied on the old answer
-              // (reconsider design, implementation ruling on Q1).
+              // An answer changed to a refusal ends redo, as a new batch
+              // does: a taken-back choice may have relied on the grant.
+              // A change to a grant only permits more, so it leaves redo
+              // (reconsider design, implementation ruling R7).
               Progress(event match
-                case _: OathEvent.ConsentReconsidered =>
+                case OathEvent.ConsentReconsidered(_, _, _, _, false) =>
                   recorded.copy(redo = Nil)
                 case _ => recorded, None)
             }
@@ -1627,7 +1607,7 @@ git commit -m "feat(consent): let a granter change an answer until it is acted o
 ReconsiderConsent goes to the consent desk, which answers with one
 ConsentReconsidered or says why not: no such answer this turn, an
 automatic power, a power no longer ruled, a locked answer, or no change.
-It opens no batch and resumes nothing. A changed answer ends redo.
+It opens no batch and resumes nothing. A change to a refusal ends redo.
 
 Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
 git log -3
@@ -2030,7 +2010,7 @@ screen, so there is no browser check.
     undoes past it) and Task 7 (the line is never struck). Ruling 26:
     Task 5's "changed back" test and Task 7.
   - "State": `history` and its turn (Task 1); one entry per requester,
-    decision, option and answering granter (Task 1, Q4); `reconsidered`
+    decision, option and answering granter (Task 1, R10); `reconsidered`
     (Task 2); the use mark in `CurrentGameState`, its fold, choose-many,
     undo (Task 4, Task 5).
   - "Events": Task 3. "Commands": Task 5 (each refusal reason has a
@@ -2041,14 +2021,14 @@ screen, so there is no browser check.
     belong to slice 3.
   - "Slices": the amendment of rulings 12 and 13 (Task 8).
   - "Not reconsidered" and "Deferred": the automatic power's refusal
-    (Task 5); the asks nobody rules, refused by the rule check (read; not
-    tested one by one, which the report will say).
+    (Task 5); the asks nobody rules, refused by the rule check (Task 5
+    tests the Chancellor's Eye; the other three are read, not tested).
 - **The orchestrator's five points.** The answer event and its fold, and
   why a replay sets the same marks: "What the code says" and Task 4, with
-  the replay test in Task 5. The mark's turn: Q5. The keys a change
-  rewrites and their readers: "What the code says" and Q3. The entry's
-  identity: Q4. The service path and what runs after: "What the code
-  says" and Task 5; Q1 and Q2 are two cases the path leaves open.
+  the replay test in Task 5. The mark's turn: R11. The keys a change
+  rewrites and their readers: "What the code says" and R9. The entry's
+  identity: R10. The service path and what runs after: "What the code
+  says" and Task 5; R7 and R8 settle the two cases the path left open.
 - **Placeholder scan.** Every code step shows its code. Three steps name
   a fallback for a fact only a run can show (the architecture check on
   the import, staging a finished game through the service, a missing
