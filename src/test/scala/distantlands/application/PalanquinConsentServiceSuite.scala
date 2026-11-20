@@ -136,6 +136,28 @@ class PalanquinConsentServiceSuite extends munit.FunSuite:
     assertEquals(after.pawn(p3), coast)
     assertEquals(after.favor(p3), 1)
 
+  test("after the ruler's late waiver a Redo cannot bring the payment " +
+      "back, and a fresh pick charges nobody (reconsider ruling R29)"):
+    val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
+    val no = answering(service, asking(service, Vector.empty), p2,
+      ConsentChoice.No)
+    val yes = answering(service, no, p3, ConsentChoice.Yes)
+    val undone = accepted(service.handle(gameId, yes.nextSequence,
+      Commands.undo(p1)))
+    assert(undone.redo.nonEmpty)
+    val waived = accepted(service.handle(gameId, undone.nextSequence,
+      Commands.reconsiderConsent(p2, p1, Palanquin.destinationDecisionId,
+        coastRef, allow = true)))
+    assertEquals(waived.redo, None)
+    assertEquals(service.handle(gameId, waived.nextSequence,
+      Commands.redo(p1)), Left(GameApplicationError.CommandRejected(
+        OathViolation.NothingToRedo)))
+    val sent = accepted(service.handle(gameId, waived.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(
+        Palanquin.destinationDecisionId,
+        DecisionAnswer.ChooseOneAnswer(coastRef)))))
+    assertEquals(Look(Outcomes.ready(sent.state)).favor(p3), 1)
+
   test("a ruler who refused while the target is still asked cannot " +
       "change it until the request ends; after a withdrawal the refusal " +
       "is theirs to change (reconsider rulings R8 and R14)"):

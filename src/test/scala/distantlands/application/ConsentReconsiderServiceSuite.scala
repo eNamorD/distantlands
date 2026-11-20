@@ -141,7 +141,8 @@ class ConsentReconsiderServiceSuite extends munit.FunSuite:
       Commands.redo(p1)), Left(GameApplicationError.CommandRejected(
         OathViolation.NothingToRedo)))
 
-  test("a change to a grant leaves redo, and the redo then succeeds"):
+  test("a change to a grant ends redo too: a taken-back step may hold " +
+      "what the grant now changes (R29)"):
     val (service, repository) = ConsentFixture.service()
     val no = answeredBy(service, ConsentChoice.No)
     // p1 takes back the Travel's start; the refusal stays in the ledger.
@@ -149,15 +150,14 @@ class ConsentReconsiderServiceSuite extends munit.FunSuite:
       Commands.undo(p1)))
     assert(undone.redo.nonEmpty)
     val granted = changing(service, undone, allow = true)
-    assertEquals(granted.redo, undone.redo)
-    val redone = accepted(service.handle(gameId, granted.nextSequence,
-      Commands.redo(p1)))
-    assert(parked(redone))
-    assert(dunesOffered(redone).available)
+    assertEquals(granted.redo, None)
+    assertEquals(service.handle(gameId, granted.nextSequence,
+      Commands.redo(p1)), Left(GameApplicationError.CommandRejected(
+        OathViolation.NothingToRedo)))
     val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
     assertEquals(reloaded.load(gameId).map(_.map(game =>
       (game.state, game.undo, game.redo))),
-      Right(Some((redone.state, redone.undo, redone.redo))))
+      Right(Some((granted.state, granted.undo, granted.redo))))
 
   test("a replay of a journal with a taken-back choice sets the same " +
       "marks as live play"):

@@ -106,12 +106,13 @@ private[application] final class JournalFold(
             .map(EventReplayFailure(record.index, _))
             .map { after =>
               val recorded = settled.recorded(record, after)
-              // An answer changed to a refusal ends redo, as a new batch
-              // does: a taken-back choice may have relied on the grant.
-              // A change to a grant only permits more, so it leaves redo
-              // (reconsider design, implementation ruling R7).
+              // A changed answer ends redo, as a new batch does. A
+              // taken-back step may have relied on a grant now refused,
+              // or may hold what a new grant changes, such as a toll the
+              // waiver now spares (reconsider design, implementation
+              // ruling R29).
               Progress(event match
-                case OathEvent.ConsentReconsidered(_, _, _, _, false) =>
+                case _: OathEvent.ConsentReconsidered =>
                   recorded.copy(redo = Nil)
                 case _ => recorded, None)
             }
