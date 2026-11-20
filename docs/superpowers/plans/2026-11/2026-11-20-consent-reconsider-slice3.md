@@ -154,87 +154,41 @@ the click handler. The note shows on a resting mouse, on keyboard focus
 and on a tap. Its element is one for the whole document, above the
 overlays (`z-index: 400`).
 
-## Open questions
+## Rulings
 
-The tasks below are written for the recommended answer to each question.
-Production code waits for the rulings. When a ruling differs, the listed
-steps change as stated, and this section becomes "Rulings".
+Recorded in the
+[implementation rulings](../../specs/2026-11/2026-11-20-consent-reconsider-design-implementation-rulings.md).
+Where a task's code below was written before a ruling, the ruling wins;
+each such place is named here.
 
-- **Q1. The column's width at 360px.** The column is sized to its
-  content: 275px, three settings of 87.7px, in a line about 303px wide
-  (measured in slice 1). A sentence line of the list would wrap at 275px
-  with 28px unused beside it.
-  - A: leave it content-sized.
-  - B (recommended): `.consent-grid { flex: 1 1 17rem; max-width: 22rem;
-    }`. Alone on its line, under the details, the column fills the line
-    up to 22rem; beside the details it keeps its content's width. At
-    360px the settings become about 97px each, which eases R3 and R5.
-    The browser check measures both widths again.
-  - If A: delete the `flex` and `max-width` declarations from Task 6
-    Step 3 and the width test from Task 6 Step 1.
-- **Q2. An answer that covers a power the viewer no longer rules.** The
-  desk refuses a change when the granter lost any power of their ask
-  ("p2 no longer rules …"). The entry is still listed under the powers
-  they keep. The spec names three `change` values and R8 a fourth; your
-  brief names four hover notes, and I count three (used, automatic,
-  waiting). I take this case to be the fourth.
-  - A (recommended): a fifth `change` value, `lapsed`, its button
-    withheld with the hover note "You no longer rule every power this
-    answer covers."
-  - B: omit such an entry from the list.
-  - C: list it as `open`; the click is refused by the server.
-  - If B: `ConsentChange.Lapsed` rows are filtered out in Task 2 Step 4,
-    and the `lapsed` cases leave Task 2 Step 2, Task 3 and Task 7. If C:
-    `Lapsed` maps to `open` in Task 2 Step 4.
-- **Q3. An automatic power's entry.** The spec gives its text ("Blue's
-  Tyrant: deactivated") and a withheld button, but not where the state
-  word goes or what the button reads.
-  - A (recommended): line 1 is "Blue's Tyrant: deactivated" (or "let
-    work"), which already says the state, so line 2 holds the button
-    alone. The button reads the prompt's own words for the other answer:
-    "Let it work" on a deactivation, "Deactivate" on a let-work.
-  - B: line 2 shows "Refused" or "Allowed" and a button "Allow" or
-    "Refuse", as for other entries.
-  - If B: in Task 3 Step 3 the automatic entry takes the common line 2.
-- **Q4. An option the viewer may not identify.** The row carries the
-  option's kind and wire id, as the spec says, because the command sends
-  them back. For a card the viewer may not name, the label is redacted,
-  but a card's wire id is its catalog id. No request I found targets such
-  a card today: hidden cards are offered by slot (*read*, not
-  exhaustive). The prompt, for the same case, would print the raw wire
-  id as its label (*read*; existing behaviour).
-  - A (recommended): the row's label reads "a hidden card" for a card
-    option the viewer may not identify, and the row is sent with its ids.
-    The prompt is left as it is.
-  - B: such an entry is not listed at all, so no id is sent. The granter
-    cannot change that answer from the overlay.
-  - C: A, and the prompt's label takes the same words in place of the
-    raw id.
-  - If B: Task 2 Step 4 drops a row whose card option projects no label.
-    If C: Task 2 Step 4 changes `target`'s fallback too, with a prompt
-    test.
-- **Q5. What a refused change shows.** With the code as it is, the
-  Actions pane prints the server's reason, behind the scrim, and the list
-  redraws at the next snapshot.
-  - A (recommended): nothing more. After a click the entry's button is
-    disabled until the next snapshot redraws the list, so a second click
-    cannot send a second command that the server would refuse as "already
-    that". The spec asks for the redraw only.
-  - B: the column also prints a status line with the server's reason.
-  - If B: a new step in Task 4; not planned here.
-- **Q6. The prompt notice for an answer that stays final.** The spec
-  keeps the old notice for an automatic power only. A payer's prompt
-  (Toll Roads, Palanquin) and an Imperial law's prompt (the Chancellor's
-  Eye, Warband Transfers) also give answers that cannot be changed, and
-  have no power to click.
-  - A: the spec's rule. Every prompt but an automatic power's reads the
-    new notice, which is untrue for those four.
-  - B (recommended): the server tells the prompt whether its answer can
-    be changed later: `ConsentPromptProjection.changeable`, true when the
-    viewer rules every power of the ask and the request is not about an
-    automatic power. The new notice shows only then.
-  - If A: delete `changeable` from Task 1 and Task 2, and Task 5 tests
-    `use` alone.
+- **R14 (slice 2 review).** The desk now checks the waiting request
+  first. `ConsentChange.of` judges in the same order: `Waiting`,
+  `Automatic`, `Lapsed`, `Used`, `Open`. Task 2.
+- **R16.** `.consent-grid { flex: 1 1 17rem; max-width: 22rem; }`. The
+  browser check measures the settings' thirds again at both widths;
+  beside the details at desktop width the column must keep its content
+  width. Tasks 6 and 8.
+- **R17.** A fifth `change` value, `lapsed`, withheld with "You no longer
+  rule every power this answer covers." Tasks 2 and 3, as written.
+- **R18.** An automatic power's entry: its sentence on line 1, the
+  withheld button alone on line 2, reading "Let it work" on a
+  deactivation and "Deactivate" on a let-work. Task 3, as written.
+- **R19.** An entry whose option the viewer may not identify is not
+  listed. In Task 2, `optionLabel` returns an `Option` and `requests`
+  drops a row with none; the test "a card the viewer may not identify
+  ..." expects no row. No "a hidden card" label exists.
+- **R20.** Nothing beyond the redraw; a clicked button stays disabled
+  until the next snapshot. Tasks 3 and 4, as written.
+- **R21.** `ConsentPromptProjection` gains the required field `adjust`
+  in place of the planned `changeable`: `answer` (the new notice),
+  `preferences` (the old notice, an automatic power's prompt) or `none`
+  (some power of the ask has no granter: no notice element). Tasks 1, 2
+  and 5 use `adjust`. This changes four existing prompts, a payer's and
+  an Imperial law's, which lose their notice.
+- **R22.** Each entry is a `role="group"` whose `aria-label` is its line
+  1 text. Task 3.
+- **R23.** The list words an option from the current state. Task 2, as
+  written.
 
 ## Decisions already made in this plan
 
