@@ -5,7 +5,7 @@ import distantlands.gameplay.actions.minor.WarbandTransfers
 import distantlands.gameplay.powers.ConsentPowers
 import distantlands.model._
 import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
-  ConsentPreferencesCleared, ConsentRequested}
+  ConsentPreferencesCleared, ConsentReconsidered, ConsentRequested}
 import distantlands.protocol.projection.{LogKind, LogSpan}
 import LogSpan.Text
 
@@ -14,7 +14,9 @@ import LogSpan.Text
   * acts off turn. A preference line, and a reset, are formatted for their
   * granter alone. An automatic power's request names its refusing cards
   * and their rulers, and its answers say whether the power worked
-  * (automatic power consent design, "Game Log"). */
+  * (automatic power consent design, "Game Log"). A changed answer is
+  * public and names its granter, in two parallel wordings (reconsider
+  * design, "Game Log"). */
 private[gamelog] final class ConsentLines(words: LogWords,
     choices: ChoiceWords, powers: ConsentPowers):
   def lines(journal: LogJournal, at: Int, viewer: Option[PlayerId])
@@ -94,6 +96,20 @@ private[gamelog] final class ConsentLines(words: LogWords,
             case None => line(Vector(words.player(granter),
               Text(if granted then " gave consent."
                 else " gave no consent.")))
+        // "{Red} now gives consent to ignore {Narrow Pass} and select
+        // {Deep Woods}." or "{Red} no longer gives consent to ignore
+        // {Narrow Pass} and select {Deep Woods}." The powers are the
+        // changer's own on that request; the option reads as the
+        // request's line reads it.
+        case ConsentReconsidered(granter, requester, decisionId, target,
+            granted) =>
+          val own = before.consent.asked(granter, requester, decisionId,
+            target, ConsentTurn.of(before)).toVector.flatMap(_._2.powers)
+          line((words.player(granter) +: Text(
+            if granted then " now gives consent to ignore "
+            else " no longer gives consent to ignore ") +: named(own)) ++
+            (Text(" and select ") +: choices.option(target, before, after,
+              viewer)) :+ Text("."))
         case ConsentPreferenceSet(granter, power, requester, setting)
             if viewer.contains(granter) =>
           val (verb, linking) = setting match

@@ -2,6 +2,7 @@ package distantlands.application.gamelog
 
 import distantlands.application.{ConsentFixture, GameAccepted,
   GameApplicationService, TollConsentFixture}
+import distantlands.gameplay.actions.travel.TravelProcedure
 import distantlands.gameplay.cards.NarrowPassSite
 import distantlands.gameplay.powers.travel.TravelFixture
 import distantlands.model._
@@ -41,6 +42,43 @@ class GameLogConsentSuite extends munit.FunSuite:
       assert(lines.contains(asked), lines)
       assert(lines.contains("p2 gave consent."), lines)
     }
+
+  private def changing(service: GameApplicationService, at: GameAccepted,
+      allow: Boolean)(using munit.Location): GameAccepted =
+    accepted(service.handle(gameId, at.nextSequence,
+      Commands.reconsiderConsent(p2, p1,
+        TravelProcedure.destinationDecisionId, dunes, allow)))
+
+  test("a changed answer is written for every player, in both " +
+      "directions, and names the granter"):
+    val (service, _) = ConsentFixture.service()
+    val no = answering(service, asking(service), ConsentChoice.No)
+    val granted = changing(service, no, allow = true)
+    changing(service, granted, allow = false)
+    Vector(p1, p2, p3).foreach { viewer =>
+      val lines = texts(log(service, viewer))
+      val gives = lines.indexOf(
+        "p2 now gives consent to ignore Narrow Pass and select Dunes.")
+      val withdraws = lines.indexOf("p2 no longer gives consent to " +
+        "ignore Narrow Pass and select Dunes.")
+      assert(gives >= 0, lines)
+      assert(withdraws > gives, lines)
+      assert(lines.indexOf("p2 gave no consent.") < gives, lines)
+    }
+
+  test("a changed answer's line is never struck through by the " +
+      "requester's undo"):
+    val (service, _) = ConsentFixture.service()
+    val yes = answering(service, asking(service), ConsentChoice.Yes)
+    val undone = accepted(service.handle(gameId, yes.nextSequence,
+      Commands.undo(p1)))
+    val refused = changing(service, undone, allow = false)
+    accepted(service.handle(gameId, refused.nextSequence,
+      Commands.undo(p1)))
+    val line = present(log(service, p1).find(entry =>
+      entry.spans.map(_.text).mkString == "p2 no longer gives consent " +
+        "to ignore Narrow Pass and select Dunes."), "the change's line")
+    assertEquals(line.takenBack, None)
 
   test("a refusal names the ruler"):
     val (service, _) = ConsentFixture.service()
