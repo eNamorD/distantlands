@@ -969,6 +969,25 @@ wears the system's chrome. An element asks for one with `HoverTip.set`
 - **Hides** on leaving, blur, a press elsewhere, scroll, Escape, or a render
   that removes the element.
 
+### Consent Column
+A power the viewer rules opens in the card overlay with their consent
+column after the details (consent design, ruling 16; reconsider design).
+It reads at the details column's size, `0.82em`.
+- **Heading:** "Who may ignore this power", in Brass Label, 16px under
+  what stands above it and 12px over the first row.
+- **Preference row:** one per other player, 12px apart. The player's name
+  has its own line. Under it, 4px down, stand that player's three
+  settings, "Never Allow", "Case-by-case" and "Always Allow", in equal
+  thirds of the column, 6px apart, so the three always share one line,
+  at 360px too. The three are one group, named for the player.
+- **Setting:** the compact Control face. In thirds it takes 6px of side
+  padding, because the third sets its width. The setting in force is
+  pressed (`aria-pressed="true"`): a Selection border on Selection Fill,
+  the column's one selected thing. Without control the settings are
+  disabled. Where the main pointer is coarse they grow to 44px.
+- The column uses no amber: consent amber stays on the option a player
+  may ask about.
+
 ### Inputs / Fields
 - **Style:** Base fill, white text, Line-mid border, 6px radius, 8px padding,
   44px minimum height, `font: inherit`. Host-page inputs use browser defaults
