@@ -270,6 +270,21 @@ class ConsentProjectionSuite extends munit.FunSuite:
       base.copy(consent = waiting)), 0L), p3).consentPreferences
       .flatMap(_.requests), Vector.empty)
 
+  test("an option answered before and again in a waiting request is " +
+      "listed once, as the waiting answer"):
+    val base = passRuledByP2
+    val earlier = answeredByP2(passAsk, dunes, granted = true,
+      base.consent, base)
+    val waiting = accepted(accepted(earlier.requested(ConsentRequest(p1,
+      destination, dunes, Vector(
+        ConsentAsk(p2, Vector(NarrowPassSite.pass), alternative = true),
+        ConsentAsk(p3, Vector(NarrowPassSite.pass), alternative = true)))))
+      .answered(p2, granted = false, ConsentTurn.of(base)))
+    assertEquals(shownToP2With(base, waiting).consentPreferences
+      .flatMap(_.requests).map(row =>
+        (row.optionId, row.answer, row.change)),
+      Vector((dunes.wireId, "refused", "waiting")))
+
   test("the prompt names a card its granter may not identify as a hidden " +
       "card, and its id stays on the server (R25)"):
     val base = TravelFixture.on(passRuledByP2)(_.adviser(p1, TyrantCard,

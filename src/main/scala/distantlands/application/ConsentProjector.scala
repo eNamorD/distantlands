@@ -101,11 +101,18 @@ private[application] final class ConsentProjector(
     // An answer given to a request that still waits is not in the history
     // yet; its giver sees it first, as waiting (implementation ruling
     // R26).
+    def mine(entry: ConsentRequest): Option[ConsentAsk] =
+      entry.asks.find(ask => ask.granter == viewer && ask.answer.nonEmpty)
+    val waiting = ready.consent.pending.filter(mine(_).nonEmpty)
+    // The client keys an entry by requester, decision and option, so an
+    // earlier answer about the option the waiting one names is left out.
+    val settled = ready.consent.historyAt(ConsentTurn.of(ready)).reverse
+      .filterNot(entry => waiting.exists(open =>
+        open.requester == entry.requester &&
+          open.decisionId == entry.decisionId && open.target == entry.target))
     for
-      entry <- ready.consent.pending.toVector ++
-        ready.consent.historyAt(ConsentTurn.of(ready)).reverse
-      ask <- entry.asks.find(ask => ask.granter == viewer &&
-        ask.answer.nonEmpty && ask.powers.contains(power))
+      entry <- waiting.toVector ++ settled
+      ask <- mine(entry).filter(_.powers.contains(power))
       label <- optionLabel(context, entry)
     yield ConsentRequestRowProjection(entry.requester.value,
       entry.decisionId, entry.target.kind, entry.target.wireId, label,
