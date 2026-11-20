@@ -271,9 +271,13 @@ private[operations] object TurnStateOperations:
     def moved = ready.updateCurrent(current => current.copy(tracks =
       tracks.copy(round = next,
         usurperLimited = tracks.usurperLimited && next <= 3)))
-    Either.cond(tracks.round < 8,
-      moved.copy(consent = ready.consent.turnRenamed(ConsentTurn.of(ready),
-        ConsentTurn.of(moved))),
+    // The turn's use marks follow it, as its answers do.
+    def renamed =
+      val (from, to) = (ConsentTurn.of(ready), ConsentTurn.of(moved))
+      moved.copy(consent = ready.consent.turnRenamed(from, to))
+        .updateCurrent(current => current.copy(
+          useMarks = UseMark.renamed(current.useMarks, from, to)))
+    Either.cond(tracks.round < 8, renamed,
       InvalidDescription("the round marker is on its last space"))
 
   def usurperLimiterRemoved(ready: ReadyGame)

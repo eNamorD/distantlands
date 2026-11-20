@@ -117,6 +117,21 @@ object ConsentTurn:
   def of(ready: ReadyGame): ConsentTurn = ConsentTurn(
     ready.game.current.tracks.round, ready.game.current.turn.activePlayer)
 
+/** A use mark (reconsider design, "State"; ruling 21): in `turn`,
+  * `requester` chose `target` at `decisionId` on a granted request, and
+  * that choice stands. It is kept in the game, which undo rewinds, so
+  * undoing the choice removes the mark and unlocks the answer. */
+final case class UseMark(turn: ConsentTurn, requester: PlayerId,
+    decisionId: String, target: DecisionOptionRef)
+object UseMark:
+  /** `marks` with the marks of turn `from` kept as `to`'s, when the
+    * round marker moves within a turn (Great Clock), as the ledger's
+    * answers are (`ConsentState.turnRenamed`). */
+  def renamed(marks: Set[UseMark], from: ConsentTurn, to: ConsentTurn)
+      : Set[UseMark] =
+    marks.map(mark => if mark.turn == from then mark.copy(turn = to)
+      else mark)
+
 /** The consent ledger (consent design, "State"): preferences keyed by
   * granter, power and requester; the answers of `turn`; the request
   * waiting on its granters, if any; and `history`, the requests settled

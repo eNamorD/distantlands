@@ -50,6 +50,15 @@ class OperationExecutorSuite extends munit.FunSuite:
     assertEquals(after.consent.turn, Some(ConsentTurn.of(after)))
     assertEquals(after.consent.turn.map(_.round), Some(3))
 
+  test("a round advance carries the turn's use marks to the new round"):
+    val base = Table.from(ready).roundMarkerAt(2).ready
+    val mark = UseMark(ConsentTurn.of(base), PlayerId("p1"),
+      "travel.destination", DecisionOptionRef.Site(SiteId("site:dunes")))
+    val staged = base.updateCurrent(_.copy(useMarks = Set(mark)))
+    val after = accepted(executor.execute(staged, AdvanceRound))
+    assertEquals(after.game.current.useMarks,
+      Set(mark.copy(turn = ConsentTurn.of(after))))
+
   test("passing round 3 takes the Usurper Limiter off; earlier advances " +
       "leave it on"):
     def limitedAfter(round: Int): Boolean =

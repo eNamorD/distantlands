@@ -338,6 +338,11 @@ final case class CurrentGameState(
     // recorded `OpenPick`, payments and `ClosePick`, and the walker and
     // `WalkerCompleted` clear it with the dice pools.
     walkerPicks: Vector[PlayedPick] = Vector.empty,
+    // The options chosen this turn on a granted consent request (`UseMark`;
+    // reconsider design, "State"). Not walker scratch: a mark outlives
+    // its walk and locks the answer until the choice is undone. The fold
+    // of a recorded answer sets it; nothing clears it but an undo.
+    useMarks: Set[UseMark] = Set.empty,
     // Warbands that stand on a card rather than a board or a site, by card
     // and force (Obsidian Cage). They stay on the card wherever it goes,
     // and count as out of their bank. A kind with none is absent.
