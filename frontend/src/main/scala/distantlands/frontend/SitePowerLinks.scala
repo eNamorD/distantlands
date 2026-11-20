@@ -53,9 +53,12 @@ private[frontend] object SitePowerLinks:
       : SitePowerLinks =
     new SitePowerLinks(Some(value), submit)
 
-/** The grid as the overlay draws it. A choice is shown at once and sent; the
-  * overlay ignores polls while open, so it keeps what was chosen, and a
-  * choice already shown sends nothing. */
+/** The grid as the overlay draws it (reconsider design, slice 1): the
+  * heading says what the viewer consents to, and each row is a player's
+  * name on its own line over that player's three settings, which the
+  * stylesheet lays in equal thirds. A choice is shown at once and sent;
+  * the overlay ignores polls while open, so it keeps what was chosen, and
+  * a choice already shown sends nothing. */
 private[frontend] object ConsentGridView:
   private val settings = Vector("never" -> "Never Allow",
     "case-by-case" -> "Case-by-case", "always" -> "Always Allow")
@@ -63,11 +66,16 @@ private[frontend] object ConsentGridView:
   def render(grid: ConsentGrid): dom.Element =
     val section = element("section", "consent-grid")
     section.appendChild(text("h4", "consent-grid-heading",
-      "Consent preferences"))
+      "Who may ignore this power"))
     grid.rows.foreach { row =>
       val line = element("div", "consent-grid-row")
       line.setAttribute("data-player-id", row.playerId)
       line.appendChild(text("span", "consent-grid-player", row.name))
+      // The three settings stand together under the name, and are named
+      // for the player they answer (implementation ruling R2).
+      val group = element("div", "consent-grid-choices")
+      group.setAttribute("role", "group")
+      group.setAttribute("aria-label", row.name)
       val choices = settings.map { (key, label) =>
         val choice = button(label, "consent-grid-choice")
         choice.setAttribute("data-setting", key)
@@ -81,8 +89,9 @@ private[frontend] object ConsentGridView:
             choices.foreach((_, other) => other.setAttribute("aria-pressed",
               (other eq choice).toString))
             grid.choose.foreach(_(row.playerId, key))
-        line.appendChild(choice)
+        group.appendChild(choice)
       }
+      line.appendChild(group)
       section.appendChild(line)
     }
     section
