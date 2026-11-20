@@ -79,6 +79,16 @@ private[frontend] object WalkerPanelSupport:
       surface: ParkedDecision.Surface.Recover, value: GameProjection,
       canControl: Boolean, panel: dom.Element, controls: TableControls): Unit =
     val decision = surface.decision
+    val ask = ConsentAsking.asker(decision.decisionId, value, canControl,
+      controls)
+    // An askable option asks its granters first (consent design,
+    // "Frontend"); any other is picked.
+    def picks(control: dom.html.Button, option: DecisionOptionState): Unit =
+      if option.state == "askable" then
+        control.classList.add("walker-choice-askable")
+        control.onclick = _ => ask(option, control)
+      else control.onclick = _ => controls.submitCommand(
+        resolveChooseOneCommand(decision, option))
     surface.step match
       case ParkedDecision.RecoverStep.Choice(query) =>
         panel.appendChild(text("h2", "", decisionHeading(query)))
@@ -97,8 +107,7 @@ private[frontend] object WalkerPanelSupport:
             else (option.label, "recover-choice")
           val control = button(label, className)
           control.disabled = !canControl
-          control.onclick = _ => controls.submitCommand(
-            resolveChooseOneCommand(decision, option))
+          picks(control, option)
           // Without the Supply the buy is withheld, not merely disabled, so
           // the control says why it cannot be used.
           if spendsSupply && !hasSupply then
@@ -121,8 +130,7 @@ private[frontend] object WalkerPanelSupport:
           val choose = button("Take facedown", "recover-relic-choice")
           choose.setAttribute("aria-label", s"Take ${option.label} facedown")
           choose.disabled = !canControl
-          choose.onclick = _ => controls.submitCommand(
-            resolveChooseOneCommand(decision, option))
+          picks(choose, option)
           choice.appendChild(choose)
           relics.appendChild(choice)
           withholds(choose, option)
