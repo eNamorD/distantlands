@@ -182,6 +182,38 @@ class PalanquinConsentServiceSuite extends munit.FunSuite:
       change(p3, allow = false)),
       unavailable(s"p3 no longer rules ${TollRoads.payerId.value}"))
 
+  /** p3's favor after p1 sends them to the coast, on the tolled board
+    * with p3's agreement to pay remembered and `waiver` beside it. */
+  private def favorOfP3SentWith(waiver: (ConsentKey, Remembered))(
+      using munit.Location): Int =
+    val base = p3BesideP1UnderTheToll
+    val staged = base.copy(consent = ConsentState(answers = Map(
+      TollRoads.payerKey(p3, coast) -> ConsentAnswer.Granted.by(p3), waiver),
+      turn = Some(ConsentTurn.of(base))))
+    val (service, _) = ConsentFixture.service(staged)
+    val sent = accepted(service.handle(gameId,
+      atTheDestination(service).nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(
+        Palanquin.destinationDecisionId,
+        DecisionAnswer.ChooseOneAnswer(coastRef)))))
+    Look(Outcomes.ready(sent.state)).favor(p3)
+
+  test("only the waiver of the one who may give it, for this traveller " +
+      "and this destination, spares the toll (reconsider ruling R12)"):
+    val granted = ConsentAnswer.Granted
+    assertEquals(favorOfP3SentWith(
+      TollRoads.freeKey(p3, coast) -> granted.by(p2)), 1)
+    // A grant by a player who may not waive the toll now, as a ruler who
+    // has since lost the site would be.
+    assertEquals(favorOfP3SentWith(
+      TollRoads.freeKey(p3, coast) -> granted.by(p1)), 0)
+    // Another traveller's waiver.
+    assertEquals(favorOfP3SentWith(
+      TollRoads.freeKey(p1, coast) -> granted.by(p2)), 0)
+    // A waiver for another destination.
+    assertEquals(favorOfP3SentWith(TollRoads.freeKey(p3,
+      TravelFixture.provincePlains) -> granted.by(p2)), 0)
+
   test("the log writes one line per kind of ask"):
     val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
     asking(service, Vector.empty)
