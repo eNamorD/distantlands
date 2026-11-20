@@ -4,6 +4,8 @@ import distantlands.gameplay.actions.ImperialLaws
 import distantlands.gameplay.actions.travel.TravelProcedure
 import distantlands.gameplay.cards.NarrowPassSite
 import distantlands.gameplay.powers.WalkerPowerCatalog
+import distantlands.gameplay.powers.action.GreatClock
+import distantlands.gameplay.powers.setup.GreatClockCard
 import distantlands.gameplay.powers.travel.{TravelFixture, TyrantCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.gameplay.walker.WalkerPowers
@@ -170,6 +172,37 @@ class ConsentReconsiderServiceSuite extends munit.FunSuite:
     val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
     assertEquals(reloaded.load(gameId).map(_.map(game =>
       (game.state, game.undo))), Right(Some((picked.state, picked.undo))))
+
+  test("the Great Clock moves the round inside the turn: the lock holds " +
+      "across it, and across its undo (R11, R13)"):
+    // The Clock stands at Dunes, and p1 can pay for it.
+    val clockAtDunes = TravelFixture.on(passRuledByP2)(_
+      .edifice(GreatClockCard, EdificeSide.Intact,
+        at = TravelFixture.provincePlains)
+      .favor(p1, 1).secrets(p1, 3))
+    val (service, repository) = ConsentFixture.service(clockAtDunes)
+    val yes = answeredBy(service, ConsentChoice.Yes)
+    val round = Outcomes.ready(yes.state).game.current.tracks.round
+    val advanced = accepted(service.handle(gameId, yes.nextSequence,
+      MenuPlay.starting(p1, ActionRef.UsePower(GreatClock.id),
+        Vector(DecisionOptionRef.Edifice(GreatClockCard.id)))))
+    assertEquals(Outcomes.ready(advanced.state).game.current.tracks.round,
+      round + 1)
+    assertEquals(service.handle(gameId, advanced.nextSequence,
+      change(allow = false)), unavailable("p1 has acted on this consent"))
+    val clockUndone = accepted(service.handle(gameId, advanced.nextSequence,
+      Commands.undo(p1)))
+    assertEquals(Outcomes.ready(clockUndone.state).game.current.tracks.round,
+      round)
+    assertEquals(service.handle(gameId, clockUndone.nextSequence,
+      change(allow = false)), unavailable("p1 has acted on this consent"))
+    val travelUndone = accepted(service.handle(gameId,
+      clockUndone.nextSequence, Commands.undo(p1)))
+    val refused = changing(service, travelUndone, allow = false)
+    assert(refusedPlainly(dunesOffered(refused)))
+    val reloaded = ParkedServiceFixture.replayingSecond(service, repository)
+    assertEquals(reloaded.load(gameId).map(_.map(_.state)),
+      Right(Some(refused.state)))
 
   test("a change needs an answer the issuer gave this turn, and one that " +
       "differs"):
