@@ -40,6 +40,12 @@ class BoardHomesSuite extends munit.FunSuite:
     assert(has("player", "red"))
     assert(has("deck", "world"))
 
+  test("a banner a player holds has its home on that player's board"):
+    val held = table.copy(playerBoards = Vector(board.copy(banners = Vector(
+      BannerState("darkest-secret", "festival", Some("red"), 2)))))
+    assert(BoardHomes.has(held, DecisionOptionState("banner",
+      "darkest-secret", "")))
+
   test("buttons, other decks, absent things and hidden cards have none"):
     assert(!has("button", "finish"))
     assert(!has("deck", "relic"))

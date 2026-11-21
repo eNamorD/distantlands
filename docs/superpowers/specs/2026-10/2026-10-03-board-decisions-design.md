@@ -179,7 +179,12 @@ toggles a class on every element with the matching `data-option-ref`.
   defense, and "Defending force" from its defending warbands. The engine
   computes both from the same sources as `CampaignBattle.defenderForce` and
   pool gathering. `summaryNoun` is "site" for a Conquest and "target" for a
-  Raid. Targets not on offer carry a reason.
+  Raid. Only the defender's targets are options: in a Conquest, the other
+  sites the defender rules; in a Raid, the defender's faceup relics and the
+  banners they hold. A target a card power forbids stays, dimmed with the
+  power's reason. Everything else is drawn as usual, with no reason (revised
+  2026-11-20; this replaces the earlier rule that every target not on offer
+  carries a reason).
 - **Raid defender.** A player option, picked by header or pawn.
 - **Battle plans.** The engine keeps the `Repeat` of a choose-one. A survey
   of the 40 implemented plans found that one plan's application changes
