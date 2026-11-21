@@ -55,7 +55,10 @@ private[frontend] object WorldBoardRenderer:
       val identity = element("h3", "player-identity")
       identity.appendChild(playerReference(value, player.playerId))
       identity.appendChild(RoleText.span(player.role, "player-role"))
-      if value.tracks.exists(_.firstPlayerId == player.playerId) then
+      // With the Empire in play the Chancellor is always the first player
+      // (a Citizen standing in becomes the Chancellor), and the role says so.
+      if value.tracks.exists(_.firstPlayerId == player.playerId) &&
+          player.role.toLowerCase != "chancellor" then
         identity.appendChild(text("span", "player-first-badge", "First Player"))
       playerSummary.appendChild(identity)
       value.playerBoards.find(_.playerId == player.playerId).foreach { board =>
