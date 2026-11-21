@@ -71,29 +71,22 @@ class ImperialInfightingSuite extends munit.FunSuite:
     assertEquals(CampaignSetup.legalKinds(chancellorAtHome.ready, p1),
       Vector.empty)
 
-  test("a Chancellor conquering a bandit site sees the Empire's sites as " +
-      "theirs"):
+  test("a Chancellor conquering a bandit site may not add the Empire's " +
+      "sites"):
     val b = board(warbands = 5, supply = 7)
     val site = secondEmpireSite(b)
     val chancellor = on(b)(_.imperial(p1).warbandsAt(site, p1, 2))
-    val reasons = CampaignTargets.withheld(chancellor.ready, p1,
-      CampaignKind.Conquest, b.origin, CampaignDefender.Bandits,
-      Vector.empty).collect {
-        case DecisionOption.Unavailable(DecisionOption.Site(ref),
-            OptionReason.Written(text)) => ref.id -> text }.toMap
-    assertEquals(reasons.get(site), Some("You rule this site"))
+    assert(!CampaignSetup.targetOptions(chancellor.ready, p1,
+      CampaignKind.Conquest, CampaignDefender.Bandits)
+      .exists(_.ref == DecisionOptionRef.Site(site)))
 
-  test("an Exile conquering a bandit site sees the Empire's sites as not " +
-      "the defender's"):
+  test("an Exile conquering a bandit site may not add the Empire's sites"):
     val b = board(warbands = 5, supply = 7)
     val site = secondEmpireSite(b)
     val exile = on(b)(_.imperial(p2).warbandsAt(site, p2, 2))
-    val reasons = CampaignTargets.withheld(exile.ready, p1,
-      CampaignKind.Conquest, b.origin, CampaignDefender.Bandits,
-      Vector.empty).collect {
-        case DecisionOption.Unavailable(DecisionOption.Site(ref),
-            OptionReason.Written(text)) => ref.id -> text }.toMap
-    assertEquals(reasons.get(site), Some("Not ruled by the defender"))
+    assert(!CampaignSetup.targetOptions(exile.ready, p1,
+      CampaignKind.Conquest, CampaignDefender.Bandits)
+      .exists(_.ref == DecisionOptionRef.Site(site)))
 
   test("a Citizen may raid the Chancellor and another Citizen at their site"):
     val b = empireOrigin(p1, p3)
