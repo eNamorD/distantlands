@@ -122,9 +122,12 @@ object PhaseMenu:
             cost.words.fold(shown)(DecisionOption.Badged(shown, _))
           case Left(violation) => DecisionOption.Unavailable(shown,
             QueuedStart.waiting(catalog, ready, entry, walking, judging)
-              .flatMap(askFor(ready, actor, _)).getOrElse(OptionReason.Written(
+              .flatMap(askFor(ready, actor, _)).getOrElse(
                 QueuedStart.needs(catalog, ready, entry, walking, judging)
-                  .getOrElse(reason(procedure, violation))))),
+                  .map(OptionReason.Written(_))
+                  .orElse(unwaived(violation))
+                  .getOrElse(OptionReason.Written(
+                    reason(procedure, violation))))),
         group))
     val wealth: Vector[Offered] =
       if menu != Menu.Wake then Vector.empty
@@ -238,6 +241,15 @@ object PhaseMenu:
       case Answered(`decisionId`, DecisionAnswer.ChooseOneAnswer(answer), _) =>
         answer == ref
       case _ => false
+
+  /** The plain reason of a waivable refusal no ask is left for, such as
+    * the festival's ban on placing on a Trade's source card once its holder
+    * refused this turn. */
+  private def unwaived(violation: OathViolation): Option[OptionReason] =
+    violation match
+      case OathViolation.WaivableOperationRejected(_, _, waiver) =>
+        Some(OptionReason.Noted(waiver.power, waiver.plain))
+      case _ => None
 
   /** Why an option cannot start, in the player's words. */
   private def reason(procedure: StartableRef, violation: OathViolation)
