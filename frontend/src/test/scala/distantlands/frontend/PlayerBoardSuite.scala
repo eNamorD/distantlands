@@ -52,18 +52,30 @@ class PlayerBoardSuite extends munit.FunSuite:
             firstPlayerId = id))),
       "red")
 
-  test("the first player's role is followed by a First Player badge"):
-    val node = renderWithFirstPlayer(Some("blue"))
-    def identityOf(id: String) = firstMatch(node,
-      s""".player-board[data-player-id="$id"] .player-identity""")
+  private def identityOf(node: dom.Element, id: String): dom.Element =
+    firstMatch(node, s""".player-board[data-player-id="$id"] .player-identity""")
       .getOrElse(fail(s"no identity for $id"))
-    val blue = identityOf("blue")
-    assertEquals(all(blue, ".player-first-badge").map(_.textContent),
+
+  /** Only a game with no Empire can start with someone other than the
+    * Chancellor, so there the badge says something the role does not.
+    */
+  test("a first player who is not the Chancellor has a First Player badge after the role"):
+    val node = renderWithFirstPlayer(Some("red"))
+    val red = identityOf(node, "red")
+    assertEquals(all(red, ".player-first-badge").map(_.textContent),
       Vector("First Player"))
-    assertEquals(firstMatch(blue, ".player-role")
+    assertEquals(firstMatch(red, ".player-role")
       .map(_.nextElementSibling.getAttribute("class")),
       Some("player-first-badge"))
-    assertEquals(all(identityOf("red"), ".player-first-badge"), Vector.empty)
+    assertEquals(all(identityOf(node, "blue"), ".player-first-badge"),
+      Vector.empty)
+
+  /** With the Empire in play the Chancellor is always the first player, and
+    * the role already says so.
+    */
+  test("a Chancellor who is the first player has no First Player badge"):
+    assertEquals(all(renderWithFirstPlayer(Some("blue")), ".player-first-badge"),
+      Vector.empty)
 
   test("an Imperial role reads in the Empire's purple, an Exile's does not"):
     val node = renderWithFirstPlayer(None)
