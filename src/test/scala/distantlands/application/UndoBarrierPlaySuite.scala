@@ -1,6 +1,7 @@
 package distantlands.application
 
 import distantlands.gameplay.actions.explore.ExploreProcedure
+import distantlands.gameplay.chronicle.ChronicleBeginProcedure
 import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.testkit.MenuPlay
@@ -9,11 +10,12 @@ import distantlands.gameplay.setup.{AtlasPlacement, ImperialMaps,
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.{Dice, ParkedNode, Situation, Table}
-import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Commands
 import distantlands.testkit.Unwrap.{accepted, present}
 
-/** Real batches that undo never takes back (undo design, "Barriers"). */
+/** Real batches that undo never takes back (undo design, "Barriers"), and
+  * the ones beside them it still may. */
 class UndoBarrierPlaySuite extends munit.FunSuite:
   private def nothingToUndo(service: GameApplicationService, gameId: String,
       at: Long, player: PlayerId)(using munit.Location): Unit =
@@ -109,3 +111,44 @@ class UndoBarrierPlaySuite extends munit.FunSuite:
     assertEquals(undone.state, begun.state)
     assertEquals(parkedDecision(undone.state),
       SetupProcedure.reliquaryDecisionId)
+
+  /** p3's Rest hands p1, the Usurper, a Wake that p1 wins: the game parks on
+    * the winner's Start Chronicle decision. */
+  private def usurperWon(gameId: String)
+      : (GameApplicationService, Situation) =
+    val table = Table.start.turn(p3, Phase.Act)
+      .oathkeeper(Some(p1), TitleSide.Usurper).banditsRefilled
+    val (service, repository) = table.service()
+    val act = table.situation(Situation.journaled(service, catalog,
+      repository, gameId))
+    val won = act.parkedAfter(MenuPlay.start(p3,
+      PhaseTransitionRef.BeginRest))
+    assertEquals(won.ready.game.current.result.map(_.winner), Some(p1))
+    (service, won)
+
+  private val startChronicle: GameCommand = Commands.resolveWalker(p1,
+    TreeDecision(ChronicleBeginProcedure.decisionId,
+      DecisionAnswer.ChooseOneAnswer(ChronicleBeginProcedure.start)))
+
+  test("the batch that wins the game cannot be taken back"):
+    val (service, won) = usurperWon("won")
+    nothingToUndo(service, "won", won.nextSequence, p1)
+    nothingToUndo(service, "won", won.nextSequence, p3)
+
+  test("once the game is won, the winner can still take back starting the " +
+      "Chronicle"):
+    val (service, won) = usurperWon("chronicle-start")
+    val started = won.parkedAfter(startChronicle)
+    assertEquals(started.ready.game.current.turn.phase, Phase.Chronicle)
+    val undone = accepted(service.handle("chronicle-start",
+      started.nextSequence, Commands.undo(p1)))
+    assertEquals(undone.state, won.state)
+
+  test("finishing the Chronicle shows the evolved Chronicle, so it cannot " +
+      "be taken back"):
+    val (service, won) = usurperWon("chronicle-finish")
+    val done = won.after(startChronicle)
+    assert(done.ready.game.campaign.evolved.nonEmpty)
+    nothingToUndo(service, "chronicle-finish", done.nextSequence, p1)
+    nothingToUndo(service, "chronicle-finish", done.nextSequence, p2)
+    nothingToUndo(service, "chronicle-finish", done.nextSequence, p3)

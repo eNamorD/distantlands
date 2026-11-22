@@ -54,5 +54,21 @@ class UndoBarrierSuite extends munit.FunSuite:
       _.copy(result = Some(GameResult(p1, VictoryKind.Usurper))))).ready)
     assert(UndoBarrier.blocks(Vector.empty, before, won))
 
+  test("a batch after the game result is set is not a barrier for that " +
+      "alone"):
+    // The Chronicle Phase runs with the result set: its answers are
+    // ordinary batches unless they hide or reveal something.
+    val won = OathState.Ready(table.update(_.updateCurrent(
+      _.copy(result = Some(GameResult(p1, VictoryKind.Usurper))))).ready)
+    assert(!UndoBarrier.blocks(Vector.empty, won, won))
+
+  test("a batch that journals the evolved Chronicle is a barrier"):
+    // The evolved Chronicle shows every seat the relic deck's order and
+    // the lineages' dormant legacies.
+    val evolved = OathState.Ready(table.update(state =>
+      state.updateCampaign(campaign =>
+        campaign.copy(evolved = Some(campaign.savedChronicle)))).ready)
+    assert(UndoBarrier.blocks(Vector.empty, before, evolved))
+
   test("a batch begun before the game started is a barrier"):
     assert(UndoBarrier.blocks(Vector.empty, OathState.NoGame, before))
