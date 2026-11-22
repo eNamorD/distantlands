@@ -81,6 +81,16 @@ They wait in the keeper's hand until that seat's keep.
    after each pawn (CR p. 7). It uses the same deal and the same keep, and
    only the keeps' place differs. Nothing a player sees changes in a first
    game.
+8. **Matchmaker's holder sees every dealt pair from the deal on.** The
+   deal puts every other seat's dealt pair in the holder's hand at once,
+   and a legacy in a hand is named to the hand's holder. The holder may
+   therefore choose one seat's keep knowing another seat's pair. This
+   amends Legacy Setup powers implementation ruling R16, under which the
+   holder saw another player's draw only while that player's keep was
+   pending. The owner still never sees their dealt pair, the kept legacy
+   is still named to its owner alone, and the returned one to nobody. The
+   deal still comes after World Crafter's and Populist's choices, which
+   R16 kept the holder from informing.
 
 ## Architecture
 
@@ -149,13 +159,17 @@ New tests are written first and fail before the change.
 
 - `UndoBarrierPlaySuite`, a later game with two keeping seats:
   - seat 1 keeps; seat 1's undo returns the game to seat 1's keep question;
-  - after seat 2 keeps, seat 1 has nothing to undo.
+  - after seat 2 keeps, seat 1 is refused as not the issuer, and seat 2
+    may undo their own keep.
 - The deal, in a later game: when the walk first parks at a keep question,
   every seat's keeper holds that seat's dealt pair.
 - Matchmaker, in a later game: the holder holds their own dealt pair and
   every other seat's, and the holder's keep for p2 offers only p2's pair.
-- A short deck, in a later game: 3 legacies for two seats. Seat 1 is asked
-  over 2; seat 2 keeps their one with no question.
+- A short deck, in a later game: 3 legacies for three seats. The first
+  seat is asked over 2, the second keeps their one with no question, and
+  the third is asked nothing.
+- Matchmaker, from the deal on: the holder identifies p2's dealt pair at
+  p1's keep, and the owner does not (ruling 8).
 - A walk resumed at seat 2's keep question, after seat 1 kept, offers seat
   2's dealt pair. Every keep answered through `GameApplicationService`
   resumes the walk, so the scenario tests above cover this; one test

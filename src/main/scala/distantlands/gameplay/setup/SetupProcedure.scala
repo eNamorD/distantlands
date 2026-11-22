@@ -29,12 +29,13 @@ import distantlands.model.OathViolation._
  *                                                        // Foundation I normal
  *   Sequence(Vector.empty)                               // window = SetupBanks
  *   Sequence(                                            // a later game's
- *     Branch(Draw(2 into the keeper's hand)),            // LegacyKeep.step, per
- *     Branch(Decide(legacy-choice, keeper), ...))        // seat in turn order
- *   ...                                                  // (Foundation III)
+ *     LegacyKeep.deal                                    // every seat's draw,
+ *       Branch(Defer(deal), Draw(2 into the keeper's     // recorded, in turn
+ *         hand)), ...                                    // order
+ *     Deferred.resolve(deal)(Decide(legacy-choice,       // LegacyKeep.keep, per
+ *       keeper), ...), ...)                              // seat (Foundation III)
  *   Sequence(Vector.empty)                               // window = SetupWorldDeck
- *   Branch(Draw(2 into the keeper's hand))               // a first game's
- *   ...                                                  // LegacyKeep.draw, per
+ *   LegacyKeep.deal                                      // a first game's, every
  *                                                        // seat in turn order
  *   Sequence(                                            // per participant
  *     Branch(Decide(pawn-placement, participant)),       // legal sites, and
@@ -45,9 +46,9 @@ import distantlands.model.OathViolation._
  *                                                        // placer orders its powers
  *     Branch(Decide(secret-society discard, participant)) // over the limit,
  *                                                        // with a pawn
- *     Branch(                                            // a first game's
+ *     Deferred.resolve(deal)(                            // a first game's
  *       Decide(legacy-choice, keeper),                   // LegacyKeep.keep; one
- *       BuildOps(keep one, the other to the bottom),     // in the hand is kept
+ *       BuildOps(keep one, the other to the bottom),     // dealt is kept
  *       Note(kept a legacy))                             // unasked
  *     QuestToDistantLands.swapStep(participant)          // no pawn, a card to
  *                                                        // give (R31, R37)
@@ -117,10 +118,11 @@ object SetupProcedure:
 
   private def tree(catalog: ExecutableCatalog, ready: ReadyGame): Operation =
     val participants = turnOrder(ready)
-    // A first game draws every seat's legacies before the first pawn and
-    // keeps in each player's turn, after their pawn (CR p. 7);
-    // a later game keeps while Foundation III resolves, every seat before
-    // any pawn (CR "Later games", step 5; catalog batch 13, ruling 3). An
+    // Every seat's legacies are dealt before the first keep (setup keep
+    // undo design, ruling 1). A first game deals before the first pawn and
+    // keeps in each player's turn, after their pawn (CR p. 7); a later game
+    // deals and keeps while Foundation III resolves, every seat before any
+    // pawn (CR "Later games", step 5; catalog batch 13, ruling 3). An
     // exile-only game resolves its stored foundations, so it keeps in
     // Foundation III, unless its wiped baseline carries no history: then
     // it keeps after each pawn, as it places its pawns, as a first game
@@ -128,13 +130,14 @@ object SetupProcedure:
     // rebuilds the same tree.
     val firstGame = EmpireSetupRules.isFirstGame(catalog,
       ready.game.campaign.baseline)
+    val deal = LegacyKeep.deal(participants)
     val keeps =
-      if firstGame then Vector.empty else participants.map(LegacyKeep.step)
-    // A first game draws every seat's two before the first pawn, so each
-    // player places holding them (CR p. 7), and keeps after their pawn.
-    val firstGameDraws =
-      if firstGame then participants.map(LegacyKeep.draw) else Vector.empty
-    val steps = firstGameDraws ++
+      if firstGame then Vector.empty
+      else deal +: participants.map(LegacyKeep.keep)
+    // A first game's deal comes before the first pawn, so each player
+    // places holding their two (CR p. 7).
+    val firstGameDeal = if firstGame then Vector(deal) else Vector.empty
+    val steps = firstGameDeal ++
       participants.map(playerStep(catalog, ready, _, firstGame))
     val setupEnd = Sequence(Vector.empty, Some(PowerWindow.SetupEnd))
     val chancellor = Imperials.chancellor(ready)

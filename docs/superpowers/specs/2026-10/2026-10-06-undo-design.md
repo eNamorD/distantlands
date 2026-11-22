@@ -89,6 +89,9 @@ Consequences the playtest should expect:
   each rolls in its own batch.
 - The last answer before a Campaign roll cannot be undone, because the roll
   runs in the same batch.
+- A later game's legacy keep can be undone until the next keeper answers;
+  the last keep cannot when Secret Society or Seer acts on the world
+  deck ([setup keep undo design](../2026-11/2026-11-21-setup-keep-undo-design.md)).
 
 ### Redo
 
