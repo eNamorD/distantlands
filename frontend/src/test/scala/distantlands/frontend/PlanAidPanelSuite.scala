@@ -37,6 +37,15 @@ class PlanAidPanelSuite extends munit.FunSuite:
   private def saveButton(panel: dom.Element): dom.html.Button =
     panel.querySelector(".plan-aid-save").asInstanceOf[dom.html.Button]
 
+  test("the section is titled Imperial Tactics, above the heading"):
+    val open = prompt()
+    val section = pane(open, PlanAidDraft.fresh(context, open),
+      new RecordingControls()).querySelector(".plan-aid-prompt")
+    val title = section.firstElementChild
+    assertEquals((title.tagName, title.textContent), ("H2", "Imperial Tactics"))
+    assertEquals(title.nextElementSibling.getAttribute("class"),
+      "plan-aid-heading")
+
   test("the heading names the user"):
     val open = prompt()
     assertEquals(pane(open, PlanAidDraft.fresh(context, open),

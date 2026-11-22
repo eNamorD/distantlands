@@ -33,6 +33,9 @@ private[frontend] object PlanAidPanel:
       draft <- drafts.aid
     do
       val section = element("section", "plan-aid-prompt")
+      // The rule's name (CR p. 35), as the Gathering and Negotiation panels
+      // name theirs, so the offer is not read as the Campaign's own choice.
+      section.appendChild(text("h2", "", "Imperial Tactics"))
       section.appendChild(text("p", "plan-aid-heading", heading(value, prompt)))
       def toggle(key: String): Unit =
         controls.stage(Draft.Aid(Some(draft.toggled(prompt, key))))
