@@ -76,7 +76,11 @@ A batch is a barrier when any of these holds:
   and a `BeginRest` batch that finishes Rest on its own because no REST power
   is usable.
 - It is the Begin batch, which starts the game and runs Setup.
-- It sets the game result.
+- It sets the game result. The Chronicle Phase that follows runs with the
+  result still set, and its batches are not barriers for that alone.
+- It journals the evolved Chronicle at the Chronicle's end. The evolved
+  Chronicle shows every seat the relic deck's order and the lineages'
+  dormant legacies.
 
 Consequences the playtest should expect:
 
@@ -243,7 +247,8 @@ these holds:
 - the active player differs between its states before and after. This
   catches `FinishRest`, a `BeginRest` that finishes Rest on its own, and any
   other batch that hands the turn over, without naming commands;
-- its state after has a game result.
+- its state before has no game result and its state after has one;
+- its state before has no evolved Chronicle and its state after has one.
 
 The function lives beside `JournalFold` in the application layer, so the
 rules engine stays unaware of undo.
