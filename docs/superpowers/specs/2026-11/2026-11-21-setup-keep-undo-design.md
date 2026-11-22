@@ -88,10 +88,11 @@ All changes are in `LegacyKeep` and the place `SetupProcedure` calls it.
 
 ### The deal
 
-`LegacyKeep.deal(participants)` is one `Branch`. It does nothing when
-Foundation III does not show Quiet Ambitions. Otherwise it reads the legacy
-deck's top once and cuts it into dealt pairs, in seat order. For each seat
-with a nonempty dealt pair it returns two operations:
+`LegacyKeep.deal(participants)` is a `Sequence` of one `Branch` per seat,
+in seat order. Each does nothing when Foundation III does not show Quiet
+Ambitions. Otherwise it reads the top 2 legacies of the deck when it is
+reached, after every earlier seat's draw, as today's per-seat draw does.
+For a seat with a nonempty dealt pair it returns two operations:
 
 - `Defer(dealKey(owner), Vector(draw))`, which records the draw, and
 - `draw` itself: `Draw(keeper, pair, Location.Deck(CardDeck.Legacy),
@@ -100,8 +101,9 @@ with a nonempty dealt pair it returns two operations:
 `dealKey(owner)` is `DeferralKey("setup.legacy-deal.<owner>")`. Recording
 first, then the operation, is the recording form `Deferred` documents.
 
-The deal's `Branch` holds no question, so it never parks, and a resumed walk
-never re-selects it from a changed deck. `Defer` is a leaf: the undo
+The deal's `Branch`es hold no question, so the walk never parks inside
+one, and no resumed walk depends on how one re-selects from a changed
+deck. `Defer` is a leaf: the undo
 barrier check and the legality search see only the `Draw` beside it.
 `walkerDeferred` is not projected to any client, so the record shows no
 viewer a legacy the `Draw` does not already show them.
