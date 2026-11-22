@@ -116,6 +116,10 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   and Populist choices, which come first. *Slice/files:* slice 2;
   `LegacyKeep`, `GamePresentationProjector.identifiesCard`.
   *Superseded 2026-11-15* by [catalog batch 13](2026-11-14-catalog-batch-13-design.md), ruling 6: the holder draws into their own hand, so the hand rule names the draw to them alone.
+  *Amended 2026-11-21:* the holder now sees every other player's dealt
+  pair from the deal on, before any keep
+  ([setup keep undo design](2026-11-21-setup-keep-undo-design.md),
+  ruling 8).
 
 ## Slice 3
 

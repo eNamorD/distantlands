@@ -1,6 +1,7 @@
 package distantlands.gameplay.setup
 
 import distantlands.gameplay.actions.ProcedureNotes
+import distantlands.gameplay.powerresolver.Deferred
 import distantlands.gameplay.powers.{LegacyDraws, PowerAnswers}
 import distantlands.gameplay.setup.legacies.{Matchmaker, MatchmakerCard,
   SetupLegacyRules}
@@ -9,15 +10,21 @@ import distantlands.model._
 /** Foundation III's Quiet Ambitions keep in Setup's walk: each player draws
   * two legacies from the legacy deck, keeps one facedown and returns the
   * other to the bottom (Legacies design, slice 2; catalog batch 13, ruling
-  * 6). Split from `SetupProcedure`, which calls `step` for every seat
-  * while Foundation III resolves in a later game; a first game calls
-  * `draw` for every seat before the first pawn and `keep` in each
-  * player's turn, after their pawn (catalog batch 13, rulings 3 and 8).
-  * Matchmaker's holder answers every other player's
-  * keep (Legacy Setup powers ruling 13; R16). */
+  * 6). Split from `SetupProcedure`, which calls [[deal]] once and then
+  * [[keep]] for every seat. A later game deals and keeps while Foundation
+  * III resolves; a first game deals before the first pawn and keeps in
+  * each player's turn, after their pawn (catalog batch 13, rulings 3 and
+  * 8; setup keep undo design, rulings 1 and 7). Matchmaker's holder
+  * answers every other player's keep (Legacy Setup powers ruling 13;
+  * R16). */
 object LegacyKeep:
   def decisionId(player: PlayerId): String =
     s"setup.legacy-choice.${player.value}"
+
+  /** The key the deal records `owner`'s dealt pair under, which `owner`'s
+    * keep reads and takes (setup keep undo design, "The deal"). */
+  def dealKey(owner: PlayerId): DeferralKey =
+    DeferralKey(s"setup.legacy-deal.${owner.value}")
 
   private val notes = NoteSet(ProcedureNotes.id(TriggeredProcedureRef.Setup))
   /** "p2 kept a legacy". It names no card: the kept legacy is dormant, and
@@ -27,42 +34,45 @@ object LegacyKeep:
   /** The lines the keep writes, on Setup's note id. */
   def noteKeys: Vector[NoteKey] = notes.declared
 
-  /** Quiet Ambitions: draw 2 legacies from the top of the legacy deck,
-    * keep one facedown and return the other to the bottom (CR "Set Up
-    * Players"; Legacies design, slice 2; catalog batch 13, rulings 2 and
-    * 6). The draw goes to the keeper's hand: Matchmaker's holder draws and
-    * keeps for every other player (Legacy Setup powers ruling 13), and a
-    * hand is private to its holder, so only the keeper sees the draw. The
-    * keep is its own `Branch`, after the draw's, so a walk resumed at the
-    * question reads the same hand. A short deck's single legacy is kept
-    * without a question, and a player who draws none is asked nothing
-    * (R9). Public Ambitions draws nothing. */
-  def step(participant: FirstGameParticipant): Operation =
-    Sequence(Vector(draw(participant), keep(participant)))
+  /** Quiet Ambitions' deal: every seat in `participants`' order draws the
+    * next 2 legacies from the top of the deck into its keeper's hand, before
+    * any keep (setup keep undo design, rulings 1 to 3). The keeper is the
+    * seat itself or Matchmaker's holder (Legacy Setup powers ruling 13),
+    * and a hand is private to its holder, so only the keeper sees the
+    * draw. A short deck gives the later seats fewer, and a seat it cannot
+    * reach draws none. Each draw is recorded under [[dealKey]] first, then
+    * run, so [[keep]] reads the seat's own pair however the deck and the
+    * keeper's hand change before it. Public Ambitions deals nothing. */
+  def deal(participants: Vector[FirstGameParticipant]): Operation =
+    Sequence(participants.map(dealTo))
 
-  /** The keep's draw alone: 2 from the top of the legacy deck into the
-    * keeper's hand, under Quiet Ambitions. A first game runs every seat's
-    * draw before the first pawn, so each player holds their two while
-    * placing (CR p. 7), and runs [[keep]] after each pawn. */
-  def draw(participant: FirstGameParticipant): Operation =
+  /** One seat's part of [[deal]]: its draw, read off the deck when the step
+    * is reached, after every earlier seat's. */
+  private def dealTo(participant: FirstGameParticipant): Operation =
     val owner = participant.playerId
     Branch((state, _) =>
       if !quiet(state) then Vector.empty
       else LegacyDraws.top(state, LegacyDeal.QuietDraw) match
         case Vector() => Vector.empty
-        case top => Vector(LegacyDraws.draw(
-          SetupLegacyRules.keeper(state, owner), top)))
+        case pair =>
+          val keeper = SetupLegacyRules.keeper(state, owner)
+          val draw = Draw(keeper, pair, Location.Deck(CardDeck.Legacy),
+            Location.Hand(keeper))
+          Vector(BuildOps((_, _) => Right(Vector[CoreOperation](
+            Defer(dealKey(owner), Vector(draw)), draw)), required = true)))
 
-  /** The keep of what [[draw]] put in the keeper's hand: the keeper sorts
-    * the legacies into Keep, one, and Discard, the rest. It reads the whole
-    * hand, so the keeper holds only this player's draw when it runs. */
+  /** The keep of the pair [[deal]] recorded for this player: the keeper
+    * sorts the legacies into Keep, one, and Discard, the rest. A seat dealt
+    * one legacy keeps it without a question, and a seat dealt none is asked
+    * nothing (R9). A walk resumed at the question finds the same pair still
+    * recorded. */
   def keep(participant: FirstGameParticipant): Operation =
     val owner = participant.playerId
     val lineage = participant.lineageId
     val decisionId = LegacyKeep.decisionId(owner)
-    Branch((state, _) =>
+    Deferred.resolve(dealKey(owner))((state, _, held) =>
       val keeper = SetupLegacyRules.keeper(state, owner)
-      LegacyDraws.hand(state, keeper) match
+      dealt(held) match
         case Vector() => Vector.empty
         case Vector(only) => Vector(
           BuildOps((_, _) => Right(Vector(keptMove(only, keeper, lineage))),
@@ -77,6 +87,13 @@ object LegacyKeep:
           BuildOps(settled(lineage, keeper, drawn, decisionId),
             required = true),
           keptNote(keeper, owner)))
+
+  /** The legacies the recorded draws took, in draw order. */
+  private def dealt(held: Vector[CoreOperation]): Vector[LegacyId] =
+    held.flatMap {
+      case draw: Draw => draw.cards.collect { case id: LegacyId => id }
+      case _ => Vector.empty
+    }
 
   /** Whether Foundation III shows Quiet Ambitions, whose keep draws. */
   private def quiet(state: ReadyGame): Boolean =

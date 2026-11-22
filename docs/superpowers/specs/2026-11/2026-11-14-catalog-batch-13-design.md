@@ -79,6 +79,9 @@ then continue.
    first-game Homeland edifice is the lowest-numbered implemented edifice of
    its suit (E01 for Discord, E06 for Nomad), and Explore needs Foundation I
    altered.
+   *Amended 2026-11-21:* every seat's legacies are drawn before the first
+   keep ([setup keep undo design](2026-11-21-setup-keep-undo-design.md),
+   ruling 1).
 4. **The placer orders the powers in their `SetupPawnPlaced` window.**
    Whenever two or more powers apply in a player's window, that player is
    asked "Choose a power to resolve", with each power named by its card.

@@ -72,13 +72,13 @@ class MatchmakerSuite extends munit.FunSuite:
       MatchmakerCard.id.value), said)
     assert(said.contains("p3 kept a legacy"), said)
 
-  test("a player who drew one legacy keeps it with no question"):
+  test("a player dealt one legacy keeps it with no question"):
     // Box lineages hold every legacy but Matchmaker and 3 others, so the
-    // derived deck is short. Each keep returns one legacy to the bottom, so
-    // p1 and p2 draw 2 each and p3 draws the 1 left (Legacies R9; catalog
-    // batch 13, ruling 6). Matchmaker's holder p3 answers both questions
-    // and keeps their own single legacy unasked. A later game with a Chancellor keeps them; a first game played
-    // exile-only would wipe them back into the deck (R40).
+    // derived deck is short. The deal gives p1 two, p2 the one left and
+    // p3 none (Legacies R9; setup keep undo, ruling 2). Matchmaker's
+    // holder p3 answers p1's question and keeps p2's single legacy
+    // unasked. A later game with a Chancellor keeps them; a first game
+    // played exile-only would wipe them back into the deck (R40).
     val held = catalog.legacies.map(_.id).filterNot(_ == MatchmakerCard.id)
       .dropRight(3)
     val boxed = held.grouped(12).zipWithIndex.map((ids, n) => LineageState(
@@ -98,13 +98,12 @@ class MatchmakerSuite extends munit.FunSuite:
       WalkerPowers.empty)
     assertEquals(setup.asked.filter(_.decisionId.startsWith(
       "setup.legacy-choice.")).map(decide => decide.decisionId ->
-      decide.owner), Vector(LegacyKeep.decisionId(p1) -> p3,
-      LegacyKeep.decisionId(p2) -> p3))
+      decide.owner), Vector(LegacyKeep.decisionId(p1) -> p3))
     val said = NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
       SetupProcedure.noteKeys, setup.events).map(_.text)
-    assert(said.contains("p3 kept a legacy"), said)
     Vector("p1", "p2").foreach(owner => assert(said.contains(
       s"p3 kept a legacy for $owner with ${MatchmakerCard.id.value}"), said))
+    assert(!said.contains("p3 kept a legacy"), said)
 
   test("under Public Ambitions nobody draws, so the power does nothing"):
     val public = record.copy(foundations = record.foundations.updated(
