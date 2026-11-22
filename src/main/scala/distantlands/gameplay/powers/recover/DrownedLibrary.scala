@@ -69,6 +69,13 @@ case object DrownedLibrary extends OnEdificeFace:
 
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map.empty
 
+  /** Whether a Recover `actor` starts now could take the relic deck's top
+    * card through it: the ruined face stands at their pawn site and the
+    * relic deck holds a card. Its price is left to the modifier decision. */
+  def offersRelicDeck(ready: ReadyGame, actor: PlayerId): Boolean =
+    atLibrary(ready, actor) &&
+      ready.game.current.commonCards.relicDeck.nonEmpty
+
   /** Whether the ruined face stands at the user's pawn site, the site the
     * Recover is made at. */
   private def atLibrary(ready: ReadyGame, actor: PlayerId): Boolean =

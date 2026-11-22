@@ -138,6 +138,11 @@ object RecoverProcedure:
       Vector.empty[RelicState])(_.relics.filter(
       _.orientation == Orientation.FaceDown))
 
+  /** The Act menu's warning on a Recover a success would gain nothing
+    * from. */
+  val nothingToRecover: String =
+    "No relics at your site: a successful Recover takes nothing"
+
   /** "Start Recover": the modifier decision's button. */
   val startLabel: String = "Start Recover"
 
