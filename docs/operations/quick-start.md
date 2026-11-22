@@ -36,7 +36,8 @@ else needs installing. `<version>` is the release version, for example
 4. If the system asks whether to allow incoming connections, allow them on
    private networks only.
 5. The window shows the address players open, for example
-   `http://192.168.1.20:8080`, and your browser opens the game-creation page.
+   `http://192.168.1.20:8080`. Your browser opens the game-creation page at
+   `http://localhost:8080`, this computer's own address for the server.
    Continue with [Create and distribute seats](#create-and-distribute-seats).
 6. Keep the window open while you play. Close it, or press Ctrl-C, to stop.
 
@@ -118,8 +119,9 @@ above and share the LAN address instead.
    address; on the test router, requests from the host to the public address
    mostly timed out. An open tab that got through once can keep working by
    reusing its connection, which hides the problem; a private window shows it.
-   On the host, open `http://localhost:8080/` instead. The window shows this
-   address as "On this computer you can also use". Create the game there. The
+   On the host, use `http://localhost:8080/` instead. The browser that the
+   Start file opens already uses it, and the window shows it as "On this
+   computer you can also use". Create the game there. The
    seat links still contain the public address, which is what the other
    players need. Then continue with
    [Create and distribute seats](#create-and-distribute-seats).
