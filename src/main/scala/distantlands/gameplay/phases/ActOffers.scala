@@ -3,6 +3,8 @@ package distantlands.gameplay.phases
 import distantlands.gameplay.actions.campaign.CampaignProcedure
 import distantlands.gameplay.actions.economy.TradeProcedure
 import distantlands.gameplay.actions.explore.ExploreProcedure
+import distantlands.gameplay.actions.recover.RecoverProcedure
+import distantlands.gameplay.powers.recover.DrownedLibrary
 import distantlands.gameplay.roles.CouncilSeat
 import distantlands.model._
 
@@ -71,13 +73,21 @@ object ActOffers:
       case _ => true)
 
   /** The button `offer` shows `actor`. Self-exile carries Council Seat's
-    * warning while the Seat guards them. */
+    * warning while the Seat guards them. Recover warns when a success would
+    * take nothing: no facedown relic at the actor's site, and no Drowned
+    * Library to take the relic deck's top card instead. A wasted Recover is
+    * legal (`RecoverProcedure`), so it stays choosable. */
   def button(ready: ReadyGame, actor: PlayerId, offer: ActOffer)
       : DecisionOption =
     val plain = DecisionOption.Button(offer.ref, offer.label)
-    if offer.procedure == ActionRef.SelfExile then
-      CouncilSeat.warned(ready, actor, plain)
-    else plain
+    offer.procedure match
+      case ActionRef.SelfExile => CouncilSeat.warned(ready, actor, plain)
+      case ActionRef.Recover
+          if RecoverProcedure.actorFacedownRelics(ready, actor).isEmpty &&
+            !DrownedLibrary.offersRelicDeck(ready, actor) =>
+        DecisionOption.Warned(plain,
+          OptionReason.Written(RecoverProcedure.nothingToRecover))
+      case _ => plain
 
   /** Why an Act action cannot start, in the player's words, when its
     * refusal is not about Supply or favor. */
