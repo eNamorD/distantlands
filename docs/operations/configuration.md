@@ -137,3 +137,10 @@ computer uses for its default route. If there is none, the server listens on
 `DLQ_PUBLIC_BASE_URL` in the settings file. The port stays at 8080 unless
 you change it; if it is in use, the server stops with a message naming the
 settings file.
+
+The browser opens `http://localhost` on the listen port when the public base
+URL is plain HTTP and not a loopback address, and the server listens on
+`0.0.0.0`, `::`, or a loopback address. Many home routers cannot loop a
+connection back to their own public address. Otherwise the browser opens the
+public base URL, or `127.0.0.1` when there is none. Seat links always contain
+the public base URL.

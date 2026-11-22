@@ -59,9 +59,37 @@ class DesktopConsoleSuite extends munit.FunSuite:
       ).mkString("", nl, nl)
     )
 
-  test("the browser opens the public base URL, else loopback"):
-    val lanConfig = config(Map("DLQ_HOST" -> "0.0.0.0", "DLQ_PUBLIC_BASE_URL" -> "http://192.168.1.20:8080"))
-    assertEquals(DesktopConsole.browserUrl(lanConfig), "http://192.168.1.20:8080/")
+  test("the browser opens localhost when the server listens on every interface"):
+    // The host's router may not loop back to its own public address, so the
+    // host's browser uses localhost; the seat links keep the public address.
+    Seq("0.0.0.0", "::").foreach { host =>
+      Seq("http://192.168.1.20:8080", "http://203.0.113.7:8080").foreach { publicUrl =>
+        assertEquals(
+          DesktopConsole.browserUrl(config(Map("DLQ_HOST" -> host, "DLQ_PUBLIC_BASE_URL" -> publicUrl))),
+          "http://localhost:8080/",
+          s"$host $publicUrl"
+        )
+      }
+    }
+
+  test("the browser follows the port the server listens on"):
+    val otherPort = config(Map("DLQ_HOST" -> "0.0.0.0", "DLQ_PORT" -> "9090",
+      "DLQ_PUBLIC_BASE_URL" -> "http://203.0.113.7:9090"))
+    assertEquals(DesktopConsole.browserUrl(otherPort), "http://localhost:9090/")
+
+  test("the browser opens the public address when localhost cannot reach the server"):
+    val boundToLanAddress = config(Map("DLQ_HOST" -> "192.168.1.20", "DLQ_PUBLIC_BASE_URL" -> "http://192.168.1.20:8080"))
+    assertEquals(DesktopConsole.browserUrl(boundToLanAddress), "http://192.168.1.20:8080/")
+    assert(!DesktopConsole.banner(boundToLanAddress, launch(lanDetectionFailed = false)).contains("On this computer"))
+
+  test("the browser opens an HTTPS public address, which goes through its proxy"):
+    val behindProxy = config(Map("DLQ_HOST" -> "0.0.0.0", "DLQ_PUBLIC_BASE_URL" -> "https://oath.example"))
+    assertEquals(DesktopConsole.browserUrl(behindProxy), "https://oath.example/")
+    assert(!DesktopConsole.banner(behindProxy, launch(lanDetectionFailed = false)).contains("On this computer"))
+
+  test("the browser opens a loopback public address, else 127.0.0.1"):
+    val loopbackPublic = config(Map("DLQ_HOST" -> "0.0.0.0", "DLQ_PUBLIC_BASE_URL" -> "http://127.0.0.1:8080"))
+    assertEquals(DesktopConsole.browserUrl(loopbackPublic), "http://127.0.0.1:8080/")
     assertEquals(DesktopConsole.browserUrl(config(Map("DLQ_HOST" -> "127.0.0.1"))), "http://127.0.0.1:8080/")
 
   test("the browser command follows the operating system"):

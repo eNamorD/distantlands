@@ -16,9 +16,8 @@ object DesktopConsole:
         s"Distant Lands ${config.version} is running.",
         address
       ) ++
-        config.publicBaseUrl
-          .filterNot(url => ServerConfig.isLoopback(url.getHost.stripPrefix("[").stripSuffix("]")))
-          .map(_ => s"  On this computer you can also use: http://localhost:${config.port}") ++
+        thisComputerUrl(config)
+          .map(url => s"  On this computer you can also use: ${url.stripSuffix("/")}") ++
       Vector(
         s"  Data folder:   ${config.databasePath.getParent}",
         s"  Settings:      ${launch.settingsFile}"
@@ -32,10 +31,29 @@ object DesktopConsole:
         "Close this window or press Ctrl-C to stop."
     lines.mkString("", System.lineSeparator, System.lineSeparator)
 
-  def browserUrl(config: ServerConfig): String =
+  /** A loopback address for the host's own browser, when the public address
+    * is a plain-HTTP, non-loopback one and the server also listens on
+    * loopback. Many home routers cannot loop a connection back to their own
+    * public address, so the host uses this one instead. An HTTPS public
+    * address goes through a proxy that loopback would skip. */
+  def thisComputerUrl(config: ServerConfig): Option[String] =
+    val listensOnLoopback =
+      WildcardHosts.contains(config.host) || ServerConfig.isLoopback(unbracketed(config.host))
     config.publicBaseUrl
-      .map(_.toString.stripSuffix("/") + "/")
+      .filter(url => Option(url.getScheme).exists(_.equalsIgnoreCase("http")))
+      .filterNot(url => ServerConfig.isLoopback(unbracketed(url.getHost)))
+      .filter(_ => listensOnLoopback)
+      .map(_ => s"http://localhost:${config.port}/")
+
+  def browserUrl(config: ServerConfig): String =
+    thisComputerUrl(config)
+      .orElse(config.publicBaseUrl.map(_.toString.stripSuffix("/") + "/"))
       .getOrElse(s"http://127.0.0.1:${config.port}/")
+
+  private val WildcardHosts = Set("0.0.0.0", "::", "[::]")
+
+  private def unbracketed(host: String): String =
+    host.stripPrefix("[").stripSuffix("]")
 
   def browserCommand(osName: String, url: String): Vector[String] =
     val os = osName.toLowerCase
