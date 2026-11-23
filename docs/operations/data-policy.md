@@ -97,7 +97,7 @@ The volume is mounted read-only during backup.
 Restore into a new named volume so the old one remains untouched:
 
 ```sh
-export DLQ_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.1.0-alpha.1'
+export DLQ_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.2.0-alpha'
 docker pull "$DLQ_IMAGE_REFERENCE"
 docker volume create distantlands-data-restored-2026-09-09
 docker run --rm \

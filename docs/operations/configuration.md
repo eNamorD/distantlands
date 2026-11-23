@@ -62,7 +62,7 @@ reference supplied by the release operator. The placeholder must be replaced
 before use:
 
 ```sh
-export DLQ_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.1.0-alpha.1'
+export DLQ_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.2.0-alpha'
 docker pull "$DLQ_IMAGE_REFERENCE"
 docker volume create distantlands-data
 docker run --detach --name distantlands \

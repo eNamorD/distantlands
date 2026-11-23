@@ -147,7 +147,7 @@ Every printed power runs, and every rule row above is **Tested** but these.
 Each names the ROADMAP item that owns it.
 
 - **Era scoring and reset** (Partial): the era end, its winner and the
-  reset; era ties F7 (Phase - Eras).
+  reset; era ties F7 (Phase - Chronicle steps).
 - **Simultaneous ordering** (Partial): F2 is resolved, and the audit of
   windows where order changes the outcome is open (Phase - Gameplay
   completeness gate).

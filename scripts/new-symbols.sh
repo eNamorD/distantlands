@@ -2,13 +2,13 @@
 # Lists the public Scala symbols a branch adds, one per line as "file: kind name".
 #
 # Usage: scripts/new-symbols.sh [base-ref] [head-ref]
-#   base-ref defaults to 0.2.0-alpha; with no head-ref the working tree is compared.
+#   base-ref defaults to 0.2-alpha; with no head-ref the working tree is compared.
 #
 # Private and protected members are skipped. A val or var indented four spaces
 # or more is treated as a local and skipped; defs, classes, objects and traits
 # are listed at any depth.
 set -eu
-base="${1:-0.2.0-alpha}"
+base="${1:-0.2-alpha}"
 head="${2:-}"
 git diff -U0 "$base" ${head:+"$head"} -- '*.scala' | awk '
   /^\+\+\+ b\// { file = substr($0, 7); next }
