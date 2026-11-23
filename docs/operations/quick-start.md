@@ -9,7 +9,7 @@ Send each link only to its intended player and keep a private saved copy.
 
 Download the archive for your computer. It includes its own Java, so nothing
 else needs installing. `<version>` is the release version, for example
-`0.1.0-alpha.3`:
+`0.2.0-alpha.1`:
 
 | Computer | Download |
 | --- | --- |

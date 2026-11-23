@@ -115,11 +115,12 @@ starts the build.
    host access as described above. Confirm a clean host can pull the exact
    published reference before distributing OCI startup instructions.
 
-The GitHub prerelease contains both Universal archives, the three bundled
-archives, `SHA256SUMS`, these
-release notes, and sanitized archive/image/manifest evidence. Checksums cover
-the archives and evidence files. Verify downloads with `sha256sum --check
-SHA256SUMS` on Linux or `shasum -a 256 --check SHA256SUMS` on macOS. Successful
+The GitHub prerelease carries these release notes as its body and attaches
+only what players download: the three bundled archives and a `SHA256SUMS` that
+covers exactly those three. Verify downloads with `sha256sum --check
+SHA256SUMS` on Linux or `shasum -a 256 --check SHA256SUMS` on macOS. The
+Universal archives and the sanitized archive, image and manifest evidence stay
+in the workflow run's artifacts, which expire after 14 days. Successful
 smoke evidence contains only source/version/platform, image identity, and test
 summaries; temporary databases, seat links, cookies, and raw server logs are not
 uploaded. CI cannot attest to separate-machine LAN/TLS or browser acceptance.
