@@ -211,14 +211,18 @@ exchange_seat() {
       --connect-timeout "$curl_connect_timeout" \
       --max-time "$curl_request_timeout" \
       --output /dev/null \
-      --write-out '%{http_code}' \
+      --write-out '%{http_code} %{redirect_url}' \
       --cookie-jar "$cookie_jar" \
       "$seat_url" 2>"$exchange_error"); then
     redact_seat_links <"$exchange_error" >&2
     fail "$player_id seat exchange request failed on run $run_label"
   fi
-  [ "$exchange_status" = 303 ] ||
-    fail "$player_id seat exchange returned HTTP $exchange_status instead of 303 on run $run_label"
+  # Each seat has its own page, so seats sharing one browser keep their
+  # own cookies.
+  [ "${exchange_status% *}" = 303 ] ||
+    fail "$player_id seat exchange returned HTTP ${exchange_status% *} instead of 303 on run $run_label"
+  [ "${exchange_status#* }" = "$base_url/games/$game_id/seats/$player_id" ] ||
+    fail "$player_id seat exchange did not redirect to its seat page on run $run_label"
   grep -F 'distantlands_seat' "$cookie_jar" >/dev/null ||
     fail "$player_id seat exchange did not store a cookie on run $run_label"
 }
@@ -235,12 +239,12 @@ load_seat() {
     --output "$page_file" \
     --write-out '%{http_code}' \
     --cookie "$cookie_jar" \
-    "$base_url/games/$game_id") ||
-    fail "$player_id canonical page request failed on run $run_label"
+    "$base_url/games/$game_id/seats/$player_id") ||
+    fail "$player_id seat page request failed on run $run_label"
   [ "$page_status" = 200 ] ||
-    fail "$player_id canonical page returned HTTP $page_status instead of 200 on run $run_label"
+    fail "$player_id seat page returned HTTP $page_status instead of 200 on run $run_label"
   grep -F '/assets/main.js' "$page_file" >/dev/null ||
-    fail "$player_id canonical page omitted /assets/main.js on run $run_label"
+    fail "$player_id seat page omitted /assets/main.js on run $run_label"
 
   api_status=$(curl --silent --show-error \
     --connect-timeout "$curl_connect_timeout" \
@@ -248,7 +252,7 @@ load_seat() {
     --output "$projection_file" \
     --write-out '%{http_code}' \
     --cookie "$cookie_jar" \
-    "$base_url/games/$game_id/api") ||
+    "$base_url/games/$game_id/seats/$player_id/api") ||
     fail "$player_id private API request failed on run $run_label"
   [ "$api_status" = 200 ] ||
     fail "$player_id private API returned HTTP $api_status instead of 200 on run $run_label"
@@ -308,7 +312,7 @@ submit_representative_command() {
     --cookie "$active_cookie_jar" \
     --header 'Content-Type: application/json' \
     --data "{\"expectedNextSequence\":$starting_sequence,\"intent\":{\"type\":\"resolveWalker\",\"decisionId\":\"$decision_id\",\"payload\":{\"kind\":\"choose-one\",\"optionKind\":\"site\",\"optionId\":\"$site_id\"}}}" \
-    "$base_url/games/$game_id/api/commands") ||
+    "$base_url/games/$game_id/seats/$active_player_id/api/commands") ||
     fail "representative command request failed on run $run_label"
   [ "$command_status" = 200 ] ||
     fail "representative command returned HTTP $command_status instead of 200 on run $run_label"

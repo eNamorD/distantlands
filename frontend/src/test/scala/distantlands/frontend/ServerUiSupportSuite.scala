@@ -11,12 +11,13 @@ import munit.FunSuite
   */
 class ServerUiSupportSuite extends FunSuite:
 
-  test("canonical path decodes only a single game segment"):
-    assertEquals(ServerUiSupport.canonicalGameId("/games/my%20game"), Some("my game"))
-    assertEquals(ServerUiSupport.canonicalGameId("/"), None)
-    assertEquals(ServerUiSupport.canonicalGameId("/games/"), None)
-    assertEquals(ServerUiSupport.canonicalGameId("/games/a/api"), None)
-    assertEquals(ServerUiSupport.canonicalGameId("/games/%broken"), None)
+  test("a seat page path decodes exactly one game and one seat segment"):
+    assertEquals(ServerUiSupport.seatPage("/games/my%20game/seats/blue%20exile"),
+      Some(SeatPage("my game", "blue exile")))
+    Vector("/", "/games/", "/games/my%20game", "/games/a/seats/",
+        "/games//seats/p1", "/games/a/seats/p1/api", "/games/a/players/p1",
+        "/games/%broken/seats/p1", "/games/a/seats/%broken")
+      .foreach(path => assertEquals(ServerUiSupport.seatPage(path), None, path))
 
   test("secret summaries lead with available over total and explain unavailable tokens on a line of their own"):
     assertEquals(ServerUiSupport.secretSummaryLines(1, 1, 0, 0),

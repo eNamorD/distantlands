@@ -136,14 +136,6 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
   the test `index.html` fixture shadowing the generated one, the hardcoded
   `distantlands:root` assertion, and no Docker `HEALTHCHECK`. Also document
   host bind mounts at `/var/lib/distantlands` in the configuration guide.
-- [ ] **Several seats in one browser.** Opening a second seat's link for the
-  same game in one browser profile silently replaces the first seat, because
-  `/s/{seat-code}` sets one cookie name scoped to `/games/{game-id}` and
-  redirects there (`TrustedSeatRoutes`). Every release's notes carry this as
-  a known caveat. One fix keeps the seat in the URL instead of redirecting to
-  the shared game path, for example a per-seat path with its own cookie
-  scope. Weigh the seat code staying in the address bar and history, which
-  the redirect avoids, and update the network guide and quick start.
 - [ ] **A lighter way to test separate-machine play.** The manual
   [acceptance record](operations/alpha-acceptance.md) takes two physical
   machines and a lot of hand-recorded evidence, so `0.1.0-alpha.3` and

@@ -30,7 +30,7 @@ Not a defect; a cost the current design pays and could stop paying.
 
 `SnapshotPollingCoordinator` reschedules a `setTimeout` every 5s while the tab
 is visible and every 30s while it is hidden. Each tick calls `GameClient.load`,
-which issues `GET /games/{game-id}/api` for a trusted seat (or
+which issues `GET /games/{game-id}/seats/{player-id}/api` for a trusted seat (or
 `GET /api/dev/first-games/{id}?playerId=…` in development) and returns the
 entire viewer-scoped projection. Nothing has usually changed, so the steady-state cost
 of an idle game is a full projection per client per 5s.

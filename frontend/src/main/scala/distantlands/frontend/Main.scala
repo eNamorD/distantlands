@@ -20,9 +20,10 @@ object Main:
       devices: ChronicleDevices = ChronicleDevices.browser,
       search: String = ""): Unit =
     val startPage = pathname == "/" || pathname == ChroniclePages.NewGamePath
-    ServerUiSupport.canonicalGameId(pathname) match
-      case Some(gameId) =>
-        ServerModeUi.start(mount, new TrustedHttpGameClient(transport), Some(gameId),
+    ServerUiSupport.seatPage(pathname) match
+      case Some(seat) =>
+        ServerModeUi.start(mount, new TrustedHttpGameClient(transport, seat.playerId),
+          Some(seat.gameId),
           transport = transport, devices = devices, nextGame = navigate)
       case None if trustedAlpha && startPage =>
         ChroniclePages.start(mount, pathname + search, transport, devices)

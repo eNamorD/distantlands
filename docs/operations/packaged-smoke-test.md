@@ -37,8 +37,8 @@ The script copies only the staged package contents into a directory created by
 `mktemp -d`, launches that copy in `trusted-alpha` mode, and stores its HSQLDB
 files beside the copy. It creates one deterministic three-player game, extracts
 the returned links without logging their codes, and exchanges each link into a
-separate cookie jar. Each jar must load the canonical page and a private API
-projection naming the correct viewer. The active seat then submits one pawn
+separate cookie jar. Each link must redirect to its own seat page, and each jar
+must load that page and a private API projection naming the correct viewer. The active seat then submits one pawn
 placement and the script verifies that the game sequence advances.
 
 The script sends `TERM`, allows at most 15 seconds for shutdown, accepts the
