@@ -45,7 +45,7 @@ class ServerRoutesSuite extends munit.FunSuite:
         // 404: no seat has this code.
         assertEquals(absent.get("/s/AAAAAAAAAAAAAAAAAAAAAA").statusCode(), 404)
         // 403: the request carries no seat cookie.
-        assertEquals(absent.get("/games/game/api").statusCode(), 403)
+        assertEquals(absent.get("/games/game/seats/p1/api").statusCode(), 403)
       finally absent.close()
     finally runtime.close()
 
@@ -62,7 +62,7 @@ class ServerRoutesSuite extends munit.FunSuite:
       try
         assertEquals(server.get("/").statusCode(), 200)
         assertEquals(server.get("/games/test-game").statusCode(), 403)
-        assertEquals(server.get("/games/test-game/api").statusCode(), 403)
+        assertEquals(server.get("/games/test-game/seats/p1/api").statusCode(), 403)
         assertEquals(server.get(
           "/api/dev/first-games/test-game?playerId=p1").statusCode(), 404)
       finally server.close()
@@ -123,11 +123,11 @@ class ServerRoutesSuite extends munit.FunSuite:
           .foreach(origin =>
             assertEquals(create(origin).statusCode(), 403, origin))
         // Commands pass the same origin gate before the seat cookie is checked.
-        val fromLoopback = post("/games/g/api/commands",
+        val fromLoopback = post("/games/g/seats/p1/api/commands",
           s"http://localhost:$listenPort", "{}")
         assert(!fromLoopback.body().contains("csrf-validation-failed"),
           fromLoopback.body())
-        val fromLan = post("/games/g/api/commands",
+        val fromLan = post("/games/g/seats/p1/api/commands",
           s"http://192.168.1.20:$listenPort", "{}")
         assert(fromLan.body().contains("csrf-validation-failed"),
           fromLan.body())

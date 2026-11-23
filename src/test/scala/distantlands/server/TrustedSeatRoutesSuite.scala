@@ -91,8 +91,8 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       Left(HttpInputError("$.intent.playerId",
         "actor identity is bound by the server")))
 
-  test("the seat cookie resolves its own game only, and a stale position " +
-      "is refused"):
+  test("the seat cookie resolves its own game and seat only, and a stale " +
+      "position is refused"):
     val TrustedGatewayGame(_, gateway, afterBegin) = begunTrustedGame()
     val code = SeatCode.generate(new java.security.SecureRandom())
     // Stub of IdentityRepository: the one seat is p2's in "trusted".
@@ -102,12 +102,15 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
           IdentityFailure.TrustedSeatNotFound)
     val seats = new SeatCookieActor(identities,
       scala.concurrent.ExecutionContext.global)
-    def resolved(cookie: String, gameId: String) = scala.concurrent.Await
-      .result(seats.resolve(akka.http.scaladsl.model.HttpRequest(headers =
-        List(akka.http.scaladsl.model.headers.Cookie("distantlands_seat", cookie))),
+    def resolved(cookie: String, gameId: String, playerId: String = "p2") =
+      scala.concurrent.Await.result(seats.at(playerId).resolve(
+        akka.http.scaladsl.model.HttpRequest(headers = List(
+          akka.http.scaladsl.model.headers.Cookie("distantlands_seat", cookie))),
         gameId), scala.concurrent.duration.Duration(5, "s"))
     assertEquals(resolved(code.raw, "trusted"), Right(p2Seat))
     assertEquals(resolved(code.raw, "other"), Left(AccessRefusal.Forbidden))
+    assertEquals(resolved(code.raw, "trusted", "p3"),
+      Left(AccessRefusal.Forbidden))
     assertEquals(resolved("not-a-code", "trusted"),
       Left(AccessRefusal.Forbidden))
     assertEquals(resolved(SeatCode.generate(new java.security.SecureRandom())
@@ -169,28 +172,29 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       assert(created.seats.forall(_.url.startsWith("http://127.0.0.1:8080/s/")))
     }
 
-  test("a seat link exchanges for an HttpOnly cookie scoped to its game and " +
+  test("a seat link exchanges for an HttpOnly cookie scoped to its seat and " +
       "redirects without the code"):
     withServer() { (server, _) =>
       val code = codeOf(create(server, "game-a"), "p2")
       val entry = send(server, s"/s/$code")
       assertEquals(entry.statusCode(), 303, entry.body())
-      assertEquals(entry.headers().firstValue("Location").orElse(""), "/games/game-a")
+      assertEquals(entry.headers().firstValue("Location").orElse(""),
+        "/games/game-a/seats/p2")
       assert(!entry.body().contains(code))
       assert(!entry.headers().firstValue("Location").orElse("").contains(code))
       val cookie = entry.headers().firstValue("Set-Cookie").orElse("")
-      assertCookie(cookie, code, "/games/game-a", secure = false)
+      assertCookie(cookie, code, "/games/game-a/seats/p2", secure = false)
     }
 
-  test("the seat's cookie loads the canonical page and the private API"):
+  test("the seat's cookie loads its seat page and the private API"):
     withServer() { (server, _) =>
       val code = codeOf(create(server, "game-a"), "p2")
-      val canonical = send(server, "/games/game-a",
+      val canonical = send(server, "/games/game-a/seats/p2",
         cookie = Some(s"distantlands_seat=$code"))
       assertEquals(canonical.statusCode(), 200, canonical.body())
       assert(canonical.body().contains("/assets/main.js"))
       assert(!canonical.body().contains(code))
-      val loaded = send(server, "/games/game-a/api",
+      val loaded = send(server, "/games/game-a/seats/p2/api",
         cookie = Some(s"distantlands_seat=$code"))
       assertEquals(loaded.statusCode(), 200, loaded.body())
     }
@@ -218,7 +222,7 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
   private def p2SeatParked(server: HttpTestServer): SeatPark =
     val created = create(server, "game-a")
     val code = codeOf(created, "p2")
-    val loaded = send(server, "/games/game-a/api",
+    val loaded = send(server, "/games/game-a/seats/p2/api",
       cookie = Some(s"distantlands_seat=$code"))
     assertEquals(loaded.statusCode(), 200, loaded.body())
     val currentSequence = ujson.read(loaded.body())("nextSequence").num.toLong
@@ -229,7 +233,7 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       "accept the seat's answer"):
     withServer() { (server, _) =>
       val SeatPark(code, _, currentSequence, command) = p2SeatParked(server)
-      val api = "/games/game-a/api"
+      val api = "/games/game-a/seats/p2/api"
       val spoofed = command.replace("\"type\":\"resolveWalker\"",
         "\"type\":\"resolveWalker\",\"playerId\":\"p1\"")
       assertEquals(send(server, api + "/commands", Some(spoofed),
@@ -257,12 +261,13 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       "or the plan"):
     withServer() { (server, _) =>
       val SeatPark(code, p1Code, _, command) = p2SeatParked(server)
-      val api = "/games/game-a/api"
+      val api = "/games/game-a/seats/p2/api"
       val answered = send(server, api + "/commands", Some(command),
         Some(s"distantlands_seat=$code"))
       assertEquals(answered.statusCode(), 200, answered.body())
       val reloaded = send(server, api, cookie = Some(s"distantlands_seat=$code"))
-      val other = send(server, api, cookie = Some(s"distantlands_seat=$p1Code"))
+      val other = send(server, "/games/game-a/seats/p1/api",
+        cookie = Some(s"distantlands_seat=$p1Code"))
       assertEquals(other.statusCode(), 200)
       assert(ujson.read(other.body())("walkerDecision").isNull)
       Vector(answered.body(), reloaded.body(), other.body()).foreach { body =>
@@ -276,19 +281,19 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
     withServer() { (server, _) =>
       val code = codeOf(create(server, "log-game"), "p2")
       val cookie = Some(s"distantlands_seat=$code")
-      val page = send(server, "/games/log-game/api/log/0", cookie = cookie)
+      val page = send(server, "/games/log-game/seats/p2/api/log/0", cookie = cookie)
       assertEquals(page.statusCode(), 200, page.body())
       assertEquals(page.headers().firstValue("Cache-Control").orElse(""), "no-store")
       val decoded = accepted(distantlands.protocol.projection.LogPageCodec
         .decode(page.body()))
       assertEquals(decoded.after, 0L)
-      assertEquals(send(server, "/games/log-game/api/log/0").statusCode(), 403)
-      assertEquals(send(server, "/games/log-game/api/log/-1",
+      assertEquals(send(server, "/games/log-game/seats/p2/api/log/0").statusCode(), 403)
+      assertEquals(send(server, "/games/log-game/seats/p2/api/log/-1",
         cookie = cookie).statusCode(), 400)
       assertEquals(send(server,
-        s"/games/log-game/api/log/${decoded.nextSequence + 1}",
+        s"/games/log-game/seats/p2/api/log/${decoded.nextSequence + 1}",
         cookie = cookie).statusCode(), 400)
-      assertEquals(send(server, "/games/log-game/api/log/0?x=1",
+      assertEquals(send(server, "/games/log-game/seats/p2/api/log/0?x=1",
         cookie = cookie).statusCode(), 400)
     }
 
@@ -299,12 +304,14 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       val code = codeOf(created, "p1")
       val exchanged = send(server, s"/s/$code")
       assertEquals(exchanged.statusCode(), 303)
-      assertCookie(exchanged.headers().firstValue("Set-Cookie").orElse(""), code, "/games/tls", secure = true)
+      assertCookie(exchanged.headers().firstValue("Set-Cookie").orElse(""), code, "/games/tls/seats/p1", secure = true)
     }
 
-  test("invalid links are generic and canonical pages recover absent, malformed, wrong-game and missing-game cookies"):
+  test("invalid links are generic and seat pages recover absent, malformed, " +
+      "wrong-game, wrong-seat and missing-game cookies"):
     withServer() { (server, _) =>
-      val code = codeOf(create(server, "private-game"), "p1")
+      val created = create(server, "private-game")
+      val code = codeOf(created, "p1")
       val invalid = send(server, "/s/malformed-secret")
       val unknown = send(server, "/s/AAAAAAAAAAAAAAAAAAAAAA")
       assertEquals(invalid.statusCode(), 404)
@@ -312,16 +319,27 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       assert(!invalid.body().contains("malformed-secret"))
       assert(!invalid.body().contains("private-game"))
       assert(invalid.headers().firstValue("Set-Cookie").isEmpty)
-      val recovery = send(server, "/games/private-game")
+      val recovery = send(server, "/games/private-game/seats/p1")
       assertEquals(recovery.statusCode(), 403)
       assert(recovery.body().contains("assigned seat link"))
-      Vector(None, Some("distantlands_seat=broken"), Some(s"distantlands_seat=$code")).foreach { cookie =>
-        val response = send(server, "/games/another-game", cookie = cookie)
-        assertEquals(response.statusCode(), 403)
-        assertEquals(response.body(), recovery.body())
-        assert(!response.body().contains(code))
-        assertEquals(send(server, "/games/another-game/api",
-          cookie = cookie).statusCode(), 403)
+      val p1Cookie = Some(s"distantlands_seat=$code")
+      // The game's bare path names no seat, so even its own seat's cookie
+      // is sent to the seat link.
+      assertEquals(send(server, "/games/private-game", cookie = p1Cookie).body(),
+        recovery.body())
+      Vector(
+        "/games/another-game/seats/p1" -> Vector(None,
+          Some("distantlands_seat=broken"), p1Cookie),
+        "/games/private-game/seats/p2" -> Vector(p1Cookie)
+      ).foreach { (seatPath, cookies) =>
+        cookies.foreach { cookie =>
+          val response = send(server, seatPath, cookie = cookie)
+          assertEquals(response.statusCode(), 403)
+          assertEquals(response.body(), recovery.body())
+          assert(!response.body().contains(code))
+          assertEquals(send(server, seatPath + "/api",
+            cookie = cookie).statusCode(), 403)
+        }
       }
     }
 
@@ -347,8 +365,8 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
           origin = Some(origin)).statusCode(), 403)
       }
       val OriginGame(code, cookie, command) = originGame(server)
-      Vector("/games", s"/s/$code", "/games/origin-game", "/games/origin-game/api",
-        "/games/origin-game/api/commands").foreach { path =>
+      Vector("/games", s"/s/$code", "/games/origin-game/seats/p2", "/games/origin-game/seats/p2/api",
+        "/games/origin-game/seats/p2/api/commands").foreach { path =>
         val payload =
           if path == "/games" then Some(requestBody)
           else if path.endsWith("commands") then Some(command)
@@ -357,7 +375,7 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
         assertEquals(result.statusCode(), 400, result.body())
         assert(!result.body().contains(code))
       }
-      assertEquals(send(server, "/games/origin-game/api/commands",
+      assertEquals(send(server, "/games/origin-game/seats/p2/api/commands",
         Some(command), cookie,
         Some("https://evil.example.test")).statusCode(), 403)
     }
@@ -366,10 +384,10 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       "none"):
     withServer(Some("https://games.example.test")) { (server, _) =>
       val OriginGame(_, cookie, command) = originGame(server)
-      assertEquals(send(server, "/games/origin-game/api/commands",
+      assertEquals(send(server, "/games/origin-game/seats/p2/api/commands",
         Some(command), cookie,
         Some("https://games.example.test")).statusCode(), 409)
-      assertEquals(send(server, "/games/origin-game/api/commands",
+      assertEquals(send(server, "/games/origin-game/seats/p2/api/commands",
         Some(command), cookie).statusCode(), 409)
     }
 
@@ -378,26 +396,28 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       val created = create(server, "alpha:one")
       val entry = send(server, URI.create(seatLink(created, "p2")).getPath)
       assertEquals(entry.statusCode(), 303)
-      assertEquals(entry.headers().firstValue("Location").orElse(""), "/games/alpha%3Aone")
+      assertEquals(entry.headers().firstValue("Location").orElse(""),
+        "/games/alpha%3Aone/seats/p2")
       val cookie = entry.headers().firstValue("Set-Cookie").orElse("")
-      assert(cookie.contains("Path=/games/alpha%3Aone;"), cookie)
+      assert(cookie.contains("Path=/games/alpha%3Aone/seats/p2;"), cookie)
       val credential = cookie.takeWhile(_ != ';')
-      assertEquals(send(server, "/games/alpha%3Aone",
+      assertEquals(send(server, "/games/alpha%3Aone/seats/p2",
         cookie = Some(credential)).statusCode(), 200)
-      val loaded = send(server, "/games/alpha%3Aone/api",
+      val loaded = send(server, "/games/alpha%3Aone/seats/p2/api",
         cookie = Some(credential))
       assertEquals(loaded.statusCode(), 200, loaded.body())
       assertEquals(ujson.read(loaded.body())("gameId").str, "alpha:one")
       assertEquals(ujson.read(loaded.body())("viewerPlayerId").str, "p2")
     }
 
-  test("trailing game slash redirects to the same encoded canonical page"):
+  test("a trailing seat slash redirects to the same encoded seat page"):
     withServer() { (server, _) =>
       Vector("alpha", "alpha:one").foreach { game =>
         val created = create(server, game)
         val entry = send(server, URI.create(seatLink(created, "p1")).getPath)
         val cookie = entry.headers().firstValue("Set-Cookie").orElse("").takeWhile(_ != ';')
-        val path = if game == "alpha" then "/games/alpha" else "/games/alpha%3Aone"
+        val path = (if game == "alpha" then "/games/alpha"
+          else "/games/alpha%3Aone") + "/seats/p1"
         val redirected = send(server, path + "/", cookie = Some(cookie))
         assertEquals(redirected.statusCode(), 303, redirected.body())
         assertEquals(redirected.headers().firstValue("Location").orElse(""), path)
@@ -406,26 +426,51 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       }
     }
 
+  /** A GET from a browser-like client on `server`: one that stores the
+    * cookies it is set and sends each back on the paths it is scoped to. */
+  private final class CookieKeepingBrowser(server: HttpTestServer):
+    private val cookies = new CookieManager(null, CookiePolicy.ACCEPT_ALL)
+    private val client = HttpClient.newBuilder().cookieHandler(cookies).build()
+    def get(path: String): JavaResponse[String] = client.send(
+      HttpRequest.newBuilder(URI.create(server.base + path)).GET().build(),
+      JavaResponse.BodyHandlers.ofString())
+    def cookiePaths: Set[String] =
+      cookies.getCookieStore.getCookies.asScala.map(_.getPath).toSet
+
   test("same-name cookies for two game paths coexist and restore each seat"):
     withServer() { (server, _) =>
-      // A browser-like client that stores and sends the cookies it is set.
-      val cookies = new CookieManager(null, CookiePolicy.ACCEPT_ALL)
-      val client = HttpClient.newBuilder().cookieHandler(cookies).build()
-      def browse(path: String) = client.send(
-        HttpRequest.newBuilder(URI.create(server.base + path)).GET().build(),
-        JavaResponse.BodyHandlers.ofString())
+      val browser = new CookieKeepingBrowser(server)
       Vector("one", "two").foreach { game =>
         val created = create(server, game)
         val path = URI.create(seatLink(created, "p2")).getPath
-        assertEquals(browse(path).statusCode(), 303)
+        assertEquals(browser.get(path).statusCode(), 303)
       }
-      assertEquals(cookies.getCookieStore.getCookies.asScala.map(_.getPath).toSet,
-        Set("/games/one", "/games/two"))
+      assertEquals(browser.cookiePaths,
+        Set("/games/one/seats/p2", "/games/two/seats/p2"))
       Vector("one", "two").foreach { game =>
-        assertEquals(browse(s"/games/$game").statusCode(), 200)
-        val loaded = browse(s"/games/$game/api")
+        assertEquals(browser.get(s"/games/$game/seats/p2").statusCode(), 200)
+        val loaded = browser.get(s"/games/$game/seats/p2/api")
         assertEquals(loaded.statusCode(), 200, loaded.body())
         assertEquals(ujson.read(loaded.body())("gameId").str, game)
+      }
+    }
+
+  test("one browser holds two seats of the same game, each on its own page"):
+    withServer() { (server, _) =>
+      val browser = new CookieKeepingBrowser(server)
+      val created = create(server, "shared")
+      Vector("p1", "p2").foreach { player =>
+        assertEquals(browser.get(URI.create(seatLink(created, player)).getPath)
+          .statusCode(), 303)
+      }
+      assertEquals(browser.cookiePaths,
+        Set("/games/shared/seats/p1", "/games/shared/seats/p2"))
+      Vector("p1", "p2").foreach { player =>
+        assertEquals(browser.get(s"/games/shared/seats/$player").statusCode(),
+          200)
+        val loaded = browser.get(s"/games/shared/seats/$player/api")
+        assertEquals(loaded.statusCode(), 200, loaded.body())
+        assertEquals(ujson.read(loaded.body())("viewerPlayerId").str, player)
       }
     }
 
@@ -441,7 +486,7 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       val retainedCookie = secondEntry.headers().firstValue("Set-Cookie").orElse("")
         .takeWhile(_ != ';')
       assertEquals(retainedCookie, s"distantlands_seat=$secondCode")
-      val beforeRestart = send(current.server, "/games/restart-game/api",
+      val beforeRestart = send(current.server, "/games/restart-game/seats/p2/api",
         cookie = Some(retainedCookie))
       assertEquals(beforeRestart.statusCode(), 200, beforeRestart.body())
       assertEquals(ujson.read(beforeRestart.body())("viewerPlayerId").str, "p2")
@@ -451,10 +496,11 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
 
       val originalLink = send(current.server, s"/s/$secondCode")
       assertEquals(originalLink.statusCode(), 303)
-      assertEquals(originalLink.headers().firstValue("Location").orElse(""), "/games/restart-game")
+      assertEquals(originalLink.headers().firstValue("Location").orElse(""),
+        "/games/restart-game/seats/p2")
       val reenteredCookie = originalLink.headers().firstValue("Set-Cookie").orElse("")
         .takeWhile(_ != ';')
-      val api = "/games/restart-game/api"
+      val api = "/games/restart-game/seats/p2/api"
       val restored = send(current.server, api, cookie = Some(retainedCookie))
       assertEquals(restored.statusCode(), 200, restored.body())
       assertEquals(ujson.read(restored.body())("viewerPlayerId").str, "p2")
@@ -463,14 +509,18 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       assertEquals(ujson.read(reentered.body())("viewerPlayerId").str, "p2")
 
       val otherCookie = s"distantlands_seat=$firstCode"
-      val otherSeat = send(current.server, api, cookie = Some(otherCookie))
+      val otherApi = "/games/restart-game/seats/p1/api"
+      val otherSeat = send(current.server, otherApi, cookie = Some(otherCookie))
       assertEquals(otherSeat.statusCode(), 200, otherSeat.body())
       assertEquals(ujson.read(otherSeat.body())("viewerPlayerId").str, "p1")
       assert(ujson.read(otherSeat.body())("walkerDecision").isNull)
       val currentSequence = ujson.read(restored.body())("nextSequence").num.toLong
       val command = answerFirstOfferedSite(restored)
-      // 422: p1 does not own the parked pawn decision.
+      // 403: p1's cookie does not open p2's seat path.
       assertEquals(send(current.server, api + "/commands", Some(command),
+        Some(otherCookie)).statusCode(), 403)
+      // 422: p1 does not own the parked pawn decision.
+      assertEquals(send(current.server, otherApi + "/commands", Some(command),
         Some(otherCookie)).statusCode(), 422)
       assertEquals(ujson.read(send(current.server, api,
         cookie = Some(retainedCookie)).body())("nextSequence").num,
@@ -489,7 +539,8 @@ class TrustedSeatRoutesSuite extends munit.FunSuite:
       captured.start(); logger.addAppender(captured)
       try
         runtime.close()
-        Vector(s"/s/$code", "/games/failure", "/games/failure/api").foreach { path =>
+        Vector(s"/s/$code", "/games/failure/seats/p1",
+            "/games/failure/seats/p1/api").foreach { path =>
           val failed = send(server, path, cookie = Some(s"distantlands_seat=$code"))
           assertEquals(failed.statusCode(), 500)
           assert(!failed.body().contains(code))

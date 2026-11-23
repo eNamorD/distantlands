@@ -10,11 +10,11 @@ import distantlands.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
   DecisionAnswerWire, GameIntent}
 
 class HttpGameClientSuite extends FunSuite:
-  test("trusted client uses canonical cookie APIs and actorless bodies"):
+  test("trusted client uses its seat's cookie APIs and actorless bodies"):
     val transport = transportAnsweringInOrder(Vector(
       Right(TransportResponse(200, projectionJson(7))),
       Right(TransportResponse(200, projectionJson(8)))))
-    val client = new TrustedHttpGameClient(transport)
+    val client = new TrustedHttpGameClient(transport, "blue exile")
     client.load("game /?", "seat-must-not-travel").flatMap { loaded =>
       assertEquals(accepted(loaded).nextSequence, 7L)
       client.submit("game /?", "seat-must-not-travel", 7,
@@ -23,8 +23,8 @@ class HttpGameClientSuite extends FunSuite:
       assertEquals(accepted(submitted).nextSequence, 8L)
       assertEquals(transport.requests.map(r => r.method -> r.url).toVector,
         Vector(
-          "GET" -> "/games/game%20%2F%3F/api",
-          "POST" -> "/games/game%20%2F%3F/api/commands"))
+          "GET" -> "/games/game%20%2F%3F/seats/blue%20exile/api",
+          "POST" -> "/games/game%20%2F%3F/seats/blue%20exile/api/commands"))
       assertEquals(transport.requests.head.body, None)
       assertEquals(ActorlessCommandCodec.decode(
         present(transport.requests.last.body, "the submitted command body")),
@@ -35,7 +35,7 @@ class HttpGameClientSuite extends FunSuite:
   test("a 409 is a stale position, and the client does not retry the command"):
     val transport = transportAnsweringInOrder(Vector(
       Right(TransportResponse(409, """{"error":"stale-client-position","message":"position changed"}"""))))
-    val client = new TrustedHttpGameClient(transport)
+    val client = new TrustedHttpGameClient(transport, "blue exile")
     client.submit("game-1", "red-exile", 7, GameIntent.Undo)
       .map { result =>
         assertEquals(result, Left(GameClientFailure.StalePosition("position changed")))
@@ -263,9 +263,9 @@ class HttpGameClientSuite extends FunSuite:
   test("the trusted client reads the log after a cursor on the seat's path"):
     val transport = transportAnsweringInOrder(
       Vector(Right(TransportResponse(200, logPage))))
-    new TrustedHttpGameClient(transport).loadLog("my game", "ignored", 3L).map { result =>
+    new TrustedHttpGameClient(transport, "blue").loadLog("my game", "ignored", 3L).map { result =>
       assertEquals(transport.requests.map(r => r.method -> r.url).toVector,
-        Vector("GET" -> "/games/my%20game/api/log/3"))
+        Vector("GET" -> "/games/my%20game/seats/blue/api/log/3"))
       assertEquals(result.map(_.entries.map(_.sequence)), Right(Vector(3L)))
     }
 
@@ -282,7 +282,7 @@ class HttpGameClientSuite extends FunSuite:
     val transport = transportAnsweringInOrder(Vector(
       Right(TransportResponse(400, """{"error":"malformed-request","message":"bad"}""")),
       Right(TransportResponse(200, "{"))))
-    val client = new TrustedHttpGameClient(transport)
+    val client = new TrustedHttpGameClient(transport, "blue exile")
     client.loadLog("g", "", 9L).flatMap { refused =>
       assertEquals(refused, Left(GameClientFailure.HttpFailure(400,
         "malformed-request", "bad")))

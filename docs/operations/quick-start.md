@@ -309,20 +309,20 @@ database.
 7. Send each player only their assigned link. Do not post links in public chat,
    issue trackers, screenshots, or access logs.
 
-Opening `/s/{seat-code}` stores a seat cookie and redirects to the canonical
-`/games/{game-id}` page. Reloading that page restores the same private seat.
-The server remains authoritative after disconnects and reloads.
+Opening `/s/{seat-code}` stores a seat cookie and redirects to the seat's own
+`/games/{game-id}/seats/{player-id}` page. Reloading that page restores the
+same private seat. The server remains authoritative after disconnects and
+reloads.
 
 Each player should bookmark their original assigned `/s/` link on a private
 device. If cookies are cleared, open that original link again to restore the
 seat. The same link can initialize a replacement browser or device, and anyone
 who obtains it can control the seat.
 
-Use separate browser profiles for different seats in the same game. All seats
-use the same cookie name and game-scoped path, so opening two seat links for one
-game in one browser profile replaces the profile's current seat. A private or
-incognito window is suitable only if losing its cookies at window close is
-acceptable and the original link is still available.
+One browser can hold several seats of the same game: each seat link opens its
+own page, and each seat's cookie is scoped to that page. A private or incognito
+window is suitable only if losing its cookies at window close is acceptable and
+the original link is still available.
 
 ## Before players join
 

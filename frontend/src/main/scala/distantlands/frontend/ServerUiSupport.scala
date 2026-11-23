@@ -4,6 +4,9 @@ import distantlands.protocol._
 import org.scalajs.dom
 import scala.scalajs.js
 
+/** A trusted seat's page: the game it is in and the player whose seat it is. */
+private[frontend] final case class SeatPage(gameId: String, playerId: String)
+
 private[frontend] object ServerUiSupport:
   /** The count a player hovers to learn, then why the rest are unavailable. */
   private[frontend] def secretSummaryLines(available: Int, total: Int,
@@ -375,11 +378,16 @@ private[frontend] object ServerUiSupport:
   private[frontend] def freshGameId(): String =
     s"manual-${js.Date.now().toLong}-${(js.Math.random() * 1000000).toInt}"
 
-  private[frontend] def canonicalGameId(pathname: String): Option[String] =
+  /** The seat whose page `pathname` is: `/games/{game}/seats/{player}`,
+    * each segment percent-encoded and non-empty. */
+  private[frontend] def seatPage(pathname: String): Option[SeatPage] =
+    def decoded(encoded: String): Option[String] =
+      try Option(js.URIUtils.decodeURIComponent(encoded)).filter(_.nonEmpty)
+      catch { case scala.util.control.NonFatal(_) => None }
     pathname.split("/", -1).toVector match
-      case Vector("", "games", encoded) if encoded.nonEmpty =>
-        try Option(js.URIUtils.decodeURIComponent(encoded)).filter(_.nonEmpty)
-        catch { case scala.util.control.NonFatal(_) => None }
+      case Vector("", "games", game, "seats", player) =>
+        for gameId <- decoded(game); playerId <- decoded(player)
+        yield SeatPage(gameId, playerId)
       case _ => None
 
   private[frontend] def queryParameter(name: String): Option[String] =

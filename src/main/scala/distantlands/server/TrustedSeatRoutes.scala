@@ -24,7 +24,8 @@ final class TrustedSeatRoutes(
 ):
   private val logger = LoggerFactory.getLogger(classOf[TrustedSeatRoutes])
   private val seats = new SeatCookieActor(identities, blockingExecutionContext)
-  private val api = new GameApiRoutes(seats, gateway, blockingExecutionContext)
+  private def api(playerId: String) =
+    new GameApiRoutes(seats.at(playerId), gateway, blockingExecutionContext)
   private val privateHeaders = List(RawHeader("Cache-Control", "no-store"),
     RawHeader("Referrer-Policy", "no-referrer"))
 
@@ -68,24 +69,28 @@ final class TrustedSeatRoutes(
         SeatCode.parse(raw) match
           case Left(_) => invalidLink
           case Right(code) => seats.seat(code) match
-            case Right(seat) if DevelopmentTrustBoundary.validateIdentifier(seat.gameId, "$.gameId").isRight =>
-              val path = canonicalPath(seat.gameId)
+            case Right(seat) if validIdentifiers(seat.gameId, seat.playerId) =>
+              // The cookie is scoped to the seat's own page, so another
+              // seat's link in the same browser sets a second cookie
+              // instead of replacing this one.
               val cookie = HttpCookie(seats.cookieName, code.raw, maxAge = Some(31536000L),
-                path = Some(path), secure = publicBaseUrl.getScheme.equalsIgnoreCase("https"),
+                path = Some(seatPath(seat.gameId, seat.playerId)),
+                secure = publicBaseUrl.getScheme.equalsIgnoreCase("https"),
                 httpOnly = true).withSameSite(SameSite.Lax)
-              HttpResponse(StatusCodes.SeeOther, headers = List(canonicalLocation(seat.gameId), `Set-Cookie`(cookie)))
+              HttpResponse(StatusCodes.SeeOther, headers = List(
+                seatLocation(seat.gameId, seat.playerId), `Set-Cookie`(cookie)))
             case Left(AccessRefusal.Storage) => internalError()
             case _ => invalidLink
       } } }
-    } ~ pathPrefix("games" / Segment) { gameId =>
+    } ~ pathPrefix("games" / Segment / "seats" / Segment) { (gameId, playerId) =>
       noQuery:
-        if DevelopmentTrustBoundary.validateIdentifier(gameId, "$.gameId").isLeft then complete(malformed)
+        if !validIdentifiers(gameId, playerId) then complete(malformed)
         else extractRequest { request =>
           pathEnd {
             get:
-              // The page is served to a seat that can load its game; any
+              // The page is served to the seat that can load its game; any
               // other holder is sent back to its seat link.
-              onComplete(seats.resolve(request, gameId).map(_.left
+              onComplete(seats.at(playerId).resolve(request, gameId).map(_.left
                 .map(GatewayFailure.Access.apply)
                 .flatMap(gateway.load(gameId, _)))(using blockingExecutionContext)):
                 case Success(Right(_)) => ProductionFrontendRoutes.gamePage
@@ -96,21 +101,31 @@ final class TrustedSeatRoutes(
                 case _ => complete(internalError())
           } ~ pathSingleSlash {
             get { complete(HttpResponse(StatusCodes.SeeOther,
-              headers = List(canonicalLocation(gameId)))) }
+              headers = List(seatLocation(gameId, playerId)))) }
           } ~ pathPrefix("api"):
             // Only a mutation passes the same-origin check; the API itself
-            // is the shared one, with the seat cookie as its actor.
-            get { api.route(gameId) } ~ post { sameOrigin { api.route(gameId) } }
+            // is the shared one, with the seat's cookie as its actor.
+            get { api(playerId).route(gameId) } ~
+              post { sameOrigin { api(playerId).route(gameId) } }
         }
+    } ~ pathPrefix("games" / Segment) { _ =>
+      // A game's own path names no seat, so a bookmark of it is sent back
+      // to its seat link.
+      get { complete(recovery) }
     }
 
-  private def canonicalPath(gameId: String): String =
-    "/games/" + URLEncoder.encode(gameId, StandardCharsets.UTF_8)
+  private def validIdentifiers(gameId: String, playerId: String): Boolean =
+    DevelopmentTrustBoundary.validateIdentifier(gameId, "$.gameId").isRight &&
+      DevelopmentTrustBoundary.validateIdentifier(playerId, "$.playerId").isRight
+
+  private def seatPath(gameId: String, playerId: String): String =
+    "/games/" + URLEncoder.encode(gameId, StandardCharsets.UTF_8) +
+      "/seats/" + URLEncoder.encode(playerId, StandardCharsets.UTF_8)
 
   // Preserve the same escaped path used by encodeURIComponent and cookie matching.
   // Rendering a modeled URI may normalize percent-encoded colons back to literals.
-  private def canonicalLocation(gameId: String): RawHeader =
-    RawHeader("Location", canonicalPath(gameId))
+  private def seatLocation(gameId: String, playerId: String): RawHeader =
+    RawHeader("Location", seatPath(gameId, playerId))
 
   private def noQuery(inner: => Route): Route = parameterMap { parameters =>
     if parameters.nonEmpty then complete(malformed) else inner

@@ -79,20 +79,24 @@ object QueryParameterActor extends ActorResolution:
         "$.playerId").left.map(_ => AccessRefusal.Malformed)
     yield GameAccess.Seat(PlayerId(valid)))
 
-/** The trusted alpha's actor: the seat the `distantlands_seat` cookie opens, for
-  * the game the seat belongs to. A missing, malformed, unknown or
-  * wrong-game cookie is forbidden alike, so a response never tells a
-  * holder which it was. */
+/** The trusted alpha's seat credential: the `distantlands_seat` cookie,
+  * scoped to its seat's own path, so one browser can hold a cookie for each
+  * seat it opened. */
 final class SeatCookieActor(identities: IdentityRepository,
-    blockingExecutionContext: ExecutionContext) extends ActorResolution:
+    blockingExecutionContext: ExecutionContext):
   val cookieName = "distantlands_seat"
 
-  def resolve(request: HttpRequest, gameId: String)
-      : Future[Either[AccessRefusal, GameAccess]] = Future {
+  /** The actor for the page of `playerId`'s seat: the seat the cookie opens,
+    * when that is `playerId`'s seat in the requested game. A missing,
+    * malformed, unknown, wrong-game or wrong-seat cookie is forbidden alike,
+    * so a response never tells a holder which it was. */
+  def at(playerId: String): ActorResolution = (request, gameId) => Future {
     request.cookies.filter(_.name == cookieName).map(_.value) match
       case Seq(raw) => SeatCode.parse(raw).left.map(_ => AccessRefusal.Forbidden)
-        .flatMap(seat).filterOrElse(_.gameId == gameId, AccessRefusal.Forbidden)
-        .map(seat => GameAccess.Seat(PlayerId(seat.playerId)))
+        .flatMap(seat)
+        .filterOrElse(opened => opened.gameId == gameId &&
+          opened.playerId == playerId, AccessRefusal.Forbidden)
+        .map(opened => GameAccess.Seat(PlayerId(opened.playerId)))
       case _ => Left(AccessRefusal.Forbidden)
   }(using blockingExecutionContext)
 
