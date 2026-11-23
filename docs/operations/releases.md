@@ -3,7 +3,7 @@
 This workflow is prepared for GitHub; local implementation is not publication
 evidence. No repository remote or registry owner is assumed. The GitHub Actions
 run derives its image name from the current repository:
-`ghcr.io/<owner>/<repository>:v0.1.0-alpha.1` (lowercase owner and repository).
+`ghcr.io/<owner>/<repository>:v0.2.0-alpha` (lowercase owner and repository).
 The tag here is an example, not a claim that this release exists.
 
 ## GHCR access for hosts
@@ -20,7 +20,7 @@ host-access models before distributing the OCI quick start:
 
   ```sh
   printf '%s' "$CR_PAT" | docker login ghcr.io --username '<github-user>' --password-stdin
-  docker pull 'ghcr.io/<owner>/<repository>:v0.1.0-alpha.1'
+  docker pull 'ghcr.io/<owner>/<repository>:v0.2.0-alpha'
   docker logout ghcr.io
   ```
 
@@ -36,12 +36,13 @@ documents private pulls with a classic token scoped to `read:packages`.
 
 ## Versions and compatibility
 
-Release tags must be `vX.Y.Z-alpha.N`, `vX.Y.Z-beta.N`, or `vX.Y.Z-rc.N`, with
-nonnegative integers and no leading zeros. Stable versions, `SNAPSHOT`, build
-metadata, branches, and arbitrary refs are rejected. Local builds retain
-`0.1.0-SNAPSHOT`. Set `DLQ_RELEASE_VERSION=0.1.0-alpha.1` to build a prerelease
+Versions follow [Semantic Versioning](https://semver.org/). Release tags
+must be `vX.Y.Z-alpha`, `vX.Y.Z-beta`, or `vX.Y.Z-rc`, with nonnegative
+integers and no leading zeros. Stable versions, counters such as `-alpha.1`,
+`SNAPSHOT`, build metadata, branches, and arbitrary refs are rejected. Local
+builds report `0.2.0-SNAPSHOT`. Set `DLQ_RELEASE_VERSION=0.2.0-alpha` to build a prerelease
 locally; the `v` belongs only to the Git/registry tag. Both archive filenames and
-their single extraction directory are `distantlands-0.1.0-alpha.1`, with `.zip`
+their single extraction directory are `distantlands-0.2.0-alpha`, with `.zip`
 or `.tgz` on the filename. Two versions can be extracted side by side.
 
 Universal archives require Java 21; OCI images include Java 21 and run as UID
@@ -50,16 +51,29 @@ launchers are included, but their browser/OS acceptance is provisional until
 recorded in the [alpha acceptance record](alpha-acceptance.md).
 
 Bundled archives include a Java 21 runtime built with `jlink` from the
-module list in `packaging/jlink-modules.txt`: `distantlands-0.1.0-alpha.1-macos-arm64.tgz`,
-`distantlands-0.1.0-alpha.1-windows-x64.zip`, and
-`distantlands-0.1.0-alpha.1-linux-x64.tgz`. They extract to the same
-`distantlands-0.1.0-alpha.1` directory. They are not signed or notarized; the
+module list in `packaging/jlink-modules.txt`: `distantlands-0.2.0-alpha-macos-arm64.tgz`,
+`distantlands-0.2.0-alpha-windows-x64.zip`, and
+`distantlands-0.2.0-alpha-linux-x64.tgz`. They extract to the same
+`distantlands-0.2.0-alpha` directory. They are not signed or notarized; the
 [quick start](quick-start.md) describes the one-time macOS and Windows prompts.
 Intel Macs and Linux arm64 use the all-platform archive or the OCI image.
 
-During alpha, no release promises to open another release's saved games.
-Each release's notes name the earlier releases whose databases it supports,
-which is usually none, and warn that saved games may not survive the upgrade.
+The version says whether saved games survive an upgrade. Saved games are the
+server's games and exported Chronicles.
+
+- **Patch** (`0.2.0-alpha` to `0.2.1-alpha`): the new release loads every
+  save made by the earlier releases with the same major and minor version.
+- **Minor** (`0.2.x-alpha` to `0.3.0-alpha`): saves from earlier minor
+  versions may not load. Any release that cannot load the previous release's
+  saves takes the next minor version.
+
+Each minor version has a branch named after it without the patch, such as
+`0.2-alpha`. After a release, that branch takes only changes that keep its
+saves loading. When the first change that breaks saves is ready to merge,
+create the next minor's branch (`0.3-alpha`) from it and merge there; the
+older branch then holds only fixes. Releases before `0.2.0-alpha` used a
+counter (`0.1.0-alpha.2` to `0.1.0-alpha.4`) and promised no compatibility.
+
 Alpha releases do not work out migration behavior or rollback limits. Restore
 only with the exact release that created the backup. Before any upgrade, stop
 the server and back up the complete database directory as described in the
@@ -75,8 +89,9 @@ notes. Every version's notes carry:
 
 - what changed since the previous release;
 - a **Saved games** section naming the earlier releases whose saved games this
-  one loads (during alpha, usually none) with the disclaimer that saved games
-  may not survive an upgrade;
+  one loads (every earlier release of the same minor version, and none for a
+  new minor version) with the disclaimer that a new minor version may not load
+  them;
 - what is not in the game yet, how to get started, and known caveats.
 
 Mark anything still to be written with an HTML comment containing `TODO`. The
@@ -138,6 +153,8 @@ Publishing images, a manifest, and a GitHub release is not atomic. If publicatio
 fails partway, some image tags may exist without a GitHub release. A retry then
 stops at the existing-tag check. Preserve the run's evidence and published
 digests; inspect the failure and use a new prerelease tag after correction.
+A version is never reused, so the corrected release takes the next patch
+version (`v0.2.1-alpha` after a failed `v0.2.0-alpha`).
 Do not delete or overwrite published versions to make a retry pass. No cleanup
 or remote repair is automated. GitHub Actions artifacts expire after 14 days;
 retain evidence outside Actions if investigation needs longer.
@@ -150,8 +167,8 @@ checkout:
 
 ```sh
 sh scripts/verify-alpha-release.sh self-test
-sh scripts/verify-alpha-release.sh check-tag v0.1.0-alpha.1
-sh scripts/verify-alpha-release.sh archives v0.1.0-alpha.1 /tmp/oath-alpha-verification
+sh scripts/verify-alpha-release.sh check-tag v0.2.0-alpha
+sh scripts/verify-alpha-release.sh archives v0.2.0-alpha /tmp/oath-alpha-verification
 ```
 
 The output directory must not exist. The verifier never publishes. `sbtw`
@@ -164,7 +181,7 @@ platform before saving it as a tested-image artifact.
 To build and smoke the bundled archive for the host platform (`macos-arm64`
 or `linux-x64`) from an all-platform archive:
 
-    sh scripts/verify-alpha-release.sh bundled target/universal/distantlands-0.1.0-alpha.1.tgz macos-arm64 /tmp/oath-bundled
+    sh scripts/verify-alpha-release.sh bundled target/universal/distantlands-0.2.0-alpha.tgz macos-arm64 /tmp/oath-bundled
 
 The `windows-x64` archive is built and smoked only by the workflow. Its smoke
 cannot stop the server gracefully, so the database-close check for Windows is

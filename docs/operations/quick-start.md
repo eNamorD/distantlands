@@ -9,7 +9,7 @@ Send each link only to its intended player and keep a private saved copy.
 
 Download the archive for your computer. It includes its own Java, so nothing
 else needs installing. `<version>` is the release version, for example
-`0.2.0-alpha.1`:
+`0.2.0-alpha`:
 
 | Computer | Download |
 | --- | --- |
@@ -182,7 +182,7 @@ is the database file prefix inside that directory.
 
 #### macOS
 
-These archive examples use version `0.1.0-alpha.1`. Replace that version in the
+These archive examples use version `0.2.0-alpha`. Replace that version in the
 filename and extracted directory with the exact version in the archive you
 downloaded. A Git or OCI tag has a leading `v`; the archive filename and
 directory do not. This macOS example also assumes the host's LAN address is
@@ -191,9 +191,9 @@ directory do not. This macOS example also assumes the host's LAN address is
 ```sh
 mkdir -p /Users/alex/Applications
 cd /Users/alex/Applications
-tar -xzf /Users/alex/Downloads/distantlands-0.1.0-alpha.1.tgz
+tar -xzf /Users/alex/Downloads/distantlands-0.2.0-alpha.tgz
 mkdir -p /Users/alex/DistantLandsData/alpha-1
-cd distantlands-0.1.0-alpha.1
+cd distantlands-0.2.0-alpha
 DLQ_HOST=0.0.0.0 \
 DLQ_PORT=8080 \
 DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
@@ -208,9 +208,9 @@ This example assumes the archive is in `/home/alex/Downloads`:
 ```sh
 mkdir -p /home/alex/apps
 cd /home/alex/apps
-tar -xzf /home/alex/Downloads/distantlands-0.1.0-alpha.1.tgz
+tar -xzf /home/alex/Downloads/distantlands-0.2.0-alpha.tgz
 mkdir -p /home/alex/distantlands-data/alpha-1
-cd distantlands-0.1.0-alpha.1
+cd distantlands-0.2.0-alpha
 DLQ_HOST=0.0.0.0 \
 DLQ_PORT=8080 \
 DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
@@ -226,13 +226,13 @@ Run these commands in PowerShell. This example assumes the ZIP is in
 ```powershell
 New-Item -ItemType Directory -Force -Path C:\DistantLands
 Set-Location C:\DistantLands
-Expand-Archive -LiteralPath C:\Users\Alex\Downloads\distantlands-0.1.0-alpha.1.zip -DestinationPath .
+Expand-Archive -LiteralPath C:\Users\Alex\Downloads\distantlands-0.2.0-alpha.zip -DestinationPath .
 New-Item -ItemType Directory -Force -Path C:\DistantLandsData\alpha-1
 $env:DLQ_HOST = '0.0.0.0'
 $env:DLQ_PORT = '8080'
 $env:DLQ_PUBLIC_BASE_URL = 'http://192.168.1.20:8080'
 $env:DLQ_DATABASE_PATH = 'C:\DistantLandsData\alpha-1\database'
-.\distantlands-0.1.0-alpha.1\bin\distantlands.bat
+.\distantlands-0.2.0-alpha\bin\distantlands.bat
 ```
 
 Replace `192.168.1.20` with the host's private LAN address. For host-only use,
@@ -254,7 +254,7 @@ placeholder below must be replaced with the actual lowercase GitHub owner and
 repository:
 
 ```sh
-export DLQ_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.1.0-alpha.1'
+export DLQ_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.2.0-alpha'
 docker pull "$DLQ_IMAGE_REFERENCE"
 docker volume create distantlands-data
 docker run --detach --name distantlands \
