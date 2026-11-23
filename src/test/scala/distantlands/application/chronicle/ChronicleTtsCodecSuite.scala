@@ -17,12 +17,14 @@ import distantlands.model._
 class ChronicleTtsCodecSuite extends munit.FunSuite:
   private val codec = ChronicleTtsCodec(FirstGameSetupFixture.catalog)
   private val chronicle = FirstGameSetupFixture.chronicle
+  private val v3Export = "03H3uk5&m#lvuYL;KIO:Mg9FjOs)5.yU!bk{6k9tUwlHwZ}z%uTY3.}IvkwdiP9.r)s-g,XAxa!)JRjGCc5ze$;93~2=J;chc)06a}66Pn:tI#vWs~QDbnK5PpZ#&Xq36lcTLE-g359{rq/DBYLh@RBb~R;?$:iMT},~=/N@)J+fh9Ip8T1#dMl?Gf:M?tM%r/8%cL,lF{RGZOorax@0pONlP@9O.&SmJ>G6bq2t^7FJFmI>W$a,3r4:&ohBXUX)$&d%DuAJl%i~Y,c)@b!/W30&z!C-uQw(dF6Ni2k&rOzPKszQh!I4AT}rDwTx3cqDpjWuF%!o=v:aydNT-"
   private val fullExport = "02H3uk5&m#lvuYL;KIO:Mg9FjOs)5.yU!bk{6k9tUwlHwZ}z%uTY3.}IvkwdiP9.r)s-g,XAxa!)JRjGCc5ze$;93~2=J;chc)06a}66Pn:tI#vWs~QDbnK5PpZ#&Xq36lcTLE-g359{rq/DBYLh@RBb~R;?$:iMT},~=/N@)J+fh9Ip8T1#dMl?Gf:M?tM%r/8%cL,lF{RGZOorax@0pONlP@9O.&SmJ>G6bq2t^7FJFmI>W$a,3r4:&ohBXUX)$&d%DuAJl%i~Y,c)@b!/eoUQ9Qs!w223^(:%Lf.{eA5@(1u^DqWE$Kv#=iyHXC/5T"
 
   private def roundTripped(c: Chronicle)(using munit.Location): Chronicle =
     codec.encode(c).flatMap(e => codec.decode(e.text, c.name)).fold(fail(_), identity)
 
-  test("the full Lua export decodes to the values its own test asserts"):
+  test("the full version 2 Lua export decodes to the values its own test " +
+      "asserts"):
     val full = codec.decode(fullExport, "Imported").fold(fail(_), identity)
     assertEquals(full.reliquary, Vector(SpitefulMirrorCard.id, SigilOfTheEyeCard.id,
       WhistleCard.id, LostTapestryCard.id, CrackedHornCard.id))
@@ -43,11 +45,11 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
 
   test("the first-game fixture round trips, losing only its name"):
     val exported = codec.encode(chronicle).fold(fail(_), identity)
-    assert(exported.text.startsWith("03"), exported.text)
+    assert(exported.text.startsWith("04"), exported.text)
     assertEquals(exported.omitted, Vector("the name"))
     assertEquals(roundTripped(chronicle), chronicle)
 
-  test("every Oathkeeper goal survives version 3"):
+  test("every Oathkeeper goal survives the Oath digit"):
     OathkeeperGoal.all.foreach(goal =>
       assertEquals(roundTripped(chronicle.copy(oathkeeperGoal = goal))
         .oathkeeperGoal, goal))
@@ -65,13 +67,14 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
   test("an export lists what the TTS string leaves out"):
     val evolved = chronicle.copy(
       era = EraState(15, Vector(EraGame(Vector(
-        EraEntry(lineageOf(PlayerColor.Red), 6, Role.Exile))))),
+        EraEntry(lineageOf(PlayerColor.Red), 0, Role.Exile))))),
       lineages = Vector(LineageState(lineageOf(PlayerColor.Red),
         Some(PlayerId("Red")), Role.Exile, Vector.empty, Vector.empty)),
       foundations = Map(FoundationNumber.II -> FoundationState(
         FoundationFace.Altered, Set(ArbiterCard.id))))
     assertEquals(codec.encode(evolved).map(_.omitted), Right(Vector(
-      "the name", "the era target", "the era scorepad", "previous players",
+      "the name", "the era target", "the era scorepad's games",
+      "previous players",
       "Foundation alteration sources", "Exile lineages with nothing kept")))
 
   test("an unknown card, a wrong kind and a reserved goal are refused"):
@@ -79,9 +82,9 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
     assertEquals(codec.fromTts(unknownSite, "Imported"), Left("TTS site 30 is not in the catalog"))
     val relicInDeck = TtsChronicle(worldDeck = Some(Vector(401)))
     assertEquals(codec.fromTts(relicInDeck, "Imported"), Left("TTS card 401 is not a denizen"))
-    val reserved = TtsChronicle(foundations = Some(TtsFoundations(0, Some(7))))
+    val reserved = TtsChronicle(foundations = Some(TtsFoundations(0, 7)))
     assertEquals(codec.fromTts(reserved, "Imported"), Left("Oathkeeper goal 7 is reserved"))
-    val fan = TtsChronicle(foundations = Some(TtsFoundations(0, Some(21))))
+    val fan = TtsChronicle(foundations = Some(TtsFoundations(0, 21)))
     assertEquals(codec.fromTts(fan, "Imported"), Left("Oathkeeper goal 21 is fan content"))
 
   test("a lineage without a TTS color is refused on export"):
@@ -103,7 +106,7 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
       "starts"):
     // Bit 2 is Foundation III, the one altered face game start accepts.
     val imported = codec.fromTts(TtsChronicle(foundations =
-      Some(TtsFoundations(1 << 2, None))), "Imported").fold(fail(_), identity)
+      Some(TtsFoundations(1 << 2, 0))), "Imported").fold(fail(_), identity)
     val altered = FoundationState(FoundationFace.Altered, Set.empty)
     assertEquals(imported.foundations, Map(FoundationNumber.III -> altered))
     val ready = GameStartRules.evolve(FirstGameSetupFixture.catalog,
@@ -120,8 +123,8 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
     assertEquals(EmpireSetupRules.resolve(FirstGameSetupFixture.catalog,
       decoded, FirstGameSetupFixture.orders), Right(SetupMode.FirstGame))
 
-  test("a version 3 goal digit of 0 reads as Supremacy"):
-    val unset = TtsChronicle(foundations = Some(TtsFoundations(0, Some(0))))
+  test("an Oath digit of 0 reads as Supremacy"):
+    val unset = TtsChronicle(foundations = Some(TtsFoundations(0, 0)))
     assertEquals(codec.fromTts(unset, "Imported").map(_.oathkeeperGoal),
       Right(OathkeeperGoal.Supremacy))
 
@@ -144,3 +147,43 @@ class ChronicleTtsCodecSuite extends munit.FunSuite:
       Right("Harsch's game"))
     assertEquals(codec.decode(fullExport, " "),
       Left("a Chronicle name has no leading or trailing spaces"))
+
+  test("the full version 3 Lua export sets the Oath and carries each " +
+      "lineage score"):
+    val full = codec.decode(v3Export, "Imported").fold(fail(_), identity)
+    assertEquals(full.oathkeeperGoal, OathkeeperGoal.Protection)
+    val scores = TtsWire.colors.zipWithIndex.map((key, i) =>
+      lineageOf(PlayerColor.fromKey(key).get) -> (i + 1)).toMap
+    assertEquals(full.era, EraState(20, Vector.empty, scores))
+    // Black keeps nothing but scored 4, so it is a lineage now.
+    assertEquals(full.lineages.find(_.id == lineageOf(PlayerColor.Black))
+      .map(_.role), Some(Role.Exile))
+    assertEquals(roundTripped(full), full)
+
+  test("a lineage's latest scorepad total is exported as its score"):
+    val red = lineageOf(PlayerColor.Red)
+    val played = chronicle.copy(
+      era = EraState(20, Vector(EraGame(Vector(EraEntry(red, 4, Role.Exile))),
+        EraGame(Vector(EraEntry(red, 9, Role.Citizen))))),
+      lineages = Vector(LineageState(red, None, Role.Citizen, Vector.empty,
+        Vector.empty)))
+    assertEquals(roundTripped(played).era,
+      EraState(20, Vector.empty, Map(red -> 9)))
+
+  test("a carried score reaches the scorepad's next total"):
+    val red = lineageOf(PlayerColor.Red)
+    val era = EraState(20, Vector.empty, Map(red -> 7))
+    assertEquals(era.score(red), 7)
+    assertEquals(era.copy(games = Vector(EraGame(Vector(
+      EraEntry(red, 11, Role.Exile))))).score(red), 11)
+    assertEquals(era.score(lineageOf(PlayerColor.Blue)), 0)
+
+  test("a non-empty extra player is refused; an empty one is ignored"):
+    val extra = TtsPlayer(1, 3, Vector.empty, Vector.empty, Vector.empty)
+    val named = Vector.fill[Option[TtsPlayer]](7)(None)
+    assertEquals(codec.fromTts(TtsChronicle(players =
+      named ++ Vector(Some(TtsPlayer.emptyExile), Some(extra))), "Imported"),
+      Left("TTS player 9 has no color here"))
+    assertEquals(codec.fromTts(TtsChronicle(players =
+      named :+ Some(TtsPlayer.emptyExile)), "Imported").map(_.lineages),
+      Right(Vector.empty))

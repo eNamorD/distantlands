@@ -50,16 +50,19 @@ enum Region(val key: String, val slots: Int):
 object Region:
   val all: Vector[Region] = Vector(Cradle, Provinces, Hinterland)
 
-/** The shared card piles of a game. The legacy deck is not stored: it is
-  * every legacy no lineage holds and the public row does not show
-  * (Legacies design, ruling 3), and every legacy draw happens at game
-  * start. `publicLegacies` is the Public Ambitions row, faceup. */
+/** The shared card piles of a game. `publicLegacies` is the Public
+  * Ambitions row, faceup. `legacyDeck` is the legacy deck, top first: game
+  * start keeps what Foundation III's deal leaves of the shuffled deck, a
+  * draw takes from the top, and a returned or discarded legacy goes to the
+  * bottom (catalog batch 13, rulings 1 and 2). The next game derives its
+  * deck from the Chronicle again (`LegacyDeal.deck`). */
 final case class CardZones(
     worldDeck: Vector[WorldCardId],
     relicDeck: Vector[RelicId],
     edificeDeck: Vector[EdificeId],
     regionalDiscards: Map[Region, Vector[WorldCardId]],
-    publicLegacies: Vector[LegacyId] = Vector.empty
+    publicLegacies: Vector[LegacyId] = Vector.empty,
+    legacyDeck: Vector[LegacyId] = Vector.empty
 ):
   def discard(region: Region): Vector[WorldCardId] =
     regionalDiscards.getOrElse(region, Vector.empty)

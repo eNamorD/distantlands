@@ -150,19 +150,21 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
     // delta, not one event per legacy setup command. The first Wake has
     // nothing to decide, so its End Wake step and completion follow, then
     // the Act menu parks: 1 GameStarted, 13 parks (4 decisions per seat --
-    // pawn, kept legacy, adviser, reveal -- and the Act menu), 23 steps and
-    // 2 completions (Setup's and the first Wake's) make 39. Each of the 12
-    // answers opens its command batch with a `CommandAccepted`, so 51.
-    // Setup journals its own Game Log lines, three per seat -- the pawn, the
-    // kept legacy and the kept adviser, nobody having a card to reveal --
-    // so 60.
-    assertEquals(reloaded.nextSequence, 60L)
+    // pawn, kept legacy, adviser, reveal -- and the Act menu), 29 steps (two
+    // per seat are the deal's recorded legacy draw and the keep's take of
+    // that record, catalog batch 13, ruling 6; setup keep undo design, "The
+    // keep") and 2 completions (Setup's and the first Wake's) make 45. Each
+    // of the 12 answers opens its command batch with a `CommandAccepted`, so
+    // 57. Setup journals its own Game Log lines, three per seat -- the pawn,
+    // the kept legacy and the kept adviser, nobody having a card to reveal
+    // -- so 66.
+    assertEquals(reloaded.nextSequence, 66L)
     val records = loaded(repository.load("game-v2")).records
-    assertEquals(records.size, 60)
+    assertEquals(records.size, 66)
     val eventType = (record: String) => ujson.read(record)("eventType").str
     assertEquals(records.groupMapReduce(eventType)(_ => 1)(_ + _),
       Map("setup.game-started" -> 1, "walker.parked" -> 13,
-        "walker.step-recorded" -> 23, "walker.completed" -> 2,
+        "walker.step-recorded" -> 29, "walker.completed" -> 2,
         "walker.power-noted" -> 9, "undo.command-accepted" -> 12))
     assert(records.forall(record =>
       ujson.read(record)("formatVersion").num.toInt ==
@@ -249,10 +251,10 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
               NatureWorshipCard.id),
               SetupAdviserSteps.discardKey)))))
       ),
-      Left(GameApplicationError.StaleClientPosition(1L, 2L)))
+      Left(GameApplicationError.StaleClientPosition(1L, 5L)))
     assertEquals(
       loaded(repository.load("game-stale-v2")).nextSequence,
-      2L)
+      5L)
 
   test("malformed v1 envelopes are rejected without reinterpretation"):
     val repository = new InMemoryEventStreamRepository
@@ -363,7 +365,9 @@ class GameApplicationServiceStreamSuite extends munit.FunSuite:
       PlayerIntent.SetConsentPreference(MinesSite.mountain,
         p2, ConsentSetting.Always),
       PlayerIntent.RequestConsent("any", DecisionOptionRef.Button("go")),
-      PlayerIntent.AnswerConsent(ConsentChoice.Yes))
+      PlayerIntent.AnswerConsent(ConsentChoice.Yes),
+      PlayerIntent.ReconsiderConsent(p2, "any",
+        DecisionOptionRef.Button("go"), allow = true))
     assertEquals(intents.filter(_.opensBatch).map(_.productPrefix),
       Vector("ResolveWalker"))
     assertEquals(GameCommand.issuer(GameCommand.Issued(p1, intents(2))),

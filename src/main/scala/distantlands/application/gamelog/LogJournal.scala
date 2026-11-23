@@ -28,8 +28,7 @@ private[gamelog] final case class Run(procedure: ProcedureRef, actor: PlayerId,
   */
 private[gamelog] final class LogJournal(
     steps: Vector[ReplayStep[OathState, OathEvent]],
-    applied: ReplayStep[OathState, OathEvent] => Vector[OpStep] =
-      LogJournal.opSteps):
+    applied: ReplayStep[OathState, OathEvent] => Vector[OpStep]):
   private val closings: Vector[Option[Int]] =
     steps.indices.foldRight(List.empty[Option[Int]]) { (index, later) =>
       val next = later.headOption.flatten
@@ -88,7 +87,7 @@ private[gamelog] final class LogJournal(
   /** Every answer `run` recorded from its first event through `at`. */
   def answers(run: Run, at: Int): Vector[Answered] =
     (run.first to at).toVector.map(event).collect {
-      case WalkerStepRecorded(_, ChoicePayload(id, answer, by), _) =>
+      case WalkerStepRecorded(_, ChoicePayload(id, answer, by, _), _) =>
         Answered(id, answer, by)
     }
 

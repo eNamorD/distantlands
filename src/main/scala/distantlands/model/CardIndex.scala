@@ -135,8 +135,7 @@ object CardIndex:
     addIds(common.worldDeck, CardContainer.Deck(CardDeck.World))
     addIds(common.relicDeck, CardContainer.Deck(CardDeck.Relic))
     addIds(common.edificeDeck, CardContainer.Deck(CardDeck.Edifice))
-    // The legacy deck is derived (Legacies design, ruling 3): no card is
-    // indexed there.
+    addIds(common.legacyDeck, CardContainer.Deck(CardDeck.Legacy))
     addIds(common.publicLegacies, CardContainer.PublicLegacies)
 
     Region.all.foreach { region =>
@@ -146,12 +145,14 @@ object CardIndex:
       )
     }
 
-    game.current.temporaryHands.toVector.sortBy(_._1.value).foreach:
-      case (player, cards) =>
-        addIds(
-          cards,
-          CardContainer.Player(player, PlayerCardArea.Hand)
-        )
+    val handOwners = (game.current.temporaryHands.keySet ++
+      game.current.legacyHands.keySet).toVector.sortBy(_.value)
+    handOwners.foreach(player =>
+      addIds(
+        game.current.temporaryHands.getOrElse(player, Vector.empty) ++
+          game.current.legacyHands.getOrElse(player, Vector.empty),
+        CardContainer.Player(player, PlayerCardArea.Hand)
+      ))
 
     game.current.players.foreach { player =>
       addStates(

@@ -165,6 +165,19 @@ private[operations] object ChronicleStateOperations:
       case None => Right(ready.updateCurrent(current => current.copy(
         scoredLegacies = current.scoredLegacies ++ legacies)))
 
+  /** `legacies` join the kept-dormant set (Stone Baths); one already in it,
+    * or named twice, is a doubled keep. */
+  def legaciesKeptDormant(ready: ReadyGame, legacies: Vector[LegacyId])
+      : Either[OperationError, ReadyGame] =
+    val kept = ready.game.current.keptDormant
+    legacies.find(kept) match
+      case Some(legacy) => Left(InvalidDescription(
+        s"${legacy.value} is already kept dormant"))
+      case None if legacies.distinct.size != legacies.size =>
+        Left(InvalidDescription("a keep names each legacy once"))
+      case None => Right(ready.updateCurrent(current => current.copy(
+        keptDormant = current.keptDormant ++ legacies)))
+
   /** `relics` turn facedown in their holders' play areas, and every
     * viewer's record of them is forgotten (R28). The Grand Scepter and a
     * relic no player holds are refused. */
@@ -185,8 +198,9 @@ private[operations] object ChronicleStateOperations:
               CardKnowledgeMoves.forget)))
 
   /** `relic` from `player`'s relics to their lineage's starting relics
-    * (Heirloom; R20). The Grand Scepter, a relic the player does not hold
-    * and a relic with tokens are refused. */
+    * (Heirloom, R20; Hiding Place, Last Chronicle powers design, ruling 4).
+    * The Grand Scepter, a relic the player does not hold and a relic with
+    * tokens or warbands on it are refused. */
   def startingRelicKept(ready: ReadyGame, player: PlayerId, relic: RelicId)
       : Either[OperationError, ReadyGame] =
     val held = ready.game.current.player(player)
@@ -200,6 +214,9 @@ private[operations] object ChronicleStateOperations:
         s"${player.value} holds no ${relic.value} to keep"))
       case (Some(state), _) if !state.tokens.isEmpty => Left(
         InvalidDescription(s"${relic.value} still holds tokens"))
+      case _ if ready.game.current.warbandsOnCards.get(relic)
+          .exists(_.values.exists(_ > 0)) => Left(
+        InvalidDescription(s"${relic.value} still holds warbands"))
       case (Some(_), Some(id)) => Right(ready.updateCurrent(current =>
         current.copy(players = current.players.map(state =>
           if state.player == player then

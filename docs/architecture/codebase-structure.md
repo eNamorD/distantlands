@@ -20,8 +20,8 @@ model/engine -> no outer adapter packages
   `ReadyGame`/`OathState`, the `OathEvent` and `OathViolation` vocabularies,
   the operation algebra (`CoreOperation`, `Location`, `Piece`), power windows,
   and rule-source identities. It holds data only, never rules.
-- `distantlands.catalog` owns the typed card classes (`Cards.scala`) and the
-  not-yet-implemented card objects in `holding/`; the full list and the
+- `distantlands.catalog` owns the typed card classes (`Cards.scala`); the
+  card objects sit beside their powers, and the full list and the
   production `ExecutableCatalog` are in `gameplay/cards/NewFoundations.scala`.
 - `distantlands.engine` owns generic event evolution and replay machinery.
 - `distantlands.gameplay` owns legality, procedures, and deterministic
@@ -44,12 +44,11 @@ Group code by one reason to change. Keep a procedure and its legality/evolution
 together. Do not create one file per case class or event. Split orchestration,
 codecs, projection, or rendering when distinct responsibilities emerge.
 
-Most cards with an implemented power have their own file under
-`gameplay/powers/`, grouped by timing (`action`, `rest`, `wake`, `economy` and
-so on), with the typed card object and the power object side by side. Cards
-with no implemented power share the `catalog/holding/` files by kind. A power
-owns only applicability and power-specific mechanics: the contributions it
-makes at power windows, or a phase power's `usable` check and `build` tree.
+Most cards have their own file under `gameplay/powers/`, grouped by timing
+(`action`, `rest`, `wake`, `economy` and so on), with the typed card object
+and the power object side by side. A power owns only applicability and
+power-specific mechanics: the contributions it makes at power windows, or a
+phase power's `usable` check and `build` tree.
 The walker owns procedure lifecycle, window folding and recording.
 
 Production Scala files must remain at or below 800 lines. Around 500 meaningful
@@ -58,6 +57,32 @@ architecture check enforces the hard limit and dependency boundaries:
 
 ```sh
 python3 scripts/check-architecture.py
+```
+
+## Change, don't preserve
+
+Before the first public release nothing in this repository is outdated code
+that callers must keep working. A change to a signature, a field, a file or a
+name moves every caller with it. It does not add a forwarding overload, an
+optional field with a fallback, an adapter, or a second code path so that the
+shape from an earlier commit still works. "Make it safe" means the protected
+list below, not the previous shape. The
+[no compatibility shims decision](../superpowers/specs/2026-11/2026-11-15-no-compatibility-shims-decision.md)
+records the scope of this rule and when it ends.
+
+Protected: the rules as the game plays them, and the frontend and server at
+the same commit understanding each other. Not protected: an earlier commit's
+signatures, names, file layout, wire fields, or saved journals.
+
+Before adding a helper, wrapper, trait or default argument, delete it in your
+head. If its callers read no worse without it, do not add it. A method whose
+body is one call with the same arguments is a pass-through: remove it.
+
+At the end of a slice, list the public symbols the branch adds and decide, per
+name, whether it is inlined, replaced by an existing name, or kept:
+
+```sh
+scripts/new-symbols.sh
 ```
 
 ## Sources of truth
@@ -125,8 +150,8 @@ gameplay.
 ### Power
 
 1. Verify the catalog handler ID and its `RuleSourceIndex` source.
-2. Move the card object out of `catalog/holding/` into the power's file. Keep
-   its `PrintedPower`, and keep the card listed in
+2. Put the card object in the power's file. Keep its `PrintedPower`, and
+   keep the card listed in
    `gameplay/cards/NewFoundations.scala`. The 24 site objects are the
    exception: all of them live in `gameplay/cards` (`HomelandsAndPlains.scala`
    and `PoweredSites.scala`), and a site power imports its site from there.
@@ -145,7 +170,6 @@ gameplay.
    refuses a `catalog: ExecutableCatalog` constructor parameter and a
    `forCatalog` constructor under `gameplay/powers`.
 4. Register it in `WalkerPowerCatalog` or `PhasePowerCatalog`, or both.
-   Registration marks the handler implemented (`PowerImplementationStatus`).
 5. Declare its Game Log keys as `noteKeys`. `DeclaredNotes` refuses a note
    no power declared.
 6. Never infer mechanics from labels or rules text. An applicable handler

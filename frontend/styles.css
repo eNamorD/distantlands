@@ -35,6 +35,9 @@
   --die-attack: #c0392b;
   --die-defense: #3d6fb4;
   --die-round: #9b59b6;
+  /* The printed festival marker's teal plate and its dark rim. */
+  --festival-teal: #0f8285;
+  --festival-rim: #062b2c;
   /* An option the viewer may ask consent for, and nothing else. */
   --consent-amber: #e8a33d;
   /* The printed power marks (PowerMarks): a modifier's tab is warm grey,
@@ -76,7 +79,6 @@
   --line-pane: #443c30;
   --selection-fill: #243442;
   --pile-back: #493751;
-  --unimplemented: #a15c4a;
   --error-line: #e27f79;
   --error-text: #ffd0cd;
   --token-symbol: #d8cdb4;
@@ -193,12 +195,36 @@
 body { margin: 0; }
 button { font: inherit; }
 .trusted-host-form, .host-field { display: grid; gap: 0.5rem; }
-.trusted-host-form { max-width: 40rem; gap: 1rem; }
+.trusted-host-form { max-width: 40rem; gap: 1rem;
+  grid-template-columns: minmax(0, 1fr); }
+/* Player selection and the seat links after it: one centered column, like
+   the Chronicle page, so the intro wraps instead of running wide. */
+/* minmax(0, 1fr): an auto track would grow to an input's default width
+   and push the column past a phone's edge. */
+.host-page { max-width: 40rem; margin: 0 auto; display: grid;
+  grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+.host-page > h1, .host-page > p { text-align: center; }
+.host-intro { max-width: 65ch; justify-self: center; margin: 0 0 0.5rem; }
+.host-page > .chronicle-back { justify-self: start; }
+/* The seat-link rows mark nothing, so the list keeps no indent for markers. */
+.host-page .seat-links { margin: 0; padding: 0; }
+.host-page .created-game-id { margin: 0; }
 .host-field input, .host-field textarea, .seat-link { font: inherit; padding: 0.5rem; min-width: 0; }
-.host-players { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
-.host-player { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
-.host-player-color { min-width: 4.5rem; font-weight: 700; }
-.host-player-id { font: inherit; padding: 0.5rem; flex: 1 1 12rem; min-width: 0; }
+/* The rows share one set of columns, so the name fields line up whatever
+   each label's length. One row at every width: the name field gives way
+   first, and a long label ("Yellow Chancellor") wraps inside its own cell,
+   so Remove stays beside its field on a phone. */
+.host-players { list-style: none; margin: 0; padding: 0; display: grid;
+  grid-template-columns: auto fit-content(10rem) minmax(0, 1fr) auto;
+  column-gap: 0.75rem; row-gap: 0.5rem; }
+.host-player { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid;
+  align-items: center; }
+.host-player-color { font-weight: 700; }
+/* On a phone a long label takes two lines, leaving the name its room. */
+@media (max-width: 30rem) {
+  .host-players { grid-template-columns: auto fit-content(6.5rem) minmax(0, 1fr) auto; }
+}
+.host-player-id { font: inherit; padding: 0.5rem; min-width: 0; }
 /* Element-qualified so it beats the .player-* text styles, e.g. the black pill. */
 span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padding: 0;
   border-radius: 50%; background: currentColor; border: 2px solid var(--cream); flex: none; }
@@ -217,9 +243,82 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .add-player-limit { color: var(--brass); }
 .seat-link-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin: 1rem 0; }
 .seat-link { flex: 1 1 20rem; }
-/* Chronicle page (Chronicle browsing design, "Chronicle page"). */
-.chronicle-import, .chronicle-export, .chronicle-saved, .chronicle-loaded {
-  max-width: 40rem; margin: 1.5rem 0; display: grid; gap: 0.75rem; }
+.seat-link-player { font-weight: 700; }
+.seat-link-color { color: var(--ink-dim); }
+/* Wider than a phone, the seat rows share columns so the links line up. */
+@media (min-width: 30.01rem) {
+  .host-page .seat-links { display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto; column-gap: 0.75rem; }
+  .seat-link-row { display: grid; grid-column: 1 / -1; grid-template-columns: subgrid;
+    margin: 0.5rem 0; }
+}
+/* Chronicle page (Chronicle browsing design, "Chronicle page"): one centered
+   column, each button on a line of its own and all of one width. */
+.chronicle-page { max-width: 40rem; margin: 0 auto; display: grid;
+  justify-items: center; gap: 0.75rem; text-align: center; }
+.chronicle-page > button { width: min(100%, 18rem); padding: 0.4rem 0.75rem; }
+/* The Loaded Chronicle box: a brass frame with its name set into the top
+   edge, kept in place with "None" when nothing is loaded. The label's Base
+   patch hides the border behind it. */
+.chronicle-loaded { position: relative; width: 100%; margin: 0.75rem 0 0.5rem;
+  padding: 1.5rem 1rem 1rem; display: grid; gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr); justify-items: center;
+  border: 2px solid var(--brass); border-radius: 12px; }
+.chronicle-loaded-label { position: absolute; top: 0; left: 0.75rem;
+  transform: translateY(-50%); margin: 0; padding: 0 0.4rem;
+  background: var(--base); color: var(--brass); font-size: 0.9rem; }
+.chronicle-loaded-none, .chronicle-no-scores { margin: 0; color: var(--ink-dim); }
+.chronicle-loaded > .continue-chronicle { width: min(100%, 18rem);
+  padding: 0.4rem 0.75rem; }
+.chronicle-saved { display: grid; gap: 0.75rem; }
+.chronicle-saved-none { margin: 0; color: var(--ink-dim); }
+/* In the Load dialog each row is the name over its details, with Load and
+   Delete to the right, ruled off from the next. */
+.chronicle-saved .chronicle-row { display: grid;
+  grid-template-columns: minmax(0, 1fr) auto; column-gap: 0.75rem;
+  row-gap: 0.15rem; padding: 0.6rem 0;
+  border-bottom: 1px solid var(--brass-line); }
+.chronicle-saved .chronicle-row:last-child { border-bottom: 0; }
+.chronicle-saved .chronicle-row-name, .chronicle-saved .chronicle-row-details {
+  grid-column: 1; }
+.chronicle-saved .chronicle-row-details { font-size: 0.9rem; }
+.chronicle-saved .chronicle-row-controls { grid-column: 2; grid-row: 1 / span 2; }
+/* The scoresheet: lineages down the side, the last five games across, each
+   cell the running total. As on the paper scorepad, the Chancellor's score
+   is circled and Citizens' are underlined. */
+.chronicle-scoresheet { width: 100%; border-collapse: collapse;
+  font-variant-numeric: tabular-nums; }
+.chronicle-scoresheet th, .chronicle-scoresheet td { padding: 0.35rem 0.4rem;
+  border-bottom: 1px solid var(--brass-line); text-align: center; }
+.chronicle-scoresheet thead th { color: var(--brass); font-size: 0.8rem;
+  font-weight: 400; white-space: nowrap; }
+.chronicle-scoresheet tbody tr:last-child > * { border-bottom: 0; }
+.chronicle-scoresheet .scoresheet-lineage { text-align: left; font-weight: 400; }
+.chronicle-scoresheet thead th:first-child { text-align: left; }
+.scoresheet-lineage-name { display: inline-flex; align-items: center;
+  gap: 0.4rem; font-weight: 700; }
+.scoresheet-lineage-name .color-swatch { width: 0.9rem; height: 0.9rem; }
+.scoresheet-legacies { display: block; margin-top: 0.15rem; color: var(--ink-dim);
+  font-size: 0.8rem; }
+.scoresheet-earlier { width: 1.5rem; color: var(--ink-dim); }
+.scoresheet-mark { display: inline-grid; place-items: center; min-width: 1.75em;
+  height: 1.75em; border: 1.5px solid transparent; border-radius: 50%; }
+.scoresheet-chancellor { border-color: currentColor; }
+.scoresheet-citizen { text-decoration: underline; text-underline-offset: 0.2em;
+  text-decoration-thickness: 1.5px; }
+.scoresheet-total { font-weight: 700; color: var(--cream-bright); }
+.scoresheet-frame { width: 100%; overflow-x: auto; }
+/* A phone's box holds eight narrow columns: the game headings drop the word
+   "Game" from sight, and the cells and the box's sides tighten. */
+@media (max-width: 30rem) {
+  .chronicle-loaded { padding: 1.4rem 0.5rem 0.75rem; }
+  .chronicle-scoresheet th, .chronicle-scoresheet td { padding: 0.3rem 0.15rem; }
+  .scoresheet-game-word { position: absolute; width: 1px; height: 1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .scoresheet-mark { min-width: 1.6em; height: 1.6em; }
+}
+.chronicle-import, .chronicle-export { display: grid; gap: 0.75rem; }
+.chronicle-export > button { justify-self: start; }
 .import-chronicle-tts { font: inherit; min-height: 5rem; padding: 0.5rem;
   overflow-wrap: anywhere; }
 .import-chronicle-name, .import-new-name { font: inherit; padding: 0.5rem; }
@@ -231,13 +330,15 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .chronicle-export-controls .status { flex: 1 0 100%; margin: 0; }
 .export-tts-text { flex: 1 0 100%; font: inherit; min-height: 4rem;
   overflow-wrap: anywhere; }
+.chronicle-export .export-tts-text { min-height: 8rem; padding: 0.5rem; }
+.chronicle-export .status:empty { display: none; }
 .chronicle-loaded-heading { display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: center;
   gap: 0.75rem; }
 .chronicle-loaded-name { margin: 0; font-family: Georgia, serif; font-size: 1.6rem;
   color: var(--cream); }
 .chronicle-rename { font: inherit; padding: 0.5rem; flex: 1 1 14rem; min-width: 0; }
 .chronicle-summary-line { margin: 0; color: var(--brass); }
-.continue-chronicle, .new-chronicle, .edit-chronicle { margin: 0.5rem 0.75rem 0.5rem 0; }
 .chronicle-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
 .chronicle-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
 .chronicle-row-name { font-weight: 700; }
@@ -250,12 +351,24 @@ span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padd
 .game-table .table-chronicle { margin: 0 0 12px; display: grid; gap: 6px; }
 .game-table .table-chronicle p { margin: 0; }
 .table-chronicle-note { color: var(--brass); }
-.chronicle-save-prompt { position: fixed; inset: 0; z-index: 60; display: grid;
-  place-items: center; padding: 16px; background: #000a; }
+.table-chronicle-way-on { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.chronicle-save-prompt, .chronicle-dialog { position: fixed; inset: 0;
+  z-index: 60; display: grid; place-items: center; padding: 16px;
+  background: #000a; }
 .chronicle-save-panel { width: min(30rem, 100%); display: grid; gap: 0.75rem;
   padding: 18px; background: var(--panel); border: 1px solid var(--brass);
   border-radius: 12px; }
 .chronicle-save-name { font: inherit; padding: 0.5rem; }
+/* The Chronicle page's Import and Export dialogs. */
+.chronicle-dialog-panel { width: min(34rem, 100%); max-height: 100%;
+  overflow: auto; display: grid; gap: 1rem; padding: 18px; text-align: left;
+  background: var(--panel); border: 1px solid var(--brass);
+  border-radius: 12px; }
+.chronicle-dialog-header { display: flex; align-items: center;
+  justify-content: space-between; gap: 0.75rem; }
+.chronicle-dialog-heading { margin: 0; font-size: 1.15rem; }
+.chronicle-dialog-divider { width: 100%; margin: 0.25rem 0; border: 0;
+  border-top: 1px solid var(--brass-line); }
 
 #app {
   max-width: 1280px;
@@ -312,6 +425,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .round-tracker text { fill: var(--cream-bright); font-weight: 700; }
 /* Qualified by the tracker so it outranks the tracker's text rule below. */
 .round-tracker .limiter-marker { fill: #ff8c7f; }
+/* The end die the mat prints on the wheel in an Empire game, in the round
+   die's own purple with brass pips. It stands down while no roll would be
+   made. */
+.end-die-face { fill: var(--die-round); stroke: var(--brass); stroke-width: 1.5; }
+.end-die-pip { fill: var(--brass-bright); }
+.end-die-idle { opacity: 0.4; }
 .target-detail-badge { display: inline-block; margin-left: 0.4rem; padding: 0.08rem 0.35rem;
   border: 1px solid #a98b58; border-radius: 999px; background: var(--base);
   color: var(--brass-bright); font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
@@ -443,11 +562,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   white-space: nowrap; }
 
 /* Beside the mat, as the physical table has them: the Public Ambitions,
-   then the oath, the banners and the foundations in one row. */
+   then the oath and the banners, then the Chronicle Details button. */
 .table-edge { display: flex; align-items: flex-start; gap: 16px;
   margin-top: 12px; }
-.table-edge .shared-bank { display: flex; flex: 1; align-items: flex-start;
-  gap: 16px; padding: 0; border: 0; }
+.table-edge .shared-bank { display: flex; flex: 0 1 auto;
+  align-items: flex-start; gap: 16px; padding: 0; border: 0; }
 .table-edge .shared-bank > h3 { margin: 0; font-size: 1rem; }
 /* A banner on the table's edge keeps its larger side (ruling R3, amended):
    the real banner is three card widths across. */
@@ -458,9 +577,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    square as a relic is (Legacy in-play powers ruling 9). */
 .table-edge .shared-reliquary { --card-w: var(--banner-edge-side);
   margin-top: 0; }
-.table-edge .foundations { flex: 1; margin-top: 0; }
-.table-edge .foundation-strip {
-  grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .table-edge .public-legacies { margin: 0; }
 /* The edge is on the board's zoom surface, so its words hold the glance
    size as the board's do, and its rows wrap rather than run off the edge
@@ -470,11 +586,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .map-compact .table-edge, .map-compact .table-edge .shared-bank {
   flex-wrap: wrap; }
 .map-compact .table-edge :is(.shared-bank > h3, .oathkeeper-status,
-  .public-legacies-label, .shared-reliquary-label, .foundations-title) {
+  .public-legacies-label, .shared-reliquary-label) {
   font-size: var(--glance-text); }
-/* Set larger, the foundations take a row of their own, so their names
-   keep the room to be read. */
-.map-compact .table-edge .foundations { flex: 1 1 100%; }
 .map-compact .table-edge .public-legacies-cards { --card-h: 9.1rem;
   --card-w: calc(9.1rem * var(--ratio-denizen)); font-size: var(--glance-text); }
 .map-compact .table-edge .public-legacies-cards .card-face {
@@ -493,6 +606,25 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* The Oath goal is a control: a hit area of 24px on screen at any zoom. */
 .table-edge .oathkeeper-status > .oathkeeper-goal { display: flex;
   align-items: center; min-height: calc(24px / var(--map-scale, 1)); }
+/* The Chronicle Details button beside the Shared Bank (Chronicle Details
+   design, slice 4): a rectangular Control as tall as the edge (R18) and as
+   wide as a site's three denizen slots (R23): 3 card widths and 2 slot gaps
+   from MatLayout, 1072 of the mat's 5787 units, are 445px of the map's 2400.
+   The map scales as one, so the button keeps that width at every screen
+   size. It takes the edge's own sizes, its touch floor set against the
+   scale as the Oath goal's is (R17). */
+.table-edge .chronicle-details-button { flex: 0 0 445px; align-self: stretch;
+  min-height: calc(44px / var(--map-scale, 1)); padding: 8px 16px;
+  color: #e8d9bb; background: var(--raised);
+  border: 1px solid var(--brass-line); border-radius: 4px; font: inherit;
+  font-size: 1rem; }
+.table-edge .chronicle-details-button:hover {
+  border-color: var(--cream-bright); background: var(--pressed); }
+.map-compact .table-edge .chronicle-details-button {
+  font-size: var(--glance-text); }
+@media (max-width: 620px) {
+  .table-edge { flex-wrap: wrap; }
+}
 
 /* The glance layer on the mat. A site's face is a fixed box, so each line
    it holds is set against the scale, its rows grow with it, and the name
@@ -518,8 +650,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   overflow: visible; }
 /* Zoomed out, a pawn is its dot and its player's initial on one line that
    never wraps and never leaves the face (ruling R6); the name steps out of
-   sight and stays the pawn's name. The festival marker is its initial too,
-   its whole name its label. */
+   sight and stays the pawn's name. */
 .pawn-initial { display: none; }
 .map-compact .mat-board .site-pawns { display: flex; flex-wrap: nowrap;
   gap: 0.12em; overflow: hidden; white-space: nowrap; margin: 0;
@@ -534,8 +665,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .map-compact .mat-board .pawn-initial { display: inline; font-weight: 700; }
 /* At rest a face holds two pawns by name on its one line; from three on,
    each shows its dot and initial there too. A name too long for its share
-   of the line is cut with an ellipsis; a dot never is. The thresholds count
-   pawns, not the festival marker. */
+   of the line is cut with an ellipsis; a dot never is. */
 .mat-board .site-pawns { flex-wrap: nowrap; overflow: hidden;
   white-space: nowrap; min-height: 0; }
 .mat-board .pawn { display: inline-flex; flex: 0 1 auto; min-width: 0;
@@ -548,20 +678,10 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   clip-path: inset(50%); }
 .mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn) .pawn-initial {
   display: inline; font-weight: 700; }
-.mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn) .festival-marker {
-  font-size: 0; padding: 0 0.2em; }
-.mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn) .festival-marker::after {
-  content: "F"; font-size: 0.72rem; }
 /* Five pawns or more on one zoomed-out face leave no room for initials:
    each is its dot, its player's name still its name and hover note. */
 .map-compact .mat-board .site-pawns:has(> .pawn ~ .pawn ~ .pawn ~ .pawn ~ .pawn)
   .pawn-initial { display: none; }
-.map-compact .mat-board .site-pawns .festival-marker { font-size: 0;
-  padding: 0 0.2em; }
-.map-compact .mat-board .site-pawns .festival-marker::after { content: "F";
-  font-size: calc(var(--glance-text) * 0.85); }
-.map-tiny .mat-board .site-pawns .festival-marker::after {
-  font-size: min(var(--glance-text), 32px); line-height: 1.05; }
 /* A deck's letter and count at the glance size, the count under the
    letter. */
 .map-compact .mat-board .deck-card { font-size: calc(var(--glance-text) * 1.5);
@@ -580,10 +700,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    (implementation ruling R5). Its powers, the wheel's numbers and a bank's
    favor glyph would fall under a readable size and leave the board: the
    powers are read and opened on a zoom or in the overlay, the wheel's
-   numbers are in the tracker's name, and the bank's count says favor in
+   numbers and end dice are in the tracker's name, and the bank's count says favor in
    its own words. */
 .map-tiny .mat-board :is(.site-footer,
-  .round-tracker text:not(.limiter-marker), .favor-bank > .token-favor) {
+  .round-tracker text:not(.limiter-marker), .end-die,
+  .favor-bank > .token-favor) {
   display: none; }
 /* What carries a name or state steps out of sight without leaving the
    accessibility tree: the tracker's words, the slots' names and the track's
@@ -611,9 +732,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .map-tiny .mat-board .site-forces-short { top: calc(6px + var(--row));
   right: auto; left: calc(var(--face-left) + 8px); }
 .map-tiny .mat-board .site-defense-short { top: calc(6px + var(--row)); }
-/* Each pawn is its dot alone, sized so six pawns and the festival marker
-   fit the face's width (seven items of about 1.12em in its 256px); the row
-   never wraps. */
+/* Each pawn is its dot alone, sized so six pawns fit the face's width
+   (six items of about 1.12em in its 256px); the row never wraps. */
 .map-tiny .mat-board .site-pawns { top: calc(6px + var(--row) * 2);
   font-size: min(var(--glance-text), 32px); line-height: 1.05; }
 .map-tiny .mat-board .site-tokens .site-token-count { margin-right: 0.1em; }
@@ -643,24 +763,15 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
     width: auto; max-width: calc(var(--face-w) - 16px - var(--glance-text) * 2.1);
     height: var(--glance-text); align-items: center; justify-content: flex-end;
     gap: 0.12em; line-height: 1; }
-  .map-tiny .mat-board .site-pawns,
-  .map-tiny .mat-board .site-pawns .festival-marker::after {
-    font-size: var(--glance-text); }
-  .map-tiny .mat-board .site-pawns:has(> :nth-child(3)),
-  .map-tiny .mat-board .site-pawns:has(> :nth-child(3)) .festival-marker::after {
+  .map-tiny .mat-board .site-pawns { font-size: var(--glance-text); }
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(3)) {
     font-size: min(var(--glance-text), 37px); }
-  .map-tiny .mat-board .site-pawns:has(> :nth-child(4)),
-  .map-tiny .mat-board .site-pawns:has(> :nth-child(4)) .festival-marker::after {
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(4)) {
     font-size: min(var(--glance-text), 28px); }
-  .map-tiny .mat-board .site-pawns:has(> :nth-child(5)),
-  .map-tiny .mat-board .site-pawns:has(> :nth-child(5)) .festival-marker::after {
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(5)) {
     font-size: min(var(--glance-text), 22px); }
-  .map-tiny .mat-board .site-pawns:has(> :nth-child(6)),
-  .map-tiny .mat-board .site-pawns:has(> :nth-child(6)) .festival-marker::after {
+  .map-tiny .mat-board .site-pawns:has(> :nth-child(6)) {
     font-size: min(var(--glance-text), 18px); }
-  .map-tiny .mat-board .site-pawns:has(> :nth-child(7)),
-  .map-tiny .mat-board .site-pawns:has(> :nth-child(7)) .festival-marker::after {
-    font-size: min(var(--glance-text), 16px); }
   .map-tiny .mat-board .site > .target-detail-badge { line-height: 1;
     padding: 0 0.3em; }
 }
@@ -886,15 +997,58 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .site-pawns { display: flex; flex-wrap: wrap; gap: 4px 10px; min-height: 1.25em;
   margin-top: 7px; }
 .pawn { display: inline-block; font-size: 0.9rem; }
-/* The festival marker over a site's cards: the first player badge's pill,
-   at the end of the pawn row, one line tall. */
-.festival-marker { align-self: center; border: 1px solid #a98b58;
-  border-radius: 999px; padding: 0 0.45em; color: var(--brass-bright);
-  font-size: 0.72rem; font-weight: 700; line-height: 1.15;
-  white-space: nowrap; background: none; cursor: pointer; }
-/* Its copy in the Festival's inspection is a picture of the marker, not a
-   control. */
-.festival-copy .festival-marker { display: inline-block; cursor: default; }
+/* The festival marker, drawn as the printed one: a teal plate leaning to
+   the right, its rim dark, its title in cream capitals. The plate's shape
+   is an SVG stretched over the box; the words lie over it. */
+.festival-plate { position: relative; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; box-sizing: border-box;
+  margin: 0; padding: 0 6%; border: 0; background: none;
+  color: var(--cream-bright); font-family: Georgia, serif;
+  text-align: center; container-type: size; }
+.festival-plate-shape { position: absolute; inset: 0; width: 100%;
+  height: 100%; overflow: visible;
+  filter: drop-shadow(0 0.08em 0.12em #000000b3); }
+.festival-plate-outline { fill: var(--festival-teal);
+  stroke: var(--festival-rim); stroke-width: 2px; }
+.festival-plate-title { position: relative; font-weight: 400;
+  text-transform: uppercase; letter-spacing: 0.08em; line-height: 1;
+  white-space: nowrap; }
+.festival-plate-rule { position: relative; margin: 0; }
+/* On the map it lies over the middle of the site's cards, its title as
+   tall as half the band. The tops and feet of the cards stay theirs to
+   open. */
+.mat-board .festival-marker { z-index: 1; cursor: pointer; }
+.mat-board .festival-marker .festival-plate-title { font-size: 50cqh; }
+.mat-board .festival-marker:hover .festival-plate-outline {
+  stroke: var(--cream-bright); }
+.mat-board .festival-marker:focus-visible { outline: 2px solid
+  var(--cream-bright); outline-offset: 3px; }
+/* Zoomed out, the title keeps the glance layer's size, as a site's name
+   does, so it reads at every scale. The band grows around it, centred on
+   the cards' middle, and the title wraps to two lines where one line no
+   longer fits the band's width. A card's name moves to the card's top,
+   above the band. The placement is inline, so the band's top and height
+   are overridden here. */
+.map-compact .mat-board .site:has(> .festival-marker) .site-cards
+  .card-face { justify-content: flex-start; }
+.map-compact .mat-board .festival-marker { top: 50% !important;
+  height: auto !important; min-height: 18%; transform: translateY(-50%);
+  container-type: normal; padding: 0.3em 6%; font-size: var(--glance-text); }
+.map-compact .mat-board .festival-marker .festival-plate-title {
+  font-size: 1em; line-height: 1.05; white-space: normal; }
+/* The printed marker in the inspector: its title on two lines, its text
+   beneath, at the overlay's reading size. Its ratio is its least height:
+   on a phone the text needs more, and the plate grows to hold it. */
+.card-overlay-body > .festival-plate-printed { width: min(30em, 84vw);
+  padding: 0.6em 8% 0.6em 5%; gap: 0.35em; container-type: normal; }
+.festival-plate-printed .festival-plate-title { width: min-content;
+  font-size: 2.1em; white-space: normal; }
+.festival-plate-printed .festival-plate-rule { font-size: 0.85em;
+  line-height: 1.3; max-width: 34em; }
+/* Its picture in the Festival's inspection, above where it lies. */
+.festival-copy .festival-plate { width: 16em; padding: 0 0.6em; }
+.festival-copy .festival-plate-title { font-size: 55cqh; }
+.festival-copy-where { margin: 0.35em 0 0; }
 
 .player-ref { font-weight: 700; }
 .player-purple { color: var(--player-purple); }
@@ -1111,7 +1265,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    exchanged. */
 .card-face-legacy { width: var(--card-h);
   height: calc(var(--card-h) / (var(--ratio-legacy))); border-color: var(--line); }
-.card-face-unimplemented { border-style: dashed; border-color: var(--unimplemented); }
 /* An empty slot is a place, not a card: nothing to inspect, so no ring. */
 .card-face:not(.card-slot-empty):hover, .card-face:focus-visible {
   outline: var(--option-ring) solid var(--cream-focus);
@@ -1138,8 +1291,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    marks and the room the face keeps free agree. On a denizen-shaped box the
    band stands just above the power marks' row; on a square or landscape box,
    which has no room for both rows, it stands at the foot unless the card
-   prints power marks there. An Unimplemented band or a Replace badge lifts
-   the marks, and the band with them. */
+   prints power marks there. A Replace badge lifts the marks, and the band
+   with them. */
 .card-face { --marks-bottom: 0.35em; --band-h: 1.3em;
   --band-bottom: calc(var(--marks-bottom) + 1.65em); }
 :is(.card-face-relic, .card-face-legacy):not(:has(> .card-power-marks)) {
@@ -1148,8 +1301,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    summary sets the band above its marks as the face would. */
 .card-hover-summary:has(> .card-power-marks) {
   --band-bottom: calc(var(--marks-bottom) + 1.65em); }
-.card-face:has(> .card-unimplemented-badge) {
-  --marks-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
 .card-face.board-option-replace { --marks-bottom: calc(0.35em + 1.6em); }
 .card-tokens { position: absolute; right: 0.3em; bottom: var(--band-bottom);
   left: 0.3em; display: flex; align-items: center; justify-content: center;
@@ -1177,26 +1328,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   align-items: center; gap: 0.15em; }
 .card-header .restriction-mark { width: 1.5em; height: 1.5em; }
 /* Each power's modifier tab or battle-plan crown, in the lower-left corner,
-   lifted above the unimplemented band or a Replace badge when either is
-   there. */
+   lifted above a Replace badge when one is there. */
 .card-power-marks { position: absolute; left: 0.35em;
   bottom: var(--marks-bottom); display: flex; gap: 0.15em; }
 .card-power-marks .power-mark { width: 1.5em; height: 1.5em; }
-/* A band across the card's foot, out to the dashed border, so the word gets
-   the card's whole width: at the floor's 0.7rem, mixed case, "Unimplemented"
-   fits the smallest card in a pane. The card keeps the band's height free
-   at its foot, worked out in the card's own font, so the restriction above
-   it never runs under it. */
-.card-unimplemented-badge { position: absolute; right: 0; bottom: 0; left: 0;
-  padding: 0 0.2em; background: var(--unimplemented); color: var(--cream-bright);
-  font-size: max(0.62em, 0.7rem); line-height: 1.35; text-align: center;
-  white-space: nowrap; }
-.card-face:has(> .card-unimplemented-badge) {
-  padding-bottom: calc(max(0.62em, 0.7rem) * 1.35 + 0.3em); }
-/* A face holding tokens keeps the band's room free, the Unimplemented
-   band's with it: what it prints stops above the band, and a name too long
-   for what is left is cut there, its whole text being the face's hover note
-   and accessible name. */
+/* A face holding tokens keeps the token band's room free: what it prints
+   stops above the band, and a name too long for what is left is cut there,
+   its whole text being the face's hover note and accessible name. */
 :is(.card-face, .card-hover-summary):has(> .card-tokens) {
   padding-bottom: calc(var(--band-bottom) + var(--band-h) + 0.15em); }
 /* A legacy's goal in words, under its name, until goals have icons
@@ -1468,41 +1606,35 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .shared-banners .banner-face { width: 100%; height: auto;
   aspect-ratio: var(--ratio-banner); }
 /* The six foundation setup cards (Foundations design, slice 1), a card a
-   row: its numeral, the name of the face in use in the serif that names
-   things, and on an altered card the word. The word alone marks it: brass
-   on the board means an option, so the frame stays the neutral line. On the
-   table a row is one line of name and at most one of mark and never wraps.
-   Its height is not fixed: on the compact map it follows the glance text
-   size, and so the Fit scale. The strip stays shorter than the regions
-   beside it, whose height sets the map's. The table's cards are buttons
-   that read the face's rules; the Chronicle page's are not. */
-.foundations { margin-top: 12px; }
-.foundations-title { margin: 0 0 6px; font-size: 1rem; }
-.foundation-strip { list-style: none; margin: 0; padding: 0; display: grid;
-  gap: 4px; }
-.foundation-card { box-sizing: border-box; display: grid;
+   row, in Chronicle Details (Chronicle Details design, slice 4): its
+   numeral, the name of the face in use in the serif that names things, and
+   on an altered card the word. The word alone marks it: brass on the board
+   means an option, so the frame stays the neutral line. A row is one line
+   of name, cut rather than wrapped, and at most one of mark. Each card is a
+   button that reads the face's rules. The Chronicle Phase aids wear the
+   same face. */
+.foundations-title, .chronicle-tasks-title { margin: 0 0 6px;
+  font-size: 1rem; }
+.foundation-strip, .chronicle-task-strip { list-style: none; margin: 0;
+  padding: 0; display: grid; gap: 4px; }
+.foundation-card, .chronicle-task-card { box-sizing: border-box; display: grid;
   grid-template-columns: 1.8em minmax(0, 1fr); column-gap: 6px;
   align-items: baseline; width: 100%; padding: 4px 8px;
   border: 1px solid var(--line); border-radius: 4px; background: var(--base);
   color: var(--cream); font: inherit; text-align: left; }
-button.foundation-card { cursor: pointer; }
-button.foundation-card:hover { background: var(--pressed);
+button.foundation-card, button.chronicle-task-card { cursor: pointer; }
+button.foundation-card:hover, button.chronicle-task-card:hover {
+  background: var(--pressed);
   border-color: var(--cream-bright); }
 .foundation-number { color: var(--ink-dim); font-weight: 700;
   text-align: center; }
-.foundation-name { font-family: Georgia, serif; font-weight: 700;
+.foundation-name, .chronicle-task-name { font-family: Georgia, serif; font-weight: 700;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .foundation-mark { grid-column: 2; color: var(--parchment-dim);
   font-size: max(0.72em, 0.7rem); font-weight: 700; letter-spacing: 0.1em;
   text-transform: uppercase; }
-/* On the zoomed-out map the cards hold the glance text size, as a site's
-   details do; a name the row cannot hold is cut, never wrapped. */
-.map-compact .foundation-card { font-size: var(--glance-text); }
-/* On the Chronicle page the six stand three abreast. The page scrolls, so
-   a name its column cannot hold wraps. */
-.chronicle-loaded .foundation-strip {
-  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 0.5rem; }
-.chronicle-loaded .foundation-name { white-space: normal; }
+/* A task card has no numeral: its name takes the whole row. */
+.chronicle-task-card { grid-template-columns: minmax(0, 1fr); }
 /* Under the regions, where the physical board keeps them. Their text is set
    larger than the map's own, as the map is drawn at about half size. */
 .favor-bank { display: flex; align-items: center; justify-content: center;
@@ -1664,6 +1796,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .player-identity > * + *::before { content: "·"; margin-right: 0.45em;
   color: var(--ink-separator); font-weight: 400; }
 .player-role { color: #c0b398; font-weight: 400; text-transform: capitalize; }
+/* The Chancellor and the Citizens are the Empire, so their role reads in the
+   purple its warbands take, wherever a role is labelled. Doubled so it
+   beats the role's own colour above. */
+.role-imperial.role-imperial { color: var(--player-purple); }
 /* Who opens the round, read as a target detail badge beside the role it
    qualifies. No separator dot: the badge belongs to the role, not the line. */
 .player-first-badge { align-self: center; border: 1px solid #a98b58;
@@ -1709,7 +1845,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .player-board .board-cards { align-items: flex-start; font-size: 0.86em; }
 .game-table button, .development-panel button { cursor: pointer; }
 .map-controls { display: flex; align-items: center; gap: 5px; }
-.map-control, .dev-toggle, .dev-close, .log-new, .log-overlay-close {
+.map-control, .dev-toggle, .dev-close, .log-new, .log-overlay-close,
+.chronicle-details-close {
   color: #e8d9bb; background: var(--raised);
   border: 1px solid var(--brass-line); border-radius: 4px; padding: 4px 9px;
   min-width: 32px; min-height: 30px; font-size: .78rem; }
@@ -1717,9 +1854,9 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    fill, in the space the border already holds. */
 .map-control:hover, .dev-toggle:hover, .dev-close:hover,
 .card-overlay-close:hover, .log-new:hover,
-.log-overlay-close:hover { border-color: var(--cream-bright); background: var(--pressed); }
+.log-overlay-close:hover, .chronicle-details-close:hover {
+  border-color: var(--cream-bright); background: var(--pressed); }
 .player-title:hover, .player-slot-vision:hover, .supply-open:hover,
-button.festival-marker:hover,
 .pile-open:not(:disabled):hover { background: var(--raised); }
 .zoom-label { font-size: .72rem; color: #c0b398; min-width: 35px; text-align: center; }
 /* One draggable surface, like the Arcs map: the wheel zooms, the drag pans,
@@ -1751,7 +1888,7 @@ button.festival-marker:hover,
   --glance-text: clamp(0.86rem, calc(11.6px / var(--map-scale, 1)), 3.6rem); }
 .map-compact .site-tokens, .map-compact .site-defense, .map-compact .site-pawns,
 .map-compact .site-details { font-size: var(--glance-text); }
-.map-compact .pawn, .map-compact .festival-marker { font-size: inherit; }
+.map-compact .pawn { font-size: inherit; }
 .map-compact .site-details { margin: 0; line-height: 1.15; }
 /* The compact card face: the name in the middle, the suit in the corner.
    The card inherits the counter-scaled size from the site, so its own em
@@ -1795,8 +1932,8 @@ button.festival-marker:hover,
 .map-compact .mat-board .site-cards .card-token-count { margin-right: 0.1em; }
 .map-tiny .mat-board .site-cards .card-tokens {
   font-size: min(var(--glance-text), 28px); }
-.map-compact .card-face .card-defense, .map-compact .card-face .card-power-marks,
-.map-compact .card-face .card-unimplemented-badge { display: none; }
+.map-compact .card-face .card-defense,
+.map-compact .card-face .card-power-marks { display: none; }
 /* The banner takes the corner opposite the suit glyph, in the room the
    face's top padding already keeps for it. */
 .map-compact .card-emblems { display: contents; }
@@ -1881,7 +2018,7 @@ button.festival-marker:hover,
    a pending removal is struck through, a used item and the amount tags
    sit in the helper ink. */
 .plan-aid-prompt { display: grid; gap: 8px; }
-.plan-aid-heading { margin: 0; }
+.plan-aid-prompt > h2, .plan-aid-heading { margin: 0; }
 .plan-aid-items { list-style: none; margin: 0; padding: 0; display: grid;
   gap: 2px; }
 .plan-aid-item { display: flex; gap: 6px; align-items: baseline; }
@@ -1949,6 +2086,21 @@ button.festival-marker:hover,
 .game-log .log-band-trade { --band: #94b58a; }
 .game-log .log-band-recover { --band: #9f8fc0; }
 .game-log .log-band-forge { --band: #8fa3bd; }
+/* A Chronicle step's band takes its colour from the step's place in its
+   task, reusing the action palette; the Throne's eight steps use all of it. */
+.game-log .log-band-chronicle-step-0, .game-log .log-band-chronicle-step-1,
+.game-log .log-band-chronicle-step-2, .game-log .log-band-chronicle-step-3,
+.game-log .log-band-chronicle-step-4, .game-log .log-band-chronicle-step-5,
+.game-log .log-band-chronicle-step-6, .game-log .log-band-chronicle-step-7 {
+  --band-fill: 9%; --band-edge: 28%; }
+.game-log .log-band-chronicle-step-0 { --band: #8fa3bd; }
+.game-log .log-band-chronicle-step-1 { --band: #c2b25c; }
+.game-log .log-band-chronicle-step-2 { --band: #b88aae; }
+.game-log .log-band-chronicle-step-3 { --band: #94b58a; }
+.game-log .log-band-chronicle-step-4 { --band: #c99a62; }
+.game-log .log-band-chronicle-step-5 { --band: #7fb0a8; }
+.game-log .log-band-chronicle-step-6 { --band: #d47c74; }
+.game-log .log-band-chronicle-step-7 { --band: #9f8fc0; }
 .game-log .log-band-start { margin-top: 4px; padding-top: 2px;
   border-top-width: 1px; border-top-left-radius: 4px;
   border-top-right-radius: 4px; }
@@ -2171,21 +2323,56 @@ button.festival-marker:hover,
 .overlay-confirm { display: grid; grid-template-columns: auto auto;
   justify-content: start; gap: 12px; }
 .overlay-question { grid-column: 1 / -1; margin: 0; }
-.consent-grid { margin-top: 16px; display: grid; gap: 8px; }
+.consent-grid { margin-top: 16px; display: grid;
+  grid-template-columns: minmax(0, 1fr); gap: 12px; font-size: 0.82em; }
+/* Beside the details the column keeps its content's width. On a phone it
+   stands alone on its line, and fills it up to a reading measure, so the
+   requests' sentences have the line's width (implementation ruling R16). */
+@media (max-width: 620px) {
+  .consent-grid { flex: 1 1 17rem; max-width: 22rem; }
+}
 .consent-grid-heading { margin: 0; color: var(--brass-label); }
-.consent-grid-row { display: flex; flex-wrap: wrap; align-items: center;
-  gap: 6px; }
-.consent-grid-player { flex: 1 1 6rem; min-width: 0; }
-.overlay-confirm button, .consent-grid-choice { min-width: 32px;
+/* A row is a player's name over that player's three settings (reconsider
+   design, slice 1). The settings are equal thirds of the column, so the
+   three always share a line. A third sets a setting's width, so its side
+   padding is 6px, which keeps every label on one line at 360px. */
+.consent-grid-row { display: grid; gap: 4px; }
+.consent-grid-player { overflow-wrap: anywhere; }
+.consent-grid-choices { display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+/* The turn's requests about the power (reconsider design, "Requests
+   list"), under the rows: a heading with more room above than below, then
+   one entry a request. An entry is what was asked, a quiet line for the
+   other powers the answer covers, and its state before one button. The
+   block takes no room while the power has no requests. */
+.consent-requests { display: grid; gap: 8px; margin-top: 8px; }
+.consent-requests[hidden] { display: none; }
+.consent-request-list { display: grid; gap: 12px; }
+.consent-request { display: grid; gap: 4px; }
+.consent-request-asked { margin: 0; overflow-wrap: anywhere; }
+.consent-request-also { margin: 0; color: var(--ink-dim);
+  font-size: max(0.85em, 0.7rem); overflow-wrap: anywhere; }
+.consent-request-answer { display: flex; align-items: center; gap: 8px; }
+.overlay-confirm button, .consent-grid-choice,
+.consent-request-change { min-width: 32px;
   min-height: 30px; padding: 4px 9px; color: var(--parchment-muted); background: var(--raised);
   border: 1px solid var(--brass-line); border-radius: 4px; font-size: 0.78rem;
   cursor: pointer; }
-.overlay-confirm button:hover, .consent-grid-choice:hover {
+.overlay-confirm button:hover, .consent-grid-choice:hover:not(:disabled),
+.consent-request-change:hover:not(:disabled, [aria-disabled="true"]) {
   border-color: var(--cream-bright); }
-.overlay-confirm button:focus-visible, .consent-grid-choice:focus-visible {
+.overlay-confirm button:focus-visible, .consent-grid-choice:focus-visible,
+.consent-request-change:focus-visible {
   outline: 2px solid var(--cream-focus); }
 .consent-grid-choice[aria-pressed="true"] { border-color: var(--selection);
   background: var(--selection-fill); }
+.consent-grid-choices .consent-grid-choice { padding: 4px 6px; }
+/* A setting the viewer cannot change, without control of the seat, wears
+   the Disabled face and answers no hover. So does a change that is
+   withheld: it keeps focus and a tap, and its hover note says why. */
+.consent-grid-choice:disabled, .consent-request-change:disabled,
+.consent-request-change[aria-disabled="true"] { opacity: 0.5;
+  cursor: not-allowed; }
 .card-overlay-close { position: absolute; top: 2vmin; right: 2vmin;
   min-width: 32px; min-height: 30px; padding: 4px 9px; color: #e8d9bb;
   background: var(--raised); border: 1px solid var(--brass-line); border-radius: 4px;
@@ -2202,6 +2389,51 @@ button.festival-marker:hover,
 .log-overlay .log-heading { margin: 0; font: inherit; }
 .log-overlay button { cursor: pointer; }
 .log-overlay button:focus-visible { outline: 2px solid var(--cream-focus); outline-offset: -3px; }
+/* Chronicle Details (Chronicle Details design, slice 4): the log
+   overlay's layer, scrim and pane-fill panel, full height, at a measure a
+   mat row fits in (R16). It sits outside the table, so it names its own
+   button cursor and focus ring. Its sections stack in one column and
+   scroll inside the panel. */
+.chronicle-details { position: fixed; z-index: 300; inset: 0;
+  display: flex; justify-content: center; padding: 4vmin 16px;
+  background: #0b0a08e8; }
+.chronicle-details[hidden] { display: none; }
+.chronicle-details-panel { display: flex; flex-direction: column;
+  min-height: 0; width: min(50rem, 100%); background: var(--pane);
+  border: 1px solid var(--line-pane); }
+.chronicle-details button { cursor: pointer; }
+.chronicle-details button:focus-visible,
+.chronicle-details [tabindex]:focus-visible {
+  outline: 2px solid var(--cream-focus); outline-offset: -3px; }
+/* One column as wide as the panel: a section never takes the width of a
+   row it holds, so only the Atlas and the scorepad frames scroll sideways
+   (R13). */
+.chronicle-details-body { display: grid;
+  grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.chronicle-details-body > * { min-width: 0; }
+.chronicle-details-subtitle { margin: 0; color: var(--ink-dim);
+  font-size: 0.82rem; }
+.chronicle-details-title { margin: 0 0 6px; font-size: 1rem; }
+.chronicle-details .foundation-strip, .chronicle-task-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.scoresheet-legacy-chips { display: flex; flex-wrap: wrap; gap: 4px;
+  margin-top: 4px; }
+/* A chip in a scorepad row wraps its name rather than widening the lineage
+   column, so a phone keeps the Total column in view. */
+.scoresheet-legacy-chips .legacy-chip { white-space: normal; }
+/* The Atlas's Recent site: one mat row as the map draws it at 100%, in a
+   .mat-board box so the site rules apply, at the row's width and ratio on
+   the Base fill. The Atlas is a box, not a region (R12). A narrower panel
+   scrolls the row sideways inside its frame (R13). */
+.chronicle-details-atlas-frame { overflow-x: auto;
+  scrollbar-width: thin; }
+.mat-board.chronicle-details-atlas-board { width: var(--atlas-w);
+  aspect-ratio: var(--atlas-ratio); background: var(--base); }
+/* A phone has room for one aid or foundation a row. */
+@media (max-width: 620px) {
+  .chronicle-details .foundation-strip, .chronicle-task-strip {
+    grid-template-columns: minmax(0, 1fr); }
+}
 /* A card list: cards in pile order, as the Inspect panel and a log line's
    "6 cards" show them. The grid holds dozens and scrolls inside itself; its
    cards take the one card box, so the container's font size alone sizes
@@ -2270,7 +2502,7 @@ button.festival-marker:hover,
    the 44px minimum wherever the main pointer is coarse, desktop or not. */
 @media (pointer: coarse) {
   .map-control, .dev-toggle, .dev-close, .log-new, .log-overlay-close,
-  .card-overlay-close, .pane-switch-option, .overlay-confirm button,
-  .consent-grid-choice { min-width: 44px; min-height: 44px; }
+  .chronicle-details-close, .card-overlay-close, .pane-switch-option, .overlay-confirm button,
+  .consent-grid-choice, .consent-request-change { min-width: 44px; min-height: 44px; }
   .pane-header { min-height: 52px; }
 }

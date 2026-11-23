@@ -1,5 +1,6 @@
 package distantlands.application.gamelog
 
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure.PlayedAs
 import distantlands.application._
 import distantlands.gameplay.{ModifierPlay, TravelPlay}
@@ -138,7 +139,7 @@ object PowerLogScripts:
       .denizen(OracleCard, AncientCitySite).secrets(p1, faceUp = 3)
       .worldDeckTop(VisionRules.Sanctuary).banditsRefilled)
     act.withAnswers {
-      case park if park.decisionId.startsWith(LogWords.PlacePrefix) =>
+      case park if park.decisionId.startsWith(CardPlayProcedure.placementPrefix) =>
         ChooseOneAnswer(PlacementPicks.pick(park.decide, placement))
     }.after(MenuPlay.start(p1, ActionRef.UsePower(Oracle.id), Vector(DecisionOptionRef.Denizen(card))))
     Script(name, service, p1)
@@ -182,7 +183,7 @@ object PowerLogScripts:
       .adviser(p1, FamilyHeirloomCard, facedown = true)
       .relicDeckTop(DowsingSticksCard).banditsRefilled)
     act.withAnswers {
-      case park if park.decisionId.startsWith(LogWords.PlacePrefix) =>
+      case park if park.decisionId.startsWith(CardPlayProcedure.placementPrefix) =>
         ChooseOneAnswer(PlacementPicks.pick(park.decide, PlayedAs.Faceup))
       case park if park.decisionId == FamilyHeirloom.decisionId =>
         ChooseOneAnswer(choice)

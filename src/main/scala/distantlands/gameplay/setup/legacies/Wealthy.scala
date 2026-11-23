@@ -3,7 +3,7 @@ package distantlands.gameplay.setup.legacies
 import distantlands.catalog.{Legacy, LegacyGoal, PrintedPower}
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.powerresolver.{Contribution, ContributingPower,
-  Transform}
+  OfferResolution}
 import distantlands.gameplay.powers.PowerAnswers
 import distantlands.gameplay.setup.SetupPawnPlacement
 import distantlands.model._
@@ -18,8 +18,9 @@ object WealthyCard extends Legacy(LegacyId("L31"), "Wealthy",
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Wealthy (legacy L31), its SETUP power (Legacy Setup powers design,
-  * ruling 17). In the holder's own `SetupPawnPlaced` window, after The
-  * Standard Bearer (R27), with no "may": 1 favor from each of two other
+  * ruling 17). In the holder's own `SetupPawnPlaced` window, in the order
+  * the holder chooses among its powers (catalog batch 13, ruling 4), with
+  * no "may": 1 favor from each of two other
   * players, or 3 favor from the shared bank. "Two players" is offered only
   * when two other players hold favor, and with one option nothing is asked
   * (R29). Lines: "p2 took 1 favor from p1 and p3 with Wealthy", "p2 took 3
@@ -28,10 +29,14 @@ case object Wealthy extends ContributingPower:
   val id: PowerId = WealthyCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
   def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
-    PowerWindow.SetupPawnPlaced -> Vector(Transform((ctx, ops) =>
+    PowerWindow.SetupPawnPlaced -> Vector(OfferResolution(ctx =>
       SetupPawnPlacement.latest(ctx.answered).map(_._1)
         .filter(player => SetupLegacyRules.wealthy(ctx.state).contains(player))
-        .fold(ops)(holder => ops :+ step(holder)))))
+        .map(holder => ResolutionOffer(option, Vector(step(holder)))))))
+
+  /** This legacy in the placer's power-order question. */
+  val option: DecisionOption =
+    DecisionOption.Legacy(DecisionOptionRef.Legacy(WealthyCard.id))
 
   def decisionId(player: PlayerId): String =
     s"setup.legacy.wealthy.${player.value}"
@@ -61,16 +66,22 @@ case object Wealthy extends ContributingPower:
         state.game.current.player(player).exists(_.board.favor > 0))
 
   private def step(holder: PlayerId): Operation = Branch((state, _) =>
-    val holding = givers(state, holder)
-    val options = Option.when(holding.sizeIs >= 2)(DecisionOption.Button(
-      fromPlayers, "Take 1 favor from two players")).toVector :+
-      DecisionOption.Button(fromBank, "Take 3 favor from the shared bank")
-    Option.when(options.sizeIs > 1)(Decide(decisionId(holder), holder,
-      DecisionQuery.ChooseOne(options, heading = Some("Wealthy: take favor"))))
-      .toVector :+ Branch((_, pending) =>
-        if PowerAnswers.one(pending, decisionId(holder)).contains(fromPlayers)
-        then fromTwo(holder, holding)
-        else fromTheBank(holder)))
+    // The holder is read again at the step, so a legacy lost earlier in
+    // the window does not resolve (catalog batch 13, ruling 5).
+    if !SetupLegacyRules.wealthy(state).contains(holder) then Vector.empty
+    else
+      val holding = givers(state, holder)
+      val options = Option.when(holding.sizeIs >= 2)(DecisionOption.Button(
+        fromPlayers, "Take 1 favor from two players")).toVector :+
+        DecisionOption.Button(fromBank, "Take 3 favor from the shared bank")
+      Option.when(options.sizeIs > 1)(Decide(decisionId(holder), holder,
+        DecisionQuery.ChooseOne(options,
+          heading = Some("Wealthy: take favor"))))
+        .toVector :+ Branch((_, pending) =>
+          if PowerAnswers.one(pending, decisionId(holder))
+            .contains(fromPlayers)
+          then fromTwo(holder, holding)
+          else fromTheBank(holder)))
 
   /** 1 favor from each of two players: chosen by one choose-many of
     * exactly two, or, when exactly two hold favor, from both with no

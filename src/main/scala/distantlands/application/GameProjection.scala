@@ -131,12 +131,14 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
       relicDeckCount = current.commonCards.relicDeck.size)
       .copy(walkerDecision = pending.walkerDecision,
         chronicle = Some(chronicleView(context.ready.game.campaign)),
+        chronicleDetails = Some(chronicleDetails(context)),
         foundations = FoundationPresentation.ofGame(
           context.ready.game.campaign.foundations),
         publicLegacies = presentation.publicLegacies(context.ready),
         reliquary = presentation.reliquary(context.ready, context.viewer),
         walkerWaiting = pending.walkerWaiting,
         temporaryHandPreview = handPreview(context, pending.walkerDecision),
+        publicPreview = walkerDecisions.publicPreview(context),
         supplyMaximum = SupplyTrack.Maximum,
         supplyBands = FinishRestProcedure.ExileSupply.refreshBands.map(band =>
           SupplyBandProjection(band.warbandsInBank.minimum,
@@ -154,8 +156,42 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
       entries.entry(campaign.savedChronicle).digest,
       campaign.evolved.map(entries.entry))
 
+  /** The Chronicle as the table sees it mid-game (Chronicle Details design,
+    * slice 1): the live era scorepad, which Score Lineage Points extends in
+    * the Chronicle Phase; every lineage, seated or not
+    * (`CampaignState.standingLineages`), with its total (carried TTS
+    * scores included), its role and the legacies `context`'s viewer may
+    * see (ruling D1); and the Atlas's Recent site. */
+  private def chronicleDetails(context: ScopedProjectionContext)
+      : ChronicleDetailsProjection =
+    val ready = context.ready
+    val campaign = ready.game.campaign
+    ChronicleDetailsProjection(campaign.era.targetScore,
+      ChronicleEntries.scorepad(campaign.era),
+      inColorOrder(ready, campaign.standingLineages).map(lineage =>
+        LineageDetailsProjection(lineage.id.value,
+          campaign.era.score(lineage.id),
+          ChronicleEntries.roleName(lineage.role),
+          presentation.legacies(ready, context.viewer, lineage))),
+      campaign.atlas.site(AtlasEnd.Recent).map(presentation.atlasSite))
+
+  /** `lineages` in PlayerColor order (Chronicle Details implementation
+    * ruling R5): a lineage takes its seat's colour, else the colour its id
+    * names; one with neither comes last, by id. */
+  private def inColorOrder(ready: ReadyGame, lineages: Vector[LineageState])
+      : Vector[LineageState] =
+    val seatColors = ready.game.current.players.flatMap(seat =>
+      ready.playerColors.get(seat.player).map(seat.lineage -> _)).toMap
+    def colorIndex(lineage: LineageId): Int = seatColors.get(lineage)
+      .orElse(PlayerColor.all.find(color =>
+        FirstGameBootstrapMapper.lineageOf(color) == lineage))
+      .fold(PlayerColor.all.size)(PlayerColor.all.indexOf)
+    lineages.sortBy(lineage => (colorIndex(lineage.id), lineage.id.value))
+
   /** The cards the viewer is handling and nothing else on the panel draws:
-    * their own temporary hand, face up because the cards are held in their
+    * their own temporary hand and the legacies waiting in their hand (a
+    * first game's two, drawn before any pawn, are read while placing it),
+    * face up because the cards are held in their
     * hand and read by them alone (another seat, and a spectator, are shown
     * nothing), and the card a parked placement is about, which may be held
     * elsewhere -- a facedown adviser is played from the board.
@@ -169,7 +205,8 @@ final class GameProjector(catalog: ExecutableCatalog, phasePowers: PhasePowers,
       decision: Option[WalkerDecisionProjection])
       : Vector[CardDetailsProjection] =
     val hand = context.viewer.toVector.flatMap(viewer =>
-      context.current.temporaryHands.getOrElse(viewer, Vector.empty))
+      context.current.temporaryHands.getOrElse(viewer, Vector.empty) ++
+        context.current.legacyHands.getOrElse(viewer, Vector.empty))
       .map(card => presentation.cardDetails(card, Some(Orientation.FaceUp),
         hidden = false))
     val subjects = decision.toVector.flatMap(parked =>

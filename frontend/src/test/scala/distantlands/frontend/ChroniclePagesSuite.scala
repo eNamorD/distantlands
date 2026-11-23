@@ -239,10 +239,12 @@ class ChroniclePagesSuite extends munit.FunSuite:
       Main.start(browser.mount, "/", trustedAlpha = true,
         ScriptedTransport((_, _, _) => pending.future),
         devices = ChronicleFixtures.devices(Some(storage)))
+      browser.click("import-chronicle")
       as[dom.html.TextArea](browser.byClass("import-chronicle-tts").head)
         .value = "abc"
       browser.input("Name for the TTS import").value = "Iron Vow"
       browser.click("import-tts")
+      browser.click("chronicle-dialog-close")
       browser.click("new-chronicle")
       pending.success(Right(ChronicleFixtures.converted(entry("Iron Vow"))))
       browser.settle.map { _ =>
@@ -261,10 +263,72 @@ class ChroniclePagesSuite extends munit.FunSuite:
       history.back("/")
       accepted(shelfOver(storage).put(entry("Ember Throne"),
         replacing = Some("Ashen Crown")))
-      history.back("/new-game")
+      history.back("/new-game?chronicle=Ashen%20Crown")
       assertEquals(history.replaced.toVector, Vector("/"))
       assert(shows(browser, "new-chronicle"))
       assert(!shows(browser, "create-trusted-game"))
+
+  test("Continue names its Chronicle in the address"):
+    TestBrowser.useSynchronously(): browser =>
+      val history = FakePageHistory()
+      startPages(browser, "/", ChronicleFixtures.devices(
+        Some(storageWithAshenCrown()), history = history))
+      browser.click("continue-chronicle")
+      assertEquals(history.pushed.toVector,
+        Vector("/new-game?chronicle=Ashen%20Crown"))
+
+  test("/new-game names a saved Chronicle and opens player selection for " +
+      "it, as after a reload"):
+    TestBrowser.use(): browser =>
+      val storage = storageWithAshenCrown()
+      accepted(shelfOver(storage).put(entry("Iron Vow")))
+      val history = FakePageHistory()
+      val requests = ArrayBuffer.empty[RecordedRequest]
+      Main.start(browser.mount, "/new-game", trustedAlpha = true,
+        creatingTransport(requests, None),
+        devices = ChronicleFixtures.devices(Some(storage), history = history),
+        search = "?chronicle=Ashen%20Crown")
+      assertEquals(history.replaced.toVector, Vector.empty)
+      assertEquals(browser.byClass("chronicle-continued").head.textContent,
+        "Chronicle: Ashen Crown")
+      browser.click("create-trusted-game")
+      browser.settle.map { _ =>
+        assertEquals(sentChronicles(requests),
+          Vector(ChronicleRequest.Saved(entry("Ashen Crown").json)))
+      }
+
+  test("/new-game naming a Chronicle that is not saved returns to /"):
+    TestBrowser.useSynchronously(): browser =>
+      val history = FakePageHistory()
+      Main.start(browser.mount, "/new-game", trustedAlpha = true,
+        creatingTransport(ArrayBuffer.empty, None),
+        devices = ChronicleFixtures.devices(Some(storageWithAshenCrown()),
+          history = history),
+        search = "?chronicle=Ember%20Throne")
+      assertEquals(history.replaced.toVector, Vector("/"))
+      assert(shows(browser, "new-chronicle"))
+      assert(!shows(browser, "create-trusted-game"))
+
+  test("the browser's Back while a Continue game is being created stays " +
+      "on its player selection"):
+    TestBrowser.use(): browser =>
+      val history = FakePageHistory()
+      val pending = Promise[Either[GameClientFailure, TransportResponse]]()
+      Main.start(browser.mount, "/", trustedAlpha = true,
+        ScriptedTransport((_, _, _) => pending.future),
+        devices = ChronicleFixtures.devices(Some(storageWithAshenCrown()),
+          history = history))
+      browser.click("continue-chronicle")
+      browser.click("create-trusted-game")
+      history.back("/")
+      assertEquals(history.pushed.toVector, Vector(
+        "/new-game?chronicle=Ashen%20Crown",
+        "/new-game?chronicle=Ashen%20Crown"))
+      pending.success(Right(TransportResponse(201,
+        seatLinksResponse("Ashen Crown"))))
+      browser.settle.map { _ =>
+        assertEquals(browser.byClass("seat-link").size, 2)
+      }
 
   test("refused storage still creates from a new Chronicle"):
     TestBrowser.use(): browser =>
@@ -292,19 +356,52 @@ class ChroniclePagesSuite extends munit.FunSuite:
         Some(storageWithAnEmpire())))
       browser.click("continue-chronicle")
       assertEquals(browser.byClass("host-player-color").map(_.textContent),
-        Vector("Red, Chancellor", "Blue, Citizen"))
+        Vector("Red Chancellor", "Blue Citizen"))
       assert(browser.nodes.exists(
-        _.getAttribute("aria-label") == "Red, Chancellor player ID"))
+        _.getAttribute("aria-label") == "Red Chancellor player ID"))
+      // A color with no lineage in the Chronicle yet starts as an Exile.
       browser.click("add-player-toggle")
       assertEquals(browser.byClass("add-player-option").head.textContent,
-        "Yellow")
+        "Yellow Exile")
+      // Only the Imperial roles wear the Empire's purple.
+      assertEquals(browser.byClass("role-imperial").map(_.textContent),
+        Vector("Chancellor", "Citizen"))
 
-  test("player selection says the Chancellor goes first in an Empire game"):
+  test("seat links show an Imperial role in the Empire's purple"):
     TestBrowser.useSynchronously(): browser =>
       startPages(browser, "/", ChronicleFixtures.devices(
         Some(storageWithAnEmpire())))
       browser.click("continue-chronicle")
-      assert(browser.nodes.exists(_.textContent.contains(
+      browser.click("create-trusted-game")
+      browser.settle.map { _ =>
+        assertEquals(browser.byClass("seat-link-color").map(_.textContent),
+          Vector("Red Chancellor", "Blue Citizen"))
+        assertEquals(browser.byClass("role-imperial").map(_.textContent),
+          Vector("Chancellor", "Citizen"))
+      }
+
+  test("only the development start page tells how to switch players"):
+    val toolbarLine = "In dev-server mode, switch players using the toolbar."
+    TestBrowser.useSynchronously(): browser =>
+      Main.start(browser.mount, "/", trustedAlpha = false,
+        creatingTransport(ArrayBuffer.empty, None),
+        devices = ChronicleFixtures.devices())
+      browser.click("new-chronicle")
+      val intro = browser.byClass("host-intro").head
+      assert(intro.textContent.endsWith(toolbarLine), intro.textContent)
+      assertEquals(intro.querySelectorAll("br").length, 1)
+    TestBrowser.useSynchronously(): browser =>
+      startPages(browser, "/", ChronicleFixtures.devices())
+      browser.click("new-chronicle")
+      assert(!browser.byClass("host-intro").head.textContent
+        .contains("toolbar"))
+
+  test("player selection names the first player only when no Chancellor is seated"):
+    TestBrowser.useSynchronously(): browser =>
+      startPages(browser, "/", ChronicleFixtures.devices(
+        Some(storageWithAnEmpire())))
+      browser.click("continue-chronicle")
+      assert(!browser.nodes.exists(_.textContent.contains(
         "The Chancellor goes first")))
       assert(!browser.nodes.exists(_.textContent.contains(
         "the first player are chosen at random")))

@@ -4,25 +4,44 @@
 5.0 phase 0 | Rest
 10.0 victory 0 | [player:p1|p1] won by Stable Regime
 15.0 decision 1 | [player:p3|p3] named [player:p2|p2] the winner with [card:L10|Royal Line]
-20.0 phase 0 | Chronicle
-23.0 delta 1 | [player:p2|p2] became Chancellor
-25.0 decision 1 | [player:p2|p2] took the Throne task
-30.0 decision 1 | [player:p1|p1] took the World task
-35.0 decision 1 | [player:p1|p1] took the Beacon task
-43.0 decision 1 | [player:p2|p2] took the World task
-45.0 delta 1 | Moved 1 Imperial warband to [site:site:broken-peaks|Broken Peaks]
-48.0 delta 1 | [player:p2|p2] scored [amount:3 lineage points]
-57.0 decision 1 | The Oathkeeper goal became Protection
-66.0 decision 1 | [player:p2|p2] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
-71.0 decision 1 | [player:p2|p2] kept a Denizen as a starting adviser
-72.0 delta 1 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
-84.0 decision 1 | [player:p1|p1] chose Discord, Arcane and Order
-94.0 decision 1 | [player:p1|p1] welcomed [card:21|Naysayers] as a starting adviser
-96.0 delta 1 | [site:site:ancient-city|Ancient City] was archived
-97.0 delta 1 | [site:site:buried-giant|Buried Giant] was archived
-98.0 delta 1 | [site:site:deep-woods|Deep Woods] was archived
-99.0 delta 1 | [site:site:desolate-shore|Desolate Shore] was archived
-100.0 delta 1 | [site:site:dunes|Dunes] was archived
-101.0 delta 1 | [site:site:fair-isle|Fair Isle] was archived
-102.0 delta 1 | [site:site:golden-valley|Golden Valley] was archived
-103.0 delta 1 | [site:site:broken-peaks|Broken Peaks] stays in the Empire
+20.0 round 0 | Chronicle Phase
+22.0 phase 0 | The Sun
+25.0 section 1 chronicle-step-1@23 | Crown Chancellor
+25.1 delta 1 chronicle-step-1@23 | [player:p2|p2] became Chancellor
+28.0 section 1 chronicle-step-2@26 | Assign Tasks
+28.1 decision 1 chronicle-step-2@26 | [player:p2|p2] took the Throne task
+33.0 decision 1 chronicle-step-2@26 | [player:p2|p2] gave [player:p1|p1] the World task
+38.0 decision 1 chronicle-step-2@26 | [player:p2|p2] gave [player:p1|p1] the Beacon task
+46.0 decision 1 chronicle-step-2@26 | [player:p1|p1] gave [player:p2|p2] the World task
+48.0 phase 0 | The Throne
+50.0 section 1 chronicle-step-1@49 | Offer Citizenship
+50.1 decision 1 chronicle-step-1@49 | No Exiles to invite
+52.0 section 1 chronicle-step-2@51 | Shape Empire
+52.1 delta 1 chronicle-step-2@51 | Moved 1 Imperial warband to [site:site:broken-peaks|Broken Peaks]
+59.0 section 1 chronicle-step-6@58 | Score Lineage Points
+59.1 delta 1 chronicle-step-6@58 | [player:p2|p2] scored [amount:3 lineage points]
+69.0 section 1 chronicle-step-7@64 | Swear an Oath
+69.1 decision 1 chronicle-step-7@64 | [player:p2|p2] declared an Oath of Protection
+71.0 phase 0 | The World
+76.0 section 1 chronicle-step-1@75 | Protect and Dispossess
+76.1 delta 1 chronicle-step-1@75 | Stack 1: [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+77.0 delta 1 chronicle-step-1@75 | Stack 2: [card:182|Pied Piper], [card:183|Mushrooms] and [card:100|Bandit Chief]
+82.0 decision 1 chronicle-step-1@75 | [player:p2|p2] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+87.0 decision 1 chronicle-step-1@75 | [player:p2|p2] kept a Denizen as a starting adviser
+88.0 delta 1 chronicle-step-1@75 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
+91.0 phase 0 | The Beacon
+101.0 section 1 chronicle-step-0@91 | Introduce Newcomers
+101.1 decision 1 chronicle-step-0@91 | [player:p1|p1] chose Discord, Arcane and Order
+112.0 section 1 chronicle-step-1@107 | Welcome a Stranger
+112.1 decision 1 chronicle-step-1@107 | [player:p1|p1] welcomed [card:21|Naysayers] as a starting adviser
+115.0 phase 0 | The Stars
+116.0 section 1 chronicle-step-0@115 | Archive Rival Sites
+116.1 delta 1 chronicle-step-0@115 | [site:site:ancient-city|Ancient City] was archived
+117.0 delta 1 chronicle-step-0@115 | [site:site:buried-giant|Buried Giant] was archived
+118.0 delta 1 chronicle-step-0@115 | [site:site:deep-woods|Deep Woods] was archived
+119.0 delta 1 chronicle-step-0@115 | [site:site:desolate-shore|Desolate Shore] was archived
+120.0 delta 1 chronicle-step-0@115 | [site:site:dunes|Dunes] was archived
+121.0 delta 1 chronicle-step-0@115 | [site:site:fair-isle|Fair Isle] was archived
+122.0 delta 1 chronicle-step-0@115 | [site:site:golden-valley|Golden Valley] was archived
+124.0 section 1 chronicle-step-1@123 | Store
+124.1 delta 1 chronicle-step-1@123 | [site:site:broken-peaks|Broken Peaks] stays in the Empire

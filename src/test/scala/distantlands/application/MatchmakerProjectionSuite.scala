@@ -1,6 +1,6 @@
 package distantlands.application
 
-import distantlands.gameplay.setup.{LaterGameFixture, LegacyDeal, LegacyKeep,
+import distantlands.gameplay.setup.{LaterGameFixture, LegacyKeep,
   SetupLegacyFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.application.gamelog.{GoldenLog, LaterGameLogScripts,
@@ -8,12 +8,12 @@ import distantlands.application.gamelog.{GoldenLog, LaterGameLogScripts,
 import distantlands.gameplay.setup.legacies.{MatchmakerCard, PopulistCard,
   WorldCrafterCard}
 import distantlands.model._
-import distantlands.model.DecisionAnswer.ChooseOneAnswer
-import distantlands.testkit.Situation
+import distantlands.testkit.{DecisionAnswers, Situation}
 
-/** Who sees a draw Matchmaker's holder keeps (spec ruling 13; R16): the
-  * holder, and not the owner, while it waits; the kept legacy, its owner
-  * alone once kept; the returned one, nobody. p3 holds Matchmaker. */
+/** Who sees a draw Matchmaker's holder keeps (spec ruling 13; R16, amended
+  * by setup keep undo ruling 8): the holder, and not the owner, from the
+  * deal on; the kept legacy, its owner alone once kept; the returned one,
+  * nobody. p3 holds Matchmaker. */
 class MatchmakerProjectionSuite extends munit.FunSuite:
   private val presentation = new GamePresentationProjector(catalog)
   private val projector = new GameProjector(catalog)
@@ -23,21 +23,34 @@ class MatchmakerProjectionSuite extends munit.FunSuite:
     LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2")), l3,
     Role.Exile, MatchmakerCard.id -> true)
   private val orders = LaterGameFixture.orders(record, p1)
-  private val drawn = LegacyDeal.of(record, orders.participants)
-    .drawn(orders.legacyOrder, p2)
+  private val drawn = SetupLegacyFixture.drawn(orders, p2)
 
   private def parkedAt(decisionId: String) =
     Situation.start(Situation.rules(catalog).withAnswers {
       case park if park.decisionId == LegacyKeep.decisionId(p2) =>
-        ChooseOneAnswer(DecisionOptionRef.Legacy(drawn.last))
+        DecisionAnswers.keepLegacy(drawn.last, drawn.head)
     }).parkedAt(decisionId)(GameCommand.Begin(record, orders))
 
-  test("before p2's keep is reached, nobody identifies p2's draw (R16)"):
+  test("from the deal on, the holder alone identifies p2's dealt pair " +
+      "(setup keep undo, ruling 8, amending R16)"):
     val at = parkedAt(LegacyKeep.decisionId(p1))
-    drawn.foreach(legacy => Vector(Some(p3), Some(p2), Some(p1), None)
-      .foreach(viewer => assert(
-        !presentation.identifiesAt(at.ready, viewer, legacy),
-        s"$viewer $legacy")))
+    drawn.foreach { legacy =>
+      assert(presentation.identifiesAt(at.ready, Some(p3), legacy), legacy)
+      Vector(Some(p2), Some(p1), None).foreach(viewer =>
+        assert(!presentation.identifiesAt(at.ready, viewer, legacy),
+          s"$viewer $legacy"))
+    }
+
+  test("the holder's keep for p1 offers only p1's dealt pair, though the " +
+      "holder holds every pair"):
+    val at = parkedAt(LegacyKeep.decisionId(p1))
+    val p1Pair = SetupLegacyFixture.drawn(orders, p1)
+    assertEquals(at.ready.game.current.legacyHands.getOrElse(p3,
+      Vector.empty).toSet, (p1Pair ++ drawn ++
+        SetupLegacyFixture.drawn(orders, p3)).toSet)
+    assertEquals(projector.project("match", LoadedGame(at.state, 1L), p3)
+      .walkerDecision.flatMap(_.query).map(_.offeredOptions.map(_.id)),
+      Some(p1Pair.map(_.value)))
 
   test("while p2's keep waits, only the holder identifies p2's draw"):
     val at = parkedAt(LegacyKeep.decisionId(p2))
@@ -67,8 +80,7 @@ class MatchmakerProjectionSuite extends munit.FunSuite:
   test("without Matchmaker the owner identifies their own draw"):
     val plain = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
     val plainOrders = LaterGameFixture.orders(plain, p1)
-    val own = LegacyDeal.of(plain, plainOrders.participants)
-      .drawn(plainOrders.legacyOrder, p2)
+    val own = SetupLegacyFixture.drawn(plainOrders, p2)
     val at = Situation.start(Situation.rules(catalog))
       .parkedAt(LegacyKeep.decisionId(p2))(GameCommand.Begin(plain,
         plainOrders)).ready

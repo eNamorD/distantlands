@@ -104,7 +104,18 @@ private[application] final class JournalFold(
           val settled = closedAt(record.index)
           evolve(settled.state, event).left
             .map(EventReplayFailure(record.index, _))
-            .map(after => Progress(settled.recorded(record, after), None))
+            .map { after =>
+              val recorded = settled.recorded(record, after)
+              // A changed answer ends redo, as a new batch does. A
+              // taken-back step may have relied on a grant now refused,
+              // or may hold what a new grant changes, such as a toll the
+              // waiver now spares (reconsider design, implementation
+              // ruling R29).
+              Progress(event match
+                case _: OathEvent.ConsentReconsidered =>
+                  recorded.copy(redo = Nil)
+                case _ => recorded, None)
+            }
         case event => evolve(journal.state, event).left
           .map(EventReplayFailure(record.index, _))
           .map(after => copy(journal = journal.recorded(record, after)))
@@ -114,10 +125,23 @@ private[application] object JournalFold:
     * ledger of `current` minus any waiting request (consent design,
     * "Undo"): grants, refusals and preferences outlive the rewind. The
     * standing Imperial Tactics offers of `current` outlive it too (Empire
-    * phase design, "1b-ii"). */
+    * phase design, "1b-ii").
+    *
+    * A rewind can move the round marker inside a turn: undoing the Great
+    * Clock returns to the round before it. The ledger's turn then follows
+    * the game's, as it does when the marker moves forward, so the turn's
+    * answers and history still read as this turn's (reconsider design,
+    * implementation ruling R13). A rewind never crosses a turn end: a
+    * batch that changes the active player is a barrier (`UndoBarrier`),
+    * so both states name the same active player, which is checked all the
+    * same. */
   def carried(target: OathState, current: OathState): OathState =
     (target, current) match
       case (OathState.Ready(game), OathState.Ready(now)) =>
-        OathState.Ready(game.copy(consent = now.consent.carried,
+        val (from, to) = (ConsentTurn.of(now), ConsentTurn.of(game))
+        val ledger = now.consent.carried
+        OathState.Ready(game.copy(
+          consent = if from.player == to.player then
+            ledger.turnRenamed(from, to) else ledger,
           planAid = now.planAid))
       case _ => target

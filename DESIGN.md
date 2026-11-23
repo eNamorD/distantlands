@@ -43,7 +43,6 @@ colors:
   facedown: "#2a2333"
   facedown-letter: "#cbb7dd"
   pile-back: "#493751"
-  unimplemented: "#a15c4a"
   error-line: "#e27f79"
   error-text: "#ffd0cd"
   replay: "#9ed59e"
@@ -64,6 +63,8 @@ colors:
   die-attack: "#c0392b"
   die-defense: "#3d6fb4"
   die-round: "#9b59b6"
+  festival-teal: "#0f8285"
+  festival-rim: "#062b2c"
   player-purple: "#d9b8ff"
   player-blue: "#8ecbff"
   player-red: "#ffaaa5"
@@ -277,6 +278,11 @@ reused for UI meaning.
   (`player-*`), plus bandit forces (`force-bandit`). White is pure white and
   underlined so it stays distinct from cream text. Black is ink on a
   **Black Pill** (`player-black-pill`) so it stays readable on the dark table.
+- **Imperial roles**: wherever a role is labelled (a player board's identity
+  line, game creation's color-and-role phrase), "Chancellor" and "Citizen"
+  read in Player Purple (`role-imperial`), the colour of the Empire's
+  warbands; "Exile" keeps the surrounding text colour. Rules text and log
+  prose that mention a role stay uncoloured.
 
 ### Neutral
 - **Table** (`table`): the gutter behind the four panes; the darkest surface.
@@ -308,10 +314,9 @@ reused for UI meaning.
   still clears 4.5:1 on the Pane fill; Ink Separator is for drawn marks, not
   words.
 - **States**: `facedown` and `facedown-letter` for a card back; `pile-back`
-  for a stacked pile; `unimplemented` for a card the engine does not run yet;
-  `error-line` and `error-text`; `replay` green; `limiter` coral; `dev-panel`
-  and `dev-line` for the developer aside, deliberately off-palette purple so
-  it never reads as game.
+  for a stacked pile; `error-line` and `error-text`; `replay` green; `limiter`
+  coral; `dev-panel` and `dev-line` for the developer aside, deliberately
+  off-palette purple so it never reads as game.
 
 ### Log action bands
 UI colors, used only in the Game Log (The Action Band Rule). The aggressive
@@ -464,8 +469,8 @@ rightward over its own row. A
 decision's cost badge sits at the face's foot, over the name's tail, the
 one thing it may cover. A card holding three kinds of token or more gives
 its token band two lines, and on the mat the band wraps two kinds a line. Its
-powers, the wheel's numbers and a bank's favor glyph leave the board at
-that scale; the tracker's words, the slots' names and the track's label
+powers, the wheel's numbers and end dice and a bank's favor glyph leave
+the board at that scale; the tracker's words, the slots' names and the track's label
 leave the screen but stay in the accessibility tree, and the Usurper's
 lock is also in the round tracker's name and on the limiter mark's hover
 note. The table's edge is on the same zoom surface and holds
@@ -539,10 +544,14 @@ slot. The site and its slots are one option target, and the ring a decision
 draws on it, like a deck's, is laid over the pieces that fill it. An empty
 site slot is the mat's frame, dashed. Each region's discard, the relic deck,
 the world deck, the round wheel, the Visions Drawn track with its marker and
-the six favor banks stand where the mat prints them. Under the mat, on the
+the six favor banks stand where the mat prints them. In an Empire game the
+wheel also prints the end die's Stable Regime targets as the mat does: a
+die in the round die's purple with brass pips on the line after rounds 5, 6 and 7,
+showing 6, 5 and 3, its rule in its hover note. The dice dim while the
+Oathkeeper is neither the Chancellor nor a Citizen, since no roll is made. Under the mat, on the
 same zoom surface, the table's edge holds what the physical table keeps
-beside it: the Public Ambitions row, then the oath, the banners and the
-foundations in one row.
+beside it: the Public Ambitions row, then the oath and the banners, and the
+Chronicle Details button, in one row.
 
 The Players pane is a horizontal strip of player boards, each `flex: 1 0
 auto` from a 300px floor, divided by 1px Line-mid right borders. A board is a two-column grid:
@@ -563,7 +572,19 @@ fits. Spacing runs 4, 6, 8, 12, 18px;
 
 The start pages (the Chronicle page and game creation) are the only
 scrolling documents: they scroll inside `#app` with 28px/16px/48px padding,
-forms in a 40rem grid.
+each in one centered column at most 40rem wide. Headings and intro text are
+centered; forms stay left-aligned inside the column. The Chronicle page
+stacks its buttons one to a line, and opens Load, Import and Export as
+dialogs. Above them, the Loaded Chronicle box is the page's one framed
+surface: a 2px Brass border at 12px, its label set into the top edge on a
+Base patch, "None" in Ink Dim when empty. Its scoresheet follows the paper
+scorepad: running totals in tabular figures, the Chancellor's score in a
+1.5px circle and Citizens' underlined, a Brass Line rule between rows.
+Game creation labels each player row with its color and starting role in
+one phrase ("Red Citizen", "Yellow Exile"), apart from the player name the
+host types. The player rows share one set of columns so the name fields
+line up, and the seat links do too on screens wider than a phone; the seat
+links repeat the phrase in Ink Dim after each name.
 
 ## Elevation & Depth
 
@@ -583,14 +604,15 @@ host page.
   only, which floats above the table as a fixed aside.
 - **Note lift** (`box-shadow: 0 6px 18px #000b`): the hover note only, a
   small slip floating over everything, the overlays included.
-- **Overlay scrim** (`background: #0b0a08e8`): the card inspection overlay
-  and the log overlay darken the table instead of casting a shadow.
+- **Overlay scrim** (`background: #0b0a08e8`): the card inspection overlay,
+  the log overlay and Chronicle Details darken the table instead of casting
+  a shadow.
 
 ### Named Rules
 **The Flat Board Rule.** Board pieces never cast shadows. If something must
 read as above the table, it is a fixed overlay with a scrim or a lift, and
-there are four of those: the developer panel's lift, the hover note's lift,
-and the card and log overlays' scrim.
+there are five of those: the developer panel's lift, the hover note's lift,
+and the card, log and Chronicle Details overlays' scrim.
 
 **The No-Reflow Rule.** Every hover, focus and selection treatment fits in
 space reserved at rest: transparent borders, inset rings, negative-offset
@@ -686,11 +708,19 @@ controls are 30px.
 - **First player badge**: the target detail badge's pill (`#a98b58` border,
   Bright Brass 0.72rem 700) with no fill, inline after the role on the first
   player's identity line, with no separator dot before it.
-- **Festival marker**: the first player badge's pill, at the end of a site's
-  pawn row (Sites). The Darkest Secret's Festival inspection repeats it, as
-  a picture with no hover, after the face's rules: "Festival marker: at Deep
-  Woods", or "beside the map" before the holder's first Rest and after a
-  ribbon removes it (a Challenge, a Raid or the Conspiracy).
+- **Festival marker**: the printed marker's plate: Festival Teal
+  (`festival-teal`) with a 2px Festival Rim (`festival-rim`) and a soft
+  drop shadow, its corners rounded and both side edges leaning right, the
+  right one more. Its title, "Festival Underway", is Georgia 400 in Bright
+  Cream capitals tracked 0.08em. On the map it is a band over a site's
+  cards (Sites). In the inspector it is the whole printed marker, about
+  three to one, or taller on a phone to hold its text: the title on two
+  lines, then its text at 0.85em. The
+  Darkest Secret's Festival inspection repeats it, as a 16em picture of the
+  title alone with no hover, after the face's rules, and under it "Festival
+  marker: at Deep Woods", or "beside the map" before the holder's first
+  Rest and after a ribbon removes it (a Challenge, a Raid or the
+  Conspiracy).
 - **Vision slot**: pill, `currentColor` border, 0.85em, no fill.
 - **Plan side**: 1em pill, `0 0.6em` padding, 0.75em; Discord fill for attack,
   Order fill for defense, a Discord-to-Order gradient for both; white text.
@@ -722,11 +752,6 @@ controls are 30px.
     its crown before its side chip, a modifier at its action's modifier
     decision with its arch, so the two never read alike in one list.
     Offered on the board instead, the card face shows its own marks.
-- **Unimplemented badge**: a band across the card's foot, out to its dashed
-  border, in the Unimplemented fill: Cream mixed case at `max(0.62em,
-  0.7rem)`, centered. The card keeps the band's height free at its foot, so
-  the power marks sit above it. Mixed case and the full width are what let
-  the word clear the Eleven-Pixel Floor on the smallest card in a pane.
 
 ### Cards
 The signature component. A card is a bordered box in Base with the physical
@@ -734,8 +759,8 @@ ratio, sized in `ex` from `--card-h: 18.2ex`, its width read from the ratio
 table.
 - **Corner:** 0.35em.
 - **Border:** 1px, transparent at rest so states never reflow; Line for a
-  denizen, `#7a6a4c` for a relic, dashed Unimplemented for a card the engine
-  does not run, dashed Line-mid with transparent fill for an empty slot.
+  denizen, `#7a6a4c` for a relic, dashed Line-mid with transparent fill for
+  an empty slot.
 - **Face:** header row of suit glyph (1.5em) and name (700, 0.95em) with
   defense dice pushed right; a restricted card hangs its restriction banner
   (1.5em, no words) under the suit glyph, as the printed card does, the two
@@ -744,9 +769,9 @@ table.
   single word too long for the box is hyphenated at a syllable; token row
   and defense row at 1em. Each power's modifier tab or battle-plan crown
   stands in the lower-left corner at 1.5em, a row of them for a card with
-  several, lifted above the unimplemented band or a Replace badge: a first
-  step toward a face that shows its powers, whose text and cost are read in
-  the overlay. Footer sinks to the bottom.
+  several, lifted above a Replace badge: a first step toward a face that
+  shows its powers, whose text and cost are read in the overlay. Footer
+  sinks to the bottom.
 - **Compact (zoomed-out map only):** the box and ratio are unchanged; the
   suit glyph moves to the top-left corner at 1.5em, with the face padded
   1.7em at the top so the name starts under it, and the name sits centered
@@ -770,8 +795,8 @@ table.
   The restriction banner leaves the glyph's column for the top-right corner
   at 1.5em, in the room the top padding keeps, since under the glyph it
   would run into the centred name, and is hidden on a card under 3.6em wide (a
-  container query), where it would cover the suit glyph. Defense, the power
-  marks and the unimplemented badge are hidden; tokens stay.
+  container query), where it would cover the suit glyph. Defense and the power
+  marks are hidden; tokens stay.
 - **Face-down:** Facedown fill, centered Facedown Letter at 1.9em 700; a
   knowable card adds a Secret pip top-right and reveals a summary on hover or
   focus (pointer devices only, CSS only, no client state).
@@ -824,14 +849,20 @@ Fill. A slot of a region that holds no site is an empty frame after the
 region's sites (`.site-slot-empty`): the frame the mat prints, a 1px dashed
 Line-mid border, no fill and nothing inside. It is not an option and
 answers nothing; its label names it for a screen reader. The festival
-marker, on the site whose cards it lies over, ends the pawn row as a pill
-(`.festival-marker`): the First player badge's `#a98b58` border, no fill,
-Bright Brass 0.72rem 700, reading "Festival", with the Festival's power in
-its hover note. The pawn row keeps its line, so the marker moves nothing; on
-the zoomed-out map it shrinks to its initial, "F", its name kept as its
-label. It is a button,
-as a player's title pill is, so a keyboard reaches it and its note shows on
-focus; pressing it opens the power in the inspector. It is no board option.
+marker (`.festival-marker`) lies over the cards of the site it is at: a
+band across the middle of the three card slots, half a slot gap short of
+their ends and 18% of a card tall, where a denizen prints nothing. It
+covers the lower part of a relic. The title fills half the band's height,
+and the marker's text is its hover note. The tops and feet of the cards
+stay uncovered and open the cards. Zoomed out, the title keeps the glance
+layer's size, as a site's name does, so it reads at every scale: the band
+grows around it, centred on the cards' middle, and the title wraps to two
+lines where one no longer fits. At the smallest scales the band covers
+the middle half of the cards; the title matters more than what it hides.
+A card's name moves to the card's top, above the band. It is a button, as a
+player's title pill is, so a keyboard reaches it and its note shows on
+focus; pressing it opens the printed marker in the inspector. It is no
+board option.
 
 ### Panes
 Four `section`s with a header strip (Pane Header fill, Line-pane bottom
@@ -881,6 +912,18 @@ height, at a 46rem measure, under a pane header with Close. Its list is the
 pane's list at the pane's 13px; the overlay adds room, not scale, and there
 the round headlines stick instead of the turns.
 
+The **Chronicle Details** overlay gathers the Chronicle's meta information
+over the table: the log overlay's scrim and layer, a Pane-fill panel at a
+50rem measure under a pane header naming the Chronicle, with Close. Its
+content scrolls in one column: a quiet Ink Dim line ("Chronicle Details ·
+Era target N"), the Foundations, the Era Scorepad with each lineage's
+legacy chips, the Atlas's Recent site drawn as one mat row at the map's
+100% (scrolling sideways in a narrower panel), and the Chronicle Phase
+aids in the Foundation Strip's face. It is read-only. The card overlay
+stacks one step above it and closes first on Escape. It opens from a wide
+Control-face button after the Shared Bank on the table's edge, which takes
+the edge's whole width on a phone.
+
 The **card list** shows cards in pile order: what Scryer or Oracular Pig
 looked at, or a log line's list of more than five cards. It is a count title
 in the Brass Label over a grid of ordinary card faces, each a face or a back
@@ -926,6 +969,53 @@ wears the system's chrome. An element asks for one with `HoverTip.set`
 - **Hides** on leaving, blur, a press elsewhere, scroll, Escape, or a render
   that removes the element.
 
+### Consent Column
+A power the viewer rules opens in the card overlay with their consent
+column after the details (consent design, ruling 16; reconsider design):
+beside them where the overlay is wide enough, under them where it is
+not. Beside the details it keeps its content's width; under 620px,
+alone on its line, it fills the line up to 22rem. The column carries a
+16px top margin on
+top of the overlay body's gap, and reads at the details column's size,
+`0.82em`.
+- **Heading:** "Who may ignore this power", in Brass Label, 12px over
+  the first row.
+- **Preference row:** one per other player, 12px apart. The player's name
+  has its own line. Under it, 4px down, stand that player's three
+  settings, "Never Allow", "Case-by-case" and "Always Allow", in equal
+  thirds of the column, 6px apart, so the three always share one line,
+  at 360px too. The three are one group, named for the player.
+- **Setting:** the compact Control face. In thirds it takes 6px of side
+  padding, because the third sets its width. The setting in force is
+  pressed (`aria-pressed="true"`): a Selection border on Selection Fill,
+  the column's one selected thing. Without control the settings wear
+  the Disabled face and answer no hover; the setting in force stays
+  pressed under it. Where the main pointer is coarse they grow to 44px.
+- **Requests list:** under the rows, absent while the power has no
+  requests this turn. Its heading, "Requests this turn", is the rows'
+  heading again, 20px under the last row and 8px over the first entry.
+  Entries stand 12px apart, newest first. An entry is one line saying
+  what was asked ("Blue asked to select Deep Woods"), a quiet second line
+  in Ink Dim for the other powers the answer covers ("Also answers Secret
+  Police"), and a line with the state as a word ("Refused", "Allowed",
+  "Allowed, used") before one compact Control button, "Allow" or
+  "Refuse". An automatic power's entry says what happened in its first
+  line ("Blue's Tyrant: deactivated") and shows its button alone. Each
+  entry is a group named by its first line.
+- **A change that cannot be made** keeps its button, in the Withheld
+  face: the Disabled face with `aria-disabled="true"`, so it takes focus
+  and a tap, and the hover note gives the reason. The reason is never
+  printed in the list. Without control an open button is disabled.
+- **Live:** the list is the one part of the card overlay redrawn from
+  each snapshot, and only when it changed, so an open hover note is left
+  alone. Focus stays on the entry's button, whatever it now reads. A
+  clicked button waits in the Disabled face, as `aria-disabled`, so it
+  keeps the focus, until the table's position or its shown failure
+  changes; a repaint of the same position leaves it waiting.
+- The column uses no amber and no second blue: consent amber stays on
+  the option a player may ask about, and selection blue on the pressed
+  setting.
+
 ### Inputs / Fields
 - **Style:** Base fill, white text, Line-mid border, 6px radius, 8px padding,
   44px minimum height, `font: inherit`. Host-page inputs use browser defaults
@@ -953,25 +1043,20 @@ figure and a region's discard pile are buttons on the pill hover that open
 the text and card-list overlays: Supply at Rest and the pile's cards.
 
 ### Foundation Strip
-The six foundation setup cards, read-only (`FoundationStrip`). On the table
-they close the shared bank on the table's edge, after the banners, in three
-columns, one row a card: Base
+The six foundation setup cards, read-only (`FoundationStrip`, drawn by
+`SetupCardStrip`, which the Chronicle Phase aids share). In Chronicle
+Details they stand first, in three columns, one column at 620px wide and
+narrower, as the aids' strip does, one row a card: Base
 fill, 1px Line border, 4px radius, `4px 8px` padding, the numeral in Ink Dim
 700 and the name of the face in use in Georgia 700. The name holds one line
 and is cut with an ellipsis where the column is too narrow; the whole name
-stays in the hover note and, on the table, in the row's label. An altered
+stays in the hover note and in the row's label. An altered
 card adds the word "Altered" under its name, in Parchment Dim uppercase at
 `max(0.72em, 0.7rem)`, 700, 0.1em tracking. The word alone marks it: the
 frame stays Line, because brass on the board means an option. A row is a
 button that opens its face's rules in the text overlay, and answers hover as
-a Control does (Pressed fill, Bright Cream border). On the compact map the
-row takes the glance text size (`--glance-text`), as a site's details do. A
-table row never wraps, but its height is not fixed: on the compact map it
-follows the glance text size, and so the Fit scale. The strip must stay
-shorter than the regions beside it, whose height sets the map's (The Glance
-Layer Rule). The Chronicle page lists the same six under the loaded
-Chronicle's summary line, three abreast, as plain rows with nothing to open;
-there a name too long for its column wraps.
+a Control does (Pressed fill, Bright Cream border). The Chronicle Phase aids
+share the face, with no numeral.
 
 ## Do's and Don'ts
 
@@ -996,7 +1081,8 @@ there a name too long for its column wraps.
 - **Don't** add `transition` or `animation`. State changes by color, ring and
   outline only.
 - **Don't** put a resting `box-shadow` on a board piece; only the developer
-  panel and the hover note lift, and only the card and log overlays scrim.
+  panel and the hover note lift, and only the card, log and Chronicle
+  Details overlays scrim.
 - **Don't** introduce grey or blue-tinted neutrals, blue-purple gradients,
   glassmorphism or translucent panels.
 - **Don't** add parchment textures, scrollwork, blackletter, bevels, gloss

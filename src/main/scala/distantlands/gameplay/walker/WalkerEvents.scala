@@ -31,9 +31,13 @@ final case class DeltaPayload(ops: Vector[CoreOperation])
   * operation batch, which is why this payload has nowhere to put one.
   *
   * @param by who answered.
+  * @param alone true when the walker answered the decision itself, its one
+  *   choosable option (`Decide.answersAlone`, catalog batch 13, ruling 4);
+  *   replay then needs no durable park at the node, as for an automatic
+  *   roll.
   */
 final case class ChoicePayload(decisionId: String, answer: DecisionAnswer,
-    by: PlayerId)
+    by: PlayerId, alone: Boolean = false)
     extends WalkerStepPayload
 
 /** Faces the acting player rolled for `pool`, recorded when a `Roll` park is

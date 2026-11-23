@@ -43,13 +43,13 @@ two-machine requirement.
 | 1 | From Machine A, `/health/live` and `/health/ready` succeed at the recorded public base URL. | UNEXECUTED | Not observed. |
 | 2 | Machine A opens `/` and creates one game through the host form with exactly three distinct seats. | UNEXECUTED | Not observed. |
 | 3 | Host result shows three assigned `/s/` links, each is copied privately, and no raw code appears in application logs. | UNEXECUTED | Not observed. |
-| 4 | Machine A opens seat 1 in one browser profile; Machine B opens seat 2; a separate profile opens seat 3. Each redirects to the same game's canonical `/games/{game-id}` URL. | UNEXECUTED | Not observed. |
+| 4 | Machine A opens seat 1 in one browser profile; Machine B opens seat 2; a separate profile opens seat 3. Each redirects to its own `/games/{game-id}/seats/{player-id}` page. | UNEXECUTED | Not observed. |
 | 5 | Each profile displays the correct private viewer and does not display another seat's private view. Record player IDs and screenshots with seat codes removed. | UNEXECUTED | Not observed. |
 | 6 | All three seats perform representative multiplayer turns. Record action names, player IDs, and resulting sequence numbers. | UNEXECUTED | Not observed. |
-| 7 | Machine B disconnects from the network, reconnects, reloads the canonical game URL, and resumes its assigned seat at authoritative current state. | UNEXECUTED | Not observed. |
+| 7 | Machine B disconnects from the network, reconnects, reloads its seat page, and resumes its assigned seat at authoritative current state. | UNEXECUTED | Not observed. |
 | 8 | All clients close. Operator stops the server cleanly, confirms the database-close log, and restarts the same build against the same database directory or volume. | UNEXECUTED | Not observed. |
-| 9 | After restart, all three canonical URLs load with retained cookies, show the correct private views, and retain the previously recorded sequence/state. | UNEXECUTED | Not observed. |
-| 10 | In a disposable profile, clearing the game cookie causes the canonical URL to show recovery guidance; reopening the saved original seat link restores only that seat. | UNEXECUTED | Not observed. |
+| 9 | After restart, all three seat pages load with retained cookies, show the correct private views, and retain the previously recorded sequence/state. | UNEXECUTED | Not observed. |
+| 10 | In a disposable profile, clearing the game cookie causes the seat page to show recovery guidance; reopening the saved original seat link restores only that seat. | UNEXECUTED | Not observed. |
 
 ## HTTPS proxy and origin checks
 
@@ -57,7 +57,7 @@ two-machine requirement.
 | ---: | --- | --- | --- |
 | 11 | The external origin uses a valid HTTPS certificate and the backend listens only on a restricted interface that is not directly reachable from Machine B. | UNEXECUTED | Not observed. |
 | 12 | A newly generated seat link uses the exact configured HTTPS scheme, host, and port. | UNEXECUTED | Not observed. |
-| 13 | Visiting the seat link stays on the HTTPS origin and returns a `distantlands_seat` cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, and the exact `/games/{game-id}` path. | UNEXECUTED | Not observed. |
+| 13 | Visiting the seat link stays on the HTTPS origin and returns a `distantlands_seat` cookie with `Secure`, `HttpOnly`, `SameSite=Lax`, and the exact `/games/{game-id}/seats/{player-id}` path. | UNEXECUTED | Not observed. |
 | 14 | A same-origin gameplay request succeeds; a deliberately mismatched `Origin` request is rejected without changing game state. | UNEXECUTED | Not observed. |
 | 15 | Normal exchange, a controlled failing `/s/` request, and a `/s/` request with the backend unreachable (on a throwaway proxy instance) use a disposable test code; every NGINX access/error log, upstream application log, and applicable proxy, CDN, firewall, WAF, agent, or dashboard log is inspected, and no raw `/s/{seat-code}`, `Cookie`, or `Set-Cookie` value appears. | UNEXECUTED | Not observed. |
 | 16 | Forwarded identity headers do not select or change a seat; the seat cookie remains the only trusted seat identity. | UNEXECUTED | Not observed. |

@@ -2,10 +2,11 @@ package distantlands.application
 
 import distantlands.gameplay.actions.travel.TravelProcedure
 import distantlands.gameplay.cards.NarrowPassSite
-import distantlands.gameplay.powers.travel.TravelFixture
+import distantlands.gameplay.powers.travel.{ForbiddenForestCard,
+  TravelFixture}
 import distantlands.model._
 import distantlands.testkit.{Outcomes, Table}
-import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.accepted
 import distantlands.testkit.Commands
 
@@ -17,6 +18,12 @@ object ConsentFixture:
 
   val passRuledByP2: ReadyGame = on(board())(_.warbandsAt(pass, p2, 1))
   val dunes: DecisionOptionRef.Site = DecisionOptionRef.Site(provincePlains)
+
+  /** `passRuledByP2` with the Forbidden Forest at Dunes, which p3 rules:
+    * two rulers block p1's Travel to Dunes, each with their own power. */
+  val dunesBehindTwoRulers: ReadyGame = on(passRuledByP2)(_
+    .edifice(ForbiddenForestCard, EdificeSide.Intact, at = provincePlains)
+    .warbandsAt(provincePlains, p3, 1))
   val gameId = "consent"
 
   def service(at: ReadyGame = passRuledByP2)(using munit.Location)

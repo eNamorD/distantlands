@@ -2,7 +2,7 @@ package distantlands.gameplay.setup
 
 import distantlands.gameplay.cards.GreatSlumSite
 import distantlands.gameplay.operations.TheGrandScepterCard
-import distantlands.gameplay.powers.setup.HallOfDebateCard
+import distantlands.gameplay.actions.negotiation.FestivalDistrictCard
 import distantlands.gameplay.powers.PlayerFacts
 import distantlands.model._
 import distantlands.testkit.Unwrap.accepted
@@ -87,10 +87,10 @@ class LaterGameSetupSuite extends munit.FunSuite:
       3 + onMap.count(_ == suit)))
 
   test("the atlas keeps the unused sites with their stored cards"):
-    // Great Slum is not one of the Chronicle's sites, and Hall of Debate is
+    // Great Slum is not one of the Chronicle's sites, and Festival District is
     // stored at none of them.
     val unused = GreatSlumSite.id
-    val edifice = HallOfDebateCard.id
+    val edifice = FestivalDistrictCard.id
     val denizen = record.worldDeck.head
     val relic = record.relicDeck.head
     val chronicle = withoutDeckCards(relic, Some(denizen)).copy(

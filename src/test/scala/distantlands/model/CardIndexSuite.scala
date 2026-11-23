@@ -128,8 +128,8 @@ class CardIndexSuite extends munit.FunSuite:
     assert(DomainValidation.validate(prepared).contains(
       DomainProblem.UnknownTemporaryHandOwner(unknown)))
 
-  test("a lineage's legacies and the public row are indexed, and no " +
-      "legacy lies in the legacy deck"):
+  test("a lineage's legacies, the public row and the legacy deck are " +
+      "indexed"):
     val ready = Table.start.legacy(p1, SeerCard)
       .legacy(p1, ArbiterCard, active = false)
       .publicLegacies(RivalCard).ready
@@ -141,5 +141,6 @@ class CardIndexSuite extends munit.FunSuite:
       Some(LegacyState(ArbiterCard.id, active = false)))
     assertEquals(index.get(RivalCard.id).map(_.location.container),
       Some(CardContainer.PublicLegacies))
-    assert(index.ids.flatMap(index.get).forall(
-      _.location.container != CardContainer.Deck(CardDeck.Legacy)))
+    val top = ready.game.current.commonCards.legacyDeck.head
+    assertEquals(index.locationOf(top),
+      Some(CardLocation(CardContainer.Deck(CardDeck.Legacy), 0)))

@@ -12,11 +12,19 @@ import ServerUiSupport.{button, element, text, textField}
   * Each evolved Chronicle is handled once per page, so a redraw neither
   * saves again nor asks again. The dialog that asks lives in `mount`,
   * outside the panes a redraw replaces, so what the player types survives
-  * the poll. */
+  * the poll. Beside the export it offers the way on: back to the Chronicle
+  * page (`mainMenu`), or to player selection for the next game of the saved
+  * Chronicle (`nextGame` gets that page's address). `beforeAsking` runs
+  * before the dialog opens, so an overlay drawn above it closes first
+  * (Chronicle Details implementation ruling R21). */
 private[frontend] final class TableChronicle(mount: dom.Element,
     shelf: Option[ChronicleShelf], client: ChronicleClient,
-    files: ChronicleFiles, repaint: () => Unit):
+    files: ChronicleFiles, repaint: () => Unit, mainMenu: () => Unit,
+    nextGame: String => Unit, beforeAsking: () => Unit = () => ()):
   private var handled = Set.empty[String]
+  /** The name each evolved Chronicle, by digest, was saved under: not its
+    * own when the player renamed it to resolve a clash. */
+  private var savedNames = Map.empty[String, String]
   private var note = ""
   /** The export controls of the evolved Chronicle shown, kept across
     * redraws so a copy in flight or a TTS box to copy by hand survives. */
@@ -33,10 +41,33 @@ private[frontend] final class TableChronicle(mount: dom.Element,
       value.evolved.foreach { evolved =>
         if note.nonEmpty then
           node.appendChild(text("p", "table-chronicle-note", note))
+        node.appendChild(wayOn(evolved))
         node.appendChild(exportControls(evolved))
       }
       node
     }
+
+  /** Back to the Chronicle page, and on to the next game, which waits for
+    * the Chronicle to be saved: player selection finds it in the browser. */
+  private def wayOn(evolved: ChronicleEntry): dom.Element =
+    val row = element("div", "table-chronicle-way-on")
+    val menu = button("Back to Main Menu", "back-to-main-menu")
+    menu.onclick = _ => mainMenu()
+    val next = button("Start Next Game", "start-next-game")
+    val saved = for
+      kept <- shelf
+      name <- savedNames.get(evolved.digest)
+      found <- kept.find(name)
+    yield found
+    (shelf, saved) match
+      case (None, _) => HoverTip.withhold(next,
+        "This browser cannot keep Chronicles; download the JSON to keep it")
+      case (_, None) => HoverTip.withhold(next,
+        "Save the Chronicle in this browser first")
+      case (_, Some(found)) =>
+        next.onclick = _ => nextGame(ChroniclePages.continueUrl(found.name))
+    Vector(menu, next).foreach(row.appendChild)
+    row
 
   private def exportControls(evolved: ChronicleEntry): dom.Element =
     exports.filter(_._1 == evolved.digest).map(_._2).getOrElse {
@@ -52,8 +83,12 @@ private[frontend] final class TableChronicle(mount: dom.Element,
       case None => "Chronicles cannot be kept in this browser; export this " +
         "one to keep it."
       case Some(kept) => kept.autoSave(evolved, startingDigest) match
-        case AutoSave.Saved(saved) => savedAs(saved)
-        case AutoSave.Unchanged => "Already saved in this browser."
+        case AutoSave.Saved(saved) =>
+          savedNames += evolved.digest -> saved.name
+          savedAs(saved)
+        case AutoSave.Unchanged =>
+          savedNames += evolved.digest -> evolved.summary.name
+          "Already saved in this browser."
         case AutoSave.Refused(reason) => reason
         case AutoSave.Conflict(existing) =>
           ask(kept, evolved, existing)
@@ -64,6 +99,7 @@ private[frontend] final class TableChronicle(mount: dom.Element,
 
   private def ask(kept: ChronicleShelf, evolved: ChronicleEntry,
       existing: SavedChronicle): Unit =
+    beforeAsking()
     val overlay = element("div", "chronicle-save-prompt")
     overlay.setAttribute("role", "dialog")
     overlay.setAttribute("aria-modal", "true")
@@ -92,6 +128,7 @@ private[frontend] final class TableChronicle(mount: dom.Element,
         busy(false)
         status.textContent = reason
       case Right(saved) =>
+        savedNames += evolved.digest -> saved.name
         note = savedAs(saved)
         if overlay.parentNode != null then mount.removeChild(overlay)
         repaint()

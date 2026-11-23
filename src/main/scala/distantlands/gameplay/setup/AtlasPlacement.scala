@@ -43,19 +43,13 @@ object AtlasPlacement:
     case AtlasEnd.Recent => "Recent Sites"
     case AtlasEnd.Forgotten => "Forgotten Sites"
 
-  /** The suit of a card in a site's denizen slots, an edifice's included:
-    * the bank Foundation II adds its favor to. */
-  def suitOf(catalog: ExecutableCatalog, card: SiteDenizenState)
-      : Option[Suit] = card match
-    case EdificeState(id, _, _) => catalog.edifice(id).map(_.suit)
-    case DenizenState(id, _, _) => catalog.denizen(id).map(_.suit)
-
   /** Foundation II's favor for a site Imperial Maps places: 1 from the
     * shared bank to the matching suit's bank per card the site puts in its
     * denizen slots, its ruined edifice included, one move per suit in suit
     * order. An Explore adds none: the count is a setup step. */
   def suitFavor(catalog: ExecutableCatalog, planned: Planned): Vector[Move] =
-    val suits = planned.stored.placedDenizens.flatMap(suitOf(catalog, _))
+    val suits = planned.stored.placedDenizens
+      .flatMap(card => catalog.suitOf(card.id))
     Suit.all.map(suit => suit -> suits.count(_ == suit)).collect {
       case (suit, count) if count > 0 => Move(Piece.Favor(count),
         PositionedLocation(Location.SharedBank),

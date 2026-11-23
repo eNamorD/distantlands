@@ -2,11 +2,11 @@ package distantlands.application.gamelog
 
 import distantlands.gameplay.chronicle.{ChronicleBeginProcedure,
   ChronicleSunProcedure, ResolveLegacies, BuildEdifice, IntroduceNewcomers, LineageScoring,
-  OfferCitizenship, ProtectAndDispossess, ShapeEmpire, ShapeFoundation,
-  SwearOath, WelcomeStranger,
-  ChronicleStarsProcedure}
+  OfferCitizenship, ProtectAndDispossess, RelicKeep, ShapeEmpire,
+  ShapeFoundation, SwearOath, WelcomeStranger,
+  ChronicleStarsProcedure, ChronicleSteps}
 import distantlands.gameplay.chronicle.legacies.{Chronicler, Gatekeeper,
-  Heirloom, IronHand, OathsOfLoyalty, Reformer, Revolutionary, Rival,
+  IronHand, OathsOfLoyalty, Reformer, Revolutionary, Rival,
   RoyalLine, TheBrightBeacon, TheEar}
 import distantlands.gameplay.actions.campaign.CampaignNotes
 import distantlands.gameplay.actions.cardplay.CardPlayProcedure
@@ -25,7 +25,7 @@ import distantlands.gameplay.phases.rest.{ArbiterStep, FinishRestProcedure}
 import distantlands.gameplay.chronicle.legacies.ConspiratorReveal
 import distantlands.gameplay.phases.PhaseMenu
 import distantlands.gameplay.phases.wake.QuestFirstWakeProcedure
-import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.{LegacyKeep, SetupProcedure}
 import distantlands.gameplay.setup.legacies.{Matchmaker, SecretSociety}
 import distantlands.gameplay.walker.FollowUpOffer
 import distantlands.model._
@@ -164,8 +164,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       narrated = Vector(Told(SearchProcedure.sourceDecisionId),
         Told(SearchProcedure.cardDecisionId,
           Some(SearchProcedure.keptCards))),
-      narratedPrefixes = Vector(LogWords.PlacePrefix,
-        "cardplay.discard."))
+      narratedPrefixes = Vector(CardPlayProcedure.placementPrefix,
+        CardPlayProcedure.discardPrefix))
     // The played card's line names the facedown pick. Five keys word it —
     // a discard with or without a pile, a play to a site, a revealed
     // Vision, an adviser — so no single key tells the decision.
@@ -174,8 +174,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         lines = ActionLineSource.Notes(),
         anchor = starts.adviserPicked,
         narrated = Vector(Told(CardPlayProcedure.facedownAdviserDecisionId)),
-        narratedPrefixes = Vector(LogWords.PlacePrefix,
-          "cardplay.discard."))
+        narratedPrefixes = Vector(CardPlayProcedure.placementPrefix,
+          CardPlayProcedure.discardPrefix))
     // The relic pick is told by the recovered line, which names the relic.
     // The continue-or-stop answer is told by the band's own "Continued"
     // line and, for a stop, by the failed line, so no single key tells it.
@@ -301,8 +301,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     // went, as a Search does, and tells the same card-play decisions.
     case ActionRef.UsePower(power) => ProcedureLog(tag = None,
       lines = ActionLineSource.Rule(notes.usePowerLines(power)),
-      narratedPrefixes = Vector(LogWords.PlacePrefix,
-        "cardplay.discard."))
+      narratedPrefixes = Vector(CardPlayProcedure.placementPrefix,
+        CardPlayProcedure.discardPrefix))
     case PhaseTransitionRef.EndWake | PhaseTransitionRef.BeginRest =>
       ProcedureLog(tag = None, isSection = false,
         lines = ActionLineSource.Silent(
@@ -330,7 +330,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     case TriggeredProcedureRef.Setup => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
         SetupProcedure.keptAdviser -> LogKind.Decision,
-        SetupProcedure.keptLegacy -> LogKind.Decision,
+        LegacyKeep.keptLegacy -> LogKind.Decision,
         Matchmaker.keptFor -> LogKind.Decision,
         SecretSociety.discarded -> LogKind.Decision,
         SetupProcedure.revealedCard -> LogKind.Decision) ++
@@ -361,9 +361,11 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
     case TriggeredProcedureRef.ChronicleThrone => chronicleThrone
     case TriggeredProcedureRef.ChronicleWorld => ProcedureLog(tag = None,
       lines = ActionLineSource.Notes(Map(
+        ProtectAndDispossess.stackShown -> LogKind.Delta,
         ProtectAndDispossess.protectedStack -> LogKind.Decision,
         ProtectAndDispossess.keptAdviser -> LogKind.Decision,
         ProtectAndDispossess.dispossessed -> LogKind.Delta) ++
+        headings(TriggeredProcedureRef.ChronicleWorld) ++
         OathsOfLoyalty.noteKeys(TriggeredProcedureRef.ChronicleWorld)
           .map(_ -> LogKind.Decision)),
       narratedPrefixes = Vector("chronicle.world."), isSection = false)
@@ -373,6 +375,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
         IntroduceNewcomers.returned -> LogKind.Delta,
         WelcomeStranger.keptAdviser -> LogKind.Decision,
         ShapeFoundation.keptAll -> LogKind.Decision) ++
+        headings(TriggeredProcedureRef.ChronicleBeacon) ++
         ShapeFoundation.restored.values.map(_ -> LogKind.Decision) ++
         OathsOfLoyalty.noteKeys(TriggeredProcedureRef.ChronicleBeacon)
           .map(_ -> LogKind.Decision) ++
@@ -382,7 +385,8 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       lines = ActionLineSource.Notes(Map(
         ChronicleStarsProcedure.archived -> LogKind.Delta,
         ChronicleStarsProcedure.keptInEmpire -> LogKind.Delta,
-        IronHand.stored -> LogKind.Delta)),
+        IronHand.stored -> LogKind.Delta) ++
+        headings(TriggeredProcedureRef.ChronicleStars)),
       narratedPrefixes = Vector.empty, isSection = false)
     case TriggeredProcedureRef.ChronicleFinish =>
       ProcedureLog(tag = None, isSection = false,
@@ -424,8 +428,14 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       RoyalLine.named -> LogKind.Decision,
       ConspiratorReveal.revealed -> LogKind.Decision,
       ConspiratorReveal.won -> LogKind.Victory)),
-    narratedPrefixes = Vector("chronicle.sun.legacy.royal-line."),
+    narratedPrefixes = Vector("chronicle.final-winner.royal-line."),
     isSection = false)
+
+  /** A task's step headings: never posted as lines, since the log opens each
+    * with the step's first line, but declared at the kind they open. */
+  private def headings(procedure: TriggeredProcedureRef)
+      : Vector[(NoteKey, LogKind)] =
+    ChronicleSteps.noteKeys(procedure).map(_ -> LogKind.Section)
 
   private lazy val chronicleSun: ProcedureLog = ProcedureLog(tag = None,
     lines = ActionLineSource.Notes(Map(
@@ -443,8 +453,11 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       Chronicler.declared -> LogKind.Decision,
       Chronicler.scored -> LogKind.Delta) ++
       ResolveLegacies.altered.values.map(_ -> LogKind.Delta) ++
-      ChronicleTask.all.map(task =>
-        ChronicleSunProcedure.tookTask(task) -> LogKind.Decision)),
+      Vector(ChronicleSunProcedure.exiled -> LogKind.Delta) ++
+      ChronicleTask.all.flatMap(task => Vector(
+        ChronicleSunProcedure.tookTask(task) -> LogKind.Decision,
+        ChronicleSunProcedure.gaveTask(task) -> LogKind.Decision)) ++
+      headings(TriggeredProcedureRef.ChronicleSun)),
     narratedPrefixes = Vector("chronicle.assign.",
       "chronicle.sun.public-legacy.", "chronicle.sun.legacy-cap.",
       "chronicle.sun.legacy."),
@@ -462,6 +475,7 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       OfferCitizenship.offered -> LogKind.Decision,
       OfferCitizenship.accepted -> LogKind.Decision,
       OfferCitizenship.declined -> LogKind.Decision,
+      OfferCitizenship.noExiles -> LogKind.Decision,
       OfferCitizenship.reactivated -> LogKind.Delta,
       OfferCitizenship.capped -> LogKind.Decision,
       Rival.protectedWith -> LogKind.Decision,
@@ -471,13 +485,13 @@ private[gamelog] final class ProcedureLogs(starts: StartLines,
       Revolutionary.discardedWith -> LogKind.Decision,
       Reformer.moved -> LogKind.Decision,
       Reformer.swapped -> LogKind.Decision,
-      Heirloom.keptPublic -> LogKind.Decision,
-      Heirloom.keptPrivate -> LogKind.Decision,
-      TheEar.placed -> LogKind.Decision)),
+      RelicKeep.kept -> LogKind.Decision,
+      TheEar.placed -> LogKind.Decision) ++
+      headings(TriggeredProcedureRef.ChronicleThrone)),
     narratedPrefixes = Vector("chronicle.throne.offer",
       "chronicle.throne.legacy-cap.",
       "chronicle.throne.citizenship.", "chronicle.shape-empire.",
       "chronicle.build-edifice.", "chronicle.stock-reliquary.",
       "chronicle.score-lineage.", "chronicle.swear-oath.",
-      "chronicle.throne.legacy."),
+      "chronicle.throne.legacy.", "chronicle.throne.hiding-place."),
     isSection = false)

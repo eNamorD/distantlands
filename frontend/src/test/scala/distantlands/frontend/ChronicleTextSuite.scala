@@ -1,34 +1,30 @@
 package distantlands.frontend
 
-import distantlands.protocol.{ChronicleLegacy, ChronicleScore,
-  ChronicleSummary}
+import distantlands.protocol.{ChronicleLegacy, ChronicleSummary}
 
 class ChronicleTextSuite extends munit.FunSuite:
   test("lineage names a generated lineage by its color"):
     assertEquals(ChronicleText.lineage("red-lineage"), "Red")
     assertEquals(ChronicleText.lineage("l9"), "L9")
 
-  test("the summary line reads game, era target and scores"):
+  test("the summary line reads the next game and the era's target, and " +
+      "leaves the scores to the scoresheet"):
     assertEquals(ChronicleText.summaryLine(
       ChronicleFixtures.entry("A", game = Some(3)).summary),
-      "Game 3 · Era: 20 to win · Red 9, Blue 6")
+      "Game 3 · Era: First to 20")
 
-  test("a TTS import's unknown game reads as unknown, and no scores add " +
-      "nothing"):
+  test("a TTS import's unknown game reads as unknown"):
     assertEquals(ChronicleText.summaryLine(
       ChronicleSummary("A", None, 20, Vector.empty)),
-      "Game unknown · Era: 20 to win")
+      "Game unknown · Era: First to 20")
 
   test("a row's details add the saved date"):
     assertEquals(ChronicleText.rowDetails(SavedChronicle(
       ChronicleFixtures.entry("A"), ChronicleFixtures.savedAt)),
-      "Game 1 · Era: 20 to win · saved 2026-10-29")
+      "Game 1 · Era: First to 20 · saved 2026-10-29")
 
-  test("a lineage's line names its score and legacies, the dormant ones " +
-      "marked (R39)"):
-    assertEquals(ChronicleText.lineageLine(ChronicleScore("red-lineage", 9,
-      legacies = Vector(ChronicleLegacy("Seer", active = true),
-        ChronicleLegacy("Iron Hand", active = false)))),
-      "Red 9 · Seer, Iron Hand (dormant)")
-    assertEquals(ChronicleText.lineageLine(ChronicleScore("blue-lineage", 6)),
-      "Blue 6")
+  test("a lineage's legacies are named, the dormant ones marked (R39)"):
+    assertEquals(ChronicleText.legacies(Vector(
+      ChronicleLegacy("Seer", active = true),
+      ChronicleLegacy("Iron Hand", active = false))),
+      "Seer, Iron Hand (dormant)")

@@ -3,6 +3,7 @@ package distantlands.frontend
 import distantlands.model.PlayerColor
 
 import org.scalajs.dom
+import Dom.{click, one}
 
 /** Which pane each standing line of state belongs to. The oath and the
   * usurper limit describe the table, not the acting player's options, so
@@ -74,20 +75,43 @@ class PanelPlacementSuite extends munit.FunSuite:
       ".shared-bank .oathkeeper-goal").map(_.textContent),
       Some("Oathkeeper of the People"))
 
-  test("the foundations close the shared bank, and a projection with " +
-      "none draws no strip"):
-    val foundations = Vector(
-      distantlands.protocol.projection.FoundationProjection(1, "normal",
-        "Imperial Maps", "Fill the map."),
-      distantlands.protocol.projection.FoundationProjection(3, "altered",
-        "Public Ambitions", "Deal 4 legacy cards."))
-    val bank = Dom.firstMatch(world(projection().copy(
-      foundations = foundations)), ".shared-bank")
-      .getOrElse(fail("no shared bank"))
-    assertEquals(bank.lastElementChild.getAttribute("class"), "foundations")
-    assertEquals(Dom.all(bank, ".foundation-name").map(_.textContent),
-      Vector("Imperial Maps", "Public Ambitions"))
-    assertEquals(Dom.all(world(projection()), ".foundations").size, 0)
+  private val foundations = Vector(
+    distantlands.protocol.projection.FoundationProjection(1, "normal",
+      "Imperial Maps", "Fill the map."),
+    distantlands.protocol.projection.FoundationProjection(3, "altered",
+      "Public Ambitions", "Deal 4 legacy cards."))
+  private val detailsWithNoGamesNoLineagesAndNoAtlas =
+    distantlands.protocol.projection.ChronicleDetailsProjection(20,
+      Vector.empty, Vector.empty, None)
+
+  test("the shared bank holds no foundation strip, and the Chronicle " +
+      "Details button stands after it only while the snapshot carries " +
+      "Chronicle Details"):
+    val shown = world(projection().copy(foundations = foundations,
+      chronicleDetails = Some(detailsWithNoGamesNoLineagesAndNoAtlas)))
+    assertEquals(Dom.all(shown, ".foundations").size, 0)
+    assertEquals(Dom.all(one(shown, ".table-edge"), ":scope > *")
+      .map(_.getAttribute("class")),
+      Vector("shared-bank", "chronicle-details-button"))
+    val button = one(shown, "button.chronicle-details-button")
+    assertEquals(Vector(button.textContent, button.getAttribute("type"),
+      button.getAttribute("aria-haspopup"),
+      button.getAttribute("aria-controls")),
+      Vector("Chronicle Details", "button", "dialog", "chronicle-details"))
+    assertEquals(Dom.all(world(projection().copy(foundations = foundations)),
+      ".chronicle-details-button").size, 0)
+
+  test("the Chronicle Details button opens through the shell's hook, from " +
+      "itself"):
+    var origins = Vector.empty[dom.Element]
+    ChronicleDetails.onOpen(origin => origins :+= origin)
+    try
+      val button = one(world(projection().copy(chronicleDetails =
+        Some(detailsWithNoGamesNoLineagesAndNoAtlas))),
+        "button.chronicle-details-button")
+      click(button)
+      assertEquals(origins, Vector(button))
+    finally ChronicleDetails.clear()
 
   /** Beside the regions rather than under them: the map pane is wider than
     * it is tall, so a column costs nothing at fit and a row below costs the

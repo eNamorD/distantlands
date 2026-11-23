@@ -90,6 +90,18 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     assertEquals(projection.tracks.map(_.round), Some(4))
     assertEquals(projection.temporaryHandPreview.map(_.cardId), Vector("known"))
 
+  test("a public preview round-trips, and a payload without one decodes to " +
+      "none"):
+    assertRoundTrips(projection.copy(publicPreview = Some(
+      PublicPreviewProjection(Vector(
+        PublicPreviewSection("Stack 1", Vector(known)),
+        PublicPreviewSection("Stack 2", Vector(known.copy(cardId = "other")))))
+      )))
+    val raw = ujson.read(GameProjectionCodec.encode(projection))
+    raw.obj.remove("publicPreview")
+    assertEquals(GameProjectionCodec.decode(ujson.write(raw)).map(
+      _.publicPreview), Right(None))
+
   test("the undo offer and the log revision round-trip"):
     assertRoundTrips(projection.copy(
       undo = Some(StepOfferProjection("Undo: p1 travelled to Buried Giant")),
@@ -107,13 +119,54 @@ class ProjectionProtocolSuite extends munit.FunSuite:
       consentWaiting = Some(ConsentWaitingProjection(Vector("p2"),
         use = Some("Tyrant"))),
       consentPrompt = Some(ConsentPromptProjection("p1",
-        Vector("Narrow Pass"), "Dunes", use = Some("Tyrant"))),
+        Vector("Narrow Pass"), "Dunes", use = Some("Tyrant"),
+        adjust = "preferences")),
       consentPreferences = Vector(ConsentPreferencesProjection(
         "site.narrow-pass.pass", "Narrow Pass",
-        Vector(ConsentPreferenceRowProjection("p1", "always"))),
+        Vector(ConsentPreferenceRowProjection("p1", "always")),
+        requests = Vector(
+          ConsentRequestRowProjection("p1", "travel.destination", "site",
+            "site:dunes", "Dunes", "refused", Vector("Secret Police"), None,
+            "open"),
+          ConsentRequestRowProjection("p1", "power-use.tyrant", "button",
+            "use", "Use", "allowed", Vector.empty, Some("Tyrant"),
+            "automatic"))),
         ConsentPreferencesProjection("denizen.secret-police",
           "Secret Police", Vector(ConsentPreferenceRowProjection("p1",
-            "never")), Some("113")))))
+            "never")), Some("113")),
+        ConsentPreferencesProjection("banner.darkest-secret.festival",
+          "Darkest Secret", Vector(ConsentPreferenceRowProjection("p1",
+            "case-by-case")), bannerKey = Some("darkest-secret")))))
+
+  test("a preferences entry requires its requests, and a row every key"):
+    val whole = ujson.read(GameProjectionCodec.encode(projection.copy(
+      consentPreferences = Vector(ConsentPreferencesProjection(
+        "site.narrow-pass.pass", "Narrow Pass", Vector.empty,
+        requests = Vector(ConsentRequestRowProjection("p1",
+          "travel.destination", "site", "site:dunes", "Dunes", "refused",
+          Vector.empty, None, "open")))))))
+    def refused(edit: ujson.Value => Unit): Boolean =
+      val raw = ujson.read(ujson.write(whole))
+      edit(raw("consentPreferences")(0))
+      GameProjectionCodec.decode(ujson.write(raw)).isLeft
+    assert(refused(_.obj.remove("requests")))
+    Vector("requesterPlayerId", "decisionId", "optionKind", "optionId",
+      "label", "answer", "alsoPowers", "use", "change").foreach(key =>
+      assert(refused(_("requests")(0).obj.remove(key)), key))
+    assert(refused(_("requests")(0)("extra") = 1))
+
+  test("a prompt requires what the granter may adjust later, one of " +
+      "three values"):
+    def decoded(edit: ujson.Value => Unit) =
+      val raw = ujson.read(GameProjectionCodec.encode(projection.copy(
+        consentPrompt = Some(ConsentPromptProjection("p1",
+          Vector("Narrow Pass"), "Dunes", adjust = "answer")))))
+      edit(raw("consentPrompt"))
+      GameProjectionCodec.decode(ujson.write(raw)).map(
+        _.consentPrompt.map(_.adjust))
+    assertEquals(decoded(_ => ()), Right(Some("answer")))
+    assert(decoded(_.obj.remove("adjust")).isLeft)
+    assert(decoded(_("adjust") = "sometimes").isLeft)
 
   test("an askable option's consent ask and a site power's id round-trip"):
     assertRoundTrips(projection.copy(
@@ -136,6 +189,17 @@ class ProjectionProtocolSuite extends munit.FunSuite:
           DecisionQueryProjection.ChooseOne(Vector(DecisionOptionProjection(
             "site-slot", "site:a:0", "Bury Known at Site A",
             replaces = Vector(known), buries = true))))))))
+
+  test("a preselected option round-trips, and is written only when set"):
+    val plain = DecisionOptionProjection("site", "plains", "Plains")
+    val kept = plain.copy(id = "hills", label = "Hills", preselected = true)
+    val decision = projection.copy(walkerDecision = Some(
+      WalkerDecisionProjection("chronicle", "chronicle.shape-empire.remove",
+        query = Some(DecisionQueryProjection.ChooseMany(Vector(plain, kept),
+          1, 2)))))
+    assertRoundTrips(decision)
+    assertEquals(GameProjectionCodec.encode(decision).split("preselected")
+      .length - 1, 1)
 
   test("the Imperial Tactics offer panel round-trips, and is absent when unset"):
     val row = DecisionOptionProjection("denizen", "108", "Shield Wall", None,
@@ -356,12 +420,6 @@ class ProjectionProtocolSuite extends munit.FunSuite:
     val carrying = projection.copy(walkerDecision =
       projection.walkerDecision.map(_.copy(query = Some(annotated))))
     assertRoundTrips(carrying)
-
-  test("a card defaults to implemented and round-trips implemented = false"):
-    assert(known.implemented)
-    val unimplemented = known.copy(cardId = "stub", implemented = false)
-    val withStub = projection.copy(temporaryHandPreview = Vector(unimplemented))
-    assertRoundTrips(withStub)
 
   test("a negotiate query and a waiting deal round trip with and without editing"):
     val card = CardDetailsProjection("r1", "relic", "Relic One",

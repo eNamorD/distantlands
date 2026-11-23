@@ -69,18 +69,17 @@ class SetupDealSuite extends munit.FunSuite:
     assertEquals(deal.draws, Vector(p1 -> 0, p2 -> 3, p3 -> 3))
 
   test("Teeming World deals the rest of the stack to the Cradle, the " +
-      "Provinces and the Hinterland in turn, the first card dealt to a " +
-      "pile on top and each later one beneath, and leaves the world deck " +
-      "no denizen"):
+      "Provinces and the Hinterland in turn, each card on top of its pile, " +
+      "and leaves the world deck no denizen"):
     val deal = SetupDeal(FoundationFace.Altered,
       Vector(p1 -> 3, p2 -> 3, p3 -> 3))
     // 9 drawn of 19 leaves 10: the Cradle takes the odd card. A pile is
-    // stored top last, so its first card dealt is its last here.
+    // stored top last, in the order it was dealt.
     val nineteen = stack.take(19)
     assertEquals(deal.discards(nineteen), Map[Region, Vector[WorldCardId]](
-      Region.Cradle -> Vector(18, 15, 12, 9).map(nineteen),
-      Region.Provinces -> Vector(16, 13, 10).map(nineteen),
-      Region.Hinterland -> Vector(17, 14, 11).map(nineteen)))
+      Region.Cradle -> Vector(9, 12, 15, 18).map(nineteen),
+      Region.Provinces -> Vector(10, 13, 16).map(nineteen),
+      Region.Hinterland -> Vector(11, 14, 17).map(nineteen)))
     assertEquals(deal.deck(nineteen), Vector.empty)
 
   test("a Teeming World rest two cards over a multiple of three leaves " +
@@ -91,9 +90,9 @@ class SetupDealSuite extends munit.FunSuite:
     // 9 drawn of 20 leaves 11.
     val twenty = stack.take(20)
     assertEquals(deal.discards(twenty), Map[Region, Vector[WorldCardId]](
-      Region.Cradle -> Vector(18, 15, 12, 9).map(twenty),
-      Region.Provinces -> Vector(19, 16, 13, 10).map(twenty),
-      Region.Hinterland -> Vector(17, 14, 11).map(twenty)))
+      Region.Cradle -> Vector(9, 12, 15, 18).map(twenty),
+      Region.Provinces -> Vector(10, 13, 16, 19).map(twenty),
+      Region.Hinterland -> Vector(11, 14, 17).map(twenty)))
 
   test("a player the deal does not seat draws nothing"):
     val deal = SetupDeal.firstGame(seats.take(2))

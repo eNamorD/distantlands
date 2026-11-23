@@ -46,8 +46,10 @@ private[frontend] object LegacyStrip:
   private def keys(card: CardDetails): Vector[String] =
     Option.unless(card.hidden)(BoardOptions.cardKey(card)).toVector
 
-  /** One legacy in the strip: its seal, name and dormancy, or an L back. */
-  private def chip(card: CardDetails): dom.html.Button =
+  /** One legacy in the strip: its seal, name and dormancy, or an L back.
+    * Chronicle Details' scorepad draws the same chip (Chronicle Details
+    * design, slice 4). */
+  private[frontend] def chip(card: CardDetails): dom.html.Button =
     val node = dom.document.createElement("button").asInstanceOf[dom.html.Button]
     node.`type` = "button"
     node.setAttribute("data-card-id", card.cardId)

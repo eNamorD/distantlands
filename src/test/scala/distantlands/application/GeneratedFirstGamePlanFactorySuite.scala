@@ -1,11 +1,10 @@
 package distantlands.application
 
-import distantlands.gameplay.powers.PowerImplementationStatus
 import distantlands.gameplay.setup.{EmpireSetupRules, FirstGameRulesData,
   FirstGameSetupFixture, GameStartRules, LaterGameFixture, LegacyDeal}
 import distantlands.model._
 import distantlands.testkit.ChronicleShuffles
-import distantlands.testkit.Unwrap.{accepted, present}
+import distantlands.testkit.Unwrap.accepted
 
 class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
   private val catalog = FirstGameSetupFixture.catalog
@@ -13,39 +12,14 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
     PlayerId("p2"))
   private val factory = new GeneratedFirstGamePlanFactory(catalog)
 
-  test("implemented cards are still dealt first after setup: seeded discards, " +
-      "hands, then the world deck; site relic slots, then the relic deck"):
-    val status = PowerImplementationStatus.implemented
-    val denizens = ImplementedCardCatalog.denizens(catalog, status)
-    val relics = ImplementedCardCatalog.ordinaryRelics(catalog, status)
-    def implementedFirst[A](cards: Vector[A], implemented: A => Boolean): Boolean =
-      cards.dropWhile(implemented).forall(card => !implemented(card))
-
+  test("site relic slots, then the relic deck, are dealt in the plan's " +
+      "relic order"):
     val plan = accepted(factory.build(config, ChronicleChoice.New("Test Chronicle")))
-    val orders = plan.orders
     val current = accepted(
-      GameStartRules.evolve(catalog, plan.chronicle, orders)).game.current
-    val dealtWorld: Vector[WorldCardId] =
-      Region.all.flatMap(current.commonCards.discard) ++
-        plan.resolvedConfig.participants.flatMap(p => current.temporaryHands(p.playerId)) ++
-        current.commonCards.worldDeck
-    val worldDenizens = dealtWorld.collect { case id: DenizenId => id }
-    // 2 seeded discards in each of the 3 regions.
-    assert(worldDenizens.take(6).forall(denizens), "seeded discards")
-    assert(implementedFirst(worldDenizens, denizens), worldDenizens.toString)
-
+      GameStartRules.evolve(catalog, plan.chronicle, plan.orders)).game.current
     val dealtRelics = current.map.inPlay.flatMap(site =>
       current.map.sites(site).relics.map(_.id)) ++ current.commonCards.relicDeck
     assertEquals(dealtRelics, plan.orders.relicOrder)
-    assert(implementedFirst(dealtRelics, relics), dealtRelics.toString)
-    assert(current.map.inPlay.flatMap(current.map.sites(_).denizens).forall {
-      case edifice: EdificeState =>
-        val printed = present(catalog.edifices
-          .find(_.id.value == edifice.id.value), edifice.id.value)
-        ImplementedCardCatalog.homelandEdifice(catalog, printed.suit, status)
-          .forall(_ == edifice.id)
-      case _ => true
-    }, "a Homeland in play carries its suit's implemented edifice")
 
   test("a new Chronicle carries no history and starts a first game"):
     val plan = accepted(factory.build(config, ChronicleChoice.New("Fresh")))
@@ -123,33 +97,6 @@ class GeneratedFirstGamePlanFactorySuite extends munit.FunSuite:
       plan.orders)).game.current
     assertEquals(current.commonCards.worldDeck, plan.orders.worldDeckOrder)
     assertEquals(current.players.map(_.advisers.size), Vector(3, 3, 3))
-
-  test("under Teeming World the alpha shuffle's unimplemented denizens, " +
-      "last in the stack, top no discard pile"):
-    val implemented = ImplementedCardCatalog.denizens(catalog,
-      PowerImplementationStatus.implemented)
-    val unimplemented = present(catalog.denizens.map(definition =>
-      DenizenId(definition.id.value)).find(id => !implemented(id)),
-      "an unimplemented denizen")
-    val fixture = FirstGameSetupFixture.chronicle
-    val saved = fixture.copy(
-      worldDeck = fixture.worldDeck.filterNot(_ == unimplemented) :+
-        unimplemented,
-      foundations = Map(FoundationNumber.IV ->
-        FoundationState(FoundationFace.Altered, Set.empty)))
-    val plan = accepted(factory.build(config, ChronicleChoice.Saved(saved)))
-    val stack = plan.orders.denizenOrder
-    assert(!implemented(stack.last), "the shuffle puts the unimplemented " +
-      s"denizens last: $stack")
-    val discards = accepted(GameStartRules.evolve(catalog, plan.chronicle,
-      plan.orders)).game.current.commonCards
-    val tops = Region.all.map(discards.discard(_).last)
-    assert(tops.forall {
-      case id: DenizenId => implemented(id)
-      case _ => false
-    }, s"an unimplemented denizen tops a discard pile: $tops")
-    assert(Region.all.exists(discards.discard(_).head == stack.last),
-      "the stack's last card lies at the bottom of a pile")
 
   private def lineage(id: String, role: Role) =
     LineageState(LineageId(id), None, role, Vector.empty, Vector.empty)

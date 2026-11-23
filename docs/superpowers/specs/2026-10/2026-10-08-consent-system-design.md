@@ -104,8 +104,10 @@ Pass blocks.
 
 12. **Answers last the turn.** An answer is remembered for the rest of the
     turn for its exact key: power, requester, decision and target. A refused
-    target stays unavailable. A granted target can be selected again without
-    asking. A preference set later in the same turn does not change a
+    target stays unavailable, and a granted target stays selectable without
+    asking, until its granter reconsiders (amended by the
+    [reconsider design](../2026-11/2026-11-20-consent-reconsider-design.md),
+    rulings 20 to 26). A preference set later in the same turn does not change a
     remembered answer; it applies only to targets nobody has asked about yet.
     An answer binds its granter: it counts only while the player who gave it
     may still answer that key. A ruler who loses the site, to another player
@@ -114,7 +116,10 @@ Pass blocks.
     the whole request, is the refuser's for every key it settles.
 13. **Answers never block undo.** The requester may undo past a consent
     answer, as far as the ordinary barriers allow. The answer stays
-    remembered and its log lines are never struck through.
+    remembered and its log lines are never struck through. An undo may
+    unlock an answer: one is locked while the move it decided stands, and
+    its granter may change it again once the requester undoes that move
+    (amended by the reconsider design, ruling 21).
 14. **Withdrawing.** The requester may undo while a request is unanswered.
     The request is withdrawn, its log line is struck through, and nothing is
     remembered.
@@ -162,6 +167,11 @@ stack. The walker gains one new thing: options in an askable state.
   `ConsentAsk` is a granter, its powers and an optional answer. Slice 1 has
   one ask at most.
 - `turn`: the turn `answers` belongs to.
+- `history`: the requests settled in `turn`, each with its asks as
+  answered, which a granter changes an answer through. The use mark that
+  locks an answer lives in the game. Both are described in the
+  [reconsider design](../2026-11/2026-11-20-consent-reconsider-design.md),
+  "State".
 
 The state sits outside `CurrentGameState` because undo rewinds to a saved
 `CommandBatch.before`. Consent state has to be carried across that rewind.
@@ -179,6 +189,8 @@ consent stays off the undo stack.
 - `ConsentPreferenceSet(granter, power, requester, setting)`, where
   `setting` is `Never | CaseByCase | Always`. Case-by-case removes the entry.
 - `ConsentPreferencesCleared(granter, power)`
+- `ConsentReconsidered(granter, requester, decisionId, target, granted)`,
+  a granter's changed answer (reconsider design, "Events").
 
 A manual Never Allow or Always Allow emits `ConsentAnswered`, anything it
 settles, and then `ConsentPreferenceSet` in the same append, so the
@@ -250,7 +262,9 @@ Validate that `granter` rules the power's card now, the power is waivable,
 **While a request is pending,** `ResolveWalker` and `RollWalker` are
 rejected with a new `OathViolation.ConsentPending`. Accepted: `AnswerConsent`
 from an asked granter, `Undo` from the requester, and
-`SetConsentPreference` from anyone.
+`SetConsentPreference` from anyone. `ReconsiderConsent` is accepted too,
+except about the option the waiting request names (reconsider design,
+"Commands").
 
 **After every command,** the application compares each stored preference
 with the current ruler of its card. Where they differ it appends

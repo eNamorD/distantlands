@@ -151,13 +151,14 @@ class ChallengeReachSuite extends munit.FunSuite:
       ModifierPicks.decisionId(window), ModifierPlay.start))
     assertEquals(bannersOffered(started), Vector(peoplesFavor, darkestSecret))
 
-  test("School of Vines does not reach a banner an Imperial ally holds"):
-    // p2 is the Chancellor and p1 a Citizen, so they are not enemies.
+  test("School of Vines reaches a banner the Chancellor holds, for a " +
+      "Citizen"):
+    // p2 is the Chancellor and p1 a Citizen. Imperial players are each
+    // other's enemies (rules glossary, "Enemy").
     val ready = schoolAtP1sSite.imperial(p2, p1).turn(p1, Phase.Act).ready
-    assert(!Imperials.enemies(ready, p1, p2))
-    assert(!ChallengeReach.widens(ready, p1, Vector.empty,
+    assert(ChallengeReach.widens(ready, p1, Vector.empty,
       SchoolOfVinesCard.id, Vector.empty))
-    assert(!MenuPlay.availableInMenu(catalog, ready, ActionRef.Challenge))
+    assert(MenuPlay.availableInMenu(catalog, ready, ActionRef.Challenge))
 
   test("a Challenge a Sigil opened takes the banner and replays"):
     val ready = p2HoldsBothBannersAway.relic(p1, SigilOfTheEyeCard).ready

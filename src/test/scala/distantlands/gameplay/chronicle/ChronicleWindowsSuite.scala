@@ -51,7 +51,7 @@ class ChronicleWindowsSuite extends munit.FunSuite:
       "chronicle.final-winner")
     assertEquals(
       (ChronicleWindows.sun.map(_.key), ChronicleWindows.throne.map(_.key)), (
-      Vector("chronicle.sun.start-of-sun", "chronicle.sun.reveal-relics",
+      Vector("chronicle.sun.reveal-relics",
         "chronicle.sun.before-resolve-legacies", "chronicle.sun.flip-legacies",
         "chronicle.sun.exile-dormancy", "chronicle.sun.legacy-cap",
         "chronicle.sun.shuffle-legacies",

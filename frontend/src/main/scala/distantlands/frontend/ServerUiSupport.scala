@@ -4,6 +4,9 @@ import distantlands.protocol._
 import org.scalajs.dom
 import scala.scalajs.js
 
+/** A trusted seat's page: the game it is in and the player whose seat it is. */
+private[frontend] final case class SeatPage(gameId: String, playerId: String)
+
 private[frontend] object ServerUiSupport:
   /** The count a player hovers to learn, then why the rest are unavailable. */
   private[frontend] def secretSummaryLines(available: Int, total: Int,
@@ -52,6 +55,18 @@ private[frontend] object ServerUiSupport:
     Vector(RulesTextRenderer.glyph(token),
       text("span", "site-token-count", count.toString))
 
+  /** A card's face and what opening it does: a card printing a power the
+    * viewer rules opens with their consent grid (consent slice 3), on a
+    * site or on a board (Ancient Bloodline); any other opens as itself. */
+  private[frontend] def ruledCard(details: CardDetails, links: SitePowerLinks)
+      : (dom.html.Button, Option[dom.html.Element => Unit]) =
+    val face = CardFace.render(details)
+    val ruled = links.cardGrid(details).map(grid =>
+      (origin: dom.html.Element) =>
+        CardInspection.openRuled(details, grid, origin))
+    ruled.foreach(open => face.onclick = _ => open(face))
+    (face, ruled)
+
   private[frontend] def siteDetails(site: GameSite,
       options: BoardOptions = BoardOptions.none,
       links: SitePowerLinks = SitePowerLinks.none): dom.Element =
@@ -63,14 +78,8 @@ private[frontend] object ServerUiSupport:
     site.denizens.zipWithIndex.foreach { (denizen, at) =>
       denizen.details match
         case Some(details) =>
-          val face = CardFace.render(details)
+          val (face, ruled) = ruledCard(details, links)
           face.setAttribute("data-denizen-id", denizen.denizenId)
-          // A card printing a power the viewer rules opens with their
-          // consent grid (consent slice 3).
-          val ruled = links.cardGrid(details).map(grid =>
-            (origin: dom.html.Element) =>
-              CardInspection.openRuled(details, grid, origin))
-          ruled.foreach(open => face.onclick = _ => open(face))
           cards.appendChild(options.card(face, details,
             Vector(BoardOptions.cardKey(details), siteSlot(site, at)), ruled))
         case None =>
@@ -286,45 +295,28 @@ private[frontend] object ServerUiSupport:
       value: GameProjection,
       playerId: String
   ): ViewerPresentation =
-    // A finished game hides every control, except for a walk parked after
-    // it: the winner's Start Chronicle decision, and the Chronicle's own.
-    if value.oathkeeper.exists(_.winnerPlayerId.nonEmpty) &&
-        value.walkerDecision.isEmpty && value.walkerWaiting.isEmpty then
-      return ViewerPresentation(showGameplayControls = false,
-        waitingForPlayerIds = Vector.empty, waitingForDisplayNames = Vector.empty,
-        playerId = playerId)
-    // A parked walker `Decide`'s owner is projected `walkerDecision`
-    // regardless of whose turn it is, and everyone else is projected
-    // `walkerWaiting` naming every player who may answer (see
-    // WalkerDecisionProjector.project/waiting). Reading `activeParticipantId` below instead of these two
-    // fields would leave an off-turn owner with no panel -- and the active
-    // player waiting on them right back -- since neither side is the other's
-    // active participant.
-    if value.walkerDecision.nonEmpty then
-      return ViewerPresentation(showGameplayControls = true,
-        waitingForPlayerIds = Vector.empty, waitingForDisplayNames = Vector.empty,
-        playerId = playerId)
-    if value.walkerWaiting.nonEmpty then
-      return ViewerPresentation(showGameplayControls = false,
-        waitingForPlayerIds = value.walkerWaiting.fold(Vector.empty)(_.playerIds),
-        waitingForDisplayNames = value.walkerWaiting.fold(Vector.empty)(
-          _.playerIds.map(playerDisplayName(value, _))),
-        playerId = playerId)
-    val controllingPlayer = value.activeParticipantId
-    controllingPlayer match
-      case Some(activePlayerId) if activePlayerId != playerId =>
-        ViewerPresentation(
-          showGameplayControls = false,
-          waitingForPlayerIds = Vector(activePlayerId),
-          waitingForDisplayNames = Vector(playerDisplayName(value, activePlayerId)),
-          playerId = playerId
-        )
-      case _ => ViewerPresentation(
-        showGameplayControls = true,
-        waitingForPlayerIds = Vector.empty,
-        waitingForDisplayNames = Vector.empty,
-        playerId = playerId
-      )
+    val finished = value.oathkeeper.exists(_.winnerPlayerId.nonEmpty) &&
+      value.walkerDecision.isEmpty && value.walkerWaiting.isEmpty
+    val (showGameplayControls, waitingFor) =
+      // A finished game hides every control, except for a walk parked after
+      // it: the winner's Start Chronicle decision, and the Chronicle's own.
+      if finished then (false, Vector.empty[String])
+      // A parked walker `Decide`'s owner is projected `walkerDecision`
+      // regardless of whose turn it is, and everyone else is projected
+      // `walkerWaiting` naming every player who may answer (see
+      // WalkerDecisionProjector.project/waiting). Reading
+      // `activeParticipantId` instead of these two fields would leave an
+      // off-turn owner with no panel -- and the active player waiting on
+      // them right back -- since neither side is the other's active
+      // participant.
+      else if value.walkerDecision.nonEmpty then (true, Vector.empty[String])
+      else value.walkerWaiting match
+        case Some(waiting) => (false, waiting.playerIds)
+        case None => value.activeParticipantId match
+          case Some(active) if active != playerId => (false, Vector(active))
+          case _ => (true, Vector.empty[String])
+    ViewerPresentation(showGameplayControls, waitingFor,
+      waitingFor.map(playerDisplayName(value, _)), playerId)
 
   /** A banner's printed name from its key. */
   private[frontend] def bannerLabel(key: String): String = key match
@@ -332,13 +324,13 @@ private[frontend] object ServerUiSupport:
     case "darkest-secret" => "Darkest Secret"
     case other => other
 
-  private[frontend] def winnerColorClass(value: GameProjection,
+  private[frontend] def playerColorClass(value: GameProjection,
       playerId: String): String =
     PlayerColorCss.of(value.players.find(_.playerId == playerId).map(_.color))
 
   private[frontend] def winnerBanner(value: GameProjection,
       winner: String, victory: String): dom.Element =
-    val banner = element("div", s"victory-banner ${winnerColorClass(value, winner)}")
+    val banner = element("div", s"victory-banner ${playerColorClass(value, winner)}")
     banner.setAttribute("role", "status")
     banner.appendChild(playerReference(value, winner))
     banner.appendChild(dom.document.createTextNode(s" wins — $victory"))
@@ -386,11 +378,16 @@ private[frontend] object ServerUiSupport:
   private[frontend] def freshGameId(): String =
     s"manual-${js.Date.now().toLong}-${(js.Math.random() * 1000000).toInt}"
 
-  private[frontend] def canonicalGameId(pathname: String): Option[String] =
+  /** The seat whose page `pathname` is: `/games/{game}/seats/{player}`,
+    * each segment percent-encoded and non-empty. */
+  private[frontend] def seatPage(pathname: String): Option[SeatPage] =
+    def decoded(encoded: String): Option[String] =
+      try Option(js.URIUtils.decodeURIComponent(encoded)).filter(_.nonEmpty)
+      catch { case scala.util.control.NonFatal(_) => None }
     pathname.split("/", -1).toVector match
-      case Vector("", "games", encoded) if encoded.nonEmpty =>
-        try Option(js.URIUtils.decodeURIComponent(encoded)).filter(_.nonEmpty)
-        catch { case scala.util.control.NonFatal(_) => None }
+      case Vector("", "games", game, "seats", player) =>
+        for gameId <- decoded(game); playerId <- decoded(player)
+        yield SeatPage(gameId, playerId)
       case _ => None
 
   private[frontend] def queryParameter(name: String): Option[String] =
@@ -436,6 +433,9 @@ private[frontend] object ServerUiSupport:
     val node = element(tag, className)
     node.textContent = value
     node
+
+  private[frontend] def svgElement(tag: String): dom.Element =
+    dom.document.createElementNS("http://www.w3.org/2000/svg", tag)
 
   private[frontend] def element(tag: String, className: String): dom.Element =
     val node = dom.document.createElement(tag)

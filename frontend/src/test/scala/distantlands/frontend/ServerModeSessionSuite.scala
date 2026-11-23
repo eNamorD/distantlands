@@ -61,7 +61,7 @@ class ServerModeSessionSuite extends FunSuite:
         Future.successful(Right(TransportResponse(200, encodedGame(
           chronicle = Some(ChronicleProjection("Ashen Crown", "d-1",
             Some(evolved))))))))
-      Main.start(browser.mount, "/games/my%20game", trustedAlpha = true,
+      Main.start(browser.mount, "/games/my%20game/seats/blue", trustedAlpha = true,
         withEmptyLogPage(transport),
         devices = ChronicleFixtures.devices(Some(storage)))
       browser.settle.map { _ =>
@@ -80,11 +80,11 @@ class ServerModeSessionSuite extends FunSuite:
         Future.successful(Right(TransportResponse(200,
           encodedGame(viewer = Some("blue"), active = "red")))))
       val requests = transport.requests
-      Main.start(browser.mount, "/games/my%20game", trustedAlpha = true,
+      Main.start(browser.mount, "/games/my%20game/seats/blue", trustedAlpha = true,
         withEmptyLogPage(transport))
       browser.settle.map { _ =>
         assertEquals(requests.map(r => r.method -> r.url).toVector,
-          Vector("GET" -> "/games/my%20game/api"))
+          Vector("GET" -> "/games/my%20game/seats/blue/api"))
         assert(browser.text.contains("Blue Exile"))
         assert(browser.text.contains("Waiting for"))
         assert(browser.byClass("seat-identity").head.textContent
@@ -104,7 +104,7 @@ class ServerModeSessionSuite extends FunSuite:
         requests += 1
         Future.successful(Right(TransportResponse(401,
           """{"error":"unauthorized","message":"internal detail"}"""))))
-      Main.start(browser.mount, "/games/missing", trustedAlpha = true,
+      Main.start(browser.mount, "/games/missing/seats/blue", trustedAlpha = true,
         withEmptyLogPage(transport))
       browser.settle.map { _ =>
         assertEquals(requests, 1)
@@ -263,16 +263,16 @@ class ServerModeSessionSuite extends FunSuite:
         TransportResponse(200, encodedGame(nextSequence = 2L)))
       val transport = ScriptedTransport((_, _, _) =>
         Future.successful(Right(responses.dequeue())))
-      Main.start(browser.mount, "/games/my%20game", trustedAlpha = true,
+      Main.start(browser.mount, "/games/my%20game/seats/blue", trustedAlpha = true,
         withEmptyLogPage(transport))
       browser.settle.flatMap { _ =>
         browser.click("menu-ending")
         browser.settle
       }.map { _ =>
         assertEquals(transport.requests.map(r => r.method -> r.url).toVector,
-          Vector("GET" -> "/games/my%20game/api",
-            "POST" -> "/games/my%20game/api/commands",
-            "GET" -> "/games/my%20game/api"))
+          Vector("GET" -> "/games/my%20game/seats/blue/api",
+            "POST" -> "/games/my%20game/seats/blue/api/commands",
+            "GET" -> "/games/my%20game/seats/blue/api"))
         assert(browser.byClass("seat-identity").head.textContent
           .contains("Blue Exile"))
         assert(browser.text.contains("Waiting for"))
@@ -289,7 +289,7 @@ class ServerModeSessionSuite extends FunSuite:
         Future.successful(Right(if requests == 1 then
           TransportResponse(200, encodedGame()) else TransportResponse(403,
             """{"error":"forbidden","message":"denied"}"""))))
-      Main.start(browser.mount, "/games/my%20game", trustedAlpha = true,
+      Main.start(browser.mount, "/games/my%20game/seats/blue", trustedAlpha = true,
         withEmptyLogPage(transport))
       browser.settle.flatMap { _ => browser.tick(); browser.settle }.map { _ =>
         assertEquals(requests, 2)
@@ -311,7 +311,7 @@ class ServerModeSessionSuite extends FunSuite:
             if requests.size == 1 then encodedBlueAct()
             else encodedBlueAct(viewer = viewer)))),
           requests)
-        Main.start(browser.mount, "/games/my%20game", trustedAlpha = true,
+        Main.start(browser.mount, "/games/my%20game/seats/blue", trustedAlpha = true,
           withEmptyLogPage(transport))
         browser.settle.flatMap { _ =>
           // The control on screen before the poll: once the viewer is
@@ -326,8 +326,8 @@ class ServerModeSessionSuite extends FunSuite:
             oldControl.onclick(js.Dynamic.literal())
             browser.tick()
             assertEquals(requests.map(r => r.method -> r.url).toVector, Vector(
-              "GET" -> "/games/my%20game/api",
-              "GET" -> "/games/my%20game/api"))
+              "GET" -> "/games/my%20game/seats/blue/api",
+              "GET" -> "/games/my%20game/seats/blue/api"))
           }
         }
   }
@@ -349,7 +349,7 @@ class ServerModeSessionSuite extends FunSuite:
                 encodedBlueAct(viewer = Some("red")))
               else TransportResponse(status,
                 """{"error":"forbidden","message":"denied"}"""))))
-        Main.start(browser.mount, "/games/my%20game", trustedAlpha = true,
+        Main.start(browser.mount, "/games/my%20game/seats/blue", trustedAlpha = true,
           withEmptyLogPage(transport))
         browser.settle.flatMap { _ =>
           browser.click("menu-ending")

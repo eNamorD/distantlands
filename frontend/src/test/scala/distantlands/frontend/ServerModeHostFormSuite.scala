@@ -78,8 +78,8 @@ class ServerModeHostFormSuite extends FunSuite:
       assert(!browser.nodes.exists(
         _.getAttribute("aria-label") == "First player ID"))
       assertEquals(hostColors(browser), Vector("red", "blue"))
-      assertEquals(browser.input("Red player ID").value, "Red")
-      assertEquals(browser.input("Blue player ID").value, "Blue")
+      assertEquals(browser.input("Red Exile player ID").value, "Red")
+      assertEquals(browser.input("Blue Exile player ID").value, "Blue")
       browser.click("create-trusted-game")
       browser.settle.map { _ =>
         assertEquals(requests.map(r => r.method -> r.url).toVector,
@@ -101,6 +101,11 @@ class ServerModeHostFormSuite extends FunSuite:
         assertEquals(links.map(_.value), Vector(
           "https://oath.test/s/red-code", "https://oath.test/s/blue-code"))
         assert(links.forall(_.readOnly))
+        // Each seat names its player, then that player's color and role.
+        assertEquals(browser.byClass("seat-link-player").map(_.textContent),
+          Vector("Red", "Blue"))
+        assertEquals(browser.byClass("seat-link-color").map(_.textContent),
+          Vector("Red Exile", "Blue Exile"))
         assertEquals(browser.byClass("copy-seat-link").size, 2)
         assertEquals(browser.urls, Vector.empty)
         browser.click("copy-seat-link")
@@ -111,7 +116,7 @@ class ServerModeHostFormSuite extends FunSuite:
       "auto-correct"):
     TestBrowser.useSynchronously(): browser =>
       startHostForm(browser)
-      val input = browser.input("Red player ID")
+      val input = browser.input("Red Exile player ID")
       assertEquals(input.getAttribute("autocapitalize"), "none")
       assertEquals(input.getAttribute("autocorrect"), "off")
       assertEquals(input.getAttribute("spellcheck"), "false")
@@ -123,7 +128,7 @@ class ServerModeHostFormSuite extends FunSuite:
       browser.click("add-player-toggle")
       assertEquals(toggle(browser).getAttribute("aria-expanded"), "true")
       assertEquals(menuColors(browser),
-        Vector("Yellow", "White", "Black", "Pink", "Brown"))
+        Vector("Yellow Exile", "White Exile", "Black Exile", "Pink Exile", "Brown Exile"))
       browser.click("add-player-pink")
       assert(browser.byClass("add-player-menu").head.hasAttribute("hidden"))
       assertEquals(hostColors(browser), Vector("red", "blue", "pink"))
@@ -150,7 +155,7 @@ class ServerModeHostFormSuite extends FunSuite:
       assert(!toggle(browser).disabled)
       assert(!browser.text.contains("Maximum 6 players"))
       browser.click("add-player-toggle")
-      assertEquals(menuColors(browser), Vector("Yellow", "White"))
+      assertEquals(menuColors(browser), Vector("Yellow Exile", "White Exile"))
 
   test("the posted participants follow the chosen colors"):
     TestBrowser.use(): browser =>
@@ -179,15 +184,15 @@ class ServerModeHostFormSuite extends FunSuite:
       assertEquals(hostColors(browser), Vector.empty)
       addPlayers(browser, "add-player-yellow", "add-player-red")
       assertEquals(hostColors(browser), Vector("yellow", "red"))
-      browser.input("Yellow player ID").value = "bad id"
+      browser.input("Yellow Exile player ID").value = "bad id"
       browser.click("create-trusted-game")
       assert(browser.text.contains(
         "Yellow player ID must start with a letter or digit"))
-      browser.input("Yellow player ID").value = "Alex"
-      browser.input("Red player ID").value = " Alex "
+      browser.input("Yellow Exile player ID").value = "Alex"
+      browser.input("Red Exile player ID").value = " Alex "
       browser.click("create-trusted-game")
       assert(browser.text.contains("Player ID \"Alex\" is used twice."))
-      browser.input("Red player ID").value = "Sam"
+      browser.input("Red Exile player ID").value = "Sam"
       browser.click("create-trusted-game")
       browser.settle.map { _ =>
         assertEquals(requests.size, 1)

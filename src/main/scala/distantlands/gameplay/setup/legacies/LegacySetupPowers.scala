@@ -1,7 +1,7 @@
 package distantlands.gameplay.setup.legacies
 
 import distantlands.gameplay.powerresolver.ContributingPower
-import distantlands.model.{NoteKey, Operation}
+import distantlands.model.NoteKey
 
 /** The legacies whose SETUP powers are implemented (Legacy Setup powers
   * design), registered on the walker by `WalkerPowerCatalog`. */
@@ -16,5 +16,3 @@ object LegacySetupPowers:
     Matchmaker.setupNoteKeys ++ SecretSociety.setupNoteKeys ++
     Seer.setupNoteKeys ++ TheStandardBearer.setupNoteKeys ++
     Wealthy.setupNoteKeys ++ QuestToDistantLands.setupNoteKeys
-  /** The lines that open Setup for what game start's powers did. */
-  def startNotes: Vector[Operation] = StartLines.operations

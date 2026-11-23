@@ -28,13 +28,16 @@ def relative(path: Path) -> str:
 
 
 errors = []
+STRUCTURE = "docs/architecture/codebase-structure.md"
 sources = [path for root in PRODUCTION_ROOTS for path in scala_sources(root)]
 
 for path in sources:
     line_count = len(path.read_text(encoding="utf-8").splitlines())
     if line_count > MAX_SCALA_FILE_LINES:
         errors.append(f"{relative(path)}:{line_count}: production Scala file "
-                      f"exceeds {MAX_SCALA_FILE_LINES} lines")
+                      f"exceeds {MAX_SCALA_FILE_LINES} lines; split it by reason "
+                      f"to change, not by squeezing lines ({STRUCTURE}, "
+                      '"Grouping and size")')
 
 forbidden_imports = {
     "src/main/scala/distantlands/model": (
@@ -69,7 +72,10 @@ for prefix, packages in forbidden_imports.items():
         text = text.replace(allowed_imports.get(relative(path), "\0"), "")
         for needle in needles:
             if needle in text:
-                errors.append(f"{relative(path)}: forbidden inward dependency: {needle}")
+                errors.append(f"{relative(path)}: forbidden inward dependency: "
+                              f"{needle}; move the code to the package that owns "
+                              f"it, or pass the value in ({STRUCTURE}, "
+                              '"Ownership and dependency direction")')
 
 # The frontend renders projections over the shared protocol and never
 # imports gameplay, application or server rules; the shared protocol
@@ -115,21 +121,30 @@ def outward_references(path: Path, allowed_packages: tuple[str, ...]):
 
 for path in scala_sources(ROOT / "frontend/src/main/scala"):
     for line_number, package in outward_references(path, ("frontend", "protocol")):
-        errors.append(f"{relative(path)}:{line_number}: frontend references {package}")
+        errors.append(f"{relative(path)}:{line_number}: frontend references "
+                      f"{package}; it reads only the shared protocol, so carry "
+                      f"what it needs in a projection DTO ({STRUCTURE}, "
+                      '"Ownership and dependency direction")')
 
 for path in scala_sources(ROOT / "shared/src/main/scala"):
     for line_number, package in outward_references(path, ("protocol",)):
         errors.append(
-            f"{relative(path)}:{line_number}: shared protocol references {package}"
+            f"{relative(path)}:{line_number}: shared protocol references "
+            f"{package}; keep wire DTOs self-contained and map domain values at "
+            f'the application edge ({STRUCTURE}, "Shared protocol and adapter ports")'
         )
 
 printed_text = re.compile(r"\.text\b")
 for path in scala_sources(ROOT / "src/main/scala/distantlands/gameplay"):
     text = path.read_text(encoding="utf-8")
     if "rulesText" in text:
-        errors.append(f"{relative(path)}: gameplay must not inspect catalog rulesText")
+        errors.append(f"{relative(path)}: gameplay must not inspect catalog "
+                      f"rulesText; write the rule as a typed power under "
+                      f'gameplay/powers/ ({STRUCTURE}, "Sources of truth")')
     if printed_text.search(text):
-        errors.append(f"{relative(path)}: gameplay must not read printed power text")
+        errors.append(f"{relative(path)}: gameplay must not read printed power "
+                      f"text; write the rule as a typed power under "
+                      f'gameplay/powers/ ({STRUCTURE}, "Sources of truth")')
 
 legacy_patterns = {
     r"\bdistantlands\.setup\b": "legacy setup package",
@@ -142,7 +157,9 @@ for path in sources:
     text = path.read_text(encoding="utf-8")
     for pattern, label in legacy_patterns.items():
         if re.search(pattern, text):
-            errors.append(f"{relative(path)}: contains {label}")
+            errors.append(f"{relative(path)}: contains {label}; it was "
+                          "deleted, so build on what replaced it instead of "
+                          "bringing it back")
 
 definition = re.compile(r"\s*(?:sealed trait|final case class)\s+([A-Za-z0-9_]+)")
 shared_only = {
@@ -155,7 +172,8 @@ for path in sources:
         match = definition.match(line)
         if match and match.group(1) in shared_only and "shared/src/main" not in relative(path):
             errors.append(
-                f"{relative(path)}:{line_number}: duplicate shared DTO {match.group(1)}"
+                f"{relative(path)}:{line_number}: duplicate shared DTO "
+                f"{match.group(1)}; import the one in shared/src/main instead"
             )
 
 command_definition = re.compile(
@@ -167,7 +185,10 @@ for path in sources:
         continue
     for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         if command_definition.match(line):
-            errors.append(f"{rel}:{line_number}: duplicate command vocabulary")
+            errors.append(f"{rel}:{line_number}: duplicate command vocabulary; "
+                          "GameIntent and GameCommand live only in "
+                          "application/GameCommands.scala and the shared "
+                          "protocol, so extend those")
 
 # Powers read their cards from card objects (ROADMAP standing rules; the
 # card classes design of 2026-10-01), and a power that looks other cards up
@@ -217,11 +238,13 @@ for path in sources:
     for found in operation_base_extension.finditer(text):
         line_number = text.count("\n", 0, found.start()) + 1
         errors.append(f"{rel}:{line_number}: only an operation family "
-                      "file may extend OperationBase")
+                      "file may extend OperationBase; add the case to one of "
+                      "OPERATION_FAMILY_FILES (" + STRUCTURE + ', "Operation")')
 for family_file in sorted(OPERATION_FAMILY_FILES):
     if not (ROOT / family_file).is_file():
         errors.append(f"{family_file}: listed as an operation family file "
-                      "but missing; update check-architecture.py")
+                      "but missing; update OPERATION_FAMILY_FILES in "
+                      "check-architecture.py")
 
 if errors:
     print("architecture check failed:")

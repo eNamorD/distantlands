@@ -93,7 +93,7 @@ class SitePowerGridSuite extends munit.FunSuite:
       Vector(ConsentGridRow("blue", "Blue", "case-by-case")),
       Some((player, setting) => chosen :+= (player -> setting)))), opener)
     assertEquals(root.querySelector(".consent-grid-heading").textContent,
-      "Consent preferences")
+      "Who may ignore this power")
     val choices = all(root, ".consent-grid-choice")
       .map(_.asInstanceOf[dom.html.Button])
     assertEquals(choices.map(_.textContent),
@@ -108,6 +108,30 @@ class SitePowerGridSuite extends munit.FunSuite:
     overlay.dispose()
     root.remove()
     opener.remove()
+
+  test("a preference row names the player on its own line and holds the " +
+      "three settings together under it"):
+    val drawn = ConsentGridView.render(ConsentGrid(Vector(
+      ConsentGridRow("blue", "Blue", "case-by-case"),
+      ConsentGridRow("green", "Green", "never")), None))
+    val rows = all(drawn, ".consent-grid-row")
+    assertEquals(rows.map(_.getAttribute("data-player-id")),
+      Vector("blue", "green"))
+    rows.zip(Vector("Blue", "Green")).foreach { (row, name) =>
+      assertEquals(row.children.toVector.map(_.getAttribute("class")),
+        Vector("consent-grid-player", "consent-grid-choices"))
+      assertEquals(row.children(0).textContent, name)
+      val settings = row.children(1)
+      assertEquals(settings.getAttribute("role"), "group")
+      assertEquals(settings.getAttribute("aria-label"), name)
+      assertEquals(settings.children.toVector.map(setting =>
+          setting.getAttribute("class") -> setting.textContent),
+        Vector("consent-grid-choice" -> "Never Allow",
+          "consent-grid-choice" -> "Case-by-case",
+          "consent-grid-choice" -> "Always Allow"))
+    }
+    assertEquals(all(drawn, "[aria-pressed='true']")
+      .map(_.getAttribute("data-setting")), Vector("case-by-case", "never"))
 
   private def present[A](value: Option[A])(using munit.Location): A =
     value.getOrElse(fail("expected a grid"))

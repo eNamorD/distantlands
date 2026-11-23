@@ -9,8 +9,8 @@ validate_tag() {
   # Reject newlines separately: grep matches lines, not the entire input.
   case "$1" in *'
 '*) fail "release tag contains a newline" ;; esac
-  printf '%s\n' "$1" | LC_ALL=C grep -Eq '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-(alpha|beta|rc)\.(0|[1-9][0-9]*)$' ||
-    fail "expected vX.Y.Z-(alpha|beta|rc).N without leading zeros"
+  printf '%s\n' "$1" | LC_ALL=C grep -Eq '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-(alpha|beta|rc)$' ||
+    fail "expected vX.Y.Z-(alpha|beta|rc) without leading zeros"
   printf '%s\n' "${1#v}"
 }
 
@@ -30,11 +30,11 @@ case "${1:-}" in
     check_tag "$2"
     ;;
   self-test)
-    for tag in v0.1.0-alpha.1 v1.2.3-beta.0 v10.20.30-rc.12; do
+    for tag in v0.2.0-alpha v1.2.3-beta v10.20.30-rc; do
       validate_tag "$tag" >/dev/null
     done
-    for tag in '' v1.2.3 1.2.3-alpha.1 v01.2.3-alpha.1 v1.2.3-alpha.01 \
-        v1.2.3-SNAPSHOT v1.2.3-alpha.1+build '../alpha' 'v1.2.3-alpha.1
+    for tag in '' v1.2.3 1.2.3-alpha v01.2.3-alpha v1.02.3-alpha v1.2.03-alpha \
+        v1.2.3-alpha.1 v1.2.3-SNAPSHOT v1.2.3-alpha+build '../alpha' 'v1.2.3-alpha
 '; do
       if (validate_tag "$tag") >/dev/null 2>&1; then fail "accepted invalid tag"; fi
     done
@@ -47,13 +47,13 @@ case "${1:-}" in
       cd "$fixture"
       git init -q
       git -c user.name=ReleaseTest -c user.email=release-test@example.invalid -c commit.gpgsign=false commit -qm initial --allow-empty
-      git tag v0.1.0-alpha.1
-      git -c user.name=ReleaseTest -c user.email=release-test@example.invalid -c tag.gpgsign=false tag -am test v0.1.0-beta.1
-      sh "$script" check-tag v0.1.0-alpha.1
-      sh "$script" check-tag v0.1.0-beta.1
-      if sh "$script" check-tag v0.1.0-rc.1 >/dev/null 2>&1; then fail "accepted missing tag"; fi
+      git tag v0.2.0-alpha
+      git -c user.name=ReleaseTest -c user.email=release-test@example.invalid -c tag.gpgsign=false tag -am test v0.2.0-beta
+      sh "$script" check-tag v0.2.0-alpha
+      sh "$script" check-tag v0.2.0-beta
+      if sh "$script" check-tag v0.2.0-rc >/dev/null 2>&1; then fail "accepted missing tag"; fi
       git -c user.name=ReleaseTest -c user.email=release-test@example.invalid -c commit.gpgsign=false commit -qm next --allow-empty
-      if sh "$script" check-tag v0.1.0-alpha.1 >/dev/null 2>&1; then fail "accepted wrong HEAD"; fi
+      if sh "$script" check-tag v0.2.0-alpha >/dev/null 2>&1; then fail "accepted wrong HEAD"; fi
     )
     echo "alpha release validation passed: valid/invalid versions, lightweight/annotated tags, missing tag, wrong HEAD"
     ;;

@@ -76,7 +76,11 @@ A batch is a barrier when any of these holds:
   and a `BeginRest` batch that finishes Rest on its own because no REST power
   is usable.
 - It is the Begin batch, which starts the game and runs Setup.
-- It sets the game result.
+- It sets the game result. The Chronicle Phase that follows runs with the
+  result still set, and its batches are not barriers for that alone.
+- It journals the evolved Chronicle at the Chronicle's end. The evolved
+  Chronicle shows every seat the relic deck's order and the lineages'
+  dormant legacies.
 
 Consequences the playtest should expect:
 
@@ -85,6 +89,9 @@ Consequences the playtest should expect:
   each rolls in its own batch.
 - The last answer before a Campaign roll cannot be undone, because the roll
   runs in the same batch.
+- A later game's legacy keep can be undone until the next keeper answers;
+  the last keep cannot when Secret Society or Seer acts on the world
+  deck ([setup keep undo design](../2026-11/2026-11-21-setup-keep-undo-design.md)).
 
 ### Redo
 
@@ -92,7 +99,10 @@ Consequences the playtest should expect:
    more, in the reverse order of the undos.
 2. Only that batch's issuer may redo it.
 3. The redo stack is the run of batches voided by the void markers since the
-   last command batch. Any command batch clears it, whoever issues it.
+   last command batch. Any command batch clears it, whoever issues it. A
+   changed consent answer clears it too
+   ([reconsider design](../2026-11/2026-11-20-consent-reconsider-design.md),
+   ruling 25).
 4. Redo leaves no trace in the Game Log. The restored lines return to normal
    and leave their taken-back group. The outcome is the same as if the undo
    had never happened.
@@ -178,6 +188,12 @@ Per event:
 
 - `CommandAccepted` closes the batch in progress, if any, and opens a new
   one. It clears the redo stack.
+- `ConsentReconsidered` closes the batch in progress, as every consent
+  event does, and clears the redo stack.
+- A rewind carries the consent ledger over. When it moves the round
+  marker inside a turn (an undone Great Clock), the carried ledger's turn
+  is renamed to the target state's, so the turn's answers still read as
+  this turn's.
 - `StepTakenBack` closes the batch in progress, checks the marker against
   the live stack's top, sets the state back to that batch's state before,
   and moves the batch onto the redo stack.
@@ -234,7 +250,8 @@ these holds:
 - the active player differs between its states before and after. This
   catches `FinishRest`, a `BeginRest` that finishes Rest on its own, and any
   other batch that hands the turn over, without naming commands;
-- its state after has a game result.
+- its state before has no game result and its state after has one;
+- its state before has no evolved Chronicle and its state after has one.
 
 The function lives beside `JournalFold` in the application layer, so the
 rules engine stays unaware of undo.

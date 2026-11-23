@@ -74,6 +74,19 @@ class MatLayoutSuite extends munit.FunSuite:
     assert(near(relic.ratio, 1.0), relic.toString)
     assertEquals((relic.x, relic.y, relic.w), (slot.x, slot.y, slot.w))
 
+  test("the festival marker lies across the middle of a site's three " +
+      "slots, a little short of their ends"):
+    sites.foreach { (column, row) =>
+      val marker = festivalMarker(column, row)
+      val first = cardSlot(column, row, 0)
+      val last = cardSlot(column, row, SlotsPerSite - 1)
+      assert(marker.x > first.x && marker.right < last.right, marker.toString)
+      assert(marker.w > 0.9 * (last.right - first.x), marker.toString)
+      assert(near(marker.y + marker.h / 2, first.y + first.h / 2),
+        marker.toString)
+      assert(marker.h < first.h / 4, marker.toString)
+    }
+
   test("a discard and the world deck are denizen cards on their side"):
     ((0 until 3).map(discard) :+ worldDeck).foreach(rect =>
       assert(near(rect.ratio, 596.0 / 381), rect.toString))

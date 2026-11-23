@@ -5,7 +5,8 @@ import distantlands.gameplay.setup.FirstGameSetupFixture.chronicle
 import distantlands.model._
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.chronicle.legacies.IronHandCard
-import distantlands.protocol.{ChronicleFoundation, ChronicleLegacy}
+import distantlands.protocol.{ChronicleFoundation, ChronicleLegacy,
+  ChronicleScorepadEntry}
 
 /** Digest and summary (Chronicle browsing design, "Digest" and "Summary"). */
 class ChronicleEntriesSuite extends munit.FunSuite:
@@ -74,3 +75,19 @@ class ChronicleEntriesSuite extends munit.FunSuite:
     assertEquals(ChronicleEntries.summary(held).scores.map(_.legacies),
       Vector(Vector(ChronicleLegacy(SeerCard.name, active = true),
         ChronicleLegacy(IronHandCard.name, active = false))))
+
+  test("a summary's scorepad is a column per game, each lineage's running " +
+      "total and its role at that game's end"):
+    def mark(id: String, total: Int, role: Role) =
+      EraEntry(LineageId(id), total, role)
+    val played = chronicle.copy(era = EraState(20, Vector(
+      EraGame(Vector(mark("red-lineage", 3, Role.Chancellor),
+        mark("blue-lineage", 0, Role.Exile))),
+      EraGame(Vector(mark("red-lineage", 3, Role.Chancellor),
+        mark("blue-lineage", 5, Role.Citizen))))))
+    assertEquals(ChronicleEntries.summary(played).scorepad, Vector(
+      Vector(ChronicleScorepadEntry("red-lineage", 3, Some("chancellor")),
+        ChronicleScorepadEntry("blue-lineage", 0)),
+      Vector(ChronicleScorepadEntry("red-lineage", 3, Some("chancellor")),
+        ChronicleScorepadEntry("blue-lineage", 5, Some("citizen")))))
+    assertEquals(ChronicleEntries.summary(chronicle).scorepad, Vector.empty)

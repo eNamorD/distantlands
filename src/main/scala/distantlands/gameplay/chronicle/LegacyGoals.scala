@@ -13,6 +13,11 @@ import distantlands.model._
   * includes any Exile is unfriendly, and nobody meets it (Chronicle ruling
   * 4). */
 object LegacyGoals:
+  /** Who meets `legacy`'s goal. The Chronicle, where every card is
+    * revealed, reads every card. The Mouth reads during the game with
+    * `faceupOnly`: only faceup advisers and faceup relics count, for every
+    * player, since a facedown card has no suit (CR p. 17) and reading it
+    * would reveal it (Legacy in-play powers R31). */
   def meeting(ready: ReadyGame, catalog: ExecutableCatalog, legacy: Legacy,
       faceupOnly: Boolean = false): Set[PlayerId] = legacy.goal match
     case LegacyGoal.PeoplesFavor =>
@@ -23,15 +28,6 @@ object LegacyGoals:
     case goal => leaders(ready, ChronicleTasks.seated(ready).map(player =>
       player -> score(ready, catalog, goal, legacy.suit, player, faceupOnly)))
 
-  /** Who meets `legacy`'s goal during the game, as The Mouth reads it: only
-    * faceup advisers and faceup relics count, for every player, since a
-    * facedown card has no suit (CR p. 17) and reading it would reveal it
-    * (Legacy in-play powers R31). The Chronicle, where every card is
-    * revealed, reads `meeting`. */
-  def meetingInPlay(ready: ReadyGame, catalog: ExecutableCatalog,
-      legacy: Legacy): Set[PlayerId] =
-    meeting(ready, catalog, legacy, faceupOnly = true)
-
   /** A seated player's score toward a counted goal: the sites their side
     * rules, the cards of `suit` there and among their own advisers (R23),
     * or their best held relic's printed value. A goal held by a single
@@ -41,10 +37,10 @@ object LegacyGoals:
     def counts(orientation: Orientation): Boolean =
       !faceupOnly || orientation == Orientation.FaceUp
     goal match
-      case LegacyGoal.MostSites => ruled(ready, player).size
+      case LegacyGoal.MostSites => ChronicleTasks.ruled(ready, player).size
       case LegacyGoal.MostOfSuit =>
         val current = ready.game.current
-        val atSites = ruled(ready, player).flatMap(site =>
+        val atSites = ChronicleTasks.ruled(ready, player).flatMap(site =>
           current.map.sites.get(site).toVector.flatMap(_.denizens)).count {
             case DenizenState(id, orientation, _) => counts(orientation) &&
               catalog.denizen(id).exists(_.suit == suit)
@@ -70,10 +66,6 @@ object LegacyGoals:
     val seats = ChronicleTasks.seated(ready)
     val start = seats.indexOf(ready.game.current.tracks.roundStarter)
     seats.drop(start) ++ seats.take(start)
-
-  /** The sites in play `player`'s side rules (Chronicle ruling 11). */
-  private def ruled(ready: ReadyGame, player: PlayerId): Vector[SiteId] =
-    ready.game.current.map.inPlay.filter(ChronicleTasks.rules(ready, player, _))
 
   /** The highest positive score's players, unless an Exile is among
     * several. */

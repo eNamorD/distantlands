@@ -86,10 +86,13 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
     payload match
       case DeltaPayload(ops) => ujson.Obj("kind" -> "delta",
         "ops" -> ujson.Arr.from(ops.map(encodeOperation)))
-      case ChoicePayload(decisionId, answer, by) => ujson.Obj(
-        "kind" -> "choice", "decisionId" -> decisionId,
-        "payload" -> DecisionAnswerCodec.encode(answer),
-        "byPlayerId" -> by.value)
+      case ChoicePayload(decisionId, answer, by, alone) =>
+        val encoded = ujson.Obj(
+          "kind" -> "choice", "decisionId" -> decisionId,
+          "payload" -> DecisionAnswerCodec.encode(answer),
+          "byPlayerId" -> by.value)
+        if alone then encoded("alone") = ujson.True
+        encoded
       case RollPayload(pool, faces, automatic) =>
         val encoded = ujson.Obj(
           "kind" -> "roll", "pool" -> pool.value,
@@ -107,7 +110,8 @@ private[serialization] trait WalkerEventCodec extends WalkerOperationCodec:
         }.map(DeltaPayload.apply)
       case "choice" => DecisionAnswerCodec.decode(value("payload"), s"$path.payload")
         .map(ChoicePayload(value("decisionId").str, _,
-          PlayerId(value("byPlayerId").str)))
+          PlayerId(value("byPlayerId").str),
+          value.obj.get("alone").exists(_.bool)))
       case "roll" => traverse(value("faces").arr.toVector)(face =>
         decodeDieFace(face.str, s"$path.faces"))
         .map(faces => RollPayload(PoolKey(value("pool").str), faces,

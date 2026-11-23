@@ -9,8 +9,7 @@ import distantlands.model._
   * counts as two [suit-discord]."
   *
   * The rule is `EffectiveSuit.of`, which every reader of an adviser's suit
-  * reads. This power hooks no window. It is registered so the card counts
-  * as implemented. It writes no line.
+  * reads. This power hooks no window. It writes no line.
   */
 case object PledgeToDiscord extends ContributingPower:
   val id: PowerId = PledgeToDiscordCard.power.id

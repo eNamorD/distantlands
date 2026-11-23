@@ -4,7 +4,8 @@ import distantlands.gameplay.powers.search.ErrandBoyCard
 import distantlands.gameplay.powers.travel.TyrantCard
 import distantlands.model._
 import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
-  ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
+  ConsentPreferencesCleared, ConsentReconsidered, ConsentRequestWithdrawn,
+  ConsentRequested}
 
 /** The consent facts round-trip through the envelope (consent design,
   * "Events"). */
@@ -27,7 +28,13 @@ class ConsentEventWireSuite extends munit.FunSuite:
     ConsentRequestWithdrawn(p1) -> "consent.request-withdrawn",
     ConsentPreferenceSet(p2, pass, p1, ConsentSetting.CaseByCase) ->
       "consent.preference-set",
-    ConsentPreferencesCleared(p2, pass) -> "consent.preferences-cleared")
+    ConsentPreferencesCleared(p2, pass) -> "consent.preferences-cleared",
+    ConsentReconsidered(p2, p1, "travel.destination",
+      DecisionOptionRef.Site(SiteId("site:dunes")), granted = true) ->
+      "consent.reconsidered",
+    ConsentReconsidered(p2, p1, "campaign.targets",
+      DecisionOptionRef.Button("confirm"), granted = false) ->
+      "consent.reconsidered")
 
   test("every consent fact round-trips"):
     events.foreach { case (event, _) =>
@@ -43,6 +50,28 @@ class ConsentEventWireSuite extends munit.FunSuite:
       ConsentPreferenceSet(p2, pass, p1, ConsentSetting.Always))
       .map(value => { value("payload")("setting") = "sometimes"; value })
     assert(encoded.flatMap(GameEventWire.decode(_)).isLeft)
+
+  test("a changed answer requires every field"):
+    val change = ConsentReconsidered(p2, p1, "travel.destination",
+      DecisionOptionRef.Site(SiteId("site:dunes")), granted = true)
+    Vector("granter", "requester", "decisionId", "target", "granted")
+      .foreach { field =>
+        val encoded = GameEventWire.encodeEvent("g", 0L, change)
+          .map(value => { value("payload").obj.remove(field); value })
+        assert(encoded.flatMap(GameEventWire.decode(_)).isLeft, field)
+      }
+
+  test("a changed answer refuses a field of the wrong type"):
+    val change = ConsentReconsidered(p2, p1, "travel.destination",
+      DecisionOptionRef.Site(SiteId("site:dunes")), granted = true)
+    Vector[(String, ujson.Value)]("granter" -> ujson.Num(1),
+      "requester" -> ujson.Bool(true), "decisionId" -> ujson.Num(2),
+      "target" -> ujson.Str("site:dunes"), "granted" -> ujson.Str("yes"))
+      .foreach { (field, wrong) =>
+        val encoded = GameEventWire.encodeEvent("g", 0L, change)
+          .map(value => { value("payload")(field) = wrong; value })
+        assert(encoded.flatMap(GameEventWire.decode(_)).isLeft, field)
+      }
 
   test("a request's covers round-trip, and a request without them writes " +
       "none"):

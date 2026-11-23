@@ -1,12 +1,12 @@
 package distantlands.gameplay.actions.campaign
 
 import distantlands.catalog.ExecutableCatalog
-import distantlands.gameplay.actions.BannerRules
 import distantlands.model._
 
 /** The Campaign targets question as the table shows it (board decisions
-  * design, "Campaign targets"): the target the Campaign already has, the two
-  * sums a player weighs, and why each target not on offer is not.
+  * design, "Campaign targets"): the target the Campaign already has and the
+  * two sums a player weighs. Only the defender's targets are options; a
+  * card power that forbids one keeps it, dimmed with the power's reason.
   */
 private[campaign] object CampaignTargets:
   val DefenseLabel = "Defense dice (before plans and powers)"
@@ -49,38 +49,3 @@ private[campaign] object CampaignTargets:
       case CampaignKind.Conquest => "Conquer"
       case CampaignKind.Raid => "Raid", "target", "targets",
       countsLocked = true)
-
-  /** The targets the Campaign may not add, each with why: in a Conquest,
-    * every other site in play; in a Raid, the banners the defender does not
-    * hold and other players' faceup relics.
-    */
-  def withheld(ready: ReadyGame, actor: PlayerId, kind: CampaignKind,
-      origin: SiteId, defender: CampaignDefender,
-      offered: Vector[DecisionOption]): Vector[DecisionOption] =
-    val current = ready.game.current
-    val shown = offered.map(_.ref).toSet
-    def unavailable(option: DecisionOption, reason: String): DecisionOption =
-      DecisionOption.Unavailable(option, OptionReason.Written(reason))
-    (kind, defender) match
-      case (CampaignKind.Conquest, _) => current.map.inPlay
-        .filter(site => site != origin &&
-          !shown(DecisionOptionRef.Site(site)))
-        .map(site => unavailable(DecisionOption.Site(
-          DecisionOptionRef.Site(site)),
-          if CampaignSetup.defenderAt(ready, site)
-              .contains(CampaignDefender.Player(actor))
-          then "You rule this site" else "Not ruled by the defender"))
-      case (CampaignKind.Raid, CampaignDefender.Player(target)) =>
-        val relics = current.players
-          .filter(held => held.player != actor && held.player != target)
-          .flatMap(_.relics.filter(_.orientation == Orientation.FaceUp))
-          .map(relic => unavailable(DecisionOption.Relic(
-            DecisionOptionRef.Relic(relic.id)), "Not held by the defender"))
-        val banners = Banner.all
-          .filter(banner => !shown(DecisionOptionRef.Banner(banner)))
-          .map(banner => unavailable(DecisionOption.Banner(
-            DecisionOptionRef.Banner(banner)),
-            if BannerRules.holder(current, banner).contains(actor)
-            then "You hold this banner" else "Not held by the defender"))
-        relics ++ banners
-      case _ => Vector.empty

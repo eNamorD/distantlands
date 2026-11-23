@@ -2,7 +2,8 @@ package distantlands.application
 
 import distantlands.application.gamelog.LogScripts.{formatter, texts}
 import distantlands.gameplay.powers.action.{Palanquin, PalanquinCard}
-import distantlands.gameplay.powers.travel.{TollRoadsCard, TravelFixture}
+import distantlands.gameplay.powers.travel.{TollRoads, TollRoadsCard,
+  TravelFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.protocol.projection._
@@ -113,6 +114,127 @@ class PalanquinConsentServiceSuite extends munit.FunSuite:
     assert(projector.project(gameId, no.loaded, p2).consentPrompt.nonEmpty)
     assertEquals(projector.project(gameId, no.loaded, p1).consentWaiting,
       Some(ConsentWaitingProjection(Vector("p2"))))
+
+  test("after the payer agreed and the move was undone, the ruler's late " +
+      "waiver wins: nobody pays (reconsider ruling R12)"):
+    val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
+    val no = answering(service, asking(service, Vector.empty), p2,
+      ConsentChoice.No)
+    val yes = answering(service, no, p3, ConsentChoice.Yes)
+    assertEquals(Look(Outcomes.ready(yes.state)).favor(p3), 0)
+    val undone = accepted(service.handle(gameId, yes.nextSequence,
+      Commands.undo(p1)))
+    assertEquals(Look(Outcomes.ready(undone.state)).favor(p3), 1)
+    val waived = accepted(service.handle(gameId, undone.nextSequence,
+      Commands.reconsiderConsent(p2, p1, Palanquin.destinationDecisionId,
+        coastRef, allow = true)))
+    val sent = accepted(service.handle(gameId, waived.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(
+        Palanquin.destinationDecisionId,
+        DecisionAnswer.ChooseOneAnswer(coastRef)))))
+    val after = Look(Outcomes.ready(sent.state))
+    assertEquals(after.pawn(p3), coast)
+    assertEquals(after.favor(p3), 1)
+
+  test("after the ruler's late waiver a Redo cannot bring the payment " +
+      "back, and a fresh pick charges nobody (reconsider ruling R29)"):
+    val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
+    val no = answering(service, asking(service, Vector.empty), p2,
+      ConsentChoice.No)
+    val yes = answering(service, no, p3, ConsentChoice.Yes)
+    val undone = accepted(service.handle(gameId, yes.nextSequence,
+      Commands.undo(p1)))
+    assert(undone.redo.nonEmpty)
+    val waived = accepted(service.handle(gameId, undone.nextSequence,
+      Commands.reconsiderConsent(p2, p1, Palanquin.destinationDecisionId,
+        coastRef, allow = true)))
+    assertEquals(waived.redo, None)
+    assertEquals(service.handle(gameId, waived.nextSequence,
+      Commands.redo(p1)), Left(GameApplicationError.CommandRejected(
+        OathViolation.NothingToRedo)))
+    val sent = accepted(service.handle(gameId, waived.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(
+        Palanquin.destinationDecisionId,
+        DecisionAnswer.ChooseOneAnswer(coastRef)))))
+    assertEquals(Look(Outcomes.ready(sent.state)).favor(p3), 1)
+
+  test("a ruler who refused while the target is still asked cannot " +
+      "change it until the request ends; after a withdrawal the refusal " +
+      "is theirs to change (reconsider rulings R8 and R14)"):
+    val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
+    val no = answering(service, asking(service, Vector.empty), p2,
+      ConsentChoice.No)
+    val allow = Commands.reconsiderConsent(p2, p1,
+      Palanquin.destinationDecisionId, coastRef, allow = true)
+    assertEquals(service.handle(gameId, no.nextSequence, allow),
+      Left(GameApplicationError.CommandRejected(
+        OathViolation.ConsentUnavailable(
+          "a consent request about that option is waiting"))))
+    val withdrawn = accepted(service.handle(gameId, no.nextSequence,
+      Commands.undo(p1)))
+    val waived = accepted(service.handle(gameId, withdrawn.nextSequence,
+      allow))
+    val sent = accepted(service.handle(gameId, waived.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(
+        Palanquin.destinationDecisionId,
+        DecisionAnswer.ChooseOneAnswer(coastRef)))))
+    val after = Look(Outcomes.ready(sent.state))
+    assertEquals(after.pawn(p3), coast)
+    assertEquals(after.favor(p3), 1)
+
+  test("the ruler's refusal locks with the payer's grant once the " +
+      "target is sent, and the payer's own answer stays final"):
+    val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)
+    val no = answering(service, asking(service, Vector.empty), p2,
+      ConsentChoice.No)
+    val yes = answering(service, no, p3, ConsentChoice.Yes)
+    def change(granter: PlayerId, allow: Boolean): GameCommand =
+      Commands.reconsiderConsent(granter, p1,
+        Palanquin.destinationDecisionId, coastRef, allow)
+    def unavailable(reason: String) = Left(
+      GameApplicationError.CommandRejected(
+        OathViolation.ConsentUnavailable(reason)))
+    // Ruling 21: every answer of one request locks together.
+    assertEquals(service.handle(gameId, yes.nextSequence,
+      change(p2, allow = true)), unavailable("p1 has acted on this consent"))
+    val undone = accepted(service.handle(gameId, yes.nextSequence,
+      Commands.undo(p1)))
+    // A payer rules nothing, so their agreement cannot be changed.
+    assertEquals(service.handle(gameId, undone.nextSequence,
+      change(p3, allow = false)),
+      unavailable(s"p3 no longer rules ${TollRoads.payerId.value}"))
+
+  /** p3's favor after p1 sends them to the coast, on the tolled board
+    * with p3's agreement to pay remembered and `waiver` beside it. */
+  private def favorOfP3SentWith(waiver: (ConsentKey, Remembered))(
+      using munit.Location): Int =
+    val base = p3BesideP1UnderTheToll
+    val staged = base.copy(consent = ConsentState(answers = Map(
+      TollRoads.payerKey(p3, coast) -> ConsentAnswer.Granted.by(p3), waiver),
+      turn = Some(ConsentTurn.of(base))))
+    val (service, _) = ConsentFixture.service(staged)
+    val sent = accepted(service.handle(gameId,
+      atTheDestination(service).nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(
+        Palanquin.destinationDecisionId,
+        DecisionAnswer.ChooseOneAnswer(coastRef)))))
+    Look(Outcomes.ready(sent.state)).favor(p3)
+
+  test("only the waiver of the one who may give it, for this traveller " +
+      "and this destination, spares the toll (reconsider ruling R12)"):
+    val granted = ConsentAnswer.Granted
+    assertEquals(favorOfP3SentWith(
+      TollRoads.freeKey(p3, coast) -> granted.by(p2)), 1)
+    // A grant by a player who may not waive the toll now, as a ruler who
+    // has since lost the site would be.
+    assertEquals(favorOfP3SentWith(
+      TollRoads.freeKey(p3, coast) -> granted.by(p1)), 0)
+    // Another traveller's waiver.
+    assertEquals(favorOfP3SentWith(
+      TollRoads.freeKey(p1, coast) -> granted.by(p2)), 0)
+    // A waiver for another destination.
+    assertEquals(favorOfP3SentWith(TollRoads.freeKey(p3,
+      TravelFixture.provincePlains) -> granted.by(p2)), 0)
 
   test("the log writes one line per kind of ask"):
     val (service, _) = ConsentFixture.service(p3BesideP1UnderTheToll)

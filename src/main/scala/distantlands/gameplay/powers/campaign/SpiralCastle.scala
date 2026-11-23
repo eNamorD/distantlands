@@ -4,7 +4,7 @@ import distantlands.catalog.{Edifice, EdificeFace, Locked, ModifierMark,
   PrintedPower}
 import distantlands.model._
 
-object SpiralCastleCard extends Edifice(EdificeId("E23"), Suit.Hearth):
+object SpiralCastleCard extends Edifice(EdificeId("E23"), Suit.Discord):
   object intact extends EdificeFace("Spiral Castle") with Locked:
     val power = PrintedPower(PowerId("edifice.e23.intact"),
       persistent = false, cost = Cost.free,

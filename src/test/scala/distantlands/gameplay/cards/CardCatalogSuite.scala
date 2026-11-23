@@ -2,8 +2,9 @@ package distantlands.gameplay.cards
 
 import distantlands.catalog.{AdviserOnly, ExecutableCatalog, Locked,
   ModifierMark, PrintedPower, PrintsPowers, SiteOnly}
-import distantlands.gameplay.powers.{PhasePowerCatalog,
-  PowerImplementationStatus, SelectedModifier, WalkerPowerCatalog}
+import distantlands.gameplay.operations.OperationRestrictions
+import distantlands.gameplay.powers.{PhasePowerCatalog, SelectedModifier,
+  WalkerPowerCatalog}
 import distantlands.gameplay.powers.campaign.BattlePlan
 import distantlands.gameplay.powers.challenge.SchoolOfVines
 import distantlands.gameplay.powers.recover.DrownedLibrary
@@ -105,10 +106,18 @@ class CardCatalogSuite extends munit.FunSuite:
     // Spiteful Mirror is picked in the Muster and Trade modifier decisions,
     // but its card prints no modifier icon.
     val unmarked = Set(PowerId("relic.spiteful-mirror"))
+    // The two Vows print the Muster icon but apply on their own, so the
+    // engine writes them as automatic rules, not `SelectedModifier`s.
+    val automatic = Map(
+      PowerId("denizen.vow-of-beastkin") ->
+        ModifierMark.Action(MajorActionType.Muster),
+      PowerId("denizen.vow-of-wandering.muster") ->
+        ModifierMark.Action(MajorActionType.Muster))
     val printed = powers.collect { case power if !power.persistent =>
       power.modifier.map(power.id -> _) }.flatten.toMap
-    assertEquals(printed, engine -- unmarked)
+    assertEquals(printed, (engine -- unmarked) ++ automatic)
     assert(unmarked.forall(engine.contains), unmarked)
+    assert(automatic.keys.forall(id => !engine.contains(id)), automatic)
 
   // Persistent modifiers have no engine type to check against, so the
   // owner's reading of the printed icons is pinned here.
@@ -171,31 +180,18 @@ class CardCatalogSuite extends munit.FunSuite:
       printed.exists(power => id.value.startsWith(power.value + "."))
     assertEquals(registered.filterNot(ofPrinted).distinct, Vector.empty)
 
-  test("a card leaves the holding files once a power of it is implemented, " +
-      "and sits there until then"):
-    // A card with no implemented power shares the holding files; one with
-    // any implemented power sits beside that power. The status is the one
-    // judge, so a card implemented as an operation restriction or a site
-    // handler a game rule runs leaves holding too.
-    val implemented = PowerImplementationStatus.implemented
-    def held(card: AnyRef): Boolean =
-      card.getClass.getPackageName == "distantlands.catalog.holding"
-    def misplaced(card: AnyRef, name: String, powers: Vector[PowerId])
-        : Option[String] =
-      Option.when(held(card) == powers.exists(implemented))(
-        if held(card) then s"$name is implemented but held"
-        else s"$name is unimplemented but not held")
-    val findings =
-      catalog.denizens.flatMap(card =>
-        misplaced(card, card.name, card.powers.map(_.id))) ++
-      catalog.relics.flatMap(card =>
-        misplaced(card, card.name, card.powers.map(_.id))) ++
-      catalog.legacies.flatMap(card =>
-        misplaced(card, card.name, card.powers.map(_.id))) ++
-      catalog.edifices.flatMap(card => misplaced(card, card.intact.name,
-        (card.intact.powers ++ card.ruined.powers).map(_.id))) ++
-      catalog.sites.flatMap(site => misplaced(site, site.name, site.handlers))
-    assertEquals(findings, Vector.empty)
+  test("every printed power is registered, except the Homelands' and Plains'"):
+    val registered = (WalkerPowerCatalog.default(catalog).powers.map(_.id) ++
+      PhasePowerCatalog.default.powers.map(_.id) ++
+      OperationRestrictions.printedRules.map(_.id)).toSet
+    val printed = powers.map(_.id) ++ catalog.sites.flatMap(_.handlers)
+    // Card play's Homeland rule runs a Homeland's handler; a Plains prints
+    // no power.
+    def runByAGameRule(id: PowerId): Boolean =
+      id.value.startsWith("site.") &&
+        (id.value.contains(".homeland-") || id.value.endsWith(".plains"))
+    assertEquals(printed.filterNot(registered).filterNot(runByAGameRule),
+      Vector.empty)
 
   test("card powers are registered whichever cards a catalog lists"):
     def cardPowers(listed: ExecutableCatalog): Set[PowerId] =

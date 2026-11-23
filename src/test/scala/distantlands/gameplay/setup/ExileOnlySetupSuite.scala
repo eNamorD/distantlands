@@ -217,11 +217,8 @@ class ExileOnlySetupSuite extends munit.FunSuite:
     // does; game start accepting that deal is the proof.
     val orders = LaterGameFixture.orders(record, p1)
     val ready = accepted(GameStartRules.evolve(catalog, record, orders))
-    val deal = LegacyDeal.of(record, orders.participants)
     orders.participants.foreach(seat => assertEquals(
-      ready.game.campaign.lineages(seat.lineageId).legacies,
-      deal.drawn(orders.legacyOrder, seat.playerId)
-        .map(LegacyState(_, active = false))))
+      ready.game.campaign.lineages(seat.lineageId).legacies, Vector.empty))
     assertEquals(ready.game.campaign.baseline.lineages.flatMap(_.legacies),
       Vector.empty)
 

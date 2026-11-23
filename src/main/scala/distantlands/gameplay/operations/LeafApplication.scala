@@ -85,6 +85,8 @@ private[operations] object LeafApplication:
       TurnStateOperations.writePrediction(ready, holder, round, winner)
     case ResolvePrediction(holder, fulfilled) =>
       TurnStateOperations.resolvePrediction(ready, holder, fulfilled)
+    case PledgeTemple(player) =>
+      TurnStateOperations.pledgeTemple(ready, player)
     case SetEndDieModifier(amount) =>
       Right(TurnStateOperations.setEndDieModifier(ready, amount))
     case OpenPick(decisionId, option, label) =>
@@ -134,4 +136,6 @@ private[operations] object LeafApplication:
       ChronicleStateOperations.relicsHidden(ready, relics)
     case LegaciesScored(legacies) =>
       ChronicleStateOperations.legaciesScored(ready, legacies)
+    case LegaciesKeptDormant(legacies) =>
+      ChronicleStateOperations.legaciesKeptDormant(ready, legacies)
     case placement: PlaceAtlasSite => AtlasOperations.placeSite(ready, placement)

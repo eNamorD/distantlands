@@ -2,7 +2,8 @@ package distantlands.serialization
 
 import distantlands.model._
 import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
-  ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
+  ConsentPreferencesCleared, ConsentReconsidered, ConsentRequestWithdrawn,
+  ConsentRequested}
 
 /** The consent facts (consent design, "Events"). */
 private[serialization] trait ConsentEventCodec { this: GameEventJsonSupport =>
@@ -15,6 +16,7 @@ private[serialization] trait ConsentEventCodec { this: GameEventJsonSupport =>
       case _: ConsentRequestWithdrawn => ConsentRequestWithdrawnType
       case _: ConsentPreferenceSet => ConsentPreferenceSetType
       case _: ConsentPreferencesCleared => ConsentPreferencesClearedType
+      case _: ConsentReconsidered => ConsentReconsideredType
 
   protected final val consentEncoder: PartialFunction[OathEvent, ujson.Value] =
       case ConsentRequested(request) =>
@@ -51,6 +53,12 @@ private[serialization] trait ConsentEventCodec { this: GameEventJsonSupport =>
           "requester" -> requester.value, "setting" -> setting.key)
       case ConsentPreferencesCleared(granter, power) =>
         ujson.Obj("granter" -> granter.value, "powerId" -> power.value)
+      case ConsentReconsidered(granter, requester, decisionId, target,
+          granted) =>
+        ujson.Obj("granter" -> granter.value,
+          "requester" -> requester.value, "decisionId" -> decisionId,
+          "target" -> DecisionAnswerCodec.encodeRef(target),
+          "granted" -> granted)
 
   protected final def consentDecode(eventType: String, payload: ujson.Value,
       path: String): Option[Either[WireError, OathEvent]] =
@@ -97,5 +105,10 @@ private[serialization] trait ConsentEventCodec { this: GameEventJsonSupport =>
         case ConsentPreferencesClearedType =>
           Right(ConsentPreferencesCleared(player("granter"),
             PowerId(payload("powerId").str)))
+        // Every field is required (reconsider design, "Events").
+        case ConsentReconsideredType =>
+          DecisionAnswerCodec.decodeRef(payload("target"), s"$path.target")
+            .map(ConsentReconsidered(player("granter"), player("requester"),
+              payload("decisionId").str, _, payload("granted").bool))
     decoder.lift(eventType)
 }

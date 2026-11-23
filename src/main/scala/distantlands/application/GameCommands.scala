@@ -37,6 +37,12 @@ object PlayerIntent:
       extends Consent
   /** The actor answers the request waiting on them. */
   final case class AnswerConsent(choice: ConsentChoice) extends Consent
+  /** The actor changes the answer they gave `requester` about `target`
+    * at `decisionId` this turn: a grant when `allow`, else a refusal
+    * (reconsider design, "Commands"). */
+  final case class ReconsiderConsent(requester: PlayerId,
+      decisionId: String, target: DecisionOptionRef, allow: Boolean)
+      extends Consent
   /** The actor's whole Imperial Tactics offer for the parked plan window
     * (Empire phase design, "1b-ii"). Routed to the aid desk; legal over
     * another player's parked decision. */

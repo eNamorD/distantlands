@@ -79,6 +79,16 @@ private[frontend] object WalkerPanelSupport:
       surface: ParkedDecision.Surface.Recover, value: GameProjection,
       canControl: Boolean, panel: dom.Element, controls: TableControls): Unit =
     val decision = surface.decision
+    val ask = ConsentAsking.asker(decision.decisionId, value, canControl,
+      controls)
+    // An askable option asks its granters first (consent design,
+    // "Frontend"); any other is picked.
+    def picks(control: dom.html.Button, option: DecisionOptionState): Unit =
+      if option.state == "askable" then
+        control.classList.add("walker-choice-askable")
+        control.onclick = _ => ask(option, control)
+      else control.onclick = _ => controls.submitCommand(
+        resolveChooseOneCommand(decision, option))
     surface.step match
       case ParkedDecision.RecoverStep.Choice(query) =>
         panel.appendChild(text("h2", "", decisionHeading(query)))
@@ -97,8 +107,7 @@ private[frontend] object WalkerPanelSupport:
             else (option.label, "recover-choice")
           val control = button(label, className)
           control.disabled = !canControl
-          control.onclick = _ => controls.submitCommand(
-            resolveChooseOneCommand(decision, option))
+          picks(control, option)
           // Without the Supply the buy is withheld, not merely disabled, so
           // the control says why it cannot be used.
           if spendsSupply && !hasSupply then
@@ -121,8 +130,7 @@ private[frontend] object WalkerPanelSupport:
           val choose = button("Take facedown", "recover-relic-choice")
           choose.setAttribute("aria-label", s"Take ${option.label} facedown")
           choose.disabled = !canControl
-          choose.onclick = _ => controls.submitCommand(
-            resolveChooseOneCommand(decision, option))
+          picks(choose, option)
           choice.appendChild(choose)
           relics.appendChild(choice)
           withholds(choose, option)
@@ -202,8 +210,10 @@ private[frontend] object WalkerPanelSupport:
       }
       choose.disabled = !canControl
       // A card option reads its rules text on hover, as the menu panel's
-      // power buttons do; `withholds` below puts a reason in its place.
-      option.card.filter(_ => option.badge.isEmpty).flatMap(_.rulesText)
+      // power buttons do, and a legacy its goal, as the legacy strip does;
+      // `withholds` below puts a reason in its place.
+      option.card.filter(_ => option.badge.isEmpty)
+        .flatMap(card => card.legacyGoal.map(_.text).orElse(card.rulesText))
         .foreach(HoverTip.set(choose, _))
       // An askable option asks its granters first (consent design,
       // "Frontend").
@@ -299,28 +309,23 @@ private[frontend] object WalkerPanelSupport:
       panel.appendChild(text("p", "walker-roll-totals", parts.mkString(" · ")))
     }
 
-  /** What a parked decision's panel calls itself, and what the control that
-    * submits a partition is called.
+  /** What a parked decision's panel calls itself.
     *
-    * Both come off the query. They used to branch on
+    * It comes off the query. They used to branch on
     * `decision.action` to produce Forge's copy, which was the last
     * action-shaped string in a panel whose interaction had already stopped
     * being Forge-specific -- so the panel recognised the decisions it had
     * been written for and had nothing to say about any other. Now the
-    * action that declares the question declares what to call it, and these
-    * two read it the same way every other projected field is read.
+    * action that declares the question declares what to call it, and this
+    * reads it the same way every other projected field is read.
     *
-    * The fallbacks are the whole of what this layer still authors: generic
+    * The fallback is the whole of what this layer still authors: generic
     * copy for a query that declares none, so a panel is untitled rather
     * than unusable. Never action-specific copy, and never a lookup table
     * that would grow one entry per action.
     */
   private[frontend] def decisionHeading(query: DecisionQueryState): String =
     query.heading.getOrElse("Resolve decision")
-
-  private[frontend] def partitionConfirmLabel(
-      query: DecisionQueryState.Partition): String =
-    query.confirmLabel.getOrElse("Confirm")
 
   /** What a choose-many's confirm button says with `picked` options chosen:
     * the query's counted label, "Reveal 2 cards", with the locked options
@@ -348,7 +353,7 @@ private[frontend] object WalkerPanelSupport:
       .flatMap(section => draft.optionsIn(section.key) match {
         case Vector(only) => Some(s"${section.label} ${only.label}")
         case _ => None
-      }).headOption.getOrElse(partitionConfirmLabel(query))
+      }).headOption.getOrElse(query.confirmLabel.getOrElse("Confirm"))
 
   /** Whether a zone's order is part of the answer the player should be told
     * about: the zone that takes whatever is left over, with no minimum to

@@ -7,13 +7,15 @@ import distantlands.gameplay.powers.PowerAnswers
 import distantlands.model._
 
 /** Shape Empire, the Throne's second step (CR p. 37, Chronicle rulings 6, 9,
-  * 11 and 14). The Throne holder may remove any of their warbands from
-  * sites but the last one on the map; with no site, they clear their pawn's
-  * site and place one there. Then every denizen at a site they do not rule
-  * is discarded, except intact edifices and cards at Enduring sites. Iron
-  * Hand's Exile holder, read when the step is reached, performs it in the
-  * Throne holder's place, over the sites they rule (Legacy Chronicle
-  * powers design, ruling 19; R31). */
+  * 11, 14 and 24). The Throne holder chooses the sites that stay in the Empire,
+  * all of them to start with and at least one, and every site left out loses
+  * all their warbands; with no site, they clear their pawn's site and place
+  * one there. Then every denizen at a site they do not rule
+  * is discarded, except intact edifices, cards at Enduring sites and,
+  * while Hall of Bandits is on the map, ruined edifices at bandit sites
+  * (`ShapeEmpireExemptions`). Iron Hand's Exile holder, read when the step
+  * is reached, performs it in the Throne holder's place, over the sites
+  * they rule (Legacy Chronicle powers design, ruling 19; R31). */
 object ShapeEmpire:
   val removeDecisionId: String = "chronicle.shape-empire.remove"
 
@@ -38,13 +40,13 @@ object ShapeEmpire:
       case None => Vector(ChronicleTasks.failing(OathViolation
         .InvalidEventOrder(s"${holder.value} has no warbands")))
       case Some(kind) =>
-        val ruled = current.map.inPlay.filter(ChronicleTasks.rules(state,
-          holder, _)).flatMap(site => current.map.sites(site).forces match
+        val ruled = ChronicleTasks.ruled(state, holder).flatMap(site =>
+          current.map.sites(site).forces match
             case SiteForces.Occupied(`kind`, count) => Some(site -> count)
             case _ => None)
         if ruled.isEmpty then fallback(state, holder, kind)
-        else if ruled.map(_._2).sum <= 1 then Vector.empty
-        else removeSome(holder, kind, ruled)
+        else if ruled.size <= 1 then Vector.empty
+        else keepSome(holder, kind, ruled)
 
   /** With no site ruled: clear the pawn's site and place one warband. */
   private def fallback(state: ReadyGame, holder: PlayerId, kind: ForceKind)
@@ -63,41 +65,44 @@ object ShapeEmpire:
           PositionedLocation(Location.WarbandBank(kind)), at)),
           required = true))
 
-  private def removeSome(holder: PlayerId, kind: ForceKind,
-      ruled: Vector[(SiteId, Int)]): Vector[Operation] = Vector(
-    Decide(removeDecisionId, holder, DecisionQuery.Distribute(
-      ruled.map((site, count) =>
-        DistributeSlot(DecisionOptionRef.Site(site), 0, count, None)),
-      0, ruled.map(_._2).sum - 1,
-      heading = Some("Remove warbands from the Empire"),
-      confirmLabel = "Remove")),
-    BuildOps((_, pending) => PowerAnswers.distribution(pending,
-      removeDecisionId).toRight(PowerAnswers.missing(removeDecisionId))
-      .map(_.collect {
-        case DistributeAmount(DecisionOptionRef.Site(site), amount)
-            if amount > 0 => Move(Piece.Warbands(kind, amount),
-          PositionedLocation(Location.Site(site)),
-          PositionedLocation(Location.WarbandBank(kind)))
-      }), required = true))
+  /** The holder chooses the sites that stay in the Empire, all of them
+    * to start with, and at least one. Each site left out loses every
+    * warband of the holder's: a site is kept or given up whole (Chronicle
+    * ruling 24), so one warband may not be shed from a site that stays. */
+  private def keepSome(holder: PlayerId, kind: ForceKind,
+      ruled: Vector[(SiteId, Int)]): Vector[Operation] =
+    val sites = ruled.map((site, _) =>
+      DecisionOption.Site(DecisionOptionRef.Site(site)))
+    Vector(
+      Decide(removeDecisionId, holder, DecisionQuery.ChooseMany(1,
+        sites.size, sites, heading = Some("Choose sites in the next Empire."),
+        confirm = Some(CountedConfirm("Keep", "site", "sites")),
+        selected = sites)),
+      BuildOps((_, pending) => PowerAnswers.many(pending, removeDecisionId)
+        .toRight(PowerAnswers.missing(removeDecisionId)).map(kept =>
+          ruled.collect {
+            case (site, count) if !kept.contains(DecisionOptionRef.Site(site)) =>
+              Move(Piece.Warbands(kind, count),
+                PositionedLocation(Location.Site(site)),
+                PositionedLocation(Location.WarbandBank(kind)))
+          }), required = true))
 
-  /** Cards at Enduring sites are not discarded in Shape Empire (CR p. 37).
-    * Ancient City is one; its handler names the keyword. */
-  private def enduring(catalog: ExecutableCatalog, site: SiteId): Boolean =
-    catalog.site(site).exists(_.handlers.exists(_.value.endsWith(".enduring")))
-
-  /** The cards at sites the holder does not rule, but Enduring ones, are
-    * discarded. Rival's holder, read when the discard is reached, first keeps
-    * any of them, ruined edifices included (Legacy Chronicle powers design,
-    * ruling 9; R8): the question's options are the cards this Branch read,
-    * so a walk resumed there finds the same ones. */
+  /** The cards at sites the holder does not rule, but those
+    * `ShapeEmpireExemptions` keeps, are discarded. Rival's holder, read when
+    * the discard is reached, first keeps any of them, ruined edifices
+    * included (Legacy Chronicle powers design, ruling 9; R8): the
+    * question's options are the cards this Branch read, so a walk resumed
+    * there finds the same ones. */
   private def discards(catalog: ExecutableCatalog, state: ReadyGame,
       holder: PlayerId): Vector[Operation] =
     val current = state.game.current
     val cards = current.map.inPlay.filterNot(site =>
-      ChronicleTasks.rules(state, holder, site) || enduring(catalog, site))
+      ChronicleTasks.rules(state, holder, site) ||
+        ShapeEmpireExemptions.enduring(catalog, site))
       .flatMap(site => current.map.regionOf(site).toVector.flatMap(region =>
-        current.map.sites(site).denizens.flatMap(card =>
-          discardOf(catalog, site, region, card, holder)
+        current.map.sites(site).denizens
+          .filterNot(ShapeEmpireExemptions.banditRuin(state, site, _))
+          .flatMap(card => discardOf(catalog, site, region, card, holder)
             .map(op => (site, card, op)))))
     if cards.isEmpty then Vector.empty
     else ChronicleLegacyRules.protector(state) match

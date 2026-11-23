@@ -86,19 +86,22 @@ final case class WinnerNamed(winner: PlayerId, kind: VictoryKind)
     extends ChronicleOperation, LeafOperation
 
 /** Turns `relics`, each held by a player, facedown and clears every
-  * viewer's record of them, at the start of Stock Reliquary (Legacy
-  * Chronicle powers R28, re-ruled by the owner 2026-11-14): the Sun's reveal
-  * made them public, and no seat but the holder may know them afterwards.
+  * viewer's record of them, at the start of the Throne (Last Chronicle
+  * powers design, ruling 3; Legacy Chronicle powers R28, re-ruled by the
+  * owner 2026-11-14): the Sun's reveal made them public, and no seat but
+  * the holder may know them afterwards.
   * Their owners still see their own. The Grand Scepter and a relic no
   * player holds are refused. */
 final case class RelicsHidden(relics: Vector[RelicId])
     extends ChronicleOperation, LeafOperation
 
-/** Keeps a held relic for the next game (Heirloom; Legacy Chronicle powers
-  * design, ruling 13; R20): it leaves the player's relics for their
-  * lineage's `startingRelics`, outside play and the card index (Legacies
-  * R2), and game start hands it back facedown. The Grand Scepter, a relic
-  * the player does not hold and a relic with tokens are refused. */
+/** Keeps a held relic for the next game (Heirloom, Legacy Chronicle powers
+  * design, ruling 13, R20; Hiding Place, Last Chronicle powers design,
+  * ruling 4): it leaves the player's relics for their lineage's
+  * `startingRelics`, outside play and the card index (Legacies R2), and
+  * game start hands it back facedown. The Grand Scepter, a relic the
+  * player does not hold and a relic with tokens or warbands on it are
+  * refused. */
 final case class StartingRelicKept(player: PlayerId, relic: RelicId)
     extends ChronicleOperation, LeafOperation
 
@@ -109,6 +112,14 @@ final case class StartingRelicKept(player: PlayerId, relic: RelicId)
 final case class LegaciesScored(legacies: Vector[LegacyId])
     extends ChronicleOperation, LeafOperation:
   require(legacies.nonEmpty, "a scoring records at least one legacy")
+
+/** Records the dormant legacies Stone Baths kept at Sun step 2 (catalog
+  * batch 13, ruling 14) in `CurrentGameState.keptDormant`. They are not
+  * newly dormant, so no reactivation turns them active. A legacy already
+  * recorded is a doubled operation. */
+final case class LegaciesKeptDormant(legacies: Vector[LegacyId])
+    extends ChronicleOperation, LeafOperation:
+  require(legacies.nonEmpty, "a keep records at least one legacy")
 
 /** Takes the site at `end` of the Atlas, with the cards stored on it, and
   * places it in the next slot, which is in `region`, as a bandit site

@@ -2,7 +2,9 @@ package distantlands.frontend
 
 import distantlands.protocol.projection.DieFace
 
-import distantlands.frontend.Dom.all
+import distantlands.frontend.Dom.{all, click}
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent, WalkerStartArgWire}
 import distantlands.testkit.Unwrap.as
 import ParkedDecision.{RecoverStep, Surface}
 import org.scalajs.dom
@@ -84,3 +86,36 @@ class RecoverPanelSuite extends munit.FunSuite:
     assertEquals(all(panel, ".walker-roll-faces").size, 0)
     assertEquals(all(panel, ".walker-roll-totals").map(_.textContent),
       Vector("Shields 0 · need 4"))
+
+  /** An option that needs a granter's consent is asked for, never picked:
+    * the engine refuses a pick of an option it does not offer. */
+  test("an askable Recover option asks its granter before it sends"):
+    val ask = ConsentAskState(Vector("red"), Vector("Relic Patrols"))
+    val relics = DecisionQueryState.ChooseOne(Vector(
+      DecisionOptionState("relic", "relic:crown", "Ancient Crown",
+        state = "askable", reason = Some("Relic Patrols: needs consent"),
+        consent = Some(ask))), heading = Some("Take a relic"))
+    val surface: Surface.Recover = Surface.Recover(WalkerDecisionState("recover",
+      ParkedDecision.recoverRelicDecisionId, query = Some(relics)),
+      RecoverStep.Relic(relics))
+    val ui = new RecordingControls()
+    var opened = Vector.empty[CardInspection.Request]
+    CardInspection.onOpen(request => opened :+= request)
+    try
+      val panel = dom.document.createElement("div")
+      WalkerPanelSupport.renderRecoverPanel(surface,
+        TestProjections.actingProjection(players = Vector(
+          GamePlayer("red", "Red", "Citizen", PlayerColor.Red)),
+          activePlayer = Some("red")), canControl = true, panel, ui)
+      click(all(panel, ".recover-relic-choice").head)
+      assertEquals(ui.submitted, Vector.empty)
+      opened match
+        case Vector(confirm: CardInspection.Request.Confirm) =>
+          assertEquals(confirm.question,
+            "Ask Red for consent to ignore Relic Patrols?")
+          confirm.confirm()
+        case other => fail(s"expected one confirmation, got $other")
+      assertEquals(ui.submitted, Vector(Intent.RequestConsent(
+        ParkedDecision.recoverRelicDecisionId,
+        WalkerStartArgWire("relic", "relic:crown"))))
+    finally CardInspection.clear()

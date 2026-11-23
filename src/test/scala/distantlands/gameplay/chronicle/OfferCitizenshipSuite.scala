@@ -141,8 +141,11 @@ class OfferCitizenshipSuite extends munit.FunSuite:
       state.updateCampaign(campaign => campaign.copy(lineages =
         campaign.lineages.map((id, lineage) => id -> (if lineage.role ==
           Role.Exile then lineage.copy(role = Role.Citizen) else lineage)))))
-    assert(!ChronicleWalk.parked(throneStarted(imperialTable).state)
+    val started = throneStarted(imperialTable)
+    assert(!ChronicleWalk.parked(started.state)
       .exists(_.decisionId == OfferCitizenship.offerDecisionId))
+    // The step still says so, once.
+    assertEquals(lines(started.events).count(_ == "No Exiles to invite"), 1)
 
   test("a former Chancellor who accepts turns the former Imperial sites " +
       "Imperial again (Chronicle ruling 20)"):

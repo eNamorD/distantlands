@@ -43,7 +43,24 @@ final case class GameProjection(
       * where its viewer may peek (Legacy in-play powers rulings 9 and 10);
       * empty while it holds none or is set aside. */
     ,reliquary: Vector[CardDetailsProjection] = Vector.empty
+    /** Cards every viewer is shown beside the parked decision, spectators
+      * too, under a title: public information the decision is about, such
+      * as Build Edifice's available edifices. Unlike
+      * `temporaryHandPreview` they are no one's hand. */
+    ,publicPreview: Option[PublicPreviewProjection] = None
+    /** The Chronicle Details overlay's data (Chronicle Details design,
+      * slice 1); none before a game. Required on the wire. */
+    ,chronicleDetails: Option[ChronicleDetailsProjection] = None
 )
+
+/** The cards shown to the whole table beside a decision ([[GameProjection]]'s
+  * `publicPreview`), as titled runs drawn in order. */
+final case class PublicPreviewProjection(
+    sections: Vector[PublicPreviewSection])
+
+/** One titled run of cards in a [[PublicPreviewProjection]]. */
+final case class PublicPreviewSection(title: String,
+    cards: Vector[CardDetailsProjection])
 
 /** Every seat's view of the game's Chronicle (Chronicle browsing design,
   * "Projection"): its name and the starting Chronicle's digest from the

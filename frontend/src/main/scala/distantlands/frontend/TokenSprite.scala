@@ -17,7 +17,6 @@ import org.scalajs.dom
   * even-odd, which is what cuts the notch and the pips out.
   */
 private[frontend] object TokenSprite:
-  private val Svg = "http://www.w3.org/2000/svg"
 
   /** token name -> (accessible name, path data). Order is the sprite order. */
   private val glyphs: Vector[(String, String, String)] = Vector(
@@ -93,14 +92,14 @@ private[frontend] object TokenSprite:
     */
   def mount(root: dom.Element): Unit =
     if root.querySelector("svg.token-sprite") == null then
-      val sprite = dom.document.createElementNS(Svg, "svg")
+      val sprite = ServerUiSupport.svgElement("svg")
       sprite.setAttribute("class", "token-sprite")
       sprite.setAttribute("aria-hidden", "true")
       glyphs.foreach { case (id, _, path) =>
-        val symbol = dom.document.createElementNS(Svg, "symbol")
+        val symbol = ServerUiSupport.svgElement("symbol")
         symbol.setAttribute("id", s"token-$id")
         symbol.setAttribute("viewBox", "0 0 24 24")
-        val shape = dom.document.createElementNS(Svg, "path")
+        val shape = ServerUiSupport.svgElement("path")
         shape.setAttribute("d", path)
         shape.setAttribute("fill", "currentColor")
         shape.setAttribute("fill-rule", "evenodd")

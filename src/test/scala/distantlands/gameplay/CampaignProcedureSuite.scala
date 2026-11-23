@@ -621,7 +621,8 @@ class CampaignProcedureSuite extends munit.FunSuite:
       DecisionTally("Defending force", "warbands",
         Map(origin -> 2, extra -> 2))))
 
-  test("a Conquest shows every other site as not on offer, and why"):
+  test("a Conquest offers only the defender's other sites, and leaves " +
+      "every other site off the decision"):
     val base = board(extras = 1, warbands = 5, supply = 7)
     val inPlay = base.ready.game.current.map.inPlay
     val mine = inPlay.find(site => site != base.origin &&
@@ -629,16 +630,11 @@ class CampaignProcedureSuite extends munit.FunSuite:
     val b = on(base)(_.warbandsAt(mine, base.actor, 1))
     val query = as[DecisionQuery.ChooseMany](
       parkedDecision(b, accepted(start(b))).query)
-    val reasons = query.options.collect {
-      case DecisionOption.Unavailable(DecisionOption.Site(ref),
-          OptionReason.Written(text)) => ref.id -> text }.toMap
-    assertEquals(reasons.keySet,
-      inPlay.filterNot(site => site == b.origin || b.extras.contains(site))
-        .toSet)
-    assertEquals(reasons(mine), "You rule this site")
-    assert(reasons.removed(mine).values.forall(_ == "Not ruled by the defender"))
+    assertEquals(query.options,
+      b.extras.map(site => DecisionOption.Site(DecisionOptionRef.Site(site))))
 
-  test("a Raid locks the defender's pawn, and shows what it may not take"):
+  test("a Raid locks the defender's pawn, and offers only the defender's " +
+      "faceup relics and banners"):
     val shared = withEnemyAtOrigin(board(warbands = 5, supply = 7))
     val cauldron = CursedCauldronCard.id
     val sticks = DowsingSticksCard.id
@@ -665,13 +661,10 @@ class CampaignProcedureSuite extends munit.FunSuite:
       Map(pawn -> 2, relic -> catalog.relics.find(_.id.value == cauldron.value)
         .fold(0)(_.defense)),
       Map(pawn -> 3, relic -> 0)))
-    assertEquals(query.options.collect {
-      case DecisionOption.Unavailable(inner, OptionReason.Written(text)) =>
-        inner.ref -> text }, Vector(
-      DecisionOptionRef.Relic(sticks) -> "Not held by the defender",
-      DecisionOptionRef.Banner(Banner.PeoplesFavor) ->
-        "Not held by the defender",
-      DecisionOptionRef.Banner(Banner.DarkestSecret) -> "You hold this banner"))
+    // The bystander's relic and the banners the defender does not hold are
+    // not on the decision at all.
+    assertEquals(query.options, Vector(DecisionOption.Relic(relic)))
+    assert(!query.options.exists(_.ref == DecisionOptionRef.Relic(sticks)))
 
   test("a modifier for the Campaign is asked about first, beside Start " +
       "Campaign"):

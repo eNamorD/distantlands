@@ -17,7 +17,8 @@ object ChronicleWalk:
     */
   def chronicleWonByP1: Table = Table.start
     .turn(p1, Phase.Chronicle)
-    .update(_.updateCurrent(_.copy(result = Some(GameResult(p1)))))
+    .update(_.updateCurrent(_.copy(
+      result = Some(GameResult(p1, VictoryKind.Usurper)))))
 
   /** p1's won game after the Sun: p1 is Chancellor and holds the Throne,
     * p2 the World and p3 the Beacon, and the Empire has a supply of 24
@@ -44,12 +45,10 @@ object ChronicleWalk:
       TriggeredProcedureRef.ChronicleThrone))
     val walked = walkedTo(rules, started,
       ProtectAndDispossess.protectDecisionId)
-    val nine = distantlands.testkit.Outcomes.ready(walked.state).game.current
-      .cardGathering
     accepted(rules.resolveWalker(walked.state, Table.p2,
       ProtectAndDispossess.protectDecisionId,
       DecisionAnswer.ChooseOneAnswer(
-        DecisionOptionRef.Denizen(nine(4).asInstanceOf[DenizenId])))).state
+        DecisionOptionRef.Button("protect-stack-2")))).state
 
   /** A Chronicle walked to the end of one procedure: the state replayed to
     * that end, the events up to it, and every decision it parked on. */
@@ -96,16 +95,20 @@ object ChronicleWalk:
       case Right(None) => None
       case other => munit.Assertions.fail(s"expected a parked decision, got $other")
 
-  /** The plainest legal answer: the first available option, the fewest
-    * picks a choose-many allows, nothing given in a distribution, and, in
+  /** The plainest legal answer: the first available option, a
+    * choose-many's preselected options, else the fewest picks it allows, nothing given in a distribution, and, in
     * a partition, each section's minimum. */
   def plainestAnswer(decide: Decide)(using munit.Location): DecisionAnswer =
     decide.query match
+      // Build Edifice builds nothing: the first option would bury a card.
+      case _ if decide.decisionId == BuildEdifice.cardDecisionId =>
+        DecisionAnswer.ChooseOneAnswer(BuildEdifice.skip)
       case one: DecisionQuery.ChooseOne =>
         DecisionAnswer.ChooseOneAnswer(one.options.filter(_.available).head.ref)
       case many: DecisionQuery.ChooseMany =>
         DecisionAnswer.ChooseManyAnswer(
-          many.options.filter(_.available).take(many.min).map(_.ref))
+          if many.selected.nonEmpty then many.selected.map(_.ref)
+          else many.options.filter(_.available).take(many.min).map(_.ref))
       case spread: DecisionQuery.Distribute =>
         DecisionAnswer.DistributeAnswer(spread.slots.map(slot =>
           DistributeAmount(slot.ref, slot.minimum)))

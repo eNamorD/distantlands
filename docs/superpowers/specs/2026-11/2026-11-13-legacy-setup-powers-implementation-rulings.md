@@ -115,6 +115,11 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   choosing", and an earlier view would inform the holder's World Crafter
   and Populist choices, which come first. *Slice/files:* slice 2;
   `LegacyKeep`, `GamePresentationProjector.identifiesCard`.
+  *Superseded 2026-11-15* by [catalog batch 13](2026-11-14-catalog-batch-13-design.md), ruling 6: the holder draws into their own hand, so the hand rule names the draw to them alone.
+  *Amended 2026-11-21:* the holder now sees every other player's dealt
+  pair from the deal on, before any keep
+  ([setup keep undo design](2026-11-21-setup-keep-undo-design.md),
+  ruling 8).
 
 ## Slice 3
 
@@ -144,7 +149,8 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
   Visions", and the holder chose their positions. *Slice/files:* slice 3;
   `SecretSociety`, `Seer`, `GamePresentationProjector.identifiesCard`.
 - **R21. Secret Society's excess discard.** After the holder's own
-  `SetupPawnPlaced` window and before their keep, only when they are over
+  `SetupPawnPlaced` window, and before their keep in a first game (a later
+  game keeps in Foundation III: catalog batch 13, ruling 3), only when they are over
   the adviser limit: one choose-many of exactly the excess, over the
   advisers by slot, `setup.legacy.secret-society.<player>.discard`, with no
   Decline. The cards go where Setup's rejected advisers go. Setup writes no
@@ -194,8 +200,11 @@ the design's rulings 1-20 in the "Legacy Setup powers rulings" section of
 
 - **R27. Who placed, inside `SetupPawnPlaced`.** The placer is the latest
   `setup.pawn-placement.*` answer, and the site is none if the player
-  stayed off. Inside the window the edifice powers come first, then The
-  Standard Bearer, then Wealthy, by registration order, which a test pins.
+  stayed off. Inside the window the edifice powers, then The Standard
+  Bearer, then Wealthy, by registration order, are the order in which the
+  placer's power-order question lists them. The placer orders them
+  whenever two or more apply (catalog batch 13, ruling 4), and
+  `SetupPowerOrderSuite` pins the list.
   *Reason:* reading the last answer breaks as soon as a legacy asks inside
   the window. *Slice/files:* slice 4; `SetupPawnPlacement`,
   `EdificeSetupSupport`.

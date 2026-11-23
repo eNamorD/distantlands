@@ -620,6 +620,20 @@ class WalkerDecisionProjectorSuite extends munit.FunSuite:
           "target", "targets", Some("Never shown"), countsLocked = true)))
       case other => fail(s"expected a choose-many, got $other")
 
+  test("a choose-many marks the options it opens selected"):
+    val context = parked(ActionRef.Recover)
+    val dunes = siteRef(DunesSite)
+    val peaks = siteRef(BrokenPeaksSite)
+    val tree = Sequence(Decide("test.decide", p1, DecisionQuery.ChooseMany(1,
+      2, Vector(DecisionOption.Site(dunes), DecisionOption.Site(peaks)),
+      Some("Choose sites in the next Empire."),
+      selected = Vector(DecisionOption.Site(peaks)))))
+    projectorFor(tree).project(context).flatMap(_.query) match
+      case Some(many: DecisionQueryProjection.ChooseMany) =>
+        assertEquals(many.options.map(o => (o.id, o.preselected)),
+          Vector((dunes.wireId, false), (peaks.wireId, true)))
+      case other => fail(s"expected a choose-many, got $other")
+
   test("a decide park projects where it is answered"):
     val context = parked(ActionRef.Recover)
     val board = Sequence(Decide("test.decide", p1, DecisionQuery.ChooseOne(

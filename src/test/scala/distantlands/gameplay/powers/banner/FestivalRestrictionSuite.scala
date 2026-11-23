@@ -3,6 +3,7 @@ package distantlands.gameplay.powers.banner
 import distantlands.gameplay.OathRules
 import distantlands.gameplay.WalkerDiceFixture.scripted
 import distantlands.gameplay.actions.dice.RerollChoice
+import distantlands.gameplay.actions.economy.TradeProcedure
 import distantlands.gameplay.actions.recover.RecoverProcedure
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   FairIsleSite}
@@ -161,6 +162,51 @@ class FestivalRestrictionSuite extends munit.FunSuite:
     assert(powers.ruledBy(ready, p2).contains(festival.id))
     assert(!powers.ruledBy(ready, p1).contains(festival.id))
     assertEquals(powers.source(festival.id), Some(source))
+
+  // ---- Muster and Trade at the festival ----------------------------------
+
+  private val tradeForFavor = TradeProcedure.selection(TradeResource.Favor)
+
+  /** p1 with 1 faceup secret and no favor at Ancient City, where Roving
+    * Terror, the only card, stands under p2's festival marker. */
+  private def onlyTerrorToTradeWith: Table =
+    terrorAtTheFestivalOfP2.secrets(p1, faceUp = 1).favor(p1, 0)
+
+  test("Trade for favor, with every card at the actor's site under the " +
+      "festival, starts, and its source card is askable of the holder"):
+    val ready = onlyTerrorToTradeWith.ready
+    assert(MenuPlay.availableInMenu(catalog, ready, ActionRef.Trade,
+      tradeForFavor))
+    val game = new OathRules(catalog,
+      walkerPowerCatalog = WalkerPowerCatalog.default(catalog))
+    val started = accepted(game.startWalker(Ready(ready), ActionRef.Trade, p1,
+      startArgs = tradeForFavor))
+    assert(PhasePowerHarness.awaits(started, TradeProcedure.decisionId))
+    val shown = PhasePowerHarness.queryOf(started, p1).flatMap(
+      _.offeredOptions.find(_.id == terror.value))
+    assertEquals(shown.map(option => option.state -> option.reason), Some(
+      "askable" -> Some("Darkest Secret: Cannot place favor or secrets on " +
+        "denizens at the festival without the Darkest Secret holder's " +
+        "consent.")))
+
+  test("Muster with no favor at the festival names the favor it needs"):
+    assertEquals(MenuPlay.withoutBand(MenuPlay.menuOptionFor(catalog,
+      onlyTerrorToTradeWith.ready, ActionRef.Muster)),
+      DecisionOption.Unavailable(DecisionOption.Button(
+        DecisionOptionRef.Button(ActionRef.Muster.key), "Muster"),
+        OptionReason.Written("Needs 1 favor; you have 0")))
+
+  test("once the holder refused this turn, Trade shows the festival's plain " +
+      "placing reason"):
+    val ready = onlyTerrorToTradeWith.ready
+    val refused = ready.copy(consent = ConsentState(answers = Map(
+      ConsentKey(festival.id, p1, PowerUseRules.useKey, terrorRef) ->
+        ConsentAnswer.Refused.by(p2)), turn = Some(ConsentTurn.of(ready))))
+    assertEquals(MenuPlay.withoutBand(MenuPlay.menuOptionFor(catalog, refused,
+      ActionRef.Trade, tradeForFavor)) match
+      case DecisionOption.Unavailable(_, reason) => Some(reason)
+      case _ => None,
+      Some(OptionReason.Noted(festival.id, festival.placingPlain(source))))
 
   // ---- the real powers ----------------------------------------------------
 

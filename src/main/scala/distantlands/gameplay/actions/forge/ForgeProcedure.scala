@@ -284,13 +284,7 @@ object ForgeProcedure:
 
     def payments(denizens: Vector[(DenizenId, String)])
         : Either[OathViolation, Vector[CoreOperation]] =
-      denizens.foldLeft[Either[OathViolation, Vector[CoreOperation]]](
-        Right(Vector.empty)) { case (result, (denizen, sectionKey)) =>
-        for
-          operations <- result
-          operation <- payment(denizen, sectionKey)
-        yield operations :+ operation
-      }
+      OathViolation.traverse(denizens)(payment)
 
     /** The answered split, for a site whose printed cost names both
       * resources. The generic validator has already checked that every

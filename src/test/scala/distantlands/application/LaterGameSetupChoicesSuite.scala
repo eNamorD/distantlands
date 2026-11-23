@@ -1,8 +1,12 @@
 package distantlands.application
 
+import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.setup.{AtlasPlacement, FirstGameSetupFixture,
-  GameStartRules, ImperialMaps, LaterGameFixture, SetupPawnSites,
-  SetupProcedure}
+  LegacyKeep,
+  GameStartRules, ImperialMaps, LaterGameFixture, OrderedWindow,
+  SetupLegacyFixture, SetupPawnSites, SetupProcedure}
+import distantlands.gameplay.setup.legacies.{TheStandardBearerCard, Wealthy,
+  WealthyCard}
 import distantlands.model._
 import distantlands.model.OathState.Ready
 import distantlands.testkit.{Answers, ParkedNode, Situation}
@@ -143,6 +147,45 @@ class LaterGameSetupChoicesSuite extends munit.FunSuite:
     assert(!own.toString.contains("golden-valley"), own)
     assertEquals(projector.project(ScopedProjectionContext(parked, Some(p2))),
       None)
+
+  test("a later game saved mid-Foundation III, between two keeps, " +
+      "replays its journal to the same game (catalog batch 13, ruling 3)"):
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository)
+    val keeping = Situation.start(Situation.journaled(service, catalog,
+        repository, "keeping")).parkedAt(LegacyKeep.decisionId(p2))(
+      GameCommand.Begin(record, LaterGameFixture.orders(record, p1)))
+    assert(keeping.ready.game.campaign.lineages(l1).legacies.nonEmpty,
+      "p1 kept before p2's keep")
+    assertEquals(keeping.ready.game.current.pawnSite(p1), None)
+    val loaded = present(accepted(service.load("keeping")), "the game")
+    assertEquals(loaded.state, keeping.state)
+
+  test("a later game saved inside a pawn window, after a power resolved " +
+      "alone, replays its journal to the same game (catalog batch 13, " +
+      "ruling 4)"):
+    val l3 = LineageId("l3")
+    val holding = SetupLegacyFixture.holding(record, l3, Role.Exile,
+      TheStandardBearerCard.id -> true, WealthyCard.id -> true)
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository)
+    // p3 resolves The Standard Bearer first and declines it, the first
+    // option. Wealthy, left alone, then resolves unasked and asks.
+    val saved = Situation.start(Situation.journaled(service, catalog,
+        repository, "ordering").withAnswers {
+        case park if park.decisionId == OrderedWindow.decisionId(p3, 0) =>
+          DecisionAnswer.ChooseOneAnswer(
+            DecisionOptionRef.Legacy(TheStandardBearerCard.id))
+      }).parkedAt(Wealthy.decisionId(p3))(GameCommand.Begin(holding,
+        LaterGameFixture.orders(holding, p1, LaterGameFixture.seats(3))))
+    // The window's powers decide its shape, so the park is read with them.
+    present(accepted(ParkedNode.of(saved.state, catalog,
+        WalkerPowerCatalog.default(catalog))), "a park") match
+      case ParkedNode.Decision(_, decide, _) =>
+        assertEquals(decide.decisionId, Wealthy.decisionId(p3))
+      case other => fail(s"expected Wealthy's question, parked on $other")
+    val loaded = present(accepted(service.load("ordering")), "the game")
+    assertEquals(loaded.state, saved.state)
 
   test("a Setup filled from Forgotten Sites replays its journal to the " +
       "same game, and the projected map has no empty slot"):

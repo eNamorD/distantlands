@@ -26,14 +26,22 @@ final case class ChronicleFoundation(number: Int, face: String, name: String)
 object ChronicleFoundation:
   val faces: Set[String] = Set("normal", "altered")
 
+/** One lineage's mark in one game's column of the era scorepad: its running
+  * total after that game, and its Imperial role at that game's end,
+  * `"chancellor"` or `"citizen"`, absent for an Exile. */
+final case class ChronicleScorepadEntry(lineage: String, score: Int,
+    role: Option[String] = None)
+
 /** What a browser lists for a Chronicle without decoding it (Chronicle
   * browsing design, "Summary"). `game` is the next game's number; it is
   * absent when the Chronicle has lineages but no scorepad, as a TTS import
   * does. `foundations` is the six setup cards, I to VI; an entry saved
-  * before they were kept has none. */
+  * before they were kept has none. `scorepad` is the era scorepad, a column
+  * per game played in order; an entry saved before it was kept has none. */
 final case class ChronicleSummary(name: String, game: Option[Int],
     eraTarget: Int, scores: Vector[ChronicleScore],
-    foundations: Vector[ChronicleFoundation] = Vector.empty)
+    foundations: Vector[ChronicleFoundation] = Vector.empty,
+    scorepad: Vector[Vector[ChronicleScorepadEntry]] = Vector.empty)
 
 /** A Chronicle as a browser keeps it: canonical JSON, the JSON's SHA-256
   * digest, and its summary. */
@@ -56,7 +64,9 @@ object ChronicleEntryCodec:
       },
       "foundations" -> encoded(entry.summary.foundations)(foundation =>
         ujson.Obj("number" -> foundation.number, "face" -> foundation.face,
-          "name" -> foundation.name)))
+          "name" -> foundation.name)),
+      "scorepad" -> encoded(entry.summary.scorepad)(column =>
+        encoded(column)(encodeScorepadEntry)))
     entry.summary.game.foreach(game => summary("game") = game)
     ujson.Obj("json" -> entry.json, "digest" -> entry.digest,
       "summary" -> summary)
@@ -76,7 +86,7 @@ object ChronicleEntryCodec:
       summaryRaw <- field(value, "summary", path)
       summary <- obj(summaryRaw, summaryPath)
       _ <- exact(summary, Set("name", "game", "eraTarget", "scores",
-        "foundations"), summaryPath)
+        "foundations", "scorepad"), summaryPath)
       name <- string(summary, "name", summaryPath)
       game <- optionalAbsent(summary, "game", summaryPath)(int)
       target <- int(summary, "eraTarget", summaryPath)
@@ -87,9 +97,7 @@ object ChronicleEntryCodec:
           _ <- exact(row, Set("lineage", "score", "role", "legacies"), child)
           lineage <- string(row, "lineage", child)
           score <- int(row, "score", child)
-          role <- optionalAbsent(row, "role", child)((raw, at) =>
-            string(raw, at).filterOrElse(ChronicleScore.roles,
-              ProtocolDecodeFailure.InvalidValue(at, "unknown role")))
+          role <- optionalAbsent(row, "role", child)(knownRole)
           legacyRaws <- default(row, "legacies", child,
             Vector.empty[ujson.Value])(array)
           legacies <- traverse(legacyRaws, s"$child.legacies") { (raw, at) =>
@@ -117,8 +125,36 @@ object ChronicleEntryCodec:
             name <- string(row, "name", child)
           yield ChronicleFoundation(number, face, name)
       }
+      // An entry a browser saved before the scorepad was kept has none.
+      columnRaws <- default(summary, "scorepad", summaryPath,
+        Vector.empty[ujson.Value])(array)
+      scorepad <- traverse(columnRaws, s"$summaryPath.scorepad") {
+        (raw, column) =>
+          array(raw, column).flatMap(markRaws =>
+            traverse(markRaws, column)(decodeScorepadEntry))
+      }
     yield ChronicleEntry(json, digest, ChronicleSummary(name, game, target,
-      scores, foundations))
+      scores, foundations, scorepad))
+
+  /** One mark on the era scorepad; its role is omitted for an Exile. */
+  def encodeScorepadEntry(mark: ChronicleScorepadEntry): ujson.Value =
+    val row = ujson.Obj("lineage" -> mark.lineage, "score" -> mark.score)
+    mark.role.foreach(role => row("role") = role)
+    row
+
+  def decodeScorepadEntry(raw: ujson.Value, path: String)
+      : Result[ChronicleScorepadEntry] = for
+    row <- obj(raw, path)
+    _ <- exact(row, Set("lineage", "score", "role"), path)
+    lineage <- string(row, "lineage", path)
+    score <- int(row, "score", path)
+    role <- optionalAbsent(row, "role", path)(knownRole)
+  yield ChronicleScorepadEntry(lineage, score, role)
+
+  /** An Imperial role as the wire spells it: chancellor or citizen. */
+  def knownRole(raw: ujson.Value, at: String): Result[String] =
+    string(raw, at).filterOrElse(ChronicleScore.roles,
+      ProtocolDecodeFailure.InvalidValue(at, "unknown role"))
 
 /** `POST /chronicles/convert`'s body: a saved Chronicle's JSON, or a TTS
   * string with the name it is imported under. */

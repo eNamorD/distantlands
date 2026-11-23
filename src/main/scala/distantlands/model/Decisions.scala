@@ -97,15 +97,25 @@ object DecisionOption:
   final case class DiscardPile(ref: DecisionOptionRef.DiscardPile)
       extends DecisionOption
 
+  /** An option that carries one mark beside the option it wraps. The choice
+    * is the wrapped option's: `ref`, `available` and `askable` are all read
+    * through, so an answer names the same thing marked or not, and the mark
+    * never affects legality. [[Unavailable]] is not one: it decides
+    * availability itself.
+    */
+  sealed trait Wrapping extends DecisionOption:
+    def option: DecisionOption
+    def ref: DecisionOptionRef = option.ref
+    override def available: Boolean = option.available
+    override def askable: Boolean = option.askable
+
   /** An option that states what choosing it costs, which the projector words.
     * The choice is the wrapped option's: `ref` is its reference, so an answer
     * names the same thing whether or not the option carries a price, and the
     * price never affects legality.
     */
   final case class Priced(option: DecisionOption, price: OptionPrice)
-      extends DecisionOption:
-    def ref: DecisionOptionRef = option.ref
-    override def available: Boolean = option.available
+      extends Wrapping
 
   /** An option carrying one short label a client draws as a chip: what kind of
     * thing the option is, as opposed to what choosing it costs. Wrapping for
@@ -114,17 +124,13 @@ object DecisionOption:
     * affects legality.
     */
   final case class Badged(option: DecisionOption, badge: String)
-      extends DecisionOption:
-    def ref: DecisionOptionRef = option.ref
-    override def available: Boolean = option.available
+      extends Wrapping
 
   /** A battle plan an Imperial ally lends the decision's owner (Imperial
     * Tactics): its source is `owner`'s. Wrapping for the reason `Badged`
     * wraps: `ref` is the wrapped option's. */
   final case class Lent(option: DecisionOption, owner: PlayerId)
-      extends DecisionOption:
-    def ref: DecisionOptionRef = option.ref
-    override def available: Boolean = option.available
+      extends Wrapping
 
   /** The ally who lends `option`, through any wrappers. */
   def lender(option: DecisionOption): Option[PlayerId] = option match
@@ -150,9 +156,7 @@ object DecisionOption:
     * discard pile). `ref` is the wrapped option's, so the warning never
     * affects legality. */
   final case class Warned(option: DecisionOption, reason: OptionReason)
-      extends DecisionOption:
-    def ref: DecisionOptionRef = option.ref
-    override def available: Boolean = option.available
+      extends Wrapping
 
   /** An option whose play discards `card` to make room: the card in that
     * site slot or adviser slot, or the revealed Vision a new one displaces.
@@ -160,9 +164,7 @@ object DecisionOption:
     * so the mark never affects legality. The projector names the card.
     */
   final case class Replacing(option: DecisionOption, card: CardId)
-      extends DecisionOption:
-    def ref: DecisionOptionRef = option.ref
-    override def available: Boolean = option.available
+      extends Wrapping
 
   /** An option whose play buries `card` at the site first (Forest Warden):
     * the card in that site slot, or the relic in that site relic slot.
@@ -170,9 +172,7 @@ object DecisionOption:
     * option's. The projector names the card as the viewer may see it.
     */
   final case class Burying(option: DecisionOption, card: CardId)
-      extends DecisionOption:
-    def ref: DecisionOptionRef = option.ref
-    override def available: Boolean = option.available
+      extends Wrapping
 
   /** An option that says which band of its question it belongs to. Wrapping
     * for the reason `Badged` wraps: `ref` is the wrapped option's, so an
@@ -180,10 +180,7 @@ object DecisionOption:
     * legality.
     */
   final case class Grouped(option: DecisionOption, group: OptionGroup)
-      extends DecisionOption:
-    def ref: DecisionOptionRef = option.ref
-    override def available: Boolean = option.available
-    override def askable: Boolean = option.askable
+      extends Wrapping
 
   /** The option presenting `ref`, for every kind whose name the projector
     * resolves itself. A button has no such name: its label is authored, so
@@ -353,13 +350,21 @@ object DecisionQuery:
     * client shows them chosen, and no answer names them. `tallies`,
     * `summary` and `confirm` are display only, like `heading`; a query with
     * no `confirm` gets the client's generic "Confirm".
+    *
+    * `selected` are the options a client opens with picked, for a question
+    * whose usual answer is most of its options, such as Shape Empire's
+    * sites to keep. Like `ChooseAmount`'s `suggested` it is display only:
+    * the answer is still whatever the player confirms, and it must be a
+    * legal one, so `selected` stays within the options that may be chosen
+    * and within `min..max`.
     */
   final case class ChooseMany(min: Int, max: Int,
       options: Vector[DecisionOption], heading: Option[String] = None,
       locked: Vector[DecisionOption] = Vector.empty,
       tallies: Vector[DecisionTally] = Vector.empty,
       summary: Option[DecisionSummary] = None,
-      confirm: Option[CountedConfirm] = None) extends DecisionQuery
+      confirm: Option[CountedConfirm] = None,
+      selected: Vector[DecisionOption] = Vector.empty) extends DecisionQuery
 
   /** Pick an integer from `min` to `max` inclusive. Both labels are required,
     * as on [[Distribute]]: the panel has a confirm step, and a range with no

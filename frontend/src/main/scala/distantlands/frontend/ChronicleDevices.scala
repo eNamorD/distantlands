@@ -50,7 +50,7 @@ private[frontend] object ChronicleFiles:
           .recover { case _ => Left("The file could not be read.") }
 
 /** The address bar, for moving between the Chronicle page and player
-  * selection without reloading. */
+  * selection without reloading. A path may carry its query. */
 private[frontend] trait PageHistory:
   def push(path: String): Unit
   def replace(path: String): Unit
@@ -64,7 +64,7 @@ private[frontend] object PageHistory:
       dom.window.history.replaceState(null, "", path)
     def onPop(handler: String => Unit): Unit =
       dom.window.addEventListener("popstate", (_: dom.PopStateEvent) =>
-        handler(dom.window.location.pathname))
+        handler(dom.window.location.pathname + dom.window.location.search))
 
 /** Every browser effect the Chronicle pages and the table's Chronicle
   * section use. `storage` is absent when the browser keeps nothing; `now`

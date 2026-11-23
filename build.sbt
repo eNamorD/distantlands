@@ -92,13 +92,13 @@ lazy val root = (project in file("."))
     coverageFailOnMinimum := true,
     Universal / packageName := s"distantlands-${version.value}",
     verifyReleaseVersion := {
-      assert(ReleaseVersion.resolve(None) == "0.1.0-SNAPSHOT")
-      Seq("0.1.0-alpha.1", "1.2.3-beta.0", "10.20.30-rc.12").foreach { value =>
+      assert(ReleaseVersion.resolve(None) == "0.2.0-SNAPSHOT")
+      Seq("0.2.0-alpha", "1.2.3-beta", "10.20.30-rc").foreach { value =>
         assert(ReleaseVersion.resolve(Some(value)) == value)
       }
-      Seq("", "1.2.3", "v1.2.3-alpha.1", "01.2.3-alpha.1",
-        "1.2.3-alpha.01", "1.2.3-SNAPSHOT", "1.2.3-alpha.1\n",
-        "1.2.3-alpha.1+build", "../alpha").foreach { value =>
+      Seq("", "1.2.3", "v1.2.3-alpha", "01.2.3-alpha", "1.02.3-alpha",
+        "1.2.03-alpha", "1.2.3-alpha.1", "1.2.3-SNAPSHOT", "1.2.3-alpha\n",
+        "1.2.3-alpha+build", "../alpha").foreach { value =>
         assert(scala.util.Try(ReleaseVersion.resolve(Some(value))).isFailure,
           s"accepted invalid release version: $value")
       }

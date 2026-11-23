@@ -1,19 +1,22 @@
 package distantlands.application
 
 import distantlands.gameplay.actions.explore.ExploreProcedure
+import distantlands.gameplay.chronicle.ChronicleBeginProcedure
 import distantlands.gameplay.cards.{BrokenPeaksSite, BuriedGiantSite}
 import distantlands.gameplay.powers.campaign.StickyFireCard
 import distantlands.testkit.MenuPlay
 import distantlands.gameplay.setup.{AtlasPlacement, ImperialMaps,
-  LaterGameFixture, SetupProcedure}
+  LaterGameFixture, LegacyKeep, SetupLegacyFixture, SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
-import distantlands.testkit.{Dice, ParkedNode, Situation, Table}
-import distantlands.testkit.Table.{p1, p2}
+import distantlands.testkit.{DecisionAnswers, Dice, ParkedNode, Situation,
+  Table}
+import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Commands
 import distantlands.testkit.Unwrap.{accepted, present}
 
-/** Real batches that undo never takes back (undo design, "Barriers"). */
+/** Real batches that undo never takes back (undo design, "Barriers"), and
+  * the ones beside them it still may. */
 class UndoBarrierPlaySuite extends munit.FunSuite:
   private def nothingToUndo(service: GameApplicationService, gameId: String,
       at: Long, player: PlayerId)(using munit.Location): Unit =
@@ -109,3 +112,84 @@ class UndoBarrierPlaySuite extends munit.FunSuite:
     assertEquals(undone.state, begun.state)
     assertEquals(parkedDecision(undone.state),
       SetupProcedure.reliquaryDecisionId)
+
+  /** p3's Rest hands p1, the Usurper, a Wake that p1 wins: the game parks on
+    * the winner's Start Chronicle decision. */
+  private def usurperWon(gameId: String)
+      : (GameApplicationService, Situation) =
+    val table = Table.start.turn(p3, Phase.Act)
+      .oathkeeper(Some(p1), TitleSide.Usurper).banditsRefilled
+    val (service, repository) = table.service()
+    val act = table.situation(Situation.journaled(service, catalog,
+      repository, gameId))
+    val won = act.parkedAfter(MenuPlay.start(p3,
+      PhaseTransitionRef.BeginRest))
+    assertEquals(won.ready.game.current.result.map(_.winner), Some(p1))
+    (service, won)
+
+  private val startChronicle: GameCommand = Commands.resolveWalker(p1,
+    TreeDecision(ChronicleBeginProcedure.decisionId,
+      DecisionAnswer.ChooseOneAnswer(ChronicleBeginProcedure.start)))
+
+  test("the batch that wins the game cannot be taken back"):
+    val (service, won) = usurperWon("won")
+    nothingToUndo(service, "won", won.nextSequence, p1)
+    nothingToUndo(service, "won", won.nextSequence, p3)
+
+  test("once the game is won, the winner can still take back starting the " +
+      "Chronicle"):
+    val (service, won) = usurperWon("chronicle-start")
+    val started = won.parkedAfter(startChronicle)
+    assertEquals(started.ready.game.current.turn.phase, Phase.Chronicle)
+    val undone = accepted(service.handle("chronicle-start",
+      started.nextSequence, Commands.undo(p1)))
+    assertEquals(undone.state, won.state)
+
+  test("finishing the Chronicle shows the evolved Chronicle, so it cannot " +
+      "be taken back"):
+    val (service, won) = usurperWon("chronicle-finish")
+    val done = won.after(startChronicle)
+    assert(done.ready.game.campaign.evolved.nonEmpty)
+    nothingToUndo(service, "chronicle-finish", done.nextSequence, p1)
+    nothingToUndo(service, "chronicle-finish", done.nextSequence, p2)
+    nothingToUndo(service, "chronicle-finish", done.nextSequence, p3)
+
+  /** A later game's Setup parked at p1's keep. The Reliquary is empty, so
+    * Imperial Maps asks p1, the Chancellor, first; the default answer
+    * takes its first end, and the deal follows. */
+  private def laterGameAtFirstKeep(gameId: String)
+      : (GameApplicationService, Situation, SetupOrders) =
+    val record = LaterGameFixture.chronicle(LineageId("l1"), LineageId("l2"))
+    val orders = LaterGameFixture.orders(record, p1)
+    val repository = new InMemoryEventStreamRepository
+    val service = new GameApplicationService(catalog, repository)
+    val atKeep = Situation.start(Situation.journaled(service, catalog,
+        repository, gameId))
+      .parkedAt(LegacyKeep.decisionId(p1))(GameCommand.Begin(record, orders))
+    (service, atKeep, orders)
+
+  /** `player`'s keep of the first legacy dealt to them. */
+  private def keepFirst(orders: SetupOrders, player: PlayerId): GameCommand =
+    val Vector(kept, returned) = SetupLegacyFixture.drawn(orders, player)
+    Commands.resolveWalker(player, TreeDecision(LegacyKeep.decisionId(player),
+      DecisionAnswers.keepLegacy(kept, returned)))
+
+  test("a later game's keep can be taken back until the next keeper " +
+      "answers, returning to the keep question"):
+    val (service, atKeep, orders) = laterGameAtFirstKeep("keep-undo")
+    val kept = atKeep.parkedAfter(keepFirst(orders, p1))
+    val undone = accepted(service.handle("keep-undo", kept.nextSequence,
+      Commands.undo(p1)))
+    assertEquals(undone.state, atKeep.state)
+
+  test("once the next keeper answers, the earlier keep cannot be taken " +
+      "back, and the next keeper's can"):
+    val (service, atKeep, orders) = laterGameAtFirstKeep("keep-barrier")
+    val first = atKeep.parkedAfter(keepFirst(orders, p1))
+    val second = first.parkedAfter(keepFirst(orders, p2))
+    assertEquals(service.handle("keep-barrier", second.nextSequence,
+      Commands.undo(p1)), Left(GameApplicationError.CommandRejected(
+        OathViolation.UndoNotIssuer(p1, p2))))
+    val undone = accepted(service.handle("keep-barrier", second.nextSequence,
+      Commands.undo(p2)))
+    assertEquals(undone.state, first.state)

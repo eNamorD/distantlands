@@ -41,7 +41,10 @@ private[frontend] object BoardHomes:
         slot(option.id).exists((player, at) => value.playerBoards
           .exists(board => board.playerId == player &&
             board.relics.isDefinedAt(at)))
-      case "banner" => value.banners.exists(_.key == option.id)
+      // An unheld banner sits in the shared bank; a held one on its
+      // holder's board.
+      case "banner" => (value.banners ++ value.playerBoards.flatMap(_.banners))
+        .exists(_.key == option.id)
       case "favor-bank" => value.favorBanks.exists(_.suit == option.id)
       case "player" => value.players.exists(_.playerId == option.id)
       // A legacy in a player's strip or the Public Ambitions row.

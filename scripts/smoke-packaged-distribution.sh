@@ -171,7 +171,7 @@ create_game() {
     --output "$creation_response" \
     --write-out '%{http_code}' \
     --header 'Content-Type: application/json' \
-    --data '{"participants":[{"playerId":"red-exile","color":"red"},{"playerId":"blue-exile","color":"blue"},{"playerId":"yellow-exile","color":"yellow"}]}' \
+    --data '{"participants":[{"playerId":"red-exile","color":"red"},{"playerId":"blue-exile","color":"blue"},{"playerId":"yellow-exile","color":"yellow"}],"chronicle":{"kind":"new","name":"Smoke"}}' \
     "$base_url/games") ||
     fail "game creation request failed on run $run_label"
   [ "$creation_status" = 201 ] ||
@@ -205,14 +205,18 @@ exchange_seat() {
       --connect-timeout "$curl_connect_timeout" \
       --max-time "$curl_request_timeout" \
       --output /dev/null \
-      --write-out '%{http_code}' \
+      --write-out '%{http_code} %{redirect_url}' \
       --cookie-jar "$cookie_jar" \
       "$seat_url" 2>"$exchange_error"); then
     redact_seat_links <"$exchange_error" >&2
     fail "$player_id seat exchange request failed on run $run_label"
   fi
-  [ "$exchange_status" = 303 ] ||
-    fail "$player_id seat exchange returned HTTP $exchange_status instead of 303 on run $run_label"
+  # Each seat has its own page, so seats sharing one browser keep their
+  # own cookies.
+  [ "${exchange_status% *}" = 303 ] ||
+    fail "$player_id seat exchange returned HTTP ${exchange_status% *} instead of 303 on run $run_label"
+  [ "${exchange_status#* }" = "$base_url$game_path/seats/$player_id" ] ||
+    fail "$player_id seat exchange did not redirect to its seat page on run $run_label"
   grep -F 'distantlands_seat' "$cookie_jar" >/dev/null ||
     fail "$player_id seat exchange did not store a cookie on run $run_label"
 }
@@ -229,12 +233,12 @@ load_seat() {
     --output "$page_file" \
     --write-out '%{http_code}' \
     --cookie "$cookie_jar" \
-    "$base_url$game_path") ||
-    fail "$player_id canonical page request failed on run $run_label"
+    "$base_url$game_path/seats/$player_id") ||
+    fail "$player_id seat page request failed on run $run_label"
   [ "$page_status" = 200 ] ||
-    fail "$player_id canonical page returned HTTP $page_status instead of 200 on run $run_label"
+    fail "$player_id seat page returned HTTP $page_status instead of 200 on run $run_label"
   grep -F '/assets/main.js' "$page_file" >/dev/null ||
-    fail "$player_id canonical page omitted /assets/main.js on run $run_label"
+    fail "$player_id seat page omitted /assets/main.js on run $run_label"
 
   api_status=$(curl --silent --show-error \
     --connect-timeout "$curl_connect_timeout" \
@@ -242,14 +246,24 @@ load_seat() {
     --output "$projection_file" \
     --write-out '%{http_code}' \
     --cookie "$cookie_jar" \
-    "$base_url$game_path/api") ||
+    "$base_url$game_path/seats/$player_id/api") ||
     fail "$player_id private API request failed on run $run_label"
   [ "$api_status" = 200 ] ||
     fail "$player_id private API returned HTTP $api_status instead of 200 on run $run_label"
   grep -F "\"viewerPlayerId\":\"$player_id\"" "$projection_file" >/dev/null ||
     fail "$player_id private API resolved the wrong seat on run $run_label"
-  grep -F "\"nextSequence\":$expected_sequence" "$projection_file" >/dev/null ||
+  [ -z "$expected_sequence" ] ||
+    grep -F "\"nextSequence\":$expected_sequence" "$projection_file" >/dev/null ||
     fail "$player_id private API returned the wrong sequence on run $run_label"
+}
+
+# Setup journals a different number of events before the first decision
+# (each seat's legacy deal, for one), so read the starting sequence from the
+# first seat's projection and require the other seats to agree with it.
+sequence_in() {
+  sequence=$(sed -n 's/.*"nextSequence":\([0-9]*\).*/\1/p' "$1" | head -n 1)
+  [ -n "$sequence" ] || fail "projection omitted nextSequence on run $run_label"
+  printf '%s' "$sequence"
 }
 
 submit_representative_command() {
@@ -291,8 +305,8 @@ submit_representative_command() {
     --write-out '%{http_code}' \
     --cookie "$active_cookie_jar" \
     --header 'Content-Type: application/json' \
-    --data "{\"expectedNextSequence\":2,\"intent\":{\"type\":\"resolveWalker\",\"decisionId\":\"$decision_id\",\"payload\":{\"kind\":\"choose-one\",\"optionKind\":\"site\",\"optionId\":\"$site_id\"}}}" \
-    "$base_url$game_path/api/commands") ||
+    --data "{\"expectedNextSequence\":$starting_sequence,\"intent\":{\"type\":\"resolveWalker\",\"decisionId\":\"$decision_id\",\"payload\":{\"kind\":\"choose-one\",\"optionKind\":\"site\",\"optionId\":\"$site_id\"}}}" \
+    "$base_url$game_path/seats/$active_player_id/api/commands") ||
     fail "representative command request failed on run $run_label"
   [ "$command_status" = 200 ] ||
     fail "representative command returned HTTP $command_status instead of 200 on run $run_label"
@@ -301,10 +315,10 @@ submit_representative_command() {
 
   # How many automatic follow-up steps Setup takes after one placed pawn
   # varies with the randomized board, so only the exact pre-command value
-  # (2) is fixed; a real advance just needs to be strictly greater than it.
+  # is fixed; a real advance just needs to be strictly greater than it.
   post_command_sequence=$(sed -n 's/.*"nextSequence":\([0-9]*\).*/\1/p' "$command_response" | head -n 1)
   [ -n "$post_command_sequence" ] || fail "representative command response omitted nextSequence on run $run_label"
-  [ "$post_command_sequence" -gt 2 ] ||
+  [ "$post_command_sequence" -gt "$starting_sequence" ] ||
     fail "representative command did not advance the game on run $run_label"
 }
 
@@ -345,9 +359,10 @@ yellow_seat_url=$(extract_seat_url yellow-exile)
 exchange_seat red-exile "$red_seat_url" "$red_cookie_jar"
 exchange_seat blue-exile "$blue_seat_url" "$blue_cookie_jar"
 exchange_seat yellow-exile "$yellow_seat_url" "$yellow_cookie_jar"
-load_seat red-exile "$red_cookie_jar" "$red_projection" 2
-load_seat blue-exile "$blue_cookie_jar" "$blue_projection" 2
-load_seat yellow-exile "$yellow_cookie_jar" "$yellow_projection" 2
+load_seat red-exile "$red_cookie_jar" "$red_projection" ""
+starting_sequence=$(sequence_in "$red_projection")
+load_seat blue-exile "$blue_cookie_jar" "$blue_projection" "$starting_sequence"
+load_seat yellow-exile "$yellow_cookie_jar" "$yellow_projection" "$starting_sequence"
 submit_representative_command
 stop_server
 

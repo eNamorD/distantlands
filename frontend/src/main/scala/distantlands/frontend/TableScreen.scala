@@ -114,7 +114,8 @@ private[frontend] final class TableScreen(
           controls.stage(Draft.Aid(Some(draft.toggled(prompt,
             BoardOptionViews.key(chosen)))))))
           .getOrElse(BoardOptions.none)
-        (WorldBoardRenderer.players(value, selectedPlayer, options),
+        (WorldBoardRenderer.playerBoards(value, selectedPlayer, options,
+          Option.when(view.controlsAvailable)(controls.submitCommand)),
           WorldBoardRenderer.world(value, options,
             Option.when(view.controlsAvailable)(controls.submitCommand)),
           decisionKey)
@@ -129,3 +130,7 @@ private[frontend] final class TableScreen(
       view.viewedLog, projection.fold(Map.empty[String, String])(value =>
         value.players.map(player =>
           player.playerId -> PlayerColorCss.of(player.color)).toMap))
+    shell.showChronicleDetails(projection)
+    projection.foreach(value => shell.showConsentRequests(SitePowerLinks.of(
+      value, Option.when(view.controlsAvailable)(controls.submitCommand)),
+      value.nextSequence, failure))

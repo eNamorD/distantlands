@@ -280,8 +280,8 @@ object CampaignProcedure:
     })
 
   /** The optional additions to the mandatory target, which is shown locked,
-    * with the two sums a player weighs and why every other target is not on
-    * offer.
+    * with the two sums a player weighs. Only the defender's targets are
+    * offered.
     */
   private def targetsStep(catalog: ExecutableCatalog, actor: PlayerId)
       : Operation = Branch((ready, pending) =>
@@ -293,9 +293,8 @@ object CampaignProcedure:
     yield
       val locked = CampaignTargets.lockedOf(kind, origin, defender).toVector
       Vector[Operation](Decide(CampaignIds.targets, actor,
-        DecisionQuery.ChooseMany(0, options.size, options ++
-          CampaignTargets.withheld(ready, actor, kind, origin, defender,
-            options), heading = Some(kind match {
+        DecisionQuery.ChooseMany(0, options.size, options,
+          heading = Some(kind match {
             case CampaignKind.Conquest =>
               "Also target these sites ruled by the same defender"
             case CampaignKind.Raid =>

@@ -83,7 +83,7 @@ object ChallengeProcedure:
         !holder.contains(actor) &&
           holder.forall(rival => (player.pawnSite.nonEmpty &&
             player.pawnSite == current.pawnSite(rival)) ||
-            ChallengeReach.unbound(state, actor, picks, banner, rival)) &&
+            ChallengeReach.unbound(actor, picks, banner, rival)) &&
           BannerRules.playerResources(state, player, banner) +
             ChallengeReach.bonus(picks, banner) >
             BannerRules.resources(current, banner)

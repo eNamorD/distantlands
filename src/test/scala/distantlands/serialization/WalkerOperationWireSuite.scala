@@ -5,7 +5,7 @@ import distantlands.gameplay.powers.economy.KnightsErrantCard
 import distantlands.gameplay.powers.setup.GreatMarketCard
 import distantlands.model._
 import distantlands.gameplay.setup.FirstGameSetupFixture
-import distantlands.gameplay.walker.{DeltaPayload, RollPayload,
+import distantlands.gameplay.walker.{ChoicePayload, DeltaPayload, RollPayload,
   WalkerStepRecorded}
 import distantlands.serialization.WalkerWireEvents.{encodedStream,
   encodedStreamThatRoundTrips, recordedOperation}
@@ -391,6 +391,8 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     WritePrediction(player, 6, other),
     ResolvePrediction(player, fulfilled = true),
     ResolvePrediction(player, fulfilled = false),
+    PledgeTemple(player),
+    LegaciesKeptDormant(Vector(legacy)),
     QueueProcedure(QueuedProcedure(PlayerId("p1"), ActionRef.Campaign,
         Vector.empty,
         Some(PowerSourceRef.Card(KnightsErrantCard.id)),
@@ -473,6 +475,19 @@ class WalkerOperationWireSuite extends munit.FunSuite:
     // unchanged.
     assertEquals(ujson.read(encoded).arr.map(
       _("payload")("step").obj.contains("automatic")).toVector,
+      Vector(false, true))
+
+  test("a walker choice made alone round-trips, and `alone` is written " +
+      "only when set"):
+    val answer = DecisionAnswer.ChooseOneAnswer(DecisionOptionRef.Button("a"))
+    val events = Vector[OathEvent](
+      WalkerStepRecorded("1", ChoicePayload("test.asked", answer,
+        PlayerId("p1")), Vector.empty),
+      WalkerStepRecorded("2", ChoicePayload("test.alone", answer,
+        PlayerId("p1"), alone = true), Vector.empty))
+    val encoded = encodedStreamThatRoundTrips("walker-choices", events)
+    assertEquals(ujson.read(encoded).arr.map(
+      _("payload")("step").obj.contains("alone")).toVector,
       Vector(false, true))
 
   test("a walker roll payload round-trips round faces, and a round Roll " +

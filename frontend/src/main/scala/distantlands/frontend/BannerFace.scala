@@ -61,20 +61,25 @@ private[frontend] object BannerFace:
     value.world.flatMap(_.sites).find(_.festival).map(_.label)
 
   /** The banner's rules in the inspector. The Festival face adds a copy of
-    * the festival marker and `festivalAt`, where it lies. */
-  private def inspect(banner: BannerState, festivalAt: Option[String])
-      : Option[(String, dom.html.Element => Unit)] =
+    * the festival marker and `festivalAt`, where it lies. Below them, the
+    * viewer's consent preferences for the power the banner prints, when
+    * they rule it (ruling 16): the Festival's holder. */
+  private def inspect(banner: BannerState, festivalAt: Option[String],
+      links: SitePowerLinks): Option[(String, dom.html.Element => Unit)] =
     val lines = rules(banner.face)
     val heading = s"${title(banner)} · ${side(banner.face)}"
+    val grid = links.bannerGrid(banner.key)
     Option.when(lines.nonEmpty)(title(banner) -> (origin =>
       if banner.face == "festival" then
-        CardInspection.openFestival(heading, lines, festivalAt, origin)
-      else CardInspection.openText(heading, lines, origin)))
+        CardInspection.openFestival(heading, lines, festivalAt, grid, origin)
+      else grid.fold(CardInspection.openText(heading, lines, origin))(
+        ruled => CardInspection.openPower(heading, lines, Some(ruled),
+          origin))))
 
   /** The face; `festivalAt` is [[festivalSite]], which only the Festival
-    * face reads. */
-  def render(banner: BannerState, festivalAt: Option[String])
-      : dom.html.Button =
+    * face reads. `links` finds the viewer's consent grid for it. */
+  def render(banner: BannerState, festivalAt: Option[String],
+      links: SitePowerLinks = SitePowerLinks.none): dom.html.Button =
     val name = bannerLabel(banner.key)
     val node = dom.document.createElement("button").asInstanceOf[dom.html.Button]
     node.`type` = "button"
@@ -101,14 +106,15 @@ private[frontend] object BannerFace:
     tokens.appendChild(text("span", "card-token-count",
       banner.resources.toString))
     node.appendChild(tokens)
-    inspect(banner, festivalAt).foreach((_, open) =>
+    inspect(banner, festivalAt, links).foreach((_, open) =>
       node.onclick = _ => open(node))
     node
 
   /** The face, marked when it is an option: then the face picks it and an
     * inspect button beside it reads its rules. */
   def place(banner: BannerState, options: BoardOptions,
-      festivalAt: Option[String]): dom.Element =
-    options.control(render(banner, festivalAt),
+      festivalAt: Option[String],
+      links: SitePowerLinks = SitePowerLinks.none): dom.Element =
+    options.control(render(banner, festivalAt, links),
       Vector(BoardOptionViews.key("banner", banner.key)),
-      inspect(banner, festivalAt))
+      inspect(banner, festivalAt, links))

@@ -9,7 +9,7 @@ Send each link only to its intended player and keep a private saved copy.
 
 Download the archive for your computer. It includes its own Java, so nothing
 else needs installing. `<version>` is the release version, for example
-`0.1.0-alpha.3`:
+`0.2.0-alpha`:
 
 | Computer | Download |
 | --- | --- |
@@ -36,7 +36,8 @@ else needs installing. `<version>` is the release version, for example
 4. If the system asks whether to allow incoming connections, allow them on
    private networks only.
 5. The window shows the address players open, for example
-   `http://192.168.1.20:8080`, and your browser opens the game-creation page.
+   `http://192.168.1.20:8080`. Your browser opens the game-creation page at
+   `http://localhost:8080`, this computer's own address for the server.
    Continue with [Create and distribute seats](#create-and-distribute-seats).
 6. Keep the window open while you play. Close it, or press Ctrl-C, to stop.
 
@@ -118,8 +119,9 @@ above and share the LAN address instead.
    address; on the test router, requests from the host to the public address
    mostly timed out. An open tab that got through once can keep working by
    reusing its connection, which hides the problem; a private window shows it.
-   On the host, open `http://localhost:8080/` instead. The window shows this
-   address as "On this computer you can also use". Create the game there. The
+   On the host, use `http://localhost:8080/` instead. The browser that the
+   Start file opens already uses it, and the window shows it as "On this
+   computer you can also use". Create the game there. The
    seat links still contain the public address, which is what the other
    players need. Then continue with
    [Create and distribute seats](#create-and-distribute-seats).
@@ -180,7 +182,7 @@ is the database file prefix inside that directory.
 
 #### macOS
 
-These archive examples use version `0.1.0-alpha.1`. Replace that version in the
+These archive examples use version `0.2.0-alpha`. Replace that version in the
 filename and extracted directory with the exact version in the archive you
 downloaded. A Git or OCI tag has a leading `v`; the archive filename and
 directory do not. This macOS example also assumes the host's LAN address is
@@ -189,9 +191,9 @@ directory do not. This macOS example also assumes the host's LAN address is
 ```sh
 mkdir -p /Users/alex/Applications
 cd /Users/alex/Applications
-tar -xzf /Users/alex/Downloads/distantlands-0.1.0-alpha.1.tgz
+tar -xzf /Users/alex/Downloads/distantlands-0.2.0-alpha.tgz
 mkdir -p /Users/alex/DistantLandsData/alpha-1
-cd distantlands-0.1.0-alpha.1
+cd distantlands-0.2.0-alpha
 DLQ_HOST=0.0.0.0 \
 DLQ_PORT=8080 \
 DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
@@ -206,9 +208,9 @@ This example assumes the archive is in `/home/alex/Downloads`:
 ```sh
 mkdir -p /home/alex/apps
 cd /home/alex/apps
-tar -xzf /home/alex/Downloads/distantlands-0.1.0-alpha.1.tgz
+tar -xzf /home/alex/Downloads/distantlands-0.2.0-alpha.tgz
 mkdir -p /home/alex/distantlands-data/alpha-1
-cd distantlands-0.1.0-alpha.1
+cd distantlands-0.2.0-alpha
 DLQ_HOST=0.0.0.0 \
 DLQ_PORT=8080 \
 DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
@@ -224,13 +226,13 @@ Run these commands in PowerShell. This example assumes the ZIP is in
 ```powershell
 New-Item -ItemType Directory -Force -Path C:\DistantLands
 Set-Location C:\DistantLands
-Expand-Archive -LiteralPath C:\Users\Alex\Downloads\distantlands-0.1.0-alpha.1.zip -DestinationPath .
+Expand-Archive -LiteralPath C:\Users\Alex\Downloads\distantlands-0.2.0-alpha.zip -DestinationPath .
 New-Item -ItemType Directory -Force -Path C:\DistantLandsData\alpha-1
 $env:DLQ_HOST = '0.0.0.0'
 $env:DLQ_PORT = '8080'
 $env:DLQ_PUBLIC_BASE_URL = 'http://192.168.1.20:8080'
 $env:DLQ_DATABASE_PATH = 'C:\DistantLandsData\alpha-1\database'
-.\distantlands-0.1.0-alpha.1\bin\distantlands.bat
+.\distantlands-0.2.0-alpha\bin\distantlands.bat
 ```
 
 Replace `192.168.1.20` with the host's private LAN address. For host-only use,
@@ -252,7 +254,7 @@ placeholder below must be replaced with the actual lowercase GitHub owner and
 repository:
 
 ```sh
-export DLQ_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.1.0-alpha.1'
+export DLQ_IMAGE_REFERENCE='ghcr.io/<owner>/<repository>:v0.2.0-alpha'
 docker pull "$DLQ_IMAGE_REFERENCE"
 docker volume create distantlands-data
 docker run --detach --name distantlands \
@@ -307,20 +309,20 @@ database.
 7. Send each player only their assigned link. Do not post links in public chat,
    issue trackers, screenshots, or access logs.
 
-Opening `/s/{seat-code}` stores a seat cookie and redirects to the canonical
-`/games/{game-id}` page. Reloading that page restores the same private seat.
-The server remains authoritative after disconnects and reloads.
+Opening `/s/{seat-code}` stores a seat cookie and redirects to the seat's own
+`/games/{game-id}/seats/{player-id}` page. Reloading that page restores the
+same private seat. The server remains authoritative after disconnects and
+reloads.
 
 Each player should bookmark their original assigned `/s/` link on a private
 device. If cookies are cleared, open that original link again to restore the
 seat. The same link can initialize a replacement browser or device, and anyone
 who obtains it can control the seat.
 
-Use separate browser profiles for different seats in the same game. All seats
-use the same cookie name and game-scoped path, so opening two seat links for one
-game in one browser profile replaces the profile's current seat. A private or
-incognito window is suitable only if losing its cookies at window close is
-acceptable and the original link is still available.
+One browser can hold several seats of the same game: each seat link opens its
+own page, and each seat's cookie is scoped to that page. A private or incognito
+window is suitable only if losing its cookies at window close is acceptable and
+the original link is still available.
 
 ## Before players join
 

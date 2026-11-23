@@ -2,7 +2,7 @@ package distantlands.frontend
 
 import distantlands.protocol.projection.PlanAidOfferProjection
 import org.scalajs.dom
-import ServerUiSupport.{button, element, text}
+import ServerUiSupport.{button, element, playerDisplayName, text}
 
 /** An Imperial ally's offer panel while another Imperial player's plan
   * window is parked (Empire phase design, "Offer panel"). Plans and
@@ -16,7 +16,7 @@ private[frontend] object PlanAidPanel:
     * requirements for Blue". */
   def heading(value: GameProjection, prompt: PlanAidPromptState): String =
     "You may offer your battle plans, to pay costs and to meet " +
-      s"requirements for ${ConsentAsking.name(value, prompt.userPlayerId)}"
+      s"requirements for ${playerDisplayName(value, prompt.userPlayerId)}"
 
   /** "Offer", "Save changes" or "Offered", and whether it may be pressed. */
   def action(prompt: PlanAidPromptState, draft: PlanAidDraft)
@@ -33,6 +33,9 @@ private[frontend] object PlanAidPanel:
       draft <- drafts.aid
     do
       val section = element("section", "plan-aid-prompt")
+      // The rule's name (CR p. 35), as the Gathering and Negotiation panels
+      // name theirs, so the offer is not read as the Campaign's own choice.
+      section.appendChild(text("h2", "", "Imperial Tactics"))
       section.appendChild(text("p", "plan-aid-heading", heading(value, prompt)))
       def toggle(key: String): Unit =
         controls.stage(Draft.Aid(Some(draft.toggled(prompt, key))))

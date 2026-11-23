@@ -82,24 +82,22 @@ case object Pilgrimage extends WhenPlayedPower:
       site: SiteId, actor: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =
     val from = PositionedLocation(Location.Site(site))
-    ready.game.current.map.sites.get(site).toVector.flatMap(_.denizens)
-      .foldLeft[Either[OathViolation, Vector[CoreOperation]]](
-        Right(Vector.empty)) { (done, card) =>
-        done.flatMap(ops => card match
-          case denizen: DenizenState => catalog.suitOf(denizen.id)
-            .toRight(OathViolation.UnknownWorldCard(denizen.id))
-            .map(suit => ops :+ RemoveFromMap(denizen.id, from,
-              PositionedLocation(Location.Dispossessed), suit,
-              denizen.tokens.favor, denizen.tokens.secrets, actor))
-          case edifice: EdificeState if edifice.side == EdificeSide.Ruined =>
-            catalog.suitOf(edifice.id)
-              .toRight(OathViolation.UnknownEdifice(edifice.id))
-              .map(suit => ops :+ RemoveFromMap(edifice.id, from,
-                PositionedLocation(Location.Deck(CardDeck.Edifice),
-                  StackPosition.Bottom), suit, edifice.tokens.favor,
-                edifice.tokens.secrets, actor))
-          case _ => Right(ops))
-      }
+    OathViolation.traverse(ready.game.current.map.sites.get(site).toVector
+        .flatMap(_.denizens)) {
+      case denizen: DenizenState => catalog.suitOf(denizen.id)
+        .toRight(OathViolation.UnknownWorldCard(denizen.id))
+        .map(suit => Vector(RemoveFromMap(denizen.id, from,
+          PositionedLocation(Location.Dispossessed), suit,
+          denizen.tokens.favor, denizen.tokens.secrets, actor)))
+      case edifice: EdificeState if edifice.side == EdificeSide.Ruined =>
+        catalog.suitOf(edifice.id)
+          .toRight(OathViolation.UnknownEdifice(edifice.id))
+          .map(suit => Vector(RemoveFromMap(edifice.id, from,
+            PositionedLocation(Location.Deck(CardDeck.Edifice),
+              StackPosition.Bottom), suit, edifice.tokens.favor,
+            edifice.tokens.secrets, actor)))
+      case _ => Right(Vector.empty)
+    }.map(_.flatten)
 
   private def draw(ready: ReadyGame, pilgrims: Vector[DenizenId],
       region: Region, actor: PlayerId): Vector[Operation] =

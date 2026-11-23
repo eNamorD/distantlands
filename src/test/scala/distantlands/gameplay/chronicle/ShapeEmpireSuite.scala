@@ -49,7 +49,8 @@ class ShapeEmpireSuite extends munit.FunSuite:
   private def forcesAt(ready: ReadyGame, site: SiteId): SiteForces =
     ready.game.current.map.sites(site).forces
 
-  test("the Chancellor may remove Imperial warbands but keeps the last one"):
+  test("the Chancellor chooses the sites that stay, all chosen to start " +
+      "with"):
     val table = empireAt(AncientCitySite, BrokenPeaksSite)
     // Offer Citizenship comes first; offering no one moves on.
     val started = ChronicleWalk.walkedTo(rules, throneStarted(table),
@@ -57,23 +58,57 @@ class ShapeEmpireSuite extends munit.FunSuite:
     val parked = ChronicleWalk.parked(started.state).get
     assertEquals((parked.decisionId, parked.owner),
       (ShapeEmpire.removeDecisionId, p1))
+    val sites = Vector(ancientCity, brokenPeaks).map(site =>
+      DecisionOption.Site(DecisionOptionRef.Site(site)))
     parked.query match
-      case spread: DecisionQuery.Distribute =>
-        assertEquals((spread.slots.map(_.maximum), spread.minTotal,
-          spread.maxTotal), (Vector(1, 1), 0, 1))
+      case many: DecisionQuery.ChooseMany =>
+        assertEquals((many.min, many.max, many.heading),
+          (1, 2, Some("Choose sites in the next Empire.")))
+        assertEquals(many.options.map(_.ref), sites.map(_.ref))
+        assertEquals(many.selected.map(_.ref), sites.map(_.ref))
       case other => fail(other.toString)
+
+  test("a site left out loses every warband of the Chancellor's, and a site " +
+      "kept keeps all of them"):
+    val table = ChronicleWalk.throneHeldByChancellorP1
+      .warbandsAt(AncientCitySite, p1, 3).warbandsAt(BrokenPeaksSite, p1, 2)
+    val started = ChronicleWalk.walkedTo(rules, throneStarted(table),
+      ShapeEmpire.removeDecisionId)
     val removed = accepted(rules.resolveWalker(started.state, p1,
-      ShapeEmpire.removeDecisionId, DecisionAnswer.DistributeAnswer(Vector(
-        DistributeAmount(DecisionOptionRef.Site(ancientCity), 0),
-        DistributeAmount(DecisionOptionRef.Site(brokenPeaks), 1)))))
+      ShapeEmpire.removeDecisionId, DecisionAnswer.ChooseManyAnswer(
+        Vector(DecisionOptionRef.Site(ancientCity)))))
     val after = throneDone(table,
       OathTransition(removed.state, started.events ++ removed.events))
     assertEquals(forcesAt(after, brokenPeaks), SiteForces.Empty)
     assertEquals(forcesAt(after, ancientCity),
+      SiteForces.Occupied(ForceKind.Imperial, 3))
+
+  test("every site may stay, and a walk that accepts the choice removes " +
+      "nothing"):
+    val table = empireAt(AncientCitySite, BrokenPeaksSite)
+    val after = throneDone(table)
+    assertEquals(forcesAt(after, ancientCity),
       SiteForces.Occupied(ForceKind.Imperial, 1))
+    assertEquals(forcesAt(after, brokenPeaks),
+      SiteForces.Occupied(ForceKind.Imperial, 1))
+
+  test("the last site may not be given up"):
+    val table = empireAt(AncientCitySite, BrokenPeaksSite)
+    val started = ChronicleWalk.walkedTo(rules, throneStarted(table),
+      ShapeEmpire.removeDecisionId)
+    val refused = rules.resolveWalker(started.state, p1,
+      ShapeEmpire.removeDecisionId,
+      DecisionAnswer.ChooseManyAnswer(Vector.empty))
+    assert(refused.isLeft, refused.toString)
 
   test("one Imperial warband on the map asks nothing"):
     val started = throneStarted(empireAt(AncientCitySite))
+    assert(!ChronicleWalk.parked(started.state)
+      .exists(_.decisionId == ShapeEmpire.removeDecisionId))
+
+  test("one ruled site asks nothing, however many warbands it holds"):
+    val started = throneStarted(ChronicleWalk.throneHeldByChancellorP1
+      .warbandsAt(AncientCitySite, p1, 3))
     assert(!ChronicleWalk.parked(started.state)
       .exists(_.decisionId == ShapeEmpire.removeDecisionId))
 

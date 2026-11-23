@@ -38,7 +38,7 @@ case object RoyalLine extends ContributingPower:
       (_, ops) => ops :+ step)))
 
   def decisionId(player: PlayerId): String =
-    s"chronicle.sun.legacy.royal-line.${player.value}"
+    s"chronicle.final-winner.royal-line.${player.value}"
   val decline: DecisionOptionRef.Button = DecisionOptionRef.Button("decline")
 
   private val noteId = ProcedureNotes.id(TriggeredProcedureRef.ChronicleWinner)

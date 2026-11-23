@@ -1,7 +1,6 @@
 package distantlands.gameplay.setup.legacies
 
 import distantlands.gameplay.operations.TheGrandScepterCard
-import distantlands.gameplay.powers.PowerImplementationStatus
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
   SetupLegacyFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -44,6 +43,5 @@ class ScepterBearerSuite extends munit.FunSuite:
       ScepterBearerCard.id -> true))
     assertEquals(scepter(ready), Vector(p1))
 
-  test("the card has left holding and its power is registered"):
+  test("Scepter Bearer is registered among the setup legacies"):
     assert(LegacySetupPowers.all.contains(ScepterBearer))
-    assert(PowerImplementationStatus.implemented(ScepterBearerCard.power.id))

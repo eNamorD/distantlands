@@ -19,13 +19,11 @@ object ChronicleExtraction:
     * holder's in their place, the Empire's then archived as rivals (Legacy
     * Chronicle powers design, ruling 21; R35). */
   def layout(ready: ReadyGame): Either[OathViolation, SiteLayout] =
-    ready.game.current.result.map(_.winner).toRight(OathViolation
-      .InvalidEventOrder("the Chronicle stores a game with no winner")).map(
-      winner =>
-        val kept = ChronicleLegacyRules.ironHand(ready).getOrElse(winner)
-        val (empire, rivals) = ready.game.current.map.hinterward
-          .partition(ChronicleTasks.rules(ready, kept, _))
-        SiteLayout(empire, rivals))
+    ChronicleTasks.winner(ready).map(winner =>
+      val kept = ChronicleLegacyRules.ironHand(ready).getOrElse(winner)
+      val (empire, rivals) = ready.game.current.map.hinterward
+        .partition(ChronicleTasks.rules(ready, kept, _))
+      SiteLayout(empire, rivals))
 
   def storedSite(site: SiteId, items: Vector[CardId])
       : Either[OathViolation, StoredSite] =
@@ -47,13 +45,12 @@ object ChronicleExtraction:
     for
       _ <- leftovers(ready)
       sites <- layout(ready)
-      empire <- all(sites.empire.map(atSite))
-      archived <- all(sites.rivals.map(atSite))
-      carried <- all(campaign.atlas.entries.collect {
+      empire <- OathViolation.traverse(sites.empire)(atSite)
+      archived <- OathViolation.traverse(sites.rivals)(atSite)
+      carried <- OathViolation.traverse(campaign.atlas.entries.collect {
         case AtlasEntry.StoredSite(id, denizens, relics, edifice) =>
-          storedSite(id,
-            edifice.toVector ++ denizens.map(_.id) ++ relics.map(_.id))
-      })
+          (id, edifice.toVector ++ denizens.map(_.id) ++ relics.map(_.id))
+      })(storedSite)
     yield record.copy(atlasBox = archived ++ carried, world = empire,
       worldDeck = denizens(current.commonCards.worldDeck),
       relicDeck = current.commonCards.relicDeck,
@@ -88,11 +85,6 @@ object ChronicleExtraction:
         // The public row is empty once the Sun has resolved legacies (slice
         // 3); a legacy still there cannot be stored.
         case _ => false
-
-  private def all[A](results: Vector[Either[OathViolation, A]])
-      : Either[OathViolation, Vector[A]] =
-    results.foldLeft[Either[OathViolation, Vector[A]]](Right(Vector.empty))(
-      (done, next) => done.flatMap(values => next.map(values :+ _)))
 
   private def unstorable(reason: String): OathViolation =
     OathViolation.UnsupportedChronicle(reason)

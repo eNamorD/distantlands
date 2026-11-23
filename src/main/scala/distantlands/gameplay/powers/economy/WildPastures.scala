@@ -50,8 +50,8 @@ object WildPasturesCard extends Edifice(EdificeId("E07"), Suit.Nomad):
   * `Give` from their board draws on the bank first (`KinshipDraws`), and
   * the favor lands back in it.
   *
-  * The ruined face, Blasted Pastures, is a Chronicle step and is not
-  * implemented.
+  * The ruined face, Blasted Pastures, is a Throne step:
+  * `BlastedPastures` in `gameplay/chronicle`.
   */
 case object WildPastures extends AsksBeforeBatch, OnEdificeFace:
   val edifice: EdificeId = WildPasturesCard.id

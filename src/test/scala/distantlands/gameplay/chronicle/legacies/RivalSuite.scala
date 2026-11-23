@@ -7,8 +7,7 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
 import distantlands.gameplay.chronicle.ChronicleWalk
 import distantlands.gameplay.actions.challenge.SchoolOfVinesCard
 import distantlands.gameplay.powers.action.FaeMerchantCard
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -49,9 +48,6 @@ class RivalSuite extends munit.FunSuite:
     NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone),
       keys, run.events).filter(said => keys.exists(_.name == said.key))
       .map(_.text)
-
-  test("Rival is implemented"):
-    assert(PowerImplementationStatus.implemented(RivalCard.power.id))
 
   test("the holder is offered every card Shape Empire would discard"):
     // Ancient City is Enduring, so its ruined edifice stays anyway.
@@ -97,15 +93,14 @@ class RivalSuite extends munit.FunSuite:
 
   test("a walk resumed at Rival's question keeps what was chosen, after " +
       "the warband removal changed the map"):
-    // Two Imperial warbands: Shape Empire first asks p1 to remove some.
+    // Two Imperial sites: Shape Empire first asks p1 which sites stay.
     val table = outside.warbandsAt(BrokenPeaksSite, p1, 1)
       .legacy(p2, RivalCard)
     val removing: PartialFunction[Decide, DecisionAnswer] =
       case decide if decide.decisionId ==
           distantlands.gameplay.chronicle.ShapeEmpire.removeDecisionId =>
-        DecisionAnswer.DistributeAnswer(Vector(
-          DistributeAmount(DecisionOptionRef.Site(BrokenPeaksSite.id), 1),
-          DistributeAmount(DecisionOptionRef.Site(AncientCitySite.id), 0)))
+        DecisionAnswer.ChooseManyAnswer(Vector(
+          DecisionOptionRef.Site(AncientCitySite.id)))
     val run = throne(table, removing.orElse(
       keeping(DecisionOptionRef.Denizen(ThreateningRoarCard.id))))
     assert(onMap(run.ready, ThreateningRoarCard.id))

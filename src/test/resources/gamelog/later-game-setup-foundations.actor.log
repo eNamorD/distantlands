@@ -10,17 +10,17 @@
 36.1 delta 1 | [player:p2|p2] gained 1 favor from the Hearth bank
 36.2 delta 1 | [player:p2|p2] gained 1 favor from the Beast bank
 37.0 action 1 | [player:p2|p2] divided the favor evenly among the banks with [card:L16|Populist] and took [amount:4 favor]
-42.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
-47.0 decision 1 | [player:p3|p3] kept a legacy for [player:p1|p1] with [card:L14|Matchmaker]
-52.0 decision 1 | [player:p1|p1] kept [card:207|Glamor]
-60.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
-65.0 decision 1 | [player:p3|p3] kept a legacy for [player:p2|p2] with [card:L14|Matchmaker]
-70.0 decision 1 | [player:p2|p2] kept a Denizen
-78.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
-83.0 decision 1 | [player:p3|p3] kept a legacy
-88.0 decision 1 | [player:p3|p3] kept a Denizen
-89.0 round 0 | Round 1
-89.1 turn 0 | [player:p1|p1]'s turn
-89.2 phase 0 | Wake
-91.0 action 1 | Nothing happened in Wake
-91.1 phase 0 | Act
+45.0 decision 1 | [player:p3|p3] kept a legacy for [player:p1|p1] with [card:L14|Matchmaker]
+51.0 decision 1 | [player:p3|p3] kept a legacy for [player:p2|p2] with [card:L14|Matchmaker]
+57.0 decision 1 | [player:p3|p3] kept a legacy
+63.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
+68.0 decision 1 | [player:p1|p1] kept [card:207|Glamor]
+76.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+81.0 decision 1 | [player:p2|p2] kept a Denizen
+89.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
+94.0 decision 1 | [player:p3|p3] kept a Denizen
+95.0 round 0 | Round 1
+95.1 turn 0 | [player:p1|p1]'s turn
+95.2 phase 0 | Wake
+97.0 action 1 | Nothing happened in Wake
+97.1 phase 0 | Act

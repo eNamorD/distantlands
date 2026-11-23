@@ -351,6 +351,16 @@ class DecisionQuerySuite extends munit.FunSuite:
       Suit.Arcane -> 0, Suit.Discord -> 1, Suit.Hearth -> 2, Suit.Nomad -> 3), anyone),
       Right(()))
 
+  test("one slot is a real choice when its total is a range"):
+    val lone = Vector(slot(Suit.Arcane, 0, 2))
+    assertEquals(DecisionQueries.wellFormed(decisionId, ranged(lone, 0, 2)),
+      Right(()))
+
+  test("one slot with no open bounds stays forced even over a range"):
+    val fixed = Vector(slot(Suit.Arcane, 1, 1))
+    assertEquals(DecisionQueries.wellFormed(decisionId, ranged(fixed, 0, 2)),
+      violation("declares fewer than two variable slots, leaving nothing to decide"))
+
   test("a ranged distribution is well formed when its range is reachable and open"):
     val two = Vector(slot(Suit.Arcane, 0, 3), slot(Suit.Nomad, 0, 3))
     assertEquals(DecisionQueries.wellFormed(decisionId, ranged(two, 0, 3)),
@@ -440,6 +450,20 @@ class DecisionQuerySuite extends munit.FunSuite:
       "nothing to decide"))
     assertEquals(wellFormed(many(1, sites :+ sites.head)),
       invalid("decision recover.choice declares duplicate options"))
+
+  test("a choose-many may open with options selected, if they are pickable " +
+      "and within its range"):
+    def opening(selected: Vector[DecisionOption], min: Int = 1) =
+      many(min, max = Some(3)).copy(selected = selected)
+    assertEquals(wellFormed(opening(sites)), Right(()))
+    assertEquals(wellFormed(opening(sites.take(1))), Right(()))
+    assertEquals(wellFormed(opening(sites, min = 0)), Right(()))
+    assertEquals(wellFormed(opening(Vector(DecisionOption.Site(siteRef("z"))))),
+      invalid("decision recover.choice opens with an option selected that " +
+        "may not be chosen"))
+    assertEquals(wellFormed(many(2, max = Some(3)).copy(
+      selected = sites.take(1))), invalid("decision recover.choice opens " +
+        "with 1 selected, outside 2..3"))
 
   test("a choose-many whose only blocked options are askable still asks: " +
       "none may be picked yet, and none is an answer"):

@@ -72,6 +72,17 @@ private[frontend] object ActionDecisionRenderer:
    // when it is played from the board. The projection drops every card a
    // decision offers as an option, so nothing here has to know which action
    // put them there or which decision is asking.
+   // Public cards the decision is about, shown to the whole table under
+   // their own title, in the hand's well.
+   value.publicPreview.foreach(_.sections.filter(_.cards.nonEmpty)
+     .foreach { shown =>
+       val preview = element("section", "public-preview temporary-hand-preview")
+       preview.appendChild(text("h3", "", shown.title))
+       val cards = element("div", "decision-cards")
+       shown.cards.foreach(card => cards.appendChild(CardFace.render(card)))
+       preview.appendChild(cards)
+       panel.appendChild(preview)
+     })
    if value.temporaryHandPreview.nonEmpty then
      val preview = element("section", "temporary-hand-preview")
      preview.appendChild(text("h3", "", "Cards in hand"))

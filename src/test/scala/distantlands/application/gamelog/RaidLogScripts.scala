@@ -95,10 +95,10 @@ object RaidLogScripts:
       case park if park.decisionId == CampaignIds.kind =>
         ChooseOneAnswer(DecisionOptionRef.Button("raid"))
       case Park(Decide(CampaignIds.force, _,
-          amount: DecisionQuery.ChooseAmount, _, _, _, _), _, _, _) =>
+          amount: DecisionQuery.ChooseAmount, _, _, _, _, _), _, _, _) =>
         ChooseAmountAnswer(amount.max)
       case Park(Decide(CampaignIds.sacrifice, _,
-          amount: DecisionQuery.ChooseAmount, _, _, _, _), _, _, _) =>
+          amount: DecisionQuery.ChooseAmount, _, _, _, _, _), _, _, _) =>
         ChooseAmountAnswer(amount.max)
       case park if park.decisionId == CampaignIds.attackerPlan ||
           park.decisionId == CampaignIds.defenderPlan =>

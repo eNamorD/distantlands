@@ -38,14 +38,14 @@ private[frontend] final class GameTableShell(mount: dom.Element,
   private val detachWheel = SidewaysWheel.attach(players.content)
   private val logPane = new GameLogPane(log.content, scrolled = () => watchLog())
   private val logOverlay = new GameLogOverlay(mount, () => watchLog(), () => {
-    behindLog(false)
+    inertBehind(false)
     log.heading.setAttribute("aria-expanded", "false")
     watchLog()
   })
-  /** The log overlay is modal: while it is open the table and the developer
-    * panel behind it are inert, so Tab cannot leave it and no second dialog
-    * opens under it. */
-  private def behindLog(open: Boolean): Unit =
+  /** The log overlay and Chronicle Details are modal: while either is open
+    * the table and the developer panel behind it are inert, so Tab cannot
+    * leave it and no second dialog opens under it. */
+  private def inertBehind(open: Boolean): Unit =
     Vector(table, dev).foreach(node =>
       if open then node.setAttribute("inert", "") else node.removeAttribute("inert"))
   // The heading opens the whole log (spec, "Overlay").
@@ -55,7 +55,7 @@ private[frontend] final class GameTableShell(mount: dom.Element,
   log.heading.setAttribute("aria-controls", "log-overlay")
   private def openLog(): Unit =
     if inspector.isOpen then inspector.hide()
-    behindLog(true)
+    inertBehind(true)
     log.heading.setAttribute("aria-expanded", "true")
     logOverlay.open(logPane.position, log.heading)
     watchLog()
@@ -202,8 +202,10 @@ private[frontend] final class GameTableShell(mount: dom.Element,
     case CardInspection.Request.Card(card, origin) => inspector.show(card, origin)
     case CardInspection.Request.Text(title, lines, origin, plate) =>
       inspector.showText(title, lines, origin, plate)
-    case CardInspection.Request.Festival(title, lines, at, origin) =>
-      inspector.showFestival(title, lines, at, origin)
+    case CardInspection.Request.Festival(title, lines, at, grid, origin) =>
+      inspector.showFestival(title, lines, at, grid, origin)
+    case CardInspection.Request.FestivalMarker(grid, origin) =>
+      inspector.showFestivalMarker(grid, origin)
     case CardInspection.Request.Supply(panel, origin) =>
       inspector.showSupply(panel, origin)
     case CardInspection.Request.Cards(title, cards, origin) =>
@@ -216,6 +218,31 @@ private[frontend] final class GameTableShell(mount: dom.Element,
       inspector.showPower(title, lines, grid, origin)
     case CardInspection.Request.RuledCard(card, grid, origin) =>
       inspector.showRuled(card, grid, origin)
+  // Chronicle Details (Chronicle Details design, slice 4): modal as the
+  // log overlay is, one layer under the card overlay, which closes first.
+  private val chronicleDetails = new ChronicleDetailsOverlay(mount,
+    () => inspector.isOpen, () => inspector.hide(), () => inertBehind(true),
+    () => inertBehind(false))
+  ChronicleDetails.onOpen { origin =>
+    if inspector.isOpen then inspector.hide()
+    chronicleDetails.open(origin)
+  }
+
+  /** Every snapshot reaches Chronicle Details, so an open one stays
+    * current. */
+  def showChronicleDetails(projection: Option[GameProjection]): Unit =
+    chronicleDetails.show(projection)
+
+  /** Every snapshot's consent requests reach the inspector, so an open
+    * consent column's list stays current (reconsider design, "Live while
+    * open"). */
+  def showConsentRequests(links: SitePowerLinks, position: Long,
+      failure: Option[AnyRef]): Unit =
+    inspector.showConsentRequests(links, position, failure)
+
+  /** Closes Chronicle Details, and an inspector over it, so a dialog drawn
+    * under it can open (implementation ruling R21). */
+  def closeChronicleDetails(): Unit = chronicleDetails.hide()
   private var previousGame = ""
   private var previousDecision = ""
 
@@ -257,6 +284,8 @@ private[frontend] final class GameTableShell(mount: dom.Element,
     detachWheel()
     dev.removeEventListener("keydown", escape)
     CardInspection.clear()
+    ChronicleDetails.clear()
+    chronicleDetails.dispose()
     inspector.dispose()
     dom.window.removeEventListener("pagehide", leaving)
     logPane.dispose()

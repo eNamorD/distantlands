@@ -67,7 +67,7 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
   /** The suit of every denizen on `ready`'s map, edifices included. */
   private def suitsOnMap(ready: ReadyGame): Vector[Suit] =
     ready.game.current.map.sites.values.flatMap(_.denizens)
-      .flatMap(AtlasPlacement.suitOf(catalog, _)).toVector
+      .flatMap(card => catalog.suitOf(card.id)).toVector
 
   private val atlasSites: Vector[SiteId] =
     chronicleWithGreatSlumAtForgottenEnd.atlasBox.map(_.site)
@@ -262,13 +262,13 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
     assertEquals(parkedDecide(begun).owner, p2)
 
   test("with one site in the Atlas nothing is asked: it fills the last " +
-      "slot"):
+      "slot, and the first question is the keep"):
     val record = LaterGameFixture.chronicle(l1, Vector(l2), 7)
     assertEquals(record.atlasBox.size, 1)
     val begun = Situation.start(Situation.rules(catalog))
       .parkedAfter(GameCommand.Begin(record, orders(record)))
     assertEquals(parkedDecide(begun).decisionId,
-      SetupProcedure.pawnDecisionId(p1))
+      LegacyKeep.decisionId(p1))
     assertEquals(begun.ready.game.current.map.hinterward,
       (record.world ++ record.atlasBox).map(_.site))
     assertEquals(begun.events.collect {
@@ -298,7 +298,7 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
     val begun = Situation.start(Situation.rules(catalog))
       .parkedAfter(GameCommand.Begin(record, orders(record)))
     assertEquals(parkedDecide(begun).decisionId,
-      SetupProcedure.pawnDecisionId(p1))
+      LegacyKeep.decisionId(p1))
     assert(!begun.events.exists {
       case LogNoted(_, note, _) => ImperialMaps.noteKeys.exists(
         _.name == note.key)
@@ -306,7 +306,8 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
     })
 
   test("Wide Horizons with an Empire, Setup With No Empire and a first " +
-      "game ask no Imperial Maps question and fill no slot"):
+      "game ask no Imperial Maps question and fill no slot: the first " +
+      "question is the keep in a later game and the pawn in a first"):
     val wideHorizons = chronicleWithGreatSlumAtForgottenEnd.copy(
       foundations = Map(FoundationNumber.I -> FoundationState(
         FoundationFace.Altered, Set.empty)))
@@ -314,16 +315,18 @@ class ImperialMapsSetupSuite extends munit.FunSuite:
       lineages = Vector.empty)
     val firstGame = FirstGameSetupFixture.chronicle
     Vector(
-      (wideHorizons, orders(wideHorizons), p1, empireSites),
-      (noEmpire, orders(noEmpire), p1, empireSites),
+      (wideHorizons, orders(wideHorizons), empireSites,
+        LegacyKeep.decisionId(p1)),
+      (noEmpire, orders(noEmpire), empireSites,
+        LegacyKeep.decisionId(p1)),
       (firstGame, FirstGameSetupFixture.orders,
-        FirstGameSetupFixture.firstPlayer, firstGame.atlasBox.map(_.site)))
+        firstGame.atlasBox.map(_.site),
+        SetupProcedure.pawnDecisionId(FirstGameSetupFixture.firstPlayer)))
       .foreach {
-      (chronicle, setupOrders, first, sites) =>
+      (chronicle, setupOrders, sites, first) =>
         val begun = Situation.start(Situation.rules(catalog))
           .parkedAfter(GameCommand.Begin(chronicle, setupOrders))
-        assertEquals(parkedDecide(begun).decisionId,
-          SetupProcedure.pawnDecisionId(first), chronicle.name)
+        assertEquals(parkedDecide(begun).decisionId, first, chronicle.name)
         assertEquals(begun.ready.game.current.map.hinterward, sites,
           chronicle.name)
     }

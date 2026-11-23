@@ -15,8 +15,8 @@ import distantlands.model.OathViolation._
  * Validation here is only what Setup itself needs: known and unique ids
  * across every Chronicle field (`ChronicleAccounting`), how a later game
  * starts, with an Empire, with none or as a first or exile-only game
- * (`EmpireSetupRules`), the foundation faces it starts with
- * (`StartingFoundations`) and enough cards to deal. A first game's
+ * (`EmpireSetupRules`) and enough cards to deal. The foundation faces it
+ * starts with (`StartingFoundations`) are read, not validated. A first game's
  * Homelands each store one edifice of their suit (Empire ruling R26), or
  * the Chronicle carries history and starts an exile-only game.
  * The old plan's suit-count and Vision-packet audit is the generator's own
@@ -43,19 +43,17 @@ object GameStartRules:
         .collect { case id: EdificeId => id }.toSet
       commonCards = material.commonCards.copy(edificeDeck =
         material.commonCards.edificeDeck.filterNot(storedEdifices),
-        publicLegacies = legacyDeal.publicRow(orders.legacyOrder))
+        publicLegacies = legacyDeal.publicRow(orders.legacyOrder),
+        legacyDeck = legacyDeal.rest(orders.legacyOrder))
       // A seated lineage the Chronicle lists starts from its record, its
       // legacies with their stored faces; `LaterGameSetup` hands its
-      // starting relics to its player. Foundation III's draw joins it
-      // dormant (`LegacyDeal`); the player keeps one in Setup.
+      // starting relics to its player. Quiet Ambitions' draw waits for the
+      // keep in Setup (`LegacyKeep`).
       recorded = chronicle.lineages.map(lineage => lineage.id -> lineage).toMap
       lineages = plan.participants.map { participant =>
-        val record = recorded.getOrElse(participant.lineageId,
+        participant.lineageId -> recorded.getOrElse(participant.lineageId,
           LineageState(participant.lineageId, None, Role.Exile, Vector.empty,
             Vector.empty))
-        participant.lineageId -> record.copy(legacies = record.legacies ++
-          legacyDeal.drawn(orders.legacyOrder, participant.playerId)
-            .map(LegacyState(_, active = false)))
       }.toMap
       // The atlas sites not placed on the map stay in the atlas, in order,
       // with every stored card: the inverse of
@@ -70,7 +68,7 @@ object GameStartRules:
             RelicState(id, Orientation.FaceDown, Tokens.empty) },
           stored.items.collectFirst { case id: EdificeId => id })))
       game = OathGame(
-        // The faces `buildPlan` read from the Chronicle and did not refuse.
+        // The faces `buildPlan` read from the Chronicle.
         CampaignState(atlas, plan.foundations, lineages, chronicle.reliquary,
           chronicle.dispossessed, Map.empty, plan.oathkeeperGoal,
           chronicle.era,

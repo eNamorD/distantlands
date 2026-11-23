@@ -38,7 +38,18 @@ object ChronicleSunProcedure:
       Vector(NotePart.Arg(0), NotePart.Text(s" took the ${name(task)} task"))))
       .toMap
   def tookTask(task: ChronicleTask): NoteKey = tookKeys(task)
+  /** "p1 became an Exile": a former Imperial when an Exile's win breaks the
+    * Empire. */
+  val exiled: NoteKey = notes.key("exiled", Vector(
+    NotePart.Arg(0), NotePart.Text(" became an Exile")))
+  private val gaveKeys: Map[ChronicleTask, NoteKey] =
+    ChronicleTask.all.map(task => task -> notes.key(s"gave-${task.key}",
+      Vector(NotePart.Arg(0), NotePart.Text(" gave "), NotePart.Arg(1),
+        NotePart.Text(s" the ${name(task)} task")))).toMap
+  /** The winner, or a player holding two tasks, gave `task` to another. */
+  def gaveTask(task: ChronicleTask): NoteKey = gaveKeys(task)
   def noteKeys: Vector[NoteKey] = notes.declared ++ ResolveLegacies.noteKeys ++
+    ChronicleSteps.noteKeys(TriggeredProcedureRef.ChronicleSun) ++
     LegacyChroniclePowers.sunNoteKeys ++
     IronHand.noteKeys(TriggeredProcedureRef.ChronicleSun)
 
@@ -64,10 +75,10 @@ object ChronicleSunProcedure:
       violation => Vector(ChronicleTasks.failing(violation)), steps))
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
-    ChronicleWindows.step(PowerWindow.ChronicleStartOfSun, Vector.empty),
     // Iron Hand's first checkpoint opens the Sun (Legacy Chronicle powers
     // design, ruling 18; R30).
-    ChronicleWindows.step(PowerWindow.ChronicleRevealRelics, Vector(
+    ChronicleWindows.step(ChronicleSteps.resolveLegacies,
+      PowerWindow.ChronicleRevealRelics, Vector(
       IronHand.discard(TriggeredProcedureRef.ChronicleSun),
       BuildOps((state, _) => Right(revealHeldRelics(state)), required = true))),
     ChronicleWindows.step(PowerWindow.ChronicleBeforeResolveLegacies,
@@ -87,26 +98,38 @@ object ChronicleSunProcedure:
     ChronicleWindows.step(PowerWindow.ChronicleShuffleLegacies, Vector.empty),
     ChronicleWindows.step(PowerWindow.ChronicleAfterResolveLegacies,
       Vector.empty),
-    ChronicleWindows.step(PowerWindow.ChronicleCrown, Vector(forWinner(
+    ChronicleWindows.step(ChronicleSteps.crownChancellor,
+      PowerWindow.ChronicleCrown, Vector(forWinner(
       winner => Vector(
         BuildOps((state, _) => ChronicleCrown.operations(state, winner),
           required = true),
         Note(noteId, states => Option.when(brokeTheEmpire(states, winner))(
           empireBroke.sourceless())),
+        // Each seated Imperial the break made an Exile; a boxed lineage has
+        // no player to name.
+        Branch((state, _) => ChronicleTasks.seated(state)
+          .filter(_ != winner).map(player => Note(noteId, states =>
+            Option.when(brokeTheEmpire(states, winner) &&
+              wasImperial(states, player))(
+              exiled.sourceless(NoteArg.Player(player)))))),
         Note(noteId, _ => Some(crowned.sourceless(NoteArg.Player(winner)))),
         // An Exile's win: their newly dormant legacies become active (CR
         // "If an Exile won, the Empire breaks"), then the cap if need be.
-        // An Imperial winner holds no dormant legacy after step 3 (ruling
-        // 2), so this asks nothing of them. Iron Hand's second checkpoint
-        // sits between the reactivation and the cap (R30).
+        // An Imperial winner holds no newly dormant legacy after step 3
+        // (ruling 2), so this asks nothing of them; a legacy Stone Baths
+        // kept is not newly dormant (catalog batch 13, ruling 14). Iron
+        // Hand's second checkpoint sits between the reactivation and the
+        // cap (R30).
         ResolveLegacies.reactivation(winner, noteId,
           ResolveLegacies.reactivated),
         IronHand.discard(TriggeredProcedureRef.ChronicleSun),
         ResolveLegacies.cap(winner,
           ResolveLegacies.crownCapDecisionId(winner), noteId,
           ResolveLegacies.capped))))),
-    ChronicleWindows.step(PowerWindow.ChronicleAssignTasks, Vector(forWinner(
-      ChronicleTaskAssignment.steps(_, tookNote)))))
+    ChronicleWindows.step(ChronicleSteps.assignTasks,
+      PowerWindow.ChronicleAssignTasks, Vector(forWinner(
+      ChronicleTaskAssignment.steps(_, ChronicleTaskAssignment.Notes(
+        tookNote, gaveNote))))))
 
   /** Reveal all facedown relics held by players; relics at sites stay. */
   private def revealHeldRelics(ready: ReadyGame): Vector[CoreOperation] =
@@ -115,13 +138,30 @@ object ChronicleSunProcedure:
         Reveal(id, Location.PlayArea(player.player))
     })
 
-  /** Whether the step before made an Exile winner Chancellor. */
+  /** Whether the step before made an Exile winner Chancellor of an Empire
+    * that stood: a first game has no Imperial to lose it. */
   private def brokeTheEmpire(states: NoteStates, winner: PlayerId): Boolean =
     states.previous.exists((before, _) =>
       ChronicleTasks.lineageOf(before, winner)
         .flatMap(before.game.campaign.lineages.get)
-        .exists(_.role == Role.Exile))
+        .exists(_.role == Role.Exile) &&
+        ChronicleCrown.imperials(before).nonEmpty)
+
+  /** Whether `player`'s lineage held an Imperial role before the step. */
+  private def wasImperial(states: NoteStates, player: PlayerId): Boolean =
+    states.previous.exists((before, _) =>
+      ChronicleTasks.lineageOf(before, player)
+        .exists(ChronicleCrown.imperials(before).contains))
 
   private def tookNote(task: ChronicleTask): Operation =
     Note(noteId, states => states.now.game.current.chronicleTasks.get(task)
       .map(holder => tookTask(task).sourceless(NoteArg.Player(holder))))
+
+  /** `giver` gave `task` to the player now holding it, or took it when they
+    * gave it to themself. */
+  private def gaveNote(task: ChronicleTask, giver: PlayerId): Operation =
+    Note(noteId, states => states.now.game.current.chronicleTasks.get(task)
+      .map(holder =>
+        if holder == giver then tookTask(task).sourceless(NoteArg.Player(holder))
+        else gaveTask(task).sourceless(NoteArg.Player(giver),
+          NoteArg.Player(holder))))

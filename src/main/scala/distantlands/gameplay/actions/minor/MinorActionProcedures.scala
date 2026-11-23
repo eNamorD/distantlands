@@ -287,8 +287,7 @@ object MinorActionProcedures:
         MinorActionUnavailable("pawn site is not in play")))
 
   /** The legacy handler's gate: a start takes no selection. Foundation
-    * faces gate nothing here; game start refuses the ones that do not work
-    * yet (`StartingFoundations`). */
+    * faces gate nothing here. */
   private[minor] def started(args: Vector[DecisionOptionRef],
       action: ActionRef): Either[OathViolation, Unit] =
     Either.cond(args.isEmpty, (), InvalidEventOrder(

@@ -6,25 +6,25 @@
 12.0 action 1 | [player:p1|p1] placed [site:site:dunes|Dunes] on the map
 14.0 action 1 | [player:p1|p1] placed [site:site:fair-isle|Fair Isle] on the map
 16.0 action 1 | [player:p1|p1] placed [site:site:golden-valley|Golden Valley] on the map
-21.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
-26.0 decision 1 | [player:p1|p1] kept a legacy
-31.0 decision 1 | [player:p1|p1] kept a Denizen
-38.0 action 1 | [player:p2|p2] placed no pawn with [card:L30|Quest to Distant Lands]
-43.0 action 1 | [player:p2|p2] took the People's Favor with [card:L18|The Standard Bearer]
-48.0 action 1 | [player:p2|p2] took 3 favor from the shared bank with [card:L31|Wealthy]
-53.0 decision 1 | [player:p2|p2] kept a legacy
-63.0 action 1 | [player:p2|p2] swapped a card with the Dispossessed with [card:L30|Quest to Distant Lands]
-68.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
-73.0 decision 1 | [player:p3|p3] kept a legacy
-78.0 decision 1 | [player:p3|p3] kept a Denizen
-82.0 round 0 | Round 1
-82.1 turn 0 | [player:p1|p1]'s turn
-82.2 phase 0 | Wake
-84.0 action 1 | Nothing happened in Wake
-84.1 phase 0 | Act
-92.0 phase 0 | Rest
-94.0 turn 0 | [player:p2|p2]'s turn
-94.1 phase 0 | Wake
-100.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
-105.0 decision 1 | [player:p2|p2] kept [card:178|Grasping Vines]
-107.0 phase 0 | Act
+24.0 decision 1 | [player:p1|p1] kept a legacy
+30.0 decision 1 | [player:p2|p2] kept a legacy
+36.0 decision 1 | [player:p3|p3] kept a legacy
+42.0 action 1 | [player:p1|p1] placed their pawn at [site:site:ancient-city|Ancient City]
+47.0 decision 1 | [player:p1|p1] kept a Denizen
+54.0 action 1 | [player:p2|p2] placed no pawn with [card:L30|Quest to Distant Lands]
+62.0 action 1 | [player:p2|p2] took the People's Favor with [card:L18|The Standard Bearer]
+68.0 action 1 | [player:p2|p2] took 3 favor from the shared bank with [card:L31|Wealthy]
+78.0 action 1 | [player:p2|p2] swapped a card with the Dispossessed with [card:L30|Quest to Distant Lands]
+83.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
+88.0 decision 1 | [player:p3|p3] kept a Denizen
+92.0 round 0 | Round 1
+92.1 turn 0 | [player:p1|p1]'s turn
+92.2 phase 0 | Wake
+94.0 action 1 | Nothing happened in Wake
+94.1 phase 0 | Act
+102.0 phase 0 | Rest
+104.0 turn 0 | [player:p2|p2]'s turn
+104.1 phase 0 | Wake
+110.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+115.0 decision 1 | [player:p2|p2] kept [card:178|Grasping Vines]
+117.0 phase 0 | Act

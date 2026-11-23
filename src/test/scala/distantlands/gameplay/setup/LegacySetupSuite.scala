@@ -1,6 +1,8 @@
 package distantlands.gameplay.setup
 
-import distantlands.gameplay.setup.legacies.SeerCard
+import distantlands.application.GameCommand
+import distantlands.gameplay.setup.legacies.{Populist, PopulistCard, Seer,
+  SeerCard}
 import distantlands.gameplay.walker.{LogNoted, WalkerPowers}
 import distantlands.model._
 import distantlands.testkit.{Answers, Outcomes, Situation}
@@ -22,8 +24,8 @@ class LegacySetupSuite extends munit.FunSuite:
     foundations = base.foundations.updated(FoundationNumber.III,
       FoundationState(FoundationFace.Altered, Set.empty)))
 
-  test("Quiet Ambitions deals each seated lineage 2 dormant legacies, " +
-      "after those it holds"):
+  test("Quiet Ambitions' game start deals no legacy: each seated lineage " +
+      "starts from its record and the deck holds the whole order"):
     val seated = seats.head.lineageId
     val kept = LegacyState(SeerCard.id, active = true)
     val keeping = later.copy(lineages = later.lineages.map(lineage =>
@@ -33,12 +35,11 @@ class LegacySetupSuite extends munit.FunSuite:
     val ready = accepted(GameStartRules.evolve(catalog, keeping,
       LaterGameFixture.orders(keeping, seats.head.playerId)
         .copy(legacyOrder = order)))
-    val deal = LegacyDeal.of(keeping, seats)
     seats.foreach(seat => assertEquals(
       ready.game.campaign.lineages(seat.lineageId).legacies,
-      (if seat.lineageId == seated then Vector(kept) else Vector.empty) ++
-        deal.drawn(order, seat.playerId).map(LegacyState(_, active = false)),
+      if seat.lineageId == seated then Vector(kept) else Vector.empty,
       seat.playerId.value))
+    assertEquals(ready.game.current.commonCards.legacyDeck, order)
     assertEquals(ready.game.current.commonCards.publicLegacies, Vector.empty)
 
   test("Public Ambitions deals 4 legacies faceup to the row and nobody " +
@@ -50,9 +51,8 @@ class LegacySetupSuite extends munit.FunSuite:
     assert(seats.forall(seat =>
       ready.game.campaign.lineages(seat.lineageId).legacies.isEmpty))
 
-  private val deal = LegacyDeal.of(chronicle, seats)
   private def drawn(player: PlayerId): Vector[LegacyId] =
-    deal.drawn(orders.legacyOrder, player)
+    SetupLegacyFixture.drawn(orders, player)
 
   private def notes(events: Vector[OathEvent]): Vector[LogNote] =
     events.collect { case LogNoted(_, note, _) => note }
@@ -65,7 +65,7 @@ class LegacySetupSuite extends munit.FunSuite:
 
   private def legacyQuestions(asked: Vector[Decide]): Vector[Decide] =
     asked.filter(decide =>
-      decide.decisionId == SetupProcedure.legacyDecisionId(decide.owner))
+      decide.decisionId == LegacyKeep.decisionId(decide.owner))
 
   test("in a first game each player keeps one dormant legacy and returns " +
       "the other to the deck"):
@@ -75,29 +75,46 @@ class LegacySetupSuite extends munit.FunSuite:
       val Vector(kept, returned) = drawn(seat.playerId)
       assertEquals(ready.game.campaign.lineages(seat.lineageId).legacies,
         Vector(LegacyState(kept, active = false)), seat.playerId.value)
-      assertEquals(ready.game.cardIndex.toOption.get.get(returned), None)
+      assertEquals(ready.game.cardIndex.toOption.get.get(returned)
+        .map(_.location.container), Some(CardContainer.Deck(CardDeck.Legacy)))
     }
+    assert(seats.forall(seat =>
+      ready.game.current.legacyHands.getOrElse(seat.playerId, Vector.empty)
+        .isEmpty), "every hand is empty after the keeps")
+    // Each returned legacy went to the bottom, below the deal's rest.
+    assertEquals(ready.game.current.commonCards.legacyDeck
+      .takeRight(seats.size).toSet, seats.map(seat => drawn(seat.playerId)(1)).toSet)
 
-  test("each player is asked to keep one of exactly the two legacies they " +
-      "drew, and keeps the one chosen"):
+  test("each player sorts exactly the two legacies they drew into Keep, " +
+      "one, and Discard, and keeps the one placed in Keep"):
     var asked = Vector.empty[Decide]
     val keepSecond: Answers =
       case park if park.decisionId ==
-          SetupProcedure.legacyDecisionId(park.awaiting) =>
+          LegacyKeep.decisionId(park.awaiting) =>
         asked = asked :+ park.decide
-        DecisionAnswer.ChooseOneAnswer(
-          as[DecisionQuery.ChooseOne](park.decide.query).options(1).ref)
+        val Vector(first, second) =
+          as[DecisionQuery.Partition](park.decide.query).options.map(_.ref)
+        DecisionAnswer.PartitionAnswer(Vector(
+          DecisionPlacement(first, "discard"),
+          DecisionPlacement(second, "keep")))
     val woken = Situation.wake(Situation.rules(catalog).withAnswers(keepSecond))
     assertEquals(asked.map(_.owner).toSet, seats.map(_.playerId).toSet)
-    asked.foreach(decide => assertEquals(
-      as[DecisionQuery.ChooseOne](decide.query).options.map(_.ref),
-      drawn(decide.owner).map(DecisionOptionRef.Legacy(_))))
+    asked.foreach { decide =>
+      val query = as[DecisionQuery.Partition](decide.query)
+      assertEquals(query.options.map(_.ref),
+        drawn(decide.owner).map(DecisionOptionRef.Legacy(_)))
+      assertEquals(query.sections, Vector(
+        DecisionSection("keep", "Keep", 1, Some(1)),
+        DecisionSection("discard", "Discard", 0)))
+      assertEquals(query.confirmLabel, Some("Keep Legacy"))
+    }
     seats.foreach(seat => assertEquals(
       woken.ready.game.campaign.lineages(seat.lineageId).legacies,
       Vector(LegacyState(drawn(seat.playerId)(1), active = false))))
 
-  test("a short deck draws 2, 1 and 0 in seat order: the first keeper is " +
-      "asked, the second keeps theirs unasked, the third gets none (R9)"):
+  test("a short deck deals in turn order: a later seat gets fewer, and no " +
+      "seat draws a legacy an earlier one returned (R9; setup keep undo, " +
+      "ruling 2)"):
     // Box lineages hold every legacy but 3, so the derived deck is short.
     // A later game with a Chancellor keeps them; a first game played
     // exile-only would wipe them back into the deck (R40).
@@ -108,22 +125,26 @@ class LegacySetupSuite extends munit.FunSuite:
     val short = later.copy(lineages = later.lineages ++ boxed)
     val shortOrders = LaterGameFixture.orders(short, seats.head.playerId)
       .copy(legacyOrder = LegacyDeal.deck(catalog, short))
-    assertEquals(shortOrders.legacyOrder.size, 3)
+    val Vector(a, b, c) = shortOrders.legacyOrder
     val started = accepted(GameStartRules.evolve(catalog, short, shortOrders))
-    val Vector(two, one, none) = seats
+    val Vector(first, second, third) = seats
+    // The deal gives the first seat a and b, the second c, and the third
+    // nothing. The default answer keeps the first option: the first keep
+    // takes a and returns b to the bottom; the second keeps c unasked; the
+    // third is asked nothing.
     val setup = walked(started)
     assertEquals(legacyQuestions(setup.asked).map(_.owner),
-      Vector(two.playerId))
+      Vector(first.playerId))
     def holding(seat: FirstGameParticipant) =
       setup.ready.game.campaign.lineages(seat.lineageId).legacies
-    assertEquals(holding(two).size, 1)
-    assertEquals(holding(one),
-      Vector(LegacyState(shortOrders.legacyOrder(2), active = false)))
-    assertEquals(holding(none), Vector.empty)
+    assertEquals(holding(first), Vector(LegacyState(a, active = false)))
+    assertEquals(holding(second), Vector(LegacyState(c, active = false)))
+    assertEquals(holding(third), Vector.empty)
+    assertEquals(setup.ready.game.current.commonCards.legacyDeck, Vector(b))
     val kept = notes(setup.events).filter(_.key ==
-      SetupProcedure.keptLegacy.name).map(_.args)
-    assertEquals(kept.toSet, Set(two, one).map(seat =>
-      Vector[NoteArg](NoteArg.Player(seat.playerId))))
+      LegacyKeep.keptLegacy.name).map(_.args)
+    assertEquals(kept.toSet, Vector(first, second).map(seat =>
+      Vector[NoteArg](NoteArg.Player(seat.playerId))).toSet)
 
   test("under Public Ambitions nobody is asked, and Setup first names the " +
       "row"):
@@ -141,7 +162,102 @@ class LegacySetupSuite extends munit.FunSuite:
   test("each player's keep is logged naming the player and no card"):
     val setup = FirstGameSetupFixture.setupThroughWake()
     val kept = notes(setup.events).filter(_.key ==
-      SetupProcedure.keptLegacy.name)
+      LegacyKeep.keptLegacy.name)
     assertEquals(kept.map(_.args).toSet,
       seats.map(seat => Vector[NoteArg](NoteArg.Player(seat.playerId))).toSet)
     assertEquals(kept.size, seats.size)
+
+  /** `seats` from `first` round the table. */
+  private def inTurnOrder(first: PlayerId): Vector[PlayerId] =
+    val ids = seats.map(_.playerId)
+    val at = ids.indexOf(first)
+    ids.drop(at) ++ ids.take(at)
+
+  /** The keep and pawn questions `setup` asked, in order. */
+  private def keepsAndPawns(setup: SetupWalkDriver.SetupWalked)
+      : Vector[String] =
+    setup.asked.map(_.decisionId).filter(id => seats.exists(seat =>
+      id == LegacyKeep.decisionId(seat.playerId) ||
+        id == SetupProcedure.pawnDecisionId(seat.playerId)))
+
+  test("in a first game each player keeps right after placing their pawn " +
+      "(CR p. 7)"):
+    val ready = accepted(GameStartRules.evolve(catalog, chronicle, orders))
+    assertEquals(keepsAndPawns(walked(ready)),
+      inTurnOrder(orders.firstPlayer).flatMap(player => Vector(
+        SetupProcedure.pawnDecisionId(player),
+        LegacyKeep.decisionId(player))))
+
+  test("in a first game every seat draws its two legacies before the first " +
+      "pawn, so each player places holding them (CR p. 7)"):
+    val first = orders.firstPlayer
+    val atPawn = Situation.start(Situation.rules(catalog))
+      .parkedAt(SetupProcedure.pawnDecisionId(first))(
+        GameCommand.Begin(chronicle, orders))
+    seats.foreach(seat => assertEquals(
+      atPawn.ready.game.current.legacyHands.getOrElse(seat.playerId,
+        Vector.empty), drawn(seat.playerId), seat.playerId.value))
+    assert(seats.forall(seat => atPawn.ready.game.campaign
+      .lineages(seat.lineageId).legacies.isEmpty), "nobody has kept yet")
+
+  test("in a later game every seat holds its dealt pair when the first " +
+      "keep is asked (setup keep undo, ruling 1)"):
+    val first = seats.head.playerId
+    val laterOrders = LaterGameFixture.orders(later, first)
+    val atKeep = Situation.start(Situation.rules(catalog))
+      .parkedAt(LegacyKeep.decisionId(first))(
+        GameCommand.Begin(later, laterOrders))
+    seats.foreach(seat => assertEquals(
+      atKeep.ready.game.current.legacyHands.getOrElse(seat.playerId,
+        Vector.empty), SetupLegacyFixture.drawn(laterOrders, seat.playerId),
+      seat.playerId.value))
+
+  test("in a later game every seat keeps while Foundation III resolves, " +
+      "in turn order, before any pawn (catalog batch 13, ruling 3)"):
+    // With an Empire the Chancellor, on l1, goes first; with none seated,
+    // Setup With No Empire lets the second seat go first, so the keeps
+    // start there.
+    val noEmpire = later.copy(lineages = Vector.empty)
+    Vector(later -> seats.head.playerId, noEmpire -> seats(1).playerId)
+      .foreach { (record, first) =>
+        val ready = accepted(GameStartRules.evolve(catalog, record,
+          LaterGameFixture.orders(record, first)))
+        val order = inTurnOrder(first)
+        assertEquals(keepsAndPawns(walked(ready)),
+          order.map(LegacyKeep.decisionId) ++
+            order.map(SetupProcedure.pawnDecisionId), first)
+      }
+
+  test("an exile-only game whose only history was stored legacies keeps " +
+      "after each pawn, as a first game does (R41)"):
+    // The wipe leaves a baseline with no history, so pawn placement and
+    // the keep both read a first game.
+    val legacyOnly = chronicle.copy(lineages = Vector(LineageState(
+      seats.head.lineageId, None, Role.Exile,
+      Vector(LegacyState(catalog.legacies.head.id, active = true)),
+      Vector.empty)))
+    val first = orders.firstPlayer
+    val ready = accepted(GameStartRules.evolve(catalog, legacyOnly,
+      LaterGameFixture.orders(legacyOnly, first)))
+    assertEquals(keepsAndPawns(walked(ready)),
+      inTurnOrder(first).flatMap(player => Vector(
+        SetupProcedure.pawnDecisionId(player),
+        LegacyKeep.decisionId(player))))
+
+  test("in a later game the keeps follow the banks and come before the " +
+      "world deck: Populist asks first and Seer after"):
+    val holder = seats.last
+    val record = SetupLegacyFixture.holding(later, holder.lineageId,
+      Role.Exile, PopulistCard.id -> true, SeerCard.id -> true)
+    var asked = Vector.empty[String]
+    val recording: Answers =
+      case park if { asked :+= park.decisionId; false } => ???
+    Situation.wake(Situation.productionRules(catalog).withAnswers(recording),
+      record, LaterGameFixture.orders(record, seats.head.playerId))
+    val keeps = seats.map(seat => asked.indexOf(
+      LegacyKeep.decisionId(seat.playerId)))
+    assert(keeps.forall(_ >= 0), asked)
+    val populist = asked.indexOf(Populist.decisionId(holder.playerId))
+    val seer = asked.indexOf(Seer.decisionId(holder.playerId))
+    assert(populist >= 0 && populist < keeps.min, asked)
+    assert(seer > keeps.max, asked)

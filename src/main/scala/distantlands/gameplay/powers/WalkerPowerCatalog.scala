@@ -1,6 +1,8 @@
 package distantlands.gameplay.powers
 
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.chronicle.{AncientCityEnduring,
+  BlastedPastures, HallOfBandits, HidingPlace, RuinedBaths, StoneBaths}
 import distantlands.gameplay.chronicle.legacies.LegacyChroniclePowers
 import distantlands.gameplay.operations.OperationRestrictions
 import distantlands.gameplay.phases.rest.Arbiter
@@ -59,7 +61,11 @@ import distantlands.model.{CardId, PowerId}
   * Jinx is inert until a roll step asks for rerolls.
   * The legacies' Chronicle powers (`LegacyChroniclePowers`) are inert until
   * a Chronicle walks their windows; Steadfast hooks none, as Sun step 3
-  * reads it. The legacies' SETUP powers (`LegacySetupPowers`) hook no
+  * reads it. The Baths hook none either, as Sun steps 2 and 3 read them,
+  * nor do Ancient City's Enduring and Hall of Bandits, which Shape Empire
+  * reads. Hiding Place adds a step at the start of the Throne, after
+  * Reformer's. Blasted Pastures adds one after Hiding Place's.
+  * The legacies' SETUP powers (`LegacySetupPowers`) hook no
   * window: game start and Setup's steps read them.
   * `restrictionSet` gives every walker step the catalog's global operation
   * restrictions.
@@ -97,7 +103,9 @@ object WalkerPowerCatalog:
       CardPlayTriggers.all ++
       BannerFacePowers.contributions ++
       Vector(Dazzle, GreatMarket, BanditMarket, GreatForge, BrokenForge,
-        ProvingGrounds, EmptyGrounds, HallOfMockery, LostGuardians,
+        ProvingGrounds, EmptyGrounds, LostDoors, AmberDoors, StoneBaths,
+        RuinedBaths, AncientCityEnduring, HallOfBandits, HidingPlace,
+        BlastedPastures, RuinedTemple, HallOfMockery, LostGuardians,
         RuinedSchool, BrokenHorn, BrokenClock, FallenSpire, TakeWealthLimit,
         TakeWealthPawnGate, LightFingers, Beloved, TheNeedle, Arbiter,
         ConspiracyWhenPlayed) ++

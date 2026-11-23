@@ -4,17 +4,22 @@ import distantlands.gameplay.powers.banner.TheNeedleCard
 import distantlands.gameplay.setup.legacies.SeerCard
 import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite,
   BuriedGiantSite, DeepWoodsSite}
-import distantlands.gameplay.chronicle.{BuildEdifice, LineageScoring,
-  OfferCitizenship, ShapeFoundation}
+import distantlands.gameplay.chronicle.{BuildEdifice, HidingPlace,
+  LineageScoring, OfferCitizenship, ShapeFoundation}
 import distantlands.gameplay.chronicle.legacies.{Chronicler, ChroniclerCard,
   Gatekeeper, GatekeeperCard, GreatArchitectCard, Heirloom, HeirloomCard,
   IronHandCard, OathsOfLoyalty, OathsOfLoyaltyCard, Reformer, ReformerCard,
   Revolutionary, RevolutionaryCard, Rival, RivalCard, RoyalLine,
   RoyalLineCard, TheBrightBeacon, TheBrightBeaconCard, TheEarCard}
 import distantlands.gameplay.{BanditCrownCard, GrandMaskCard}
+import distantlands.gameplay.powers.action.{EldersCard, GiantsPathCard}
+import distantlands.gameplay.powers.campaign.RivalKhanCard
 import distantlands.gameplay.powers.economy.{BirdsongCard, CupOfPlentyCard,
-  DowntroddenCard, GolemLegionsCard, MapLibraryCard, VillageIdiotCard}
-import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
+  DowntroddenCard, GolemLegionsCard, HallowedSpringCard, MapLibraryCard,
+  VillageIdiotCard, WildPasturesCard}
+import distantlands.gameplay.powers.setup.GreatForgeCard
+import distantlands.gameplay.powers.whenplayed.{GreatHerdCard,
+  ThreateningRoarCard}
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer}
 import distantlands.testkit.{MenuPlay, Table}
@@ -117,6 +122,55 @@ object ChronicleLogScripts:
         ChooseOneAnswer(DecisionOptionRef.Relic(CupOfPlentyCard.id))
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("throne-heirloom", service, p1)
+
+  /** The game of [[chronicleStarted]] with Hiding Place: p2 rules Broken
+    * Peaks, where Hiding Place stands, and holds Cup of Plenty and Grand
+    * Mask; at the start of the Throne p2 keeps Cup of Plenty (Last
+    * Chronicle powers, slice 2). */
+  def throneHidingPlace(using munit.Location): Script =
+    val (service, acting) = atTable("throne-hiding-place", Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .edifice(HallowedSpringCard, EdificeSide.Ruined, at = BrokenPeaksSite)
+      .warbandsAt(BrokenPeaksSite, p2, 1)
+      .relic(p2, CupOfPlentyCard).relic(p2, GrandMaskCard)
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.withAnswers {
+      case park if park.decisionId == HidingPlace.decisionId(p2) =>
+        ChooseOneAnswer(DecisionOptionRef.Relic(CupOfPlentyCard.id))
+    }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("throne-hiding-place", service, p1)
+
+  /** The game of [[chronicleStarted]] with Blasted Pastures at Broken
+    * Peaks, which bandits rule, Elders at Deep Woods and Giant's Rampage at
+    * Ancient City: at the start of the Throne all three are buried, named
+    * inline (Last Chronicle powers, slice 3). */
+  def throneBlastedPastures(using munit.Location): Script =
+    blastedPastures("throne-blasted-pastures", table => table
+      .denizen(EldersCard, at = DeepWoodsSite)
+      .edifice(GiantsPathCard, EdificeSide.Ruined, at = AncientCitySite))
+
+  /** The same, with six Nomad cards, so the line lists them as a card
+    * list. */
+  def throneBlastedPasturesListed(using munit.Location): Script =
+    blastedPastures("throne-blasted-pastures-listed", table => table
+      .denizen(EldersCard, at = DeepWoodsSite)
+      .denizen(GreatHerdCard, at = DeepWoodsSite)
+      .edifice(GiantsPathCard, EdificeSide.Ruined, at = AncientCitySite)
+      .denizen(RivalKhanCard, at = AncientCitySite)
+      .edifice(GreatForgeCard, EdificeSide.Intact, at = BuriedGiantSite))
+
+  /** [[chronicleStarted]]'s table with Blasted Pastures at Broken Peaks and
+    * the Nomad cards `nomads` places. */
+  private def blastedPastures(name: String, nomads: Table => Table)(
+      using munit.Location): Script =
+    val (service, acting) = atTable(name, nomads(Table.start
+      .pawn(p1, AncientCitySite).pawn(p2, BrokenPeaksSite)
+      .pawn(p3, BuriedGiantSite).oathkeeper(Some(p1), TitleSide.Usurper)
+      .edifice(WildPasturesCard, EdificeSide.Ruined, at = BrokenPeaksSite))
+      .turn(p3, Phase.Act).banditsRefilled)
+    acting.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script(name, service, p1)
 
   /** The game of [[chronicleStarted]] with Oaths of Loyalty and Heirloom:
     * p2 holds the Darkest Secret, Cup of Plenty (the highest relic) and
@@ -237,7 +291,7 @@ object ChronicleLogScripts:
       case park if park.decisionId == Rival.decisionId(p3) ||
           park.decisionId == Revolutionary.decisionId(p3) =>
         firstCard(park.decide)
-      case park if park.decisionId == BuildEdifice.decisionId(Suit.Discord) =>
+      case park if park.decisionId == BuildEdifice.cardDecisionId =>
         firstCard(park.decide)
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("throne-legacies", service, p1)
@@ -271,14 +325,35 @@ object ChronicleLogScripts:
     }.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
     Script("beacon-kept-foundations", service, p1)
 
+  /** The game of [[chronicleStarted]] where every seat holds three faceup
+    * advisers, so all nine gathered cards were identifiable when the World
+    * began. Once shuffled, nobody knows them: the World's dispossessed line
+    * names only the three that stayed faceup in the pile. */
+  def chronicleWorldAdvisers(using munit.Location): Script =
+    val bare = Table.start.pawn(p1, AncientCitySite)
+      .pawn(p2, BrokenPeaksSite).pawn(p3, BuriedGiantSite)
+      .oathkeeper(Some(p1), TitleSide.Usurper)
+    val denizens = bare.ready.game.current.commonCards.worldDeck
+      .collect { case id: DenizenId => id }
+    val held = Vector(p1, p2, p3).zipWithIndex.foldLeft(bare) {
+      case (table, (player, seat)) => denizens.slice(seat * 3, seat * 3 + 3)
+        .foldLeft(table)((with3, card) => with3.adviser(player, card)) }
+    val (service, acting) = atTable("chronicle-world-advisers",
+      held.turn(p3, Phase.Act).banditsRefilled)
+    acting.after(MenuPlay.start(p3, PhaseTransitionRef.BeginRest))
+    Script("chronicle-world-advisers", service, p1)
+
   val named: Vector[(String, () => Script)] =
     Vector("chronicle-started" -> (() => chronicleStarted),
       "throne-offered" -> (() => throneOffered),
       "throne-gifted" -> (() => throneGifted),
       "sun-gatekeeper-chronicler" -> (() => sunGatekeeperChronicler),
       "throne-heirloom" -> (() => throneHeirloom),
+      "throne-hiding-place" -> (() => throneHidingPlace),
+      "throne-blasted-pastures" -> (() => throneBlastedPastures),
       "chronicle-oaths-heirloom" -> (() => chronicleOathsHeirloom),
       "chronicle-iron-hand" -> (() => chronicleIronHand),
+      "chronicle-world-advisers" -> (() => chronicleWorldAdvisers),
       "chronicle-royal-line" -> (() => chronicleRoyalLine),
       "chronicle-ear-beacon" -> (() => chronicleEarBeacon),
       "throne-legacies" -> (() => throneLegacies),

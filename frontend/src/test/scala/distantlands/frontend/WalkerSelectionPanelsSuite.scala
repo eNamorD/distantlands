@@ -3,8 +3,9 @@ package distantlands.frontend
 import distantlands.protocol.projection.{DieFace, WalkerStatusProjection}
 
 import distantlands.frontend.Dom.{all, one, press}
+import distantlands.model.PlayerColor
 import distantlands.protocol.{DecisionAnswerWire, DecisionOptionWire,
-  GameIntent => Intent}
+  GameIntent => Intent, WalkerStartArgWire}
 import distantlands.testkit.Unwrap.as
 import ParkedDecision.Surface
 import org.scalajs.dom
@@ -24,6 +25,10 @@ class WalkerSelectionPanelsSuite extends munit.FunSuite:
     WalkerDecisionState("challenge", id, query = Some(query),
       rollOutcome = rollOutcome, status = status)
 
+  private val table = TestProjections.actingProjection(
+    players = Vector(GamePlayer("red", "Red", "Citizen", PlayerColor.Red)),
+    activePlayer = Some("red"))
+
   private def opened(id: String, query: DecisionQueryState)
       : Option[WalkerSelectionDraft] =
     WalkerSelectionDraft.reconcile(None,
@@ -35,7 +40,8 @@ class WalkerSelectionPanelsSuite extends munit.FunSuite:
       rollOutcome: Option[WalkerRollOutcomeState] = None): dom.Element =
     val panel = dom.document.createElement("div")
     WalkerSelectionPanels.render(Surface.Selection(
-      decision(id, query, rollOutcome), query), draft, canControl, panel, ui)
+      decision(id, query, rollOutcome), query), table, draft, canControl,
+      panel, ui)
     panel
 
   private def button(root: dom.Element, selector: String): dom.html.Button =
@@ -64,6 +70,31 @@ class WalkerSelectionPanelsSuite extends munit.FunSuite:
     assertEquals(ui.submitted, Vector(Intent.ResolveWalker("challenge.ribbon-site",
       DecisionAnswerWire.ChooseManyWire(Vector(DecisionOptionWire("site", "a"),
         DecisionOptionWire("site", "c"))))))
+
+  test("an askable option asks its granter, and is not toggled"):
+    val fork = DecisionOptionState("site", "fork", "Site fork",
+      state = "askable", reason = Some("Narrow Pass: needs consent"),
+      consent = Some(ConsentAskState(Vector("red"), Vector("Narrow Pass"))))
+    val query = many.copy(options = many.options :+ fork)
+    val ui = new RecordingControls()
+    val draft = opened("campaign.targets", query)
+    var asked = Vector.empty[CardInspection.Request]
+    CardInspection.onOpen(request => asked :+= request)
+    try
+      val shown = button(render(ui, draft, "campaign.targets", query),
+        """[data-option-id="site:fork"]""")
+      assert(shown.classList.contains("walker-choice-askable"))
+      shown.click()
+      assertEquals(ui.drafts.selection, None)
+      asked match
+        case Vector(confirm: CardInspection.Request.Confirm) =>
+          assertEquals(confirm.question,
+            "Ask Red for consent to ignore Narrow Pass?")
+          confirm.confirm()
+        case other => fail(s"expected one confirmation, got $other")
+      assertEquals(ui.submitted, Vector(Intent.RequestConsent(
+        "campaign.targets", WalkerStartArgWire("site", "fork"))))
+    finally CardInspection.clear()
 
   /** Setup's Reveal Cards: the button says what pressing it does, counted
     * off the selection, and its own words at zero.
@@ -225,7 +256,7 @@ class WalkerSelectionPanelsSuite extends munit.FunSuite:
     WalkerSelectionPanels.render(Surface.Selection(decision(
       "campaign.sacrifice", sacrifice, status = Vector(
         WalkerStatusProjection("Attacking force", "1 of 2 warbands"),
-        WalkerStatusProjection("Defense dice", "2"))), sacrifice),
+        WalkerStatusProjection("Defense dice", "2"))), sacrifice), table,
       opened("campaign.sacrifice", sacrifice), canControl = true, panel,
       new RecordingControls())
     assertEquals(all(panel, ".walker-status-line").map(_.textContent),

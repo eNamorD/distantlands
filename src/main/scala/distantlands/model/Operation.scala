@@ -98,16 +98,24 @@ object Operation:
   *
   * `presentation` says where a client answers it: on the board, where each
   * option with a place on the table is drawn, or in the Action panel.
+  *
+  * `answersAlone` marks a choose-one the walker answers itself when exactly
+  * one option is choosable: it records that answer for `owner`, as if they
+  * had given it, and walks on without parking. With more options it is
+  * asked as usual (catalog batch 13, ruling 4).
   */
 final case class Decide(decisionId: String, owner: PlayerId,
     query: DecisionQuery,
     override val window: Option[PowerWindow] = None,
     coOwners: Vector[PlayerId] = Vector.empty,
     passWhenEmpty: Boolean = false,
-    presentation: DecisionPresentation = DecisionPresentation.Board)
+    presentation: DecisionPresentation = DecisionPresentation.Board,
+    answersAlone: Boolean = false)
     extends LeafOperation:
   require(!passWhenEmpty || query.isInstanceOf[DecisionQuery.ChooseOne],
     "only a choose-one can be passed when empty")
+  require(!answersAlone || query.isInstanceOf[DecisionQuery.ChooseOne],
+    "only a choose-one can be answered alone")
 
   /** Everyone who may answer: `owner` first, then the co-owners, each once.
     * `owner` stays the primary owner, the player a single-owner view names.

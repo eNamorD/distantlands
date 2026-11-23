@@ -179,10 +179,14 @@ final class HttpGameClient(transport: JsonTransport)
   private def encode(value: String): String =
     js.URIUtils.encodeURIComponent(value)
 
-/** Browser-managed, path-scoped cookies are the only seat credential. */
-final class TrustedHttpGameClient(transport: JsonTransport) extends GameClient:
+/** Browser-managed cookies, each scoped to its seat's page, are the only
+  * seat credential; `playerId` names the seat whose page this is, so the
+  * browser sends that seat's cookie. */
+final class TrustedHttpGameClient(transport: JsonTransport, playerId: String)
+    extends GameClient:
   private def api(gameId: String): String =
-    s"/games/${js.URIUtils.encodeURIComponent(gameId)}/api"
+    s"/games/${js.URIUtils.encodeURIComponent(gameId)}" +
+      s"/seats/${js.URIUtils.encodeURIComponent(playerId)}/api"
 
   override def load(gameId: String, selectedPlayerId: String) =
     send("GET", api(gameId), None)

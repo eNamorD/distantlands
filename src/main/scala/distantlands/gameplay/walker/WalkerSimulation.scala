@@ -228,9 +228,10 @@ object WalkerSimulation:
     * (one level deep). A pay-or-ask step is previewed whether or not
     * `followUp` asks for it, and does not use up that level, so a priced
     * option still shows the toll its step asks (consent slice 4).
-    * A pay-or-ask step with no option its payer may take previews each
-    * askable option as if its ruler had consented, so a priced option shows
-    * what going on free costs.
+    * A decision with no option its owner may take previews each askable
+    * option as if its granters had consented, so a priced option shows what
+    * going on free costs, and a start whose every source must be asked about
+    * is still priced.
     */
   def previewParked(state: ReadyGame, tree: Operation, pending: PendingTree,
       powers: WalkerPowers, followUp: Boolean = false)
@@ -276,18 +277,22 @@ object WalkerSimulation:
     ProcedureWalker.parkedDecide(ready, tree, next, powers, probing = false)
       .exists(_.window.contains(PowerWindow.PayOrAsk))
 
-  /** For a pay-or-ask step with no option its payer may take, each askable
-    * option with the state as it would stand once its ruler consents. Empty
-    * for any other decision. */
+  /** For a decision with no option its owner may take, each askable option
+    * with the state as it would stand once its granters consent: a payer
+    * who cannot pay a pay-or-ask step's toll, or a Muster's or Trade's
+    * source cards all under the festival marker. The grant is remembered
+    * under the keys the ask covers, or, for an ask about the option itself,
+    * under the option's own. Empty while some option may be taken. */
   private def consented(state: ReadyGame, decide: Decide,
       options: Vector[DecisionOption]): Vector[(DecisionOption, ReadyGame)] =
-    if !decide.window.contains(PowerWindow.PayOrAsk) ||
-        options.exists(_.available) then Vector.empty
+    if options.exists(_.available) then Vector.empty
     else options.collect {
       case option @ DecisionOption.Unavailable(_, ask: OptionReason.Askable) =>
-        option -> state.copy(consent = state.consent.granting(
-          ask.asks.flatMap(_.powers).distinct.map(ConsentKey(_, decide.owner,
-            decide.decisionId, option.ref)), ConsentTurn.of(state)))
+        val keys = if ask.covers.nonEmpty then ask.covers
+          else ask.asks.flatMap(_.powers).distinct.map(ConsentKey(_,
+            decide.owner, decide.decisionId, option.ref))
+        option -> state.copy(consent = state.consent.granting(keys,
+          ConsentTurn.of(state)))
     }
 
   /** The parked position an answer leads to: its recorded steps applied to

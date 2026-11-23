@@ -18,7 +18,7 @@ object SteadfastCard extends Legacy(LegacyId("L03"), "Steadfast",
   * `ChronicleLegacyRules.keepsOthersActive` at its start (Legacy Chronicle
   * powers design, ruling 5). Steadfast itself can go dormant, and the cap
   * still discards, as a discard is not a dormancy. This power hooks no
-  * window; it is registered so the card counts as implemented. */
+  * window. */
 case object Steadfast extends ContributingPower:
   val id: PowerId = SteadfastCard.power.id
   def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)

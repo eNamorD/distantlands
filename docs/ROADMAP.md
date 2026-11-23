@@ -52,7 +52,6 @@ Left behind by the
   and log start-state project (2026-09-28) is the seam it would grow from.
   Recorded in the
   [service log start states design](superpowers/specs/2026-09/2026-09-28-service-log-start-states-design.md).
-  The consent play-test below needs it.
 - [ ] **Keep consent preferences across a one-turn handover.** The reset
   (consent ruling 17) clears a granter's standing preferences whenever
   `ConsentPowers.granter` names someone else, and the turn decides that
@@ -64,61 +63,25 @@ Left behind by the
   [catalog batch 11](superpowers/specs/2026-11/2026-11-07-catalog-batch-11-design.md#slice-2-card-level-ruler)
   and pinned by `GrandMaskConsentPreferenceSuite`; a change needs the
   owner's ruling and updates that suite.
-- [ ] **Play-test consent in a browser.** The amber destination, campaign
-  target, faceup Vision, Hall-protected card and free option of a toll, the confirmation, the
-  ruler's prompt, automatic answers, the preferences grid and withdrawing
-  with Undo are covered by tests only. Seeding a game with a player-ruled
-  Narrow Pass, Secret Police, Hall of Ministers or toll card needs the journaled
-  arranged start.
-- [ ] **Let an enemy ask to Muster or Trade where every card is guarded.**
-  At a site where City Wall or the festival marker guards every card, the
-  Act menu shows only "No card to muster from" or "No card to trade with",
-  and the enemy cannot enter the walk where the source would be askable of
-  the ruler or the holder: `QueuedStart.waiting` keys a grant only on the
-  menu pick, and the refused `PayCost` comes after the source decision. A
-  fix would price a start refused with `NoPlayableOption` again with the
-  waivable restrictions lifted, as `PhaseMenu`'s `unrefused` does for
-  powers, and show the option askable. Found in the
-  [Foundations](superpowers/specs/2026-11/2026-11-11-foundations-design.md) slice 6
-  review.
-
-Left behind by the
-[Foundations work](superpowers/specs/2026-11/2026-11-11-foundations-design.md):
-
-- [ ] **Show the Atlas's first site.** The rulebook makes the front Recent
-  site public, so players can always view it, with its edifice, its
-  denizens and its relic count; its relics stay facedown. Then the Imperial
-  Maps choice and an Explore can be weighed. The Imperial Maps question
-  already names that site ("Recent Sites (Buried Giant first)"); nothing
-  else shows it. Asked by the owner in the review of the Foundations
-  rulings, 2026-11-12.
-- [ ] **Move the foundation cards to an overlay of their own.** The six
-  foundation setup cards sit as a strip in the Shared Bank, the table's
-  game info column, for now. Players need them rarely, so they belong in
-  an overlay opened on demand, as the Chronicle page lists the same six.
-  Asked by the owner in the second review of the Foundations rulings,
-  2026-11-12.
 
 Left behind by the
 [Legacies work](superpowers/specs/2026-11/2026-11-13-legacies-design.md):
 
-- [ ] **Play-test Legacies' Chronicle Phase in a browser.** The running
-  app was checked only at the Setup keep decision. The Chronicle Phase
-  reveal (Legacies implementation ruling R18), a Public Ambitions row, the
-  Chancellor's tie-break with its subject card, the cap's choose-many and
-  the scoring lines are covered by tests only: no route reaches those
-  states short of playing a whole game. The journaled arranged start would
-  seed them.
+- [ ] **Play-test the rest of Legacies' Chronicle Phase in a browser.** The
+  playtest of 2026-11-21 reached the Quiet Ambitions legacies. A Public
+  Ambitions row, the Chancellor's tie-break with its subject card and the
+  cap's choose-many are covered by tests only: they need a public ambition,
+  a tie, or a player with more than three active legacies. The journaled
+  arranged start would seed them.
 
 Left behind by the
 [real proportions work](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md):
 
-- [ ] **Check the new boxes in a played game.** A Vision in the inspection
-  overlay, a banner on a player board, and a site holding five or six pawns
-  with the festival marker were checked only on copies built in the page:
-  setup refuses a Vision as a starting adviser and a Chancellor without a
-  site, and no early position gathers that many pawns. The journaled
-  arranged start would seed them.
+- [ ] **Check a crowded festival site in a played game.** A site holding
+  five or six pawns with the festival marker was checked only on a copy
+  built in the page; the playtest of 2026-11-21 showed two pawns with the
+  marker. No early position gathers that many pawns. The journaled
+  arranged start would seed one.
 - [ ] **Keep the travel-cost badge off the site's name.** A selected site's
   cost badge sits at the foot of the site face, over the end of a long name.
 - [ ] **Settle crowded pawn rows on the phone.** At the phone's Fit, three
@@ -127,6 +90,15 @@ Left behind by the
   [implementation ruling R10](superpowers/specs/2026-11/2026-11-13-real-proportions-design-implementation-rulings.md),
   low confidence). The alternative is that the site's name gives way to the
   pawns. Needs the owner's word.
+
+Left behind by the
+[Legacy in-play powers work](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md):
+
+- [ ] **Check Arbiter and Golden Key's peek in a played game.** Arbiter's
+  question before the end die needs round 5 or later, which no dev game
+  reaches, and Golden Key's peek at the Reliquary was seen in the browser
+  only during Setup. Both are covered by tests only. The journaled
+  arranged start would seed them.
 
 ### Phase - Campaign battle summary
 
@@ -164,14 +136,6 @@ for macOS arm64, Windows x64 and Linux x64. The last manual acceptance run is
   the test `index.html` fixture shadowing the generated one, the hardcoded
   `distantlands:root` assertion, and no Docker `HEALTHCHECK`. Also document
   host bind mounts at `/var/lib/distantlands` in the configuration guide.
-- [ ] **Several seats in one browser.** Opening a second seat's link for the
-  same game in one browser profile silently replaces the first seat, because
-  `/s/{seat-code}` sets one cookie name scoped to `/games/{game-id}` and
-  redirects there (`TrustedSeatRoutes`). Every release's notes carry this as
-  a known caveat. One fix keeps the seat in the URL instead of redirecting to
-  the shared game path, for example a per-seat path with its own cookie
-  scope. Weigh the seat code staying in the address bar and history, which
-  the redirect avoids, and update the network guide and quick start.
 - [ ] **A lighter way to test separate-machine play.** The manual
   [acceptance record](operations/alpha-acceptance.md) takes two physical
   machines and a lot of hand-recorded evidence, so `0.1.0-alpha.3` and
@@ -189,30 +153,28 @@ Legacies, the scoring bonus and the display) landed with the
 [Legacies design](superpowers/specs/2026-11/2026-11-13-legacies-design.md),
 the legacies' CHRONICLE powers with the
 [Legacy Chronicle powers design](superpowers/specs/2026-11/2026-11-13-legacy-chronicle-powers-design.md),
-and their SETUP powers with the
-[Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md).
+their SETUP powers with the
+[Legacy Setup powers design](superpowers/specs/2026-11/2026-11-13-legacy-setup-powers-design.md),
+the powers used during a game with the
+[Legacy in-play powers design](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md),
+the cards that act on legacies with
+[catalog batch 13](superpowers/specs/2026-11/2026-11-14-catalog-batch-13-design.md),
+and the last printed powers with the
+[last Chronicle powers design](superpowers/specs/2026-11/2026-11-16-last-chronicle-powers-design.md).
+Every printed card power now runs.
 
-- [x] **Legacy powers: in play.** The powers used during a game: actions,
-  Wake, Travel, battle plans and the rest, The Mouth activating a legacy in
-  play and The Ear's ACTION half, peeking at a site's relics, among them
-  (The Ear's card counts as implemented for its Chronicle half), and Iron
-  Hand's discard when its holder becomes an Imperial during a game, and
-  Matchmaker choosing for players who draw legacies during a game (Amber
-  Doors, Lost Doors, Ancient Writ). High
-  Priest's When Negotiating power lets its holder
-  give secrets in a deal: a `DealRules` term kind, as Council Arbiter opens
-  advisers. Landed with the
-  [Legacy in-play powers design](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-design.md);
-  Matchmaker on draws during a game waits with the cards that act on
-  legacies.
-- [ ] **Cards that act on legacies.** The non-legacy cards whose powers
-  name legacies, still in holding: Ancient Writ (bury it to draw 3 and
-  keep 1), Amber Doors and Lost Doors (E05, draw legacies when explored or
-  at setup), Ruined Temple (E10, double the legacy points), and Stone Baths
-  and Ruined Baths (E04, change Resolve Legacies). A draw during a game
-  needs a random draw from the derived legacy deck, recorded as a hidden
-  outcome: Legacies ruling 3 assumed every draw happens in setup.
 - [ ] **Eras.** Era end, tie-breaks (F7) and the reset of lineage points.
+  The rulebook also lets a group end an era after a number of games or an
+  amount of time; the Chronicle stores only a point target. An era that
+  ends after M games should read "Era: Game N of M" on the Chronicle page,
+  beside today's "Era: First to T".
+- [ ] **Oathkeeper cards at Swear an Oath.** Swear an Oath offers the four
+  goals as plain buttons with no description. Offer the Oathkeeper cards
+  instead, each drawn as a card with its goal and its successor condition,
+  so a player picks by reading what each goal asks. This needs the
+  Oathkeeper cards in the catalog and as a presentable option kind. The
+  same options are built by True Oath and The Red Seer, so they should
+  show the cards too.
 - [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
   "Coming in a later release". Edits a saved Chronicle's fields in the
   browser.
@@ -233,10 +195,14 @@ Settings players can change during a game.
 
 ### Phase - Gameplay completeness gate
 
-Audit every rulebook procedure and every runtime component handler against the
-traceability matrix; close remaining hidden-information, simultaneous-ordering,
-randomness, consent, and nested-action gaps; then run complete replay,
+Close the gaps the [traceability matrix](rules/implementation-traceability.md#remaining-source-cited-work)
+lists under "Remaining source-cited work", then run complete replay,
 persistence, server, Scala.js, packaged-network, and browser acceptance gates.
+
+- [ ] **Audit simultaneous ordering.** Order is chosen only where it changes
+  the outcome (F2). Find every window where two powers can resolve at once
+  and their order changes the result, and check that the player chooses or a
+  ruling fixes it.
 
 ## Deferred items
 
@@ -246,8 +212,9 @@ one.
 ### Setup deferred items
 
 - [ ] **Simultaneous setup effects.** The Chancellor or first player should
-  resolve simultaneous setup effects; site order is used until then. Still to
-  add: player choices earlier in setup, which the setup legacy powers bring.
+  resolve simultaneous setup effects on several players; site order is used
+  until then. A player orders the powers of their own pawn window (catalog
+  batch 13, ruling 4).
 - [ ] **Keyboard focus on the Chronicle pages.** A redraw of the Chronicle
   page drops the focused control, and the table's save dialog does not trap
   focus. Do it with the next accessibility pass over the start pages.
@@ -265,10 +232,6 @@ one.
   logs as "a Legacy set Foundation II to ...": box legacies are not among
   the cards in play, so the log cannot name them. Only an imported
   Chronicle reaches it. Left by Legacies slice 3.
-- [ ] **First-player marker with a Chancellor.** `GameProjection` sends
-  `setup.firstPlayer` as the first player, but with a Chancellor seated
-  rounds start from `tracks.roundStarter`. Send the round's starter so the
-  board's marker points at the player who began the round.
 
 - [ ] **Show a parked action's progress in the waiting message.**
   The Game Log posts a line only once its facts are complete, so an action
@@ -353,6 +316,14 @@ one.
   Vision's owner's board shows the claimant's warband on it, but the
   claimant's own board shows nothing, so they cannot see which Visions
   they claim. Left by catalog batch 11, slice 7.
+- [ ] **Leave the enemy Imperial out of the attacker's plan offers.** In
+  Imperial Infighting, Imperial Tactics counts the enemy Imperial among the
+  attacker's allies, so the attacker's plan step shows the enemy's lendable
+  plans, Keeper of Order among them, as awaiting an offer and keeps the
+  window open. The rules let the enemy lend (CR p. 35), so this is noise,
+  not a rules defect: hide the enemy from the awaiting-offer view and keep
+  their offers allowed
+  ([Legacy in-play powers implementation ruling R18](superpowers/specs/2026-11/2026-11-14-legacy-in-play-powers-implementation-rulings.md)).
 
 - [ ] **Legacy goal icons.** A legacy shows its goal in words, a tag on
   its face and a sentence in its inspection and its strip chip's hover
@@ -517,8 +488,7 @@ as current.
   are browsable; saved games and replays are not.
 - [ ] **L5 — Asynchronous accounts, invitations, and notifications**
 - [ ] **L6 — Incremental implementation of remaining phases and rules** (tracked
-  in the phased sequence above; the remaining cards come with
-  **Phase - Chronicle steps**)
+  in the phased sequence above)
 - [ ] **L7 — Incremental synchronization transport**
   - Replace complete-snapshot polling with conditional responses, projection
     deltas, long polling, SSE, or another push transport when scale or latency

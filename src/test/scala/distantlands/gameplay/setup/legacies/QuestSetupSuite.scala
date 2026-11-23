@@ -3,8 +3,7 @@ package distantlands.gameplay.setup.legacies
 import distantlands.application.GameCommand
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.chronicle.legacies.OathsOfLoyaltyCard
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.{LaterGameFixture, SetupLegacyFixture,
   SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -181,7 +180,5 @@ class QuestSetupSuite extends munit.FunSuite:
     assert(lines(woken).contains(s"p2 swapped a card with the Dispossessed " +
       s"with ${QuestToDistantLandsCard.id.value}"), lines(woken))
 
-  test("the card has left holding and its power is registered"):
+  test("Quest to Distant Lands is registered among the setup legacies"):
     assert(LegacySetupPowers.all.contains(QuestToDistantLands))
-    assert(PowerImplementationStatus.implemented(
-      QuestToDistantLandsCard.power.id))

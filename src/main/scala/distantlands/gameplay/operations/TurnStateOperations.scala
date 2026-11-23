@@ -131,6 +131,18 @@ private[operations] object TurnStateOperations:
         Some(GameResult(holder, VictoryKind.Conspirator))
         else current.result)))
 
+  /** Records `player`'s Ruined Temple pledge: a seated player, once a
+    * game. */
+  def pledgeTemple(ready: ReadyGame, player: PlayerId)
+      : Either[OperationError, ReadyGame] =
+    val current = ready.game.current
+    if current.player(player).isEmpty then Left(InvalidDescription(
+      s"${player.value} must be seated to pledge"))
+    else if current.templePledges(player) then Left(InvalidDescription(
+      s"${player.value} has already pledged at Ruined Temple"))
+    else Right(ready.updateCurrent(_.copy(
+      templePledges = current.templePledges + player)))
+
   def setEndDieModifier(ready: ReadyGame, amount: Int): ReadyGame =
     ready.updateCurrent(_.copy(endDieModifier = amount))
 
@@ -259,9 +271,13 @@ private[operations] object TurnStateOperations:
     def moved = ready.updateCurrent(current => current.copy(tracks =
       tracks.copy(round = next,
         usurperLimited = tracks.usurperLimited && next <= 3)))
-    Either.cond(tracks.round < 8,
-      moved.copy(consent = ready.consent.turnRenamed(ConsentTurn.of(ready),
-        ConsentTurn.of(moved))),
+    // The turn's use marks follow it, as its answers do.
+    def renamed =
+      val (from, to) = (ConsentTurn.of(ready), ConsentTurn.of(moved))
+      moved.copy(consent = ready.consent.turnRenamed(from, to))
+        .updateCurrent(current => current.copy(
+          useMarks = UseMark.renamed(current.useMarks, from, to)))
+    Either.cond(tracks.round < 8, renamed,
       InvalidDescription("the round marker is on its last space"))
 
   def usurperLimiterRemoved(ready: ReadyGame)

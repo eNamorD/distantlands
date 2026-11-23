@@ -33,6 +33,10 @@ object GameIntentMapper:
             s"invalid consent setting '$setting'"))
       yield PlayerIntent.SetConsentPreference(power, PlayerId(requester),
         chosen)
+    case Intent.ReconsiderConsent(requester, id, target, allow) =>
+      optionRef(target.optionKind, target.optionId, "$.intent.target")
+        .map(PlayerIntent.ReconsiderConsent(PlayerId(requester), id, _,
+          allow))
     case Intent.SavePlanAid(plans, requirements, favor, secrets, burnt,
         secretsBurnt) =>
       def refs(wires: Vector[WalkerStartArgWire], path: String) =

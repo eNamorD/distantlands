@@ -4,11 +4,11 @@ import distantlands.catalog.{Edifice, EdificeFace, ExecutableCatalog,
   Locked, PrintedPower}
 import distantlands.gameplay.NoteSupport
 import distantlands.gameplay.actions.CardPlay
-import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, PowerCtx, Transform}
+import distantlands.gameplay.powerresolver.{Contribution, ContributingPower, OfferResolution, PowerCtx, Transform}
 import distantlands.gameplay.powers.PlayerFacts
 import distantlands.model._
 
-object ProvingGroundsCard extends Edifice(EdificeId("E22"), Suit.Hearth):
+object ProvingGroundsCard extends Edifice(EdificeId("E22"), Suit.Discord):
   object intact extends EdificeFace("Proving Grounds") with Locked:
     val power = PrintedPower(PowerId("edifice.e22.intact"),
       persistent = false, cost = Cost.free,
@@ -50,15 +50,22 @@ case object ProvingGrounds extends ContributingPower:
     PlayerFacts.forceKind(ready, actor).map(kind =>
       Vector(Gain.Warbands(actor, kind, 3)))
 
-  def contributions: Map[PowerWindow, Vector[Contribution]] =
-    val effect = Vector(Transform((ctx, ops) => at(ctx) match {
-      case Some((actor, _)) => ops :+ BuildOps((ready, _) => build(ready, actor)) :+
-        Note(id, NoteSupport.gainedNote(ProvingGrounds.gained,
-          PowerSourceRef.Card(edifice), actor, NoteUnit.Warband,
-          NoteSupport.warbands))
-      case None => ops
-    }))
-    Map(PowerWindow.SetupPawnPlaced -> effect, PowerWindow.WhenExplored -> effect)
+  /** The warbands, then the line. */
+  private def steps(actor: PlayerId): Vector[Operation] = Vector(
+    BuildOps((ready, _) => build(ready, actor)),
+    Note(id, NoteSupport.gainedNote(ProvingGrounds.gained,
+      PowerSourceRef.Card(edifice), actor, NoteUnit.Warband,
+      NoteSupport.warbands)))
+
+  /** Setup's pawn window orders its powers, so there the steps are offered
+    * to the placer (catalog batch 13, ruling 4). An Explore folds them in.
+    */
+  def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
+    PowerWindow.SetupPawnPlaced -> Vector(OfferResolution(ctx =>
+      at(ctx).map((actor, _) => ResolutionOffer(
+        EdificeSetupSupport.option(edifice), steps(actor))))),
+    PowerWindow.WhenExplored -> Vector(Transform((ctx, ops) =>
+      at(ctx).fold(ops)((actor, _) => ops ++ steps(actor)))))
 
 /** Discards all OTHER denizens in this region -- edifices count as denizens
   * for this clause specifically (design spec table), and a discarded ruined
@@ -110,24 +117,22 @@ case object EmptyGrounds extends ContributingPower:
     ready.game.current.map.regionOf(site).toRight(OathViolation.InvalidEventOrder(
       s"${site.value} is not in play")).flatMap { region =>
       val destination = CardPlay.nextRegion(region)
-      candidates(ready, site).foldLeft[Either[OathViolation, Vector[CoreOperation]]](Right(Vector.empty)):
-        case (acc, (siteId, card)) => for
-          operations <- acc
-          suit <- catalog.suitOf(card.id).toRight(card match {
-            case denizen: DenizenState => OathViolation.UnknownWorldCard(denizen.id)
-            case edifice: EdificeState => OathViolation.UnknownEdifice(edifice.id)
-          })
-        yield card match
-          case denizen: DenizenState => operations :+ Discard.Denizen(denizen.id,
+      OathViolation.traverse(candidates(ready, site)) { (siteId, card) =>
+        catalog.suitOf(card.id).toRight(card match {
+          case denizen: DenizenState => OathViolation.UnknownWorldCard(denizen.id)
+          case edifice: EdificeState => OathViolation.UnknownEdifice(edifice.id)
+        }).map(suit => card match
+          case denizen: DenizenState => Vector(Discard.Denizen(denizen.id,
             PositionedLocation(Location.Site(siteId)), destination, suit,
             denizen.tokens.favor, denizen.tokens.secrets, active,
-            actorless = true, cause = Some(DiscardCause(id)))
+            actorless = true, cause = Some(DiscardCause(id))))
           case edifice: EdificeState if edifice.side == EdificeSide.Ruined =>
-            operations :+ Discard.RuinedEdifice(edifice.id,
+            Vector(Discard.RuinedEdifice(edifice.id,
               PositionedLocation(Location.Site(siteId)), suit,
               edifice.tokens.favor, edifice.tokens.secrets, active,
-              actorless = true, cause = Some(DiscardCause(id)))
-          case _ => operations
+              actorless = true, cause = Some(DiscardCause(id))))
+          case _ => Vector.empty)
+      }.map(_.flatten)
     }
 
   def contributions: Map[PowerWindow, Vector[Contribution]] =

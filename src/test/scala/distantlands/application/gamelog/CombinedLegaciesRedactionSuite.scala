@@ -1,7 +1,7 @@
 package distantlands.application.gamelog
 
 import distantlands.application.GamePresentationProjector
-import distantlands.gameplay.setup.{LaterGameFixture, LegacyDeal}
+import distantlands.gameplay.setup.{LaterGameFixture, SetupLegacyFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 
@@ -36,8 +36,7 @@ class CombinedLegaciesRedactionSuite extends munit.FunSuite:
 
   test("no log names a legacy Matchmaker's holder kept for another player"):
     val orders = LaterGameFixture.orders(record, p1)
-    val deal = LegacyDeal.of(record, orders.participants)
-    val drawn = Vector(p1, p3).flatMap(deal.drawn(orders.legacyOrder, _))
+    val drawn = Vector(p1, p3).flatMap(SetupLegacyFixture.drawn(orders, _))
       .map(_.value).toSet
     assert(drawn.nonEmpty)
     viewers.foreach(viewer => assertEquals(named(viewer).intersect(drawn),

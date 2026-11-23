@@ -237,14 +237,47 @@ class ChronicleSunSuite extends munit.FunSuite:
       ChronicleTask.Throne -> p1, ChronicleTask.World -> p2,
       ChronicleTask.Beacon -> p3))
 
-  test("the Sun writes who was crowned and who took each task"):
+  test("the Sun writes who was crowned and who gave or took each task; a " +
+      "first game's Exile winner breaks no Empire"):
     val done = sunWithTasksGiven(ChronicleWalk.chronicleWonByP1)
     val id = distantlands.gameplay.actions.ProcedureNotes.id(
       TriggeredProcedureRef.ChronicleSun)
     assertEquals(NoteText.said(id, ChronicleSunProcedure.noteKeys,
-      done.events).map(_.text), Vector("The Empire broke",
+      done.events).map(_.text), Vector(
       s"${p1.value} became Chancellor", s"${p1.value} took the Throne task",
-      s"${p3.value} took the World task", s"${p2.value} took the Beacon task"))
+      s"${p1.value} gave ${p3.value} the World task",
+      s"${p1.value} gave ${p2.value} the Beacon task"))
+
+  test("an Exile's win over an Empire that stood writes that it broke and " +
+      "who became an Exile"):
+    val done = sunWithTasksGiven(ChronicleWalk.chronicleWonByP1.imperial(p2))
+    val id = distantlands.gameplay.actions.ProcedureNotes.id(
+      TriggeredProcedureRef.ChronicleSun)
+    assertEquals(NoteText.said(id, ChronicleSunProcedure.noteKeys,
+      done.events).map(_.text).take(3), Vector("The Empire broke",
+      s"${p2.value} became an Exile", s"${p1.value} became Chancellor"))
+
+  test("a boxed former Chancellor breaks the Empire but has no player to " +
+      "name"):
+    val done = sunWithTasksGiven(withBoxedLineage(
+      ChronicleWalk.chronicleWonByP1, Role.Chancellor))
+    val id = distantlands.gameplay.actions.ProcedureNotes.id(
+      TriggeredProcedureRef.ChronicleSun)
+    assertEquals(NoteText.said(id, ChronicleSunProcedure.noteKeys,
+      done.events).map(_.text).take(2), Vector("The Empire broke",
+      s"${p1.value} became Chancellor"))
+
+  test("a winner who gives a task to themself took it"):
+    val worldToSelf = answerPlayer(sunStarted(ChronicleWalk.chronicleWonByP1), p1,
+      ChronicleTaskAssignment.worldDecisionId, p1)
+    val done = answerPlayer(worldToSelf, p1,
+      ChronicleTaskAssignment.beaconDecisionId, p2)
+    val id = distantlands.gameplay.actions.ProcedureNotes.id(
+      TriggeredProcedureRef.ChronicleSun)
+    assertEquals(NoteText.said(id, ChronicleSunProcedure.noteKeys,
+      done.events).map(_.text).drop(2), Vector(
+      s"${p1.value} took the World task",
+      s"${p1.value} gave ${p2.value} the Beacon task"))
 
   test("replaying the Sun's events reproduces its state"):
     val start = ChronicleWalk.chronicleWonByP1.state
@@ -254,14 +287,15 @@ class ChronicleSunSuite extends munit.FunSuite:
         state.flatMap(rules.evolve(_, event)))), done.state)
 
   test("Crown Chancellor and Assign Tasks read the winner when reached"):
-    // A test power at the Sun's first window, now empty in play (Royal Line
-    // acts before Start Chronicle since Legacy in-play powers R36), names p2
-    // the winner; the Crown and the Throne task then go to p2.
+    // A test power at the Sun's first window, where no printed power names
+    // a winner (Royal Line acts before Start Chronicle since Legacy in-play
+    // powers R36), names p2 the winner; the Crown and the Throne task then
+    // go to p2.
     final case class NamesP2() extends ContributingPower:
       val id: PowerId = PowerId("test.chronicle.names-p2")
       val source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
       val contributions: Map[PowerWindow, Vector[Contribution]] = Map(
-        PowerWindow.ChronicleStartOfSun -> Vector(Transform((_, ops) =>
+        PowerWindow.ChronicleRevealRelics -> Vector(Transform((_, ops) =>
           ops :+ BuildOps((_, _) => Right(Vector(
             WinnerNamed(p2, VictoryKind.Successor))), required = true))))
     val table = ChronicleWalk.chronicleWonByP1.imperial(p1, p2)

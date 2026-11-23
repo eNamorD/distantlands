@@ -7,8 +7,7 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.chronicle.ChronicleWalk
 import distantlands.gameplay.powers.action.FaeMerchantCard
 import distantlands.gameplay.powers.setup.GreatMarketCard
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.whenplayed.{ThreateningRoarCard,
   TrueOathCard}
 import distantlands.gameplay.setup.ChronicleAccounting
@@ -53,9 +52,6 @@ class RevolutionarySuite extends munit.FunSuite:
     NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.ChronicleThrone),
       keys, run.events).filter(said => keys.exists(_.name == said.key))
       .map(_.text)
-
-  test("Revolutionary is implemented"):
-    assert(PowerImplementationStatus.implemented(RevolutionaryCard.power.id))
 
   test("the holder is offered the denizens and ruined edifices at Imperial " +
       "sites, after Build Edifice"):
@@ -141,12 +137,11 @@ class RevolutionarySuite extends munit.FunSuite:
   test("a walk resumed at Revolutionary's question after a build applies " +
       "the answer"):
     // Build Edifice first buries Threatening Roar for its suit's edifice.
-    val suit = catalog.denizen(ThreateningRoarCard.id).get.suit
     val building: PartialFunction[Decide, DecisionAnswer] =
       case decide if decide.decisionId ==
-          distantlands.gameplay.chronicle.BuildEdifice.decisionId(suit) =>
-        DecisionAnswer.ChooseManyAnswer(Vector(
-          DecisionOptionRef.Denizen(ThreateningRoarCard.id)))
+          distantlands.gameplay.chronicle.BuildEdifice.cardDecisionId =>
+        DecisionAnswer.ChooseOneAnswer(
+          DecisionOptionRef.Denizen(ThreateningRoarCard.id))
     val run = throne(empire, building.orElse(
       discarding(DecisionOptionRef.Denizen(FaeMerchantCard.id))))
     assert(!onMap(run.ready, FaeMerchantCard.id))

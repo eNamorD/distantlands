@@ -9,17 +9,15 @@ object SeparateVisions:
   val steps: Vector[Operation] = Vector(BuildOps((state, _) =>
     state.game.cardIndex.left.map(problems => OathViolation.InvalidEventOrder(
       s"the card index is broken: $problems")).flatMap(index =>
-      index.ids.toVector.collect { case id: VisionId => id }.sortBy(_.value)
-        .foldLeft[Either[OathViolation, Vector[CoreOperation]]](
-          Right(Vector.empty)) { (moves, vision) =>
-          for
-            done <- moves
-            location <- index.locationOf(vision).flatMap(at =>
-              from(at.container)).toRight(OathViolation.InvalidEventOrder(
-                s"${vision.value} lies where a Vision cannot be moved from"))
-          yield done :+ Move(Piece.Card(vision), PositionedLocation(location),
-            PositionedLocation(Location.SharedBank))
-        }),
+      OathViolation.traverse(index.ids.toVector
+          .collect { case id: VisionId => id }.sortBy(_.value)) { vision =>
+        index.locationOf(vision).flatMap(at => from(at.container))
+          .toRight(OathViolation.InvalidEventOrder(
+            s"${vision.value} lies where a Vision cannot be moved from"))
+          .map(location => Move(Piece.Card(vision),
+            PositionedLocation(location),
+            PositionedLocation(Location.SharedBank)))
+      }),
     required = true))
 
   private def from(container: CardContainer): Option[Location] =

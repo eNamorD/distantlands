@@ -42,7 +42,7 @@
 12. **No board decision draws Cancel.** No choose-one or choose-many has a way back today, and spec 1 adds none.
 13. **The title's battle plan stays a button.** It has no card on the table, so it is a Decide button and submits at once, as today.
 14. **An unavailable option the viewer may not identify is dropped, not fatal.** An available option that cannot be presented still suppresses the whole decision; an unavailable one only drops itself.
-15. **Raid reasons cover banners and other players' faceup relics.** A defender's facedown relics are not shown: no rule makes them targets, so there is nothing to explain.
+15. **Raid reasons cover banners and other players' faceup relics.** A defender's facedown relics are not shown: no rule makes them targets, so there is nothing to explain. *Reversed 2026-11-20:* a Campaign offers only the defender's targets, and no target outside the defender's area or sites carries a reason (spec, "Campaign targets").
 
 ### File structure
 

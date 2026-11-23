@@ -1,15 +1,15 @@
 0.0 round 0 | Setup
-5.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
-10.0 decision 1 | [player:p2|p2] kept a legacy
-15.0 decision 1 | [player:p2|p2] kept [card:208|Wizard's Conclave]
-23.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
-28.0 decision 1 | [player:p3|p3] kept a legacy
-33.0 decision 1 | [player:p3|p3] kept a Denizen
-41.0 action 1 | [player:p1|p1] placed their pawn at [site:site:buried-giant|Buried Giant]
-46.0 decision 1 | [player:p1|p1] kept a legacy
-51.0 decision 1 | [player:p1|p1] kept a Denizen
-55.0 round 0 | Round 1
-55.1 turn 0 | [player:p2|p2]'s turn
-55.2 phase 0 | Wake
-57.0 action 1 | Nothing happened in Wake
-57.1 phase 0 | Act
+8.0 action 1 | [player:p2|p2] placed their pawn at [site:site:ancient-city|Ancient City]
+13.0 decision 1 | [player:p2|p2] kept a legacy
+19.0 decision 1 | [player:p2|p2] kept [card:208|Wizard's Conclave]
+27.0 action 1 | [player:p3|p3] placed their pawn at [site:site:broken-peaks|Broken Peaks]
+32.0 decision 1 | [player:p3|p3] kept a legacy
+38.0 decision 1 | [player:p3|p3] kept a Denizen
+46.0 action 1 | [player:p1|p1] placed their pawn at [site:site:buried-giant|Buried Giant]
+51.0 decision 1 | [player:p1|p1] kept a legacy
+57.0 decision 1 | [player:p1|p1] kept a Denizen
+61.0 round 0 | Round 1
+61.1 turn 0 | [player:p2|p2]'s turn
+61.2 phase 0 | Wake
+63.0 action 1 | Nothing happened in Wake
+63.1 phase 0 | Act

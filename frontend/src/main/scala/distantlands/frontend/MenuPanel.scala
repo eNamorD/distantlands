@@ -31,9 +31,11 @@ private[frontend] object MenuPanel:
   private def band(option: DecisionOptionState): String =
     option.group.filter(known).getOrElse("other")
 
-  def render(surface: ParkedDecision.Surface.Menu, canControl: Boolean,
-      panel: dom.Element, controls: TableControls): Unit =
+  def render(surface: ParkedDecision.Surface.Menu, value: GameProjection,
+      canControl: Boolean, panel: dom.Element, controls: TableControls): Unit =
     val options = surface.query.options
+    val ask = ConsentAsking.asker(surface.decision.decisionId, value,
+      canControl, controls)
     def control(option: DecisionOptionState, style: String): dom.Element =
       val row = element("div", "action-option")
       val choose = button(option.label,
@@ -52,8 +54,14 @@ private[frontend] object MenuPanel:
       choose.disabled = !canControl
       option.card.flatMap(_.rulesText)
         .foreach(HoverTip.set(choose, _))
-      choose.onclick = _ => controls.submitCommand(
-        WalkerPanelSupport.resolveChooseOneCommand(surface.decision, option))
+      // An askable power asks its granters first; picking it outright is a
+      // start the engine refuses (consent design, "Frontend").
+      val askable = option.state == "askable"
+      if askable then choose.classList.add("walker-choice-askable")
+      choose.onclick = _ =>
+        if askable then ask(option, choose)
+        else controls.submitCommand(WalkerPanelSupport
+          .resolveChooseOneCommand(surface.decision, option))
       row.appendChild(choose)
       WalkerPanelSupport.withholds(choose, option)
       row

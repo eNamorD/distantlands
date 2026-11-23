@@ -243,6 +243,8 @@ object CardPlay:
       case Some(at) =>
         val held = ready.game.current.map.sites.get(at)
           .fold(Vector.empty[SiteDenizenState])(_.denizens)
+        // Not OathViolation.traverse: each id is checked against the cards
+        // already found, which is how a card named twice is refused.
         ids.foldLeft[Either[OathViolation, Vector[Removed]]](
             Right(Vector.empty)) { (found, id) =>
           found.flatMap(cards => held.find(_.id == id)
@@ -281,21 +283,15 @@ object CardPlay:
         for
           pile <- ready.game.current.map.regionOf(siteId).map(nextRegion)
             .toRight(InvalidSearchPlacement("the site is not in play"))
-          removed <- each(plan.fromSite)(removal(catalog, player.player,
+          removed <- OathViolation.traverse(plan.fromSite)(removal(catalog, player.player,
             PositionedLocation(Location.Site(siteId)), pile))
         yield removed.flatten
       }
-      fromPlay <- each(plan.fromPlayArea.map(_ -> playArea) ++ played) {
+      fromPlay <- OathViolation.traverse(plan.fromPlayArea.map(_ -> playArea) ++ played) {
         (id, from) => selectedDiscard(catalog, ready, player.player, id, from,
           region)
       }
     yield fromSite ++ fromPlay ++ plan.kept.toVector ++ plan.favor
-
-  private def each[A, B](items: Vector[A])(
-      f: A => Either[OathViolation, B]): Either[OathViolation, Vector[B]] =
-    items.foldLeft[Either[OathViolation, Vector[B]]](
-      Right(Vector.empty))((done, item) =>
-      done.flatMap(operations => f(item).map(operations :+ _)))
 
   /** A card the play removes from the site at `from`, its row or its
     * relics: a row card discarded to `region`'s pile with its tokens

@@ -70,7 +70,10 @@ class GameLogPropertiesSuite extends munit.FunSuite:
       entries.flatMap(_.section).distinct.foreach { section =>
         val own = entries.filter(_.section.contains(section))
         val tags = own.filter(_.kind == LogKind.Section)
-        if tagged(section.action) then
+        // A Chronicle step's band opens with its heading, as a tagged action
+        // does.
+        if tagged(section.action) ||
+            section.action.startsWith("chronicle-step-") then
           // A run that opens with no tag yet (a Muster still choosing its
           // source) has none; a run that has one shows it first.
           assert(tags.size <= 1, s"${script.name}: $tags")
@@ -146,13 +149,13 @@ class GameLogPropertiesSuite extends munit.FunSuite:
     * in only widens the check. Answers that name no option post no line
     * either way, so they are left out. */
   private def asked(script: Script): Vector[(ProcedureRef, String, Long)] =
-    val journal = new LogJournal(script.history.steps)
+    val journal = new LogJournal(script.history.steps, LogJournal.opSteps)
     (0 until journal.size).foldLeft((Option.empty[ProcedureRef],
         Vector.empty[(ProcedureRef, String, Long)])) {
       case ((current, found), at) =>
         val procedure = current.orElse(journal.procedureAt(at))
         val more = (journal.event(at), procedure) match
-          case (WalkerStepRecorded(_, ChoicePayload(id, answer, _), _),
+          case (WalkerStepRecorded(_, ChoicePayload(id, answer, _, _), _),
               Some(ref)) if namesAnOption(answer) =>
             Vector((ref, id, journal.sequence(at)))
           case _ => Vector.empty

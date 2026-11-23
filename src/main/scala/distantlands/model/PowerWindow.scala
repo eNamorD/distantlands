@@ -53,7 +53,6 @@ object PowerWindow:
   case object ChallengeActionEligibility extends ChallengeWindow { val key = "challenge.action-eligibility" }
   case object ChallengeModifierSelection extends ChallengeWindow { val key = "challenge.modifier-selection" }
   case object WakeTakeWealth extends OtherWindow { val key = "wake.take-wealth" }
-  case object WakeBoundary extends OtherWindow { val key = "wake.boundary" }
   /** A card played faceup, to a site or as a faceup adviser. The key is the
     * one the single played-card window always had, so reviewed data and
     * fingerprints do not change.
@@ -63,8 +62,6 @@ object PowerWindow:
   /** A card placed facedown as an adviser, a denizen or a Vision. */
   case object ActionCardPlayedFacedown extends OtherWindow:
     val key = "action.card-played-facedown"
-  case object ActionAfterMajorAction extends OtherWindow:
-    val key = "action.after-major-action"
   case object SearchCost extends SearchWindow { val key = "search.cost" }
   case object SearchBeforeDraw extends SearchWindow { val key = "search.before-draw" }
   case object SearchPlayAdviser extends SearchWindow:
@@ -197,8 +194,10 @@ object PowerWindow:
     * Secret Society and then Seer hook here. Empty with no power. */
   case object SetupWorldDeck extends OtherWindow { val key = "setup.world-deck" }
   /** Where the placing player's site is fixed for this player's Setup turn
-    * (2026-09-21 Chronicle design, "Setup powers"): Great Forge and Broken
-    * Forge hook here. */
+    * (2026-09-21 Chronicle design, "Setup powers"). Its node is an
+    * `OrderedWindow`: the edifice powers, The Standard Bearer and Wealthy
+    * offer their steps there, and the placer orders them (catalog batch
+    * 13, ruling 4). */
   case object SetupPawnPlaced extends OtherWindow { val key = "setup.pawn-placed" }
   /** Runs once, in site order, after every player has placed a pawn and
     * chosen an adviser: Great Market, Bandit Market and Empty Grounds hook
@@ -212,11 +211,6 @@ object PowerWindow:
     * Legacy in-play powers R36). Empty with no power. */
   case object ChronicleFinalWinner extends OtherWindow:
     val key = "chronicle.final-winner"
-  /** The Sun's first window, before Reveal Relics. Royal Line's step was
-    * here (Legacy Chronicle powers R40) until Legacy in-play powers R36
-    * moved it before Start Chronicle; empty with no power. */
-  case object ChronicleStartOfSun extends OtherWindow:
-    val key = "chronicle.sun.start-of-sun"
   case object ChronicleRevealRelics extends OtherWindow:
     val key = "chronicle.sun.reveal-relics"
   /** Before players resolve legacies, after Reveal Relics: Gatekeeper's
@@ -238,8 +232,11 @@ object PowerWindow:
   case object ChronicleCrown extends OtherWindow { val key = "chronicle.sun.crown" }
   case object ChronicleAssignTasks extends OtherWindow:
     val key = "chronicle.sun.assign-tasks"
-  /** The start of the Throne, before Offer Citizenship: Reformer's step
-    * (Legacy Chronicle powers design, ruling 12). Empty with no power. */
+  /** The start of the Throne, before Offer Citizenship: the held relics
+    * are hidden (Last Chronicle powers design, ruling 3), then Reformer's
+    * step (Legacy Chronicle powers design, ruling 12), then Hiding
+    * Place's and Blasted Pastures' (Last Chronicle powers design, rulings
+    * 4 to 6). */
   case object ChronicleStartOfThrone extends OtherWindow:
     val key = "chronicle.throne.start-of-throne"
   case object ChronicleOfferCitizenship extends OtherWindow:
@@ -290,7 +287,6 @@ object PowerWindow:
     * beside its Setup window, so one contribution serves both.
     */
   case object WhenExplored extends OtherWindow { val key = "explore.when-explored" }
-  case object NegotiationOffer extends OtherWindow { val key = "negotiation.offer" }
   case object NegotiationEligibility extends OtherWindow:
     val key = "negotiation.eligibility"
   case object NegotiationSettlement extends OtherWindow:

@@ -28,7 +28,7 @@ private[protocol] object WorldProjectionCodec:
     "rulesText" -> stringOption(value.rulesText), "orientation" -> stringOption(value.orientation),
     "side" -> stringOption(value.side), "favor" -> value.favor, "secrets" -> value.secrets,
     "relicValue" -> intOption(value.relicValue), "defense" -> intOption(value.defense),
-    "hidden" -> value.hidden, "implemented" -> value.implemented,
+    "hidden" -> value.hidden,
     "powers" -> encoded(value.powers)(encodePowerFace),
     "warbands" -> encoded(value.warbands)(encodeForces),
     "tracking" -> option(value.tracking)(encodeTracked))
@@ -36,7 +36,7 @@ private[protocol] object WorldProjectionCodec:
     value <- obj(raw, path)
     _ <- exact(value, Set("cardId", "cardKind", "name", "suit", "restrictions",
       "rulesText", "orientation", "side", "favor", "secrets", "relicValue",
-      "defense", "hidden", "implemented", "powers", "warbands", "tracking",
+      "defense", "hidden", "powers", "warbands", "tracking",
       "legacyGoal"), path)
     cardId <- string(value, "cardId", path)
     kind <- string(value, "cardKind", path)
@@ -51,7 +51,6 @@ private[protocol] object WorldProjectionCodec:
     relicValue <- optionalAbsent(value, "relicValue", path)(int)
     defense <- optionalAbsent(value, "defense", path)(int)
     hidden <- bool(value, "hidden", path)
-    implemented <- boolOr(value, "implemented", path, true)
     powers <- default(value, "powers", path, Vector.empty[PowerFaceProjection])(
       (raw, child) => array(raw, child).flatMap(traverse(_, child)(decodePowerFace)))
     warbands <- default(value, "warbands", path,
@@ -60,8 +59,8 @@ private[protocol] object WorldProjectionCodec:
     tracking <- optionalAbsent(value, "tracking", path)(decodeTracked)
     goal <- optionalAbsent(value, "legacyGoal", path)(decodeGoal)
   yield CardDetailsProjection(cardId, kind, name, suit, restrictions, rulesText,
-    orientation, side, favor, secrets, relicValue, defense, hidden, implemented,
-    powers, warbands, tracking, goal)
+    orientation, side, favor, secrets, relicValue, defense, hidden, powers,
+    warbands, tracking, goal)
 
   private def decodeGoal(raw: ujson.Value, path: String)
       : Result[LegacyGoalProjection] = for
@@ -179,7 +178,7 @@ private[protocol] object WorldProjectionCodec:
     }): Result[SiteForcesProjection]
   yield forces
 
-  private def encodeSite(value: SetupSiteProjection): ujson.Value = ujson.Obj(
+  def encodeSite(value: SetupSiteProjection): ujson.Value = ujson.Obj(
     "siteId" -> value.siteId, "label" -> value.label,
     "looseFavor" -> value.looseFavor, "looseSecrets" -> value.looseSecrets,
     "denizenCapacity" -> value.denizenCapacity, "relicCapacity" -> value.relicCapacity,
@@ -190,7 +189,7 @@ private[protocol] object WorldProjectionCodec:
     "forces" -> option(value.forces)(encodeForces),
     "festival" -> value.festival,
     "denizens" -> encoded(value.denizens)(encodeSiteCard), "relics" -> encodeRelics(value.relics))
-  private def decodeSite(raw: ujson.Value, path: String): Result[SetupSiteProjection] = for
+  def decodeSite(raw: ujson.Value, path: String): Result[SetupSiteProjection] = for
     value <- obj(raw, path)
     _ <- exact(value, Set("siteId", "label", "looseFavor", "looseSecrets",
       "denizenCapacity", "relicCapacity", "defense", "recoverDifficulty", "forgeCost",

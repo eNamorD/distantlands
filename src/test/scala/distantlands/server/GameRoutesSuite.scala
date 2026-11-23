@@ -10,10 +10,10 @@ import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.campaign.NatureWorshipCard
 import distantlands.gameplay.powers.search.ErrandBoyCard
 import distantlands.gameplay.powers.whenplayed.WizardsConclaveCard
-import distantlands.gameplay.setup.SetupProcedure
+import distantlands.gameplay.setup.{LegacyKeep, SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.protocol.{ActorlessCommandCodec, ActorlessCommandRequest,
-  DecisionAnswerWire, GameIntent}
+  DecisionAnswerWire, DecisionPlacementWire, GameIntent}
 import distantlands.testkit.HttpTestServer
 import distantlands.testkit.HttpTestServer.cacheControl
 import distantlands.testkit.Table.p2
@@ -33,10 +33,10 @@ class GameRoutesSuite extends munit.FunSuite:
         new InMemoryEventStreamRepository)
       val begun = accepted(service.handle("route-game", 0L,
         GameCommand.Begin(chronicle, orders.copy(firstPlayer = p2))))
-      // GameStarted plus the WalkerParked fact from Setup's immediate first
-      // park (2026-09-21 Chronicle design, slice 2): two records for one
-      // Begin command.
-      assertEquals(begun.nextSequence, 2L)
+      // GameStarted, one hidden legacy draw per seat (a first game draws
+      // every seat's two before the first pawn) and the WalkerParked fact
+      // from Setup's first park: five records for one three-seat Begin.
+      assertEquals(begun.nextSequence, 5L)
       val gateway = new GameGateway(service, new GameProjector(catalog))
       BegunRoutes(
         HttpTestServer.start("first-game-route-test")(blocking =>
@@ -128,12 +128,15 @@ class GameRoutesSuite extends munit.FunSuite:
       // Quiet Ambitions asks p2 to keep one of its two drawn legacies.
       val legacyQuery = ujson.read(placed.body())("walkerDecision")
       assertEquals(legacyQuery("decisionId").str,
-        SetupProcedure.legacyDecisionId(p2))
+        LegacyKeep.decisionId(p2))
       val keptLegacy = server.post(p2Commands,
         ActorlessCommandCodec.encode(ActorlessCommandRequest(afterPlaced,
-          GameIntent.ResolveWalker(SetupProcedure.legacyDecisionId(p2),
-            DecisionAnswerWire.ChooseOneWire("legacy",
-              legacyQuery("query")("options")(0)("id").str)))))
+          GameIntent.ResolveWalker(LegacyKeep.decisionId(p2),
+            DecisionAnswerWire.PartitionWire(
+              legacyQuery("query")("options").arr.toVector.zipWithIndex.map(
+                (option, index) => DecisionPlacementWire("legacy",
+                  option("id").str, if index == 0 then "keep" else "discard")
+              ))))))
       assertEquals(keptLegacy.statusCode(), 200, keptLegacy.body())
       val afterKept = ujson.read(keptLegacy.body())("nextSequence").num.toLong
 

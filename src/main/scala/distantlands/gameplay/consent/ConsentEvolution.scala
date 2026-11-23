@@ -2,7 +2,8 @@ package distantlands.gameplay.consent
 
 import distantlands.model._
 import distantlands.model.OathEvent.{ConsentAnswered, ConsentPreferenceSet,
-  ConsentPreferencesCleared, ConsentRequestWithdrawn, ConsentRequested}
+  ConsentPreferencesCleared, ConsentReconsidered, ConsentRequestWithdrawn,
+  ConsentRequested}
 
 /** Folds the consent facts into `ReadyGame.consent` (consent design,
   * "Events"). Nothing else in the game changes. */
@@ -19,4 +20,7 @@ object ConsentEvolution:
         Right(consent.preferenceSet(granter, power, requester, setting))
       case ConsentPreferencesCleared(granter, power) =>
         Right(consent.cleared(granter, power))
+      case ConsentReconsidered(granter, requester, decisionId, target,
+          granted) => consent.reconsidered(granter, requester, decisionId,
+        target, granted, ConsentTurn.of(ready))
     ).map(next => ready.copy(consent = next))

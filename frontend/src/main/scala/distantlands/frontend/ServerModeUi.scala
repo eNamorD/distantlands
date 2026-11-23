@@ -10,7 +10,8 @@ object ServerModeUi:
       trustedGameId: Option[String] = None,
       startOver: () => Unit = () => dom.window.location.assign(Main.DevelopmentStartUrl),
       transport: JsonTransport = new SameOriginJsonTransport,
-      devices: ChronicleDevices = ChronicleDevices.browser): Unit =
+      devices: ChronicleDevices = ChronicleDevices.browser,
+      nextGame: String => Unit = url => dom.window.location.assign(url)): Unit =
     val trusted = trustedGameId.nonEmpty
     val initialPlayer = if trusted then "" else queryParameter("playerId").getOrElse("red-exile")
     val initialGame = trustedGameId.getOrElse(queryParameter("gameId").getOrElse(freshGameId()))
@@ -21,7 +22,8 @@ object ServerModeUi:
       new BrowserNavigation(startOver), () => screen.render())
     lazy val chronicle = new TableChronicle(mount,
       devices.storage.map(new ChronicleShelf(_, devices.now)),
-      new ChronicleClient(transport), devices.files, () => screen.render())
+      new ChronicleClient(transport), devices.files, () => screen.render(),
+      () => startOver(), nextGame, () => shell.closeChronicleDetails())
     lazy val screen: TableScreen = new TableScreen(shell, session, session,
       session, Some(chronicle))
 

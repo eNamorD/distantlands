@@ -41,11 +41,12 @@ private[frontend] object TrustedHostUi:
         LineageColors.flatMap(color =>
           byLineage.get(s"${color.key}-lineage").map(color -> _)).toMap
 
-  /** "First player" or the Empire's: who goes first in this game. */
-  private def firstPlayerSentence(roles: Map[PlayerColor, String]): String =
+  /** How the seating is chosen. The first player is named only when no
+    * Chancellor is seated: the Empire's Chancellor goes first, and the
+    * setup rules say so. */
+  private def seatingSentence(roles: Map[PlayerColor, String]): String =
     if roles.values.exists(_ == "chancellor") then
-      "Seating order is chosen at random. The Chancellor goes first, or a " +
-        "random Citizen when the Chancellor does not play. "
+      "Seating order is chosen at random. "
     else "Seating order and the first player are chosen at random. "
 
   /** Mirrors the backend identifier rule in `TrustedGameCodecFields.identifier`. */
@@ -62,25 +63,43 @@ private[frontend] object TrustedHostUi:
       openCreated: Option[TrustedGameCreateResponse => Unit] = None)
       : () => Boolean =
     mount.textContent = ""
+    // One centered column, as on the Chronicle page, narrow enough that
+    // the intro wraps.
+    val page = element("div", "host-page")
+    mount.appendChild(page)
     val backLink = button("Back", "chronicle-back")
     backLink.setAttribute("type", "button")
     backLink.onclick = event =>
       event.preventDefault()
       if !backLink.disabled then back()
-    mount.appendChild(backLink)
-    mount.appendChild(text("h1", "", "Create an Oath game"))
+    page.appendChild(backLink)
+    page.appendChild(text("h1", "", "Create an Oath game"))
     val imperial = roles(chronicle)
-    def label(color: PlayerColor): String =
-      name(color) + imperial.get(color).fold("")(role => s", ${role.capitalize}")
-    mount.appendChild(text("p", "", openCreated match {
+    // "Red Citizen": the color and the role its lineage starts the game
+    // in. A lineage without an Imperial role, or a new one, is an Exile
+    // (`GameStartRules` starts new lineages as Exiles).
+    def role(color: PlayerColor): String =
+      imperial.get(color).fold("Exile")(_.capitalize)
+    def label(color: PlayerColor): String = s"${name(color)} ${role(color)}"
+    // The same phrase as an element, its role in its own span so an
+    // Imperial role can wear the Empire's purple.
+    def labelElement(className: String, color: PlayerColor): dom.Element =
+      val node = element("span", className)
+      node.appendChild(dom.document.createTextNode(s"${name(color)} "))
+      node.appendChild(RoleText.span(role(color)))
+      node
+    val intro = text("p", "host-intro", openCreated match {
       case None => "Add one row per player, then send each player " +
         "their assigned link. Anyone with a seat link can control that seat. " +
-        firstPlayerSentence(imperial) +
+        seatingSentence(imperial) +
         "Save these links before leaving this page."
-      case Some(_) => "Add one row per player. " +
-        firstPlayerSentence(imperial) +
-        "The new game opens as the first listed player; switch players from the toolbar."
-    }))
+      case Some(_) => "Add one row per player. " + seatingSentence(imperial).trim
+    })
+    if openCreated.isDefined then
+      intro.appendChild(element("br", ""))
+      intro.appendChild(dom.document.createTextNode(
+        "In dev-server mode, switch players using the toolbar."))
+    page.appendChild(intro)
     val form = element("form", "trusted-host-form")
     val nameField = chronicle match
       case HostChronicle.New =>
@@ -135,7 +154,7 @@ private[frontend] object TrustedHostUi:
         option.setAttribute("type", "button")
         option.setAttribute("role", "option")
         option.appendChild(swatch(color))
-        option.appendChild(text("span", "", label(color)))
+        option.appendChild(labelElement("", color))
         option.onclick = event => {
           event.preventDefault(); closeMenu(); addRow(color); toggle.focus()
         }
@@ -153,7 +172,7 @@ private[frontend] object TrustedHostUi:
     def addRow(color: PlayerColor): Unit =
       val node = element("li", s"host-player host-player-${color.key}")
       node.appendChild(swatch(color))
-      node.appendChild(text("span", "host-player-color", label(color)))
+      node.appendChild(labelElement("host-player-color", color))
       val input = dom.document.createElement("input").asInstanceOf[dom.html.Input]
       input.className = "host-player-id"
       input.setAttribute("aria-label", s"${label(color)} player ID")
@@ -255,16 +274,19 @@ private[frontend] object TrustedHostUi:
               status.textContent = "Game created. Opening it…"
               openCreated.foreach(_(created))
             case Right(created) =>
-              mount.removeChild(form)
-              mount.removeChild(backLink)
+              page.removeChild(form)
+              page.removeChild(backLink)
               status.textContent =
                 "Game created. Copy and save each assigned seat link." +
                   unsaved.fold("")(reason => s" $reason")
-              mount.appendChild(text("p", "created-game-id", s"Game ID: ${created.gameId}"))
+              page.appendChild(text("p", "created-game-id", s"Game ID: ${created.gameId}"))
               val links = element("ol", "seat-links")
               created.seats.foreach { seat =>
                 val row = element("li", "seat-link-row")
-                row.appendChild(text("span", "", seat.playerId))
+                row.appendChild(text("span", "seat-link-player", seat.playerId))
+                // The response holds no color; the seat's row chose it.
+                participants.find(_.playerId == seat.playerId).foreach(player =>
+                  row.appendChild(labelElement("seat-link-color", player.color)))
                 val link = dom.document.createElement("input").asInstanceOf[dom.html.Input]
                 link.className = "seat-link"
                 link.value = seat.url
@@ -284,13 +306,13 @@ private[frontend] object TrustedHostUi:
                 row.appendChild(copy)
                 links.appendChild(row)
               }
-              mount.appendChild(links)
+              page.appendChild(links)
         }
     create.onclick = event => { event.preventDefault(); submit() }
     form.asInstanceOf[dom.html.Form].onsubmit = event => { event.preventDefault(); submit() }
     form.appendChild(create)
-    mount.appendChild(form)
-    mount.appendChild(status)
+    page.appendChild(form)
+    page.appendChild(status)
     () => creating
 
   private def swatch(color: PlayerColor): dom.Element =

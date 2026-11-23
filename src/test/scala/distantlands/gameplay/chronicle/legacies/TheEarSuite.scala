@@ -5,8 +5,7 @@ import distantlands.gameplay.{BanditCrownCard, GrandMaskCard, OathRules,
 import distantlands.gameplay.actions.ProcedureNotes
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.chronicle.{ChronicleWalk, ReliquaryAndRelics}
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.economy.CupOfPlentyCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -57,9 +56,6 @@ class TheEarSuite extends munit.FunSuite:
 
   private def slots: Vector[SiteId] =
     ReliquaryAndRelics.emptySlots(catalog, earTable.ready)
-
-  test("The Ear is implemented"):
-    assert(PowerImplementationStatus.implemented(TheEarCard.power.id))
 
   test("the holder chooses the relic for each empty slot in Hinterward " +
       "order while two or more remain, the last is placed without a " +

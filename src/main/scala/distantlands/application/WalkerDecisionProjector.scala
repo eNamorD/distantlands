@@ -1,7 +1,9 @@
 package distantlands.application
 
 import distantlands.catalog.ExecutableCatalog
-import distantlands.gameplay.chronicle.ResolveLegacies
+import distantlands.gameplay.actions.cardplay.CardPlayProcedure
+import distantlands.gameplay.chronicle.{BuildEdifice, ProtectAndDispossess,
+  ResolveLegacies}
 import distantlands.gameplay.powers.{PhasePowerCatalog, WalkerPowerCatalog}
 import distantlands.gameplay.powerresolver.PhasePowers
 import distantlands.gameplay.walker.{OptionWarnings, ProcedureWalker,
@@ -11,7 +13,7 @@ import distantlands.protocol.projection.{CardDetailsProjection,
   CountedConfirmProjection, DecisionOptionProjection, DecisionQueryProjection,
   DecisionSectionProjection, DecisionSlotProjection, DecisionSummaryProjection,
   DecisionTallyProjection, DecisionTallyValueProjection,
-  WalkerDecisionProjection, WalkerRollOutcomeProjection,
+  PublicPreviewProjection, PublicPreviewSection, WalkerDecisionProjection, WalkerRollOutcomeProjection,
   WalkerStatusProjection, WalkerWaitingProjection}
 
 /** Projects a parked generic-walker position (`CurrentGameState.walkerPending`
@@ -112,6 +114,28 @@ private[application] final class WalkerDecisionProjector(
       parked.pending, parked.powers, viewer, context.viewer)
   yield projection
 
+  /** The cards every viewer sees beside a parked decision, whoever may
+    * answer it: Build Edifice's available edifices, faceup and intact as
+    * they would be built, or the World's two faceup stacks to protect. */
+  def publicPreview(context: ScopedProjectionContext)
+      : Option[PublicPreviewProjection] = for
+    parked <- parkedPosition(context)
+    open = ProcedureWalker.openDecisions(context.ready, parked.tree,
+      parked.pending, parked.powers, probing = false).map(_.decisionId)
+    sections = (if open.contains(BuildEdifice.cardDecisionId) then
+      Vector(PublicPreviewSection("Available edifices",
+        BuildEdifice.available(catalog, context.current).map((_, id) =>
+          presentation.edificeCardDetails(
+            EdificeState(id, EdificeSide.Intact, Tokens.empty)))))
+    else if open.contains(ProtectAndDispossess.protectDecisionId) then
+      ProtectAndDispossess.faceupStacks(context.ready).zipWithIndex.map(
+        (stack, at) => PublicPreviewSection(s"Stack ${at + 1}", stack.map(
+          card => presentation.cardDetails(card, Some(Orientation.FaceUp),
+            hidden = false))))
+    else Vector.empty).filter(_.cards.nonEmpty)
+    if sections.nonEmpty
+  yield PublicPreviewProjection(sections)
+
   /** The public "who is this waiting on" projection, for every viewer who
     * owes no answer -- Task 5's counterpart to `project`. Built off the same
     * [[WalkerDecisionProjector.Parked]] position, so it names exactly the
@@ -146,11 +170,7 @@ private[application] final class WalkerDecisionProjector(
         found.decisionId, withRoll = true)).distinct)
 
   private def rebuild(ready: ReadyGame, procedure: ProcedureRef,
-      actor: PlayerId, args: Vector[DecisionOptionRef]) =
-    tree(procedure, ready, actor, args)
-
-  private def tree(procedure: ProcedureRef, ready: ReadyGame, actor: PlayerId,
-      args: Vector[DecisionOptionRef]) = procedure match
+      actor: PlayerId, args: Vector[DecisionOptionRef]) = procedure match
     case _: ActionRef.UsePower | TriggeredProcedureRef.ForcedWake |
         TriggeredProcedureRef.FollowUpOffer |
         TriggeredProcedureRef.WakeMenu | TriggeredProcedureRef.RestMenu |
@@ -296,7 +316,10 @@ private[application] final class WalkerDecisionProjector(
           offered <- described(many.options)
           fixed <- described(many.locked)
         yield DecisionQueryProjection.ChooseMany(
-          fixed.map(_.copy(state = "locked")) ++ offered, many.min, many.max,
+          fixed.map(_.copy(state = "locked")) ++ offered.map(row =>
+            row.copy(preselected = many.selected.exists(option =>
+              option.ref.kind == row.kind &&
+                option.ref.wireId == row.id))), many.min, many.max,
           many.heading,
           many.tallies.map(tally => DecisionTallyProjection(tally.label,
             tally.unit, tally.perOption.toVector.map((ref, value) =>
@@ -354,8 +377,9 @@ private[application] final class WalkerDecisionProjector(
     * not among its options: `cardplay.place.*` offers card slots and
     * `cardplay.discard.*` site cards, and both name the card played only in
     * the id they were built with. The id is the tree's own
-    * spelling of `WorldCardId` (`kind` then `value`), so this parses what the
-    * procedure wrote rather than reaching into the tree for it.
+    * spelling of `WorldCardId` (`kind` then `value`), and
+    * `CardPlayProcedure.cardOf` parses what the procedure wrote rather than
+    * reaching into the tree for it.
     *
     * Not a field of the decision projection: `GameProjector` draws the
     * subject with the cards in the viewer's hand (`temporaryHandPreview`),
@@ -376,20 +400,13 @@ private[application] final class WalkerDecisionProjector(
       viewer: Option[PlayerId], decisionId: String)
       : Vector[CardDetailsProjection] =
     val index = ready.game.cardIndex.toOption
-    val prefixes = Vector("cardplay.place.", "cardplay.discard.",
-      "cardplay.replaced.", "cardplay.bury.")
     // The Chancellor's tie-break for a public legacy names that legacy,
     // faceup in the row (Legacies design, slice 5).
     val publicLegacy = ResolveLegacies.publicDecisionPrefix
     val cards =
       if decisionId.startsWith(publicLegacy) then
         Vector(LegacyId(decisionId.stripPrefix(publicLegacy)): CardId)
-      else prefixes.find(decisionId.startsWith).toVector.flatMap { prefix =>
-        decisionId.stripPrefix(prefix).split("\\.", 2).toVector match
-          case Vector("denizen", value) => Vector(DenizenId(value): CardId)
-          case Vector("vision", value) => Vector(VisionId(value): CardId)
-          case _ => Vector.empty[CardId]
-      }
+      else CardPlayProcedure.cardOf(decisionId).toVector
     cards.map(rows.shown(ready, viewer, index, _))
 
   /** A card play's heading names its card or its site, and its Replace
@@ -401,17 +418,17 @@ private[application] final class WalkerDecisionProjector(
       decisionId: String, projected: DecisionQueryProjection)
       : DecisionQueryProjection =
     val played =
-      if decisionId.startsWith("cardplay.place.") then
+      if decisionId.startsWith(CardPlayProcedure.placementPrefix) then
         subjectCards(ready, viewer, decisionId).headOption.filterNot(_.hidden)
       else None
     val query = played.fold(projected)(replacing(projected, _))
     val heading =
-      if decisionId.startsWith("cardplay.place.") then
+      if decisionId.startsWith(CardPlayProcedure.placementPrefix) then
         played.map(card => s"Play ${card.name}")
-      else if decisionId.startsWith("cardplay.discard.") then
+      else if decisionId.startsWith(CardPlayProcedure.discardPrefix) then
         followUpSite(ready, projected).map(site =>
           s"Discard more cards from ${presentation.siteLabel(site)}")
-      else if decisionId.startsWith("cardplay.bury.") then
+      else if decisionId.startsWith(CardPlayProcedure.buryPrefix) then
         followUpSite(ready, projected).map(site =>
           s"Bury a card at ${presentation.siteLabel(site)}")
       else None

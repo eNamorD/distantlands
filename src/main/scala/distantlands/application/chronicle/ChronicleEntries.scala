@@ -5,9 +5,9 @@ import java.security.MessageDigest
 
 import distantlands.application.FoundationPresentation
 import distantlands.gameplay.cards.NewFoundations
-import distantlands.model.{Chronicle, Role}
+import distantlands.model.{Chronicle, EraState, Role}
 import distantlands.protocol.{ChronicleEntry, ChronicleLegacy, ChronicleScore,
-  ChronicleSummary}
+  ChronicleScorepadEntry, ChronicleSummary}
 
 /** A Chronicle as a browser keeps it (Chronicle browsing design, "Digest"
   * and "Summary"). */
@@ -32,14 +32,24 @@ object ChronicleEntries:
       era.targetScore,
       chronicle.lineages.map(lineage =>
         ChronicleScore(lineage.id.value, era.score(lineage.id),
-          lineage.role match
-            case Role.Chancellor => Some("chancellor")
-            case Role.Citizen => Some("citizen")
-            case Role.Exile => None,
+          roleName(lineage.role),
           // By printed name, every face shown: the Chronicle is its owner's
           // record (Legacies implementation ruling R39). A legacy the
           // catalog does not know keeps its id.
           lineage.legacies.map(legacy => ChronicleLegacy(
             NewFoundations.catalog.legacy(legacy.id).fold(legacy.id.value)(
               _.name), legacy.active)))),
-      FoundationPresentation.ofChronicle(chronicle))
+      FoundationPresentation.ofChronicle(chronicle),
+      scorepad(era))
+
+  /** The era scorepad as a summary lists it: a column per game played, in
+    * order, each mark its lineage's total and role at that game's end. */
+  def scorepad(era: EraState): Vector[Vector[ChronicleScorepadEntry]] =
+    era.games.map(_.entries.map(entry => ChronicleScorepadEntry(
+      entry.lineage.value, entry.totalScore, roleName(entry.endingRole))))
+
+  /** An Imperial role as the summary names it; an Exile has none. */
+  def roleName(role: Role): Option[String] = role match
+    case Role.Chancellor => Some("chancellor")
+    case Role.Citizen => Some("citizen")
+    case Role.Exile => None

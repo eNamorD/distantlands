@@ -73,7 +73,7 @@ case object IronHand extends ContributingPower:
       _.legacies.contains(LegacyState(IronHandCard.id, active = true))))(
       Move(Piece.Card(IronHandCard.id),
         PositionedLocation(Location.Legacies(lineage)),
-        PositionedLocation(Location.Deck(CardDeck.Legacy)))).toVector
+        PositionedLocation.legacyDeckBottom)).toVector
 
   private val sunNotes = NoteSet(ProcedureNotes.id(
     TriggeredProcedureRef.ChronicleSun))
@@ -138,7 +138,7 @@ case object IronHand extends ContributingPower:
           Vector(BuildOps((_, _) => Right(Vector(Move(
               Piece.Card(IronHandCard.id),
               PositionedLocation(Location.Legacies(lineage)),
-              PositionedLocation(Location.Deck(CardDeck.Legacy))))),
+              PositionedLocation.legacyDeckBottom))),
               required = true),
             Note(ProcedureNotes.id(procedure), _ => Some(discarded(procedure)
               .sourceless(NoteArg.Player(holder),

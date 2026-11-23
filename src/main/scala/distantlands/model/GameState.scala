@@ -53,15 +53,20 @@ final case class EraGame(entries: Vector[EraEntry]):
   require(entries.map(_.lineage).distinct.size == entries.size,
     "a game records each lineage once")
 
-/** The era scorepad. Resetting `games` at an era's end belongs to the
-  * Eras item. */
-final case class EraState(targetScore: Int, games: Vector[EraGame]):
+/** The era scorepad. `carriedScores` holds lineage totals that arrived
+  * without their games, as a TTS import carries them; a lineage's total is
+  * its latest game's entry, else its carried score. Resetting `games` and
+  * `carriedScores` at an era's end belongs to the Eras item. */
+final case class EraState(targetScore: Int, games: Vector[EraGame],
+    carriedScores: Map[LineageId, Int] = Map.empty):
   require(targetScore > 0, "era target score must be positive")
+  require(carriedScores.values.forall(_ >= 0),
+    "lineage scores must be non-negative")
 
   /** The lineage's latest total, or 0 before it has one. */
   def score(lineage: LineageId): Int =
     games.reverseIterator.flatMap(_.entries.find(_.lineage == lineage))
-      .nextOption().fold(0)(_.totalScore)
+      .nextOption().fold(carriedScores.getOrElse(lineage, 0))(_.totalScore)
 
 final case class CampaignState(
     atlas: AtlasState,
@@ -90,6 +95,18 @@ final case class CampaignState(
 ):
   /** The Chronicle the game was started from, as saved. */
   def savedChronicle: Chronicle = saved.getOrElse(baseline)
+
+  /** Every lineage in the Chronicle as it stands, by id (Chronicle Details
+    * implementation ruling R1): a seated lineage's live record, and each
+    * lineage nobody seated as the Chronicle the game started from records
+    * it, with the role this game gave it in the box (Crown Chancellor:
+    * "even in the box", CR p. 36). */
+  def standingLineages: Vector[LineageState] =
+    val boxed = baseline.lineages
+      .filterNot(lineage => lineages.contains(lineage.id))
+      .map(lineage => lineage.copy(role =
+        boxRoles.getOrElse(lineage.id, lineage.role)))
+    (lineages.values.toVector ++ boxed).sortBy(_.id.value)
 
   /** The Reliquary's relics a player may take in play: none while the
     * Reliquary is set aside. Every taker reads this, never `reliquary`,
@@ -215,7 +232,7 @@ enum VictoryKind(val key: String):
 /** `visions` is a Visionary win's qualifying Visions, which Swear an Oath
   * reads (catalog batch 11, ruling 30); empty for every other win. */
 final case class GameResult(winner: PlayerId,
-    kind: VictoryKind = VictoryKind.Usurper,
+    kind: VictoryKind,
     visions: Vector[VisionId] = Vector.empty)
 
 /** One pick a pick-and-pay menu took in the current walk: a battle plan or a
@@ -321,6 +338,11 @@ final case class CurrentGameState(
     // recorded `OpenPick`, payments and `ClosePick`, and the walker and
     // `WalkerCompleted` clear it with the dice pools.
     walkerPicks: Vector[PlayedPick] = Vector.empty,
+    // The options chosen this turn on a granted consent request (`UseMark`;
+    // reconsider design, "State"). Not walker scratch: a mark outlives
+    // its walk and locks the answer until the choice is undone. The fold
+    // of a recorded answer sets it; nothing clears it but an undo.
+    useMarks: Set[UseMark] = Set.empty,
     // Warbands that stand on a card rather than a board or a site, by card
     // and force (Obsidian Cage). They stay on the card wherever it goes,
     // and count as out of their bank. A kind with none is absent.
@@ -340,7 +362,21 @@ final case class CurrentGameState(
     // Royal Line's choice and before Start Chronicle, which clears it
     // (Legacy in-play powers rulings 25-27; R36). Never projected; the
     // holder reads it in their own log line.
-    predictions: Map[PlayerId, Prediction] = Map.empty
+    predictions: Map[PlayerId, Prediction] = Map.empty,
+    // Legacies drawn and not yet kept or discarded, by drawer (catalog
+    // batch 13, ruling 6). The same `Location.Hand` as `temporaryHands`,
+    // which holds world cards only, so a hand is private to its holder
+    // whatever it holds. A draw's walk empties it.
+    legacyHands: Map[PlayerId, Vector[LegacyId]] = Map.empty,
+    // The players who burned a secret at Ruined Temple this game (catalog
+    // batch 13, ruling 17), read at the win and by the scoring that
+    // doubles. Public, as the burn was made openly. Not walker scratch: it
+    // lasts the game, and a new game starts without it. Never projected.
+    templePledges: Set[PlayerId] = Set.empty,
+    // The dormant legacies Stone Baths kept at Sun step 2 (ruling 14):
+    // not newly dormant, so Crown Chancellor and Offer Citizenship leave
+    // them dormant. Public. Never projected.
+    keptDormant: Set[LegacyId] = Set.empty
 ):
   /** The warbands of `kind` on `card`. */
   def warbandsOn(card: CardId, kind: ForceKind): Int =

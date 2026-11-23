@@ -201,3 +201,57 @@ class MatBoardSuite extends munit.FunSuite:
     assertEquals(current.parentNode.asInstanceOf[dom.Element]
       .getAttribute("data-round"), "3")
     assert(!one(wheel, ".limiter-marker").classList.contains("printed"))
+
+  private val chancellor = GamePlayer("purple", "Purple", "Chancellor",
+    PlayerColor.Purple)
+  private val citizen = GamePlayer("blue", "Blue", "Citizen", PlayerColor.Blue)
+
+  /** The table with an Empire seated beside the red Exile, the Oath held
+    * by `holder`. */
+  private def empireTable(holder: Option[String]) = table.copy(
+    players = Vector(chancellor, citizen, red),
+    oathkeeper = Some(distantlands.protocol.projection.OathkeeperProjection(
+      goal = "supremacy", holderPlayerId = holder, side = "oathkeeper",
+      usurperLimited = false, winnerPlayerId = None)))
+
+  private def endDice(value: GameProjection): Vector[dom.Element] =
+    all(WorldBoardRenderer.world(value, BoardOptions.none),
+      ".round-tracker svg .end-die")
+
+  /** The mat prints the Stable Regime targets on the wheel's lines after
+    * rounds 5, 6 and 7: a purple die showing 6, 5 and 3 pips. */
+  test("an Empire game's wheel prints the end die's target after rounds " +
+      "five, six and seven"):
+    val dice = endDice(empireTable(Some("purple")))
+    assertEquals(dice.map(_.getAttribute("data-after-round")),
+      Vector("5", "6", "7"))
+    assertEquals(dice.map(all(_, ".end-die-pip").size), Vector(6, 5, 3))
+    assert(dice.forall(_.classList.contains("printed")))
+    assertEquals(dice.map(_.getAttribute("aria-label")), Vector(
+      "End die after round 5: 6", "End die after round 6: 5 or 6",
+      "End die after round 7: 3 or more"))
+    assertEquals(dice(1).getAttribute(HoverTip.Attribute),
+      "End of round 6: if the Chancellor or a Citizen is the Oathkeeper, " +
+        "roll the end die. The Chancellor wins on a 5 or 6.")
+
+  test("a game without a Chancellor prints no end die"):
+    assertEquals(endDice(table), Vector.empty)
+
+  /** The dice stand down while no roll would be made: the Oath with an
+    * Exile, or with no one. */
+  test("the end dice dim unless the Chancellor or a Citizen holds the Oath"):
+    def idle(holder: Option[String]) =
+      endDice(empireTable(holder)).map(_.classList.contains("end-die-idle"))
+    assertEquals(idle(Some("purple")), Vector(false, false, false))
+    assertEquals(idle(Some("blue")), Vector(false, false, false))
+    assertEquals(idle(Some("red")), Vector(true, true, true))
+    assertEquals(idle(None), Vector(true, true, true))
+    assert(endDice(empireTable(Some("red"))).head
+      .getAttribute(HoverTip.Attribute).endsWith(
+        "No roll now: the Oathkeeper is not the Chancellor or a Citizen."))
+
+  test("the tracker's name carries the end die's targets in an Empire game"):
+    val name = one(WorldBoardRenderer.world(empireTable(Some("purple")),
+      BoardOptions.none), ".round-tracker").getAttribute("aria-label")
+    assert(name.contains(
+      "end die after rounds 5, 6 and 7: 6, 5 or 6, 3 or more"), name)

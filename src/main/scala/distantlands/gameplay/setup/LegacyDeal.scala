@@ -3,30 +3,30 @@ package distantlands.gameplay.setup
 import distantlands.catalog.ExecutableCatalog
 import distantlands.model._
 
-/** Foundation III's deal of the legacy deck: the one arithmetic the plan
-  * factory and game start share (Legacies design, slice 2; implementation
-  * ruling R16). `seats` lists every seated player in seat order; `order`
-  * below is always the deal's `legacyOrder`, the derived deck shuffled.
+/** Foundation III's deal of the legacy deck at game start (Legacies
+  * design, slice 2; implementation ruling R16; catalog batch 13, ruling
+  * 6). `seats` lists every seated player in seat order; `order` below is
+  * always the deal's `legacyOrder`, the derived deck shuffled.
   *
-  * Quiet Ambitions, the normal face and every first game's deal (ruling
-  * 4): each player draws 2, in seat order, and keeps one in Setup. Public
-  * Ambitions, the altered face: the first 4 are dealt faceup to the public
-  * row and nobody draws. A short deck draws what remains (ruling 5).
+  * Public Ambitions, the altered face: the first 4 are dealt faceup to the
+  * public row and nobody draws. Quiet Ambitions, the normal face and every
+  * first game's (ruling 4): game start deals nothing, and Setup draws 2
+  * from the deck for each player's keep (`LegacyKeep`), a first game's
+  * all before the first pawn. A short deck deals
+  * or draws what remains (ruling 5).
   */
 final case class LegacyDeal(face: FoundationFace, seats: Vector[PlayerId]):
   private val public = face == FoundationFace.Altered
 
-  /** The legacies `player` draws, dormant: 2 under Quiet Ambitions, fewer
-    * from a short deck, none under Public Ambitions. */
-  def drawn(order: Vector[LegacyId], player: PlayerId): Vector[LegacyId] =
-    val seat = seats.indexOf(player)
-    if public || seat < 0 then Vector.empty
-    else order.slice(LegacyDeal.QuietDraw * seat,
-      LegacyDeal.QuietDraw * (seat + 1))
-
   /** The Public Ambitions row, faceup in deal order. */
   def publicRow(order: Vector[LegacyId]): Vector[LegacyId] =
     if public then order.take(LegacyDeal.PublicRow) else Vector.empty
+
+  /** What the deal leaves of `order`, top first: the game's legacy deck.
+    * Quiet Ambitions deals nothing at game start, since each keep draws its
+    * own (catalog batch 13, rulings 1 and 6). */
+  def rest(order: Vector[LegacyId]): Vector[LegacyId] =
+    if public then order.drop(LegacyDeal.PublicRow) else order
 
 object LegacyDeal:
   val QuietDraw: Int = 2
@@ -40,7 +40,8 @@ object LegacyDeal:
     LegacyDeal(StartingFoundations.of(chronicle)(FoundationNumber.III).face,
       participants.map(_.playerId))
 
-  /** The derived legacy deck (ruling 3): every catalog legacy no lineage
+  /** The legacy deck a game derives from `chronicle` (ruling 3), which
+    * game start shuffles and deals from: every catalog legacy no lineage
     * of `chronicle` holds, seated or in the box, in catalog order. A
     * Chronicle stores no public row. */
   def deck(catalog: ExecutableCatalog, chronicle: Chronicle)

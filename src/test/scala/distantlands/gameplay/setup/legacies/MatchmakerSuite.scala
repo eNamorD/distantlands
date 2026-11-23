@@ -2,15 +2,14 @@ package distantlands.gameplay.setup.legacies
 
 import distantlands.application.GameCommand
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus}
+import distantlands.gameplay.powers.NoteText
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
   LegacyDeal, LegacyKeep, SetupLegacyFixture, SetupProcedure,
   SetupWalkDriver}
 import distantlands.gameplay.walker.WalkerPowers
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
-import distantlands.model.DecisionAnswer.ChooseOneAnswer
-import distantlands.testkit.{ParkedNode, Situation}
+import distantlands.testkit.{DecisionAnswers, ParkedNode, Situation}
 import distantlands.testkit.Unwrap.{accepted, present}
 
 /** Matchmaker in Quiet Ambitions: "Whenever players draw legacies from the
@@ -25,9 +24,8 @@ class MatchmakerSuite extends munit.FunSuite:
     LaterGameFixture.chronicle(l1, l2), l3, Role.Exile,
     MatchmakerCard.id -> true)
   private val orders = LaterGameFixture.orders(record, p1)
-  private val deal = LegacyDeal.of(record, orders.participants)
   private def drawn(player: PlayerId): Vector[LegacyId] =
-    deal.drawn(orders.legacyOrder, player)
+    SetupLegacyFixture.drawn(orders, player)
 
   private def parkedAt(decisionId: String): Situation =
     Situation.start(Situation.rules(catalog)).parkedAt(decisionId)(
@@ -45,11 +43,20 @@ class MatchmakerSuite extends munit.FunSuite:
   test("the holder keeps their own draw"):
     assertEquals(owner(parkedAt(LegacyKeep.decisionId(p3))), p3)
 
+  test("the holder answers every keep in Foundation III, before any pawn " +
+      "(catalog batch 13, ruling 3)"):
+    val at = parkedAt(LegacyKeep.decisionId(p2))
+    assertEquals(owner(at), p3)
+    Vector(p1, p2, p3).foreach(player =>
+      assertEquals(at.ready.game.current.pawnSite(player), None, player))
+    assert(at.ready.game.campaign.lineages(l1).legacies.exists(!_.active),
+      "p1's keep came first")
+
   test("a walk resumed at the keep keeps the holder's choice for its owner"):
     val kept = drawn(p2).last
     val done = parkedAt(LegacyKeep.decisionId(p2)).withAnswers {
       case park if park.decisionId == LegacyKeep.decisionId(p2) =>
-        ChooseOneAnswer(DecisionOptionRef.Legacy(kept))
+        DecisionAnswers.keepLegacy(kept, drawn(p2).head)
     }.after()
     val legacies = done.ready.game.campaign.lineages(l2).legacies
     assert(legacies.contains(LegacyState(kept, active = false)), legacies)
@@ -65,11 +72,13 @@ class MatchmakerSuite extends munit.FunSuite:
       MatchmakerCard.id.value), said)
     assert(said.contains("p3 kept a legacy"), said)
 
-  test("a player who drew one legacy keeps it with no question"):
+  test("a player dealt one legacy keeps it with no question"):
     // Box lineages hold every legacy but Matchmaker and 3 others, so the
-    // derived deck is short: p1 draws 2, p2 draws 1 and p3 none (Legacies
-    // R9). A later game with a Chancellor keeps them; a first game played
-    // exile-only would wipe them back into the deck (R40).
+    // derived deck is short. The deal gives p1 two, p2 the one left and
+    // p3 none (Legacies R9; setup keep undo, ruling 2). Matchmaker's
+    // holder p3 answers p1's question and keeps p2's single legacy
+    // unasked. A later game with a Chancellor keeps them; a first game
+    // played exile-only would wipe them back into the deck (R40).
     val held = catalog.legacies.map(_.id).filterNot(_ == MatchmakerCard.id)
       .dropRight(3)
     val boxed = held.grouped(12).zipWithIndex.map((ids, n) => LineageState(
@@ -92,9 +101,9 @@ class MatchmakerSuite extends munit.FunSuite:
       decide.owner), Vector(LegacyKeep.decisionId(p1) -> p3))
     val said = NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
       SetupProcedure.noteKeys, setup.events).map(_.text)
-    assert(said.contains("p2 kept a legacy"), said)
-    assert(said.contains(s"p3 kept a legacy for p1 with " +
-      MatchmakerCard.id.value), said)
+    Vector("p1", "p2").foreach(owner => assert(said.contains(
+      s"p3 kept a legacy for $owner with ${MatchmakerCard.id.value}"), said))
+    assert(!said.contains("p3 kept a legacy"), said)
 
   test("under Public Ambitions nobody draws, so the power does nothing"):
     val public = record.copy(foundations = record.foundations.updated(
@@ -105,6 +114,5 @@ class MatchmakerSuite extends munit.FunSuite:
         public, LaterGameFixture.orders(public, p1)).events).map(_.text)
     assert(!said.exists(_.contains(MatchmakerCard.id.value)), said)
 
-  test("the card has left holding and its power is registered"):
+  test("Matchmaker is registered among the setup legacies"):
     assert(LegacySetupPowers.all.contains(Matchmaker))
-    assert(PowerImplementationStatus.implemented(MatchmakerCard.power.id))

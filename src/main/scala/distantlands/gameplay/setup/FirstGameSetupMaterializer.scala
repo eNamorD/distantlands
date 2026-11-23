@@ -205,5 +205,5 @@ final class FirstGameSetupMaterializer(catalog: ExecutableCatalog):
       else if plan.participants.size >= 5 then 4
       else 3
     val suits = map.sites.values.flatMap(_.denizens)
-      .flatMap(AtlasPlacement.suitOf(catalog, _)).toVector
+      .flatMap(card => catalog.suitOf(card.id)).toVector
     Suit.all.map(suit => suit -> (printed + suits.count(_ == suit))).toMap

@@ -5,8 +5,7 @@ import distantlands.gameplay.setup.legacies.MatchmakerCard
 import distantlands.gameplay.OathRules
 import distantlands.gameplay.chronicle.{ChronicleLegacyRules, ChronicleWalk,
   ResolveLegacies}
-import distantlands.gameplay.powers.{PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.WalkerPowerCatalog
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.testkit.Table
@@ -27,9 +26,6 @@ class SteadfastSuite extends munit.FunSuite:
       : Vector[LegacyState] =
     ready.game.campaign.lineages(ready.game.current.player(player).get.lineage)
       .legacies
-
-  test("Steadfast is implemented"):
-    assert(PowerImplementationStatus.implemented(SteadfastCard.power.id))
 
   test("an Exile holding Steadfast keeps their other unmet legacies " +
       "active, while Steadfast itself goes dormant (ruling 5)"):

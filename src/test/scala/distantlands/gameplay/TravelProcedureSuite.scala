@@ -251,7 +251,7 @@ class TravelProcedureSuite extends munit.FunSuite:
       case Decide(TravelProcedure.destinationDecisionId, `actor`,
           DecisionQuery.ChooseOne(options, Some("Choose a Travel destination"),
             Some("Travel to")),
-          _, _, _, _) => options.map(_.ref)
+          _, _, _, _, _) => options.map(_.ref)
       case other => fail(s"not the destination decision: $other")
     assertEquals(offered, ready.game.current.map.inPlay
       .filter(_ != cradlePlains).map(DecisionOptionRef.Site(_)))

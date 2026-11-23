@@ -9,9 +9,8 @@ import distantlands.model._
   * and swap advisers." (catalog batch 12, rulings 14, 16 and 17).
   *
   * The rule is `NegotiationAdvisers` and `DealRules`, which the
-  * Negotiation reads. This power hooks no window. It is registered so the
-  * card counts as implemented. Its moves write the Negotiation's own
-  * "gave" lines.
+  * Negotiation reads. This power hooks no window. Its moves write the
+  * Negotiation's own "gave" lines.
   */
 case object CouncilArbiter extends ContributingPower:
   val id: PowerId = CouncilArbiterCard.power.id
@@ -23,7 +22,7 @@ case object CouncilArbiter extends ContributingPower:
   * 17).
   *
   * The rule is `NegotiationAdvisers` and `DealRules`. This power hooks no
-  * window. It is registered so the card counts as implemented.
+  * window.
   */
 case object FestivalDistrict extends ContributingPower:
   val id: PowerId = FestivalDistrictCard.intact.power.id

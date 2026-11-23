@@ -186,6 +186,12 @@ final case class WritePrediction(holder: PlayerId, round: Int,
 final case class ResolvePrediction(holder: PlayerId, fulfilled: Boolean)
     extends TurnOperation, LeafOperation
 
+/** Records `player`'s Ruined Temple pledge in
+  * `CurrentGameState.templePledges` (catalog batch 13, ruling 17). A
+  * seated player pledges once a game. */
+final case class PledgeTemple(player: PlayerId) extends TurnOperation,
+    LeafOperation
+
 /** Sets `CurrentGameState.endDieModifier`, Arbiter's change to the coming
   * end die, from -1 to +3 (Legacy in-play powers ruling 21; R11). The end
   * die reads and clears it. The journal records it, so a reloaded game

@@ -6,13 +6,36 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import ServerUiSupport.{button, element, text, textField}
 
 /** Import and export (Chronicle browsing design, "Chronicle page", items 6
-  * and 7). The server checks every import; the browser only stores what it
-  * returns. */
+  * and 7). Each is a button on the page that opens a dialog. The server
+  * checks every import; the browser only stores what it returns. */
 private[frontend] object ChronicleTransfer:
-  def importSection(shelf: ChronicleShelf, client: ChronicleClient,
+  /** "Import Chronicle", opening the import form in a dialog in `host`. */
+  def importButton(host: dom.Element, shelf: ChronicleShelf,
+      client: ChronicleClient, files: ChronicleFiles,
+      imported: () => Unit): dom.html.Button =
+    val open = button("Import Chronicle", "import-chronicle")
+    open.onclick = _ => ChronicleDialog.open(host, open,
+      "import-chronicle-dialog", "Import Chronicle",
+      importForm(shelf, client, files, imported))
+    open
+
+  /** "Export Chronicle", opening the loaded Chronicle's export in a dialog
+    * in `host`; withheld while no Chronicle is loaded. */
+  def exportButton(host: dom.Element, entry: Option[ChronicleEntry],
+      client: ChronicleClient, files: ChronicleFiles): dom.html.Button =
+    val open = button("Export Chronicle", "export-chronicle")
+    entry match
+      case None => HoverTip.withhold(open, "Load a Chronicle to export it")
+      case Some(chronicle) =>
+        open.onclick = _ => ChronicleDialog.open(host, open,
+          "export-chronicle-dialog", "Export Chronicle",
+          exportPanel(chronicle, client, files))
+    open
+
+  /** A JSON file to upload or, below a divider, a TTS string to paste. */
+  def importForm(shelf: ChronicleShelf, client: ChronicleClient,
       files: ChronicleFiles, imported: () => Unit): dom.Element =
-    val section = element("section", "chronicle-import")
-    section.appendChild(text("h2", "", "Import Chronicle"))
+    val section = element("div", "chronicle-import")
     val status = statusLine("import-status")
     val clash = element("div", "import-clash")
 
@@ -65,7 +88,8 @@ private[frontend] object ChronicleTransfer:
       result.fold(reason => status.textContent = reason,
         json => convert(ChronicleConvertRequest.FromJson(json)))
     }
-    section.appendChild(labelled("A Chronicle JSON file", file))
+    section.appendChild(labelled("Upload a Chronicle JSON file", file))
+    section.appendChild(element("hr", "chronicle-dialog-divider"))
 
     val tts = dom.document.createElement("textarea")
       .asInstanceOf[dom.html.TextArea]
@@ -82,18 +106,51 @@ private[frontend] object ChronicleTransfer:
         case Some(problem) => status.textContent = problem
         case None => convert(ChronicleConvertRequest.FromTts(tts.value.trim,
           ttsName.value.trim))
-    section.appendChild(labelled("Or a TTS string", tts))
+    section.appendChild(labelled("Or paste a TTS string", tts))
     section.appendChild(labelled("Its name", ttsName))
     section.appendChild(fromTts)
     section.appendChild(clash)
     section.appendChild(status)
     section
 
-  def exportSection(entry: Option[ChronicleEntry], client: ChronicleClient,
+  /** The JSON download and, below a divider, the TTS string, asked of the
+    * server as the panel opens and shown with a button that copies it. */
+  def exportPanel(chronicle: ChronicleEntry, client: ChronicleClient,
       files: ChronicleFiles): dom.Element =
-    val section = element("section", "chronicle-export")
-    section.appendChild(text("h2", "", "Export Chronicle"))
-    section.appendChild(exportControls(entry, client, files))
+    val section = element("div", "chronicle-export")
+    val json = button("Download JSON", "export-chronicle-json")
+    json.onclick = _ => files.download(
+      ChronicleFiles.filename(chronicle.summary.name), chronicle.json)
+    section.appendChild(json)
+    section.appendChild(element("hr", "chronicle-dialog-divider"))
+    val status = statusLine("export-status")
+    status.textContent = "Writing the TTS string…"
+    section.appendChild(status)
+    client.convert(ChronicleConvertRequest.FromJson(chronicle.json)).foreach {
+      case Left(reason) => status.textContent = reason
+      case Right(response) => response.tts match
+        case None => status.textContent =
+          "This Chronicle cannot be written as a TTS string."
+        case Some(string) =>
+          status.textContent = ""
+          val shown = dom.document.createElement("textarea")
+            .asInstanceOf[dom.html.TextArea]
+          shown.className = "export-tts-text"
+          shown.readOnly = true
+          shown.value = string
+          shown.setAttribute("spellcheck", "false")
+          val copy = button("Copy TTS string", "export-chronicle-tts")
+          copy.onclick = _ => files.copy(string).foreach { copied =>
+            if copied then status.textContent = "TTS string copied."
+            else
+              // A browser that will not copy leaves it selected to copy.
+              status.textContent = "Copy this TTS string."
+              shown.focus()
+              shown.select()
+          }
+          section.insertBefore(labelled("TTS string", shown), status)
+          section.insertBefore(copy, status)
+    }
     section
 
   def exportControls(entry: Option[ChronicleEntry], client: ChronicleClient,

@@ -5,10 +5,6 @@ import org.scalajs.dom
 import ServerUiSupport._
 
 private[frontend] object WorldBoardRenderer:
-  def players(value: GameProjection, playerId: String,
-      options: BoardOptions = BoardOptions.none): dom.Element =
-    playerBoards(value, playerId, options)
-
   /** A resource as its glyph and its count, with the sentence the words used
     * to carry kept as the accessible name.
     */
@@ -31,8 +27,10 @@ private[frontend] object WorldBoardRenderer:
       .fold(players)(at => players.drop(at) ++ players.take(at))
 
   def playerBoards(value: GameProjection, playerId: String,
-      options: BoardOptions = BoardOptions.none): dom.Element =
+      options: BoardOptions = BoardOptions.none,
+      submit: Option[GameCommand => Unit] = None): dom.Element =
     val panel = element("section", "panel player-boards")
+    val links = SitePowerLinks.of(value, submit)
     // The seat the client holds, not the projection's viewer: a trusted
     // session adopts its seat from that viewer before it renders and refuses
     // to display a projection that disagrees with it (`ServerModeUi.store`),
@@ -56,8 +54,11 @@ private[frontend] object WorldBoardRenderer:
       // top of the table, so every line it spends is a line of card.
       val identity = element("h3", "player-identity")
       identity.appendChild(playerReference(value, player.playerId))
-      identity.appendChild(text("span", "player-role", player.role))
-      if value.tracks.exists(_.firstPlayerId == player.playerId) then
+      identity.appendChild(RoleText.span(player.role, "player-role"))
+      // With the Empire in play the Chancellor is always the first player
+      // (a Citizen standing in becomes the Chancellor), and the role says so.
+      if value.tracks.exists(_.firstPlayerId == player.playerId) &&
+          player.role.toLowerCase != "chancellor" then
         identity.appendChild(text("span", "player-first-badge", "First Player"))
       playerSummary.appendChild(identity)
       value.playerBoards.find(_.playerId == player.playerId).foreach { board =>
@@ -146,19 +147,23 @@ private[frontend] object WorldBoardRenderer:
       // has, and a relic's square box already says which card is which.
       val cards = element("div", "board-cards")
       cards.setAttribute("aria-label", "Cards in play")
-      board.advisers.zipWithIndex.foreach((card, at) => cards.appendChild(
-        options.card(CardFace.render(card), card,
-          boardCardKeys("adviser-slot", player.playerId, at, card))))
+      board.advisers.zipWithIndex.foreach { (card, at) =>
+        val (face, ruled) = ruledCard(card, links)
+        cards.appendChild(options.card(face, card,
+          boardCardKeys("adviser-slot", player.playerId, at, card), ruled))
+      }
       (board.advisers.size until board.adviserLimit).foreach(at =>
         cards.appendChild(openSlot(options, "denizen", "Empty adviser slot",
           at, BoardOptionViews.key("adviser-slot", s"${player.playerId}:$at"))))
       // A banner matters more than a relic, so it comes first of the two.
       board.banners.foreach(banner =>
         cards.appendChild(BannerFace.place(banner, options,
-          BannerFace.festivalSite(value))))
-      board.relics.zipWithIndex.foreach((card, at) => cards.appendChild(
-        options.card(CardFace.render(card), card,
-          boardCardKeys("relic-slot", player.playerId, at, card))))
+          BannerFace.festivalSite(value), links)))
+      board.relics.zipWithIndex.foreach { (card, at) =>
+        val (face, ruled) = ruledCard(card, links)
+        cards.appendChild(options.card(face, card,
+          boardCardKeys("relic-slot", player.playerId, at, card), ruled))
+      }
       section.appendChild(cards)
       LegacyStrip.board(board, options).foreach(section.appendChild)
       }
@@ -203,6 +208,9 @@ private[frontend] object WorldBoardRenderer:
   ): dom.Element =
     val panel = element("section", "panel world")
     panel.setAttribute("aria-label", "The World")
+    // The viewer's consent grids, which site powers, the festival marker and
+    // the shared banners open.
+    val links = SitePowerLinks.of(value, submit)
     panel.appendChild(text("h2", "", "The World"))
     // The world deck is a Search's source and Clay Rattle's pile.
     val deckKeys = Vector(BoardOptionViews.key("deck", "world"))
@@ -236,60 +244,10 @@ private[frontend] object WorldBoardRenderer:
       section.appendChild(header)
       val sites = element("div", "sites")
       region.sites.zipWithIndex.foreach { (site, row) =>
-        val rowRect = MatLayout.siteRow(column, row)
-        val faceRect = MatLayout.siteCard(column, row)
-        val control = place(element("article", "site site-readonly"), rowRect)
-        control.setAttribute("aria-label", site.label)
-        // The site's words are laid over its face, so the stylesheet needs
-        // the face's extent in the row.
-        val faceBox = faceRect.percentOf(rowRect).toMap
-        val style = control.asInstanceOf[dom.html.Element].style
-        style.setProperty("--face-left", faceBox("left"))
-        style.setProperty("--face-w", faceBox("width"))
-        val siteKeys = Vector(BoardOptionViews.key("site", site.siteId))
-        options.decorate(control, siteKeys)
-        // The card itself: drawn until licensed art takes its place.
-        val face = place(element("div", "site-face"), faceRect, rowRect)
-        face.setAttribute("aria-hidden", "true")
-        control.appendChild(face)
-        control.appendChild(siteHeading(site))
-        // What reaching this site costs, or why it cannot be reached, comes
-        // from the decision that offers it.
-        badged(control, siteKeys, options)
-        val pawns = element("div", "site-pawns")
-        value.pawnLocations.filter(_.siteId == site.siteId).foreach { pawn =>
-          // Both forms are in the DOM and the map's scale picks one
-          // (ruling R6): the dot and the name at rest, the dot and the
-          // initial zoomed out, the dot alone further out. The dot and the
-          // initial are for the eye; the name stays the pawn's name.
-          val marker = element("span", "pawn")
-          val player = playerReference(value, pawn.playerId)
-          val colour = PlayerColorCss.of(
-            value.players.find(_.playerId == pawn.playerId).map(_.color))
-          val dot = text("span", s"pawn-dot $colour", "●")
-          dot.setAttribute("aria-hidden", "true")
-          marker.appendChild(dot)
-          // The long form: the space and the name, as the pawn reads at rest.
-          val long = element("span", "pawn-long")
-          long.appendChild(dom.document.createTextNode(" "))
-          long.appendChild(player)
-          marker.appendChild(long)
-          val initial = text("span", s"pawn-initial $colour",
-            player.textContent.take(1))
-          initial.setAttribute("aria-hidden", "true")
-          marker.appendChild(initial)
-          HoverTip.set(marker, player.textContent)
-          options.decorate(marker,
-            Vector(BoardOptionViews.key("player", pawn.playerId)))
-          pawns.appendChild(marker)
-        }
-        if site.festival then pawns.appendChild(festivalMarker)
-        control.appendChild(pawns)
-        val details = siteDetails(site, options,
-          SitePowerLinks.of(value, submit))
-        placeCards(details, column, row, rowRect)
-        control.appendChild(details)
-        sites.appendChild(control)
+        val pawns = value.pawnLocations.filter(_.siteId == site.siteId)
+          .map(pawn => pawnMarker(value, pawn.playerId, options))
+        sites.appendChild(siteRow(site, column, row, MatLayout.Mat, options,
+          links, pawns))
       }
       // A slot no site fills is the frame the mat prints for it.
       (0 until region.emptySlots).foreach(extra =>
@@ -304,8 +262,77 @@ private[frontend] object WorldBoardRenderer:
     board.appendChild(regions)
     board.appendChild(favorBanks(value, options))
     panel.appendChild(board)
-    panel.appendChild(tableEdge(value, options))
+    panel.appendChild(tableEdge(value, options, links))
     panel
+
+  /** One site's row on the mat (Chronicle Details design, slice 3): the
+    * `article.site` placed at its row inside `within`, then its face,
+    * heading, cost badge, `pawns`, cards and festival marker, each placed
+    * relative to the row `MatLayout.siteRow(column, row)`. `world()`
+    * passes the mat; the Chronicle Details overlay passes the row itself,
+    * so the row fills a box of its ratio. `links` opens the site's powers;
+    * `options` marks what the parked decision offers. */
+  private[frontend] def siteRow(site: GameSite, column: Int, row: Int,
+      within: MatRect, options: BoardOptions, links: SitePowerLinks,
+      pawns: Vector[dom.Element]): dom.Element =
+    val rowRect = MatLayout.siteRow(column, row)
+    val faceRect = MatLayout.siteCard(column, row)
+    val control = place(element("article", "site site-readonly"), rowRect,
+      within)
+    control.setAttribute("aria-label", site.label)
+    // The site's words are laid over its face, so the stylesheet needs
+    // the face's extent in the row.
+    val faceBox = faceRect.percentOf(rowRect).toMap
+    val style = control.asInstanceOf[dom.html.Element].style
+    style.setProperty("--face-left", faceBox("left"))
+    style.setProperty("--face-w", faceBox("width"))
+    val siteKeys = Vector(BoardOptionViews.key("site", site.siteId))
+    options.decorate(control, siteKeys)
+    // The card itself: drawn until licensed art takes its place.
+    val face = place(element("div", "site-face"), faceRect, rowRect)
+    face.setAttribute("aria-hidden", "true")
+    control.appendChild(face)
+    control.appendChild(siteHeading(site))
+    // What reaching this site costs, or why it cannot be reached, comes
+    // from the decision that offers it.
+    badged(control, siteKeys, options)
+    val pawnBox = element("div", "site-pawns")
+    pawns.foreach(pawnBox.appendChild)
+    control.appendChild(pawnBox)
+    val details = siteDetails(site, options, links)
+    placeCards(details, column, row, rowRect)
+    control.appendChild(details)
+    // Last, so it lies over the cards.
+    if site.festival then
+      val band = MatLayout.festivalMarker(column, row)
+      control.appendChild(place(FestivalMarker.band(band, links.festivalGrid),
+        band, rowRect))
+    control
+
+  /** A pawn on the map. Both forms are in the DOM and the map's scale picks
+    * one (ruling R6): the dot and the name at rest, the dot and the
+    * initial zoomed out, the dot alone further out. The dot and the
+    * initial are for the eye; the name stays the pawn's name. */
+  private def pawnMarker(value: GameProjection, playerId: String,
+      options: BoardOptions): dom.Element =
+    val marker = element("span", "pawn")
+    val player = playerReference(value, playerId)
+    val colour = playerColorClass(value, playerId)
+    val dot = text("span", s"pawn-dot $colour", "●")
+    dot.setAttribute("aria-hidden", "true")
+    marker.appendChild(dot)
+    // The long form: the space and the name, as the pawn reads at rest.
+    val long = element("span", "pawn-long")
+    long.appendChild(dom.document.createTextNode(" "))
+    long.appendChild(player)
+    marker.appendChild(long)
+    val initial = text("span", s"pawn-initial $colour",
+      player.textContent.take(1))
+    initial.setAttribute("aria-hidden", "true")
+    marker.appendChild(initial)
+    HoverTip.set(marker, player.textContent)
+    options.decorate(marker, Vector(BoardOptionViews.key("player", playerId)))
+    marker
 
   /** Places `node` at `rect`, each length a percentage of `parent`, which
     * is the rectangle of the element it is positioned in. */
@@ -366,29 +393,25 @@ private[frontend] object WorldBoardRenderer:
     track
 
   /** What the physical table keeps beside the mat. */
-  private def tableEdge(value: GameProjection, options: BoardOptions)
-      : dom.Element =
+  private def tableEdge(value: GameProjection, options: BoardOptions,
+      links: SitePowerLinks): dom.Element =
     val edge = element("div", "table-edge")
     LegacyStrip.publicRow(value, options).foreach(edge.appendChild)
-    edge.appendChild(sharedBank(value, options))
+    edge.appendChild(sharedBank(value, options, links))
+    // Beside the Shared Bank, while the snapshot carries the Chronicle
+    // (Chronicle Details design, slice 4).
+    if value.chronicleDetails.nonEmpty then
+      edge.appendChild(chronicleDetailsButton)
     edge
 
-  /** The festival marker over a site's cards (Foundations design, slice
-    * 6): a pill naming it, its power in its hover note. It is a button, as
-    * a player's title pill is, so a keyboard reaches it and its note shows
-    * on focus, and pressing it opens the power in the inspector. It is no
-    * board option. */
-  private def festivalMarker: dom.Element =
-    val marker = button("Festival", "festival-marker")
-    marker.setAttribute("aria-label", "Festival marker")
-    HoverTip.set(marker, festivalNote)
-    marker.onclick = _ => CardInspection.openText("Festival marker",
-      Vector(festivalNote), marker)
-    marker
-
-  private[frontend] val festivalNote: String = "Festival: enemies of the " +
-    "Darkest Secret's holder cannot place resources on these cards or use " +
-    "their powers, unless they're persistent powers."
+  /** Opens the Chronicle Details overlay through the shell's hook. */
+  private def chronicleDetailsButton: dom.Element =
+    val node = button("Chronicle Details", "chronicle-details-button")
+    node.`type` = "button"
+    node.setAttribute("aria-haspopup", "dialog")
+    node.setAttribute("aria-controls", "chronicle-details")
+    node.onclick = _ => ChronicleDetails.open(node)
+    node
 
   /** A site slot of the region `regionName` that holds no site: a frame
     * with nothing in it, and nothing to choose or inspect. */
@@ -398,6 +421,62 @@ private[frontend] object WorldBoardRenderer:
     slot.setAttribute("role", "img")
     slot.setAttribute("aria-label", s"Empty site slot, $regionName")
     slot
+
+  /** A Stable Regime check the mat prints on the round wheel: after
+    * `round`, the end die's `pips` face or better ends the game for the
+    * Chancellor, read as `words`. */
+  private final case class EndDieTarget(round: Int, pips: Int,
+      words: String)
+
+  private val EndDieTargets = Vector(EndDieTarget(5, 6, "6"),
+    EndDieTarget(6, 5, "5 or 6"), EndDieTarget(7, 3, "3 or more"))
+
+  /** Each face's pips, from the die's centre, laid out as the mat's. */
+  private val EndDiePips: Map[Int, Vector[(Double, Double)]] =
+    val d = 5.5
+    Map(6 -> Vector((-d, -d), (-d, 0.0), (-d, d), (d, -d), (d, 0.0), (d, d)),
+      5 -> Vector((-d, -d), (d, -d), (0.0, 0.0), (-d, d), (d, d)),
+      3 -> Vector((-d, -d), (0.0, 0.0), (d, d)))
+
+  /** The purple die the mat prints on the line after the target's round,
+    * tilted along that line as the mat tilts it. It is dimmed while
+    * `rolls` is false: no roll is made unless the Chancellor or a Citizen
+    * is the Oathkeeper. */
+  private def endDie(target: EndDieTarget, rolls: Boolean): dom.Element =
+    val angle = -90.0 + target.round * 45.0
+    val radians = Math.toRadians(angle)
+    val (x, y) = (100.0 + 60.0 * Math.cos(radians),
+      100.0 + 60.0 * Math.sin(radians))
+    val die = svgElement("g")
+    die.setAttribute("class",
+      if rolls then "end-die printed" else "end-die end-die-idle printed")
+    die.setAttribute("data-after-round", target.round.toString)
+    die.setAttribute("transform",
+      f"translate($x%.2f $y%.2f) rotate(${(angle - 180.0) / 2}%.1f)")
+    die.setAttribute("role", "img")
+    die.setAttribute("aria-label",
+      s"End die after round ${target.round}: ${target.words}")
+    val wins = target.pips match
+      case 6 => "a 6"
+      case 5 => "a 5 or 6"
+      case _ => "a 3 or more"
+    HoverTip.set(die, s"End of round ${target.round}: if the Chancellor or " +
+      s"a Citizen is the Oathkeeper, roll the end die. The Chancellor wins " +
+      s"on $wins." + (if rolls then "" else " No roll now: the Oathkeeper " +
+        "is not the Chancellor or a Citizen."))
+    val face = svgElement("rect")
+    face.setAttribute("class", "end-die-face")
+    Vector("x" -> "-10", "y" -> "-10", "width" -> "20", "height" -> "20",
+      "rx" -> "3").foreach(face.setAttribute)
+    die.appendChild(face)
+    EndDiePips(target.pips).foreach { (px, py) =>
+      val pip = svgElement("circle")
+      pip.setAttribute("class", "end-die-pip")
+      pip.setAttribute("cx", px.toString); pip.setAttribute("cy", py.toString)
+      pip.setAttribute("r", "1.9")
+      die.appendChild(pip)
+    }
+    die
 
   private[frontend] final case class RoundSegment(path: String, labelX: Double,
       labelY: Double, markerX: Double, markerY: Double)
@@ -430,25 +509,31 @@ private[frontend] object WorldBoardRenderer:
     // far zoomed-out map takes out of sight.
     val lock = Option.when(track.usurperLimited)(
       s"Usurper locked until round ${track.limiterRound}")
+    val empire = value.players.exists(_.role.toLowerCase == "chancellor")
+    // The dice's targets are in the tracker's name too, for the far
+    // zoomed-out map that takes the dice out of sight.
+    val endDieWords = Option.when(empire)("end die after rounds 5, 6 and 7: " +
+      EndDieTargets.map(_.words).mkString(", "))
     section.setAttribute("aria-label", s"Round ${track.round} of 8; " +
       s"Visions Drawn ${track.visionsDrawn}; " +
       lock.fold("")(words => s"$words; ") +
+      endDieWords.fold("")(words => s"$words; ") +
       s"first player ${first.textContent}")
-    val svg = dom.document.createElementNS("http://www.w3.org/2000/svg", "svg")
+    val svg = svgElement("svg")
       .asInstanceOf[dom.svg.SVG]
     svg.setAttribute("viewBox", "0 0 200 200")
     svg.setAttribute("role", "img")
     svg.setAttribute("aria-label", s"Eight-segment round tracker, current round ${track.round}")
     (1 to 8).foreach { round =>
       val segment = roundSegment(round)
-      val group = dom.document.createElementNS("http://www.w3.org/2000/svg", "g")
+      val group = svgElement("g")
       group.setAttribute("data-round", round.toString)
-      val path = dom.document.createElementNS("http://www.w3.org/2000/svg", "path")
+      val path = svgElement("path")
       path.setAttribute("d", segment.path)
       // The wheel as printed, every segment in one fill (ruling R8); the
       // current round is a wedge of its own laid over its segment.
       path.setAttribute("class", "round-segment printed")
-      val label = dom.document.createElementNS("http://www.w3.org/2000/svg", "text")
+      val label = svgElement("text")
       label.setAttribute("x", segment.labelX.toString)
       label.setAttribute("y", segment.labelY.toString)
       label.setAttribute("text-anchor", "middle"); label.setAttribute("dominant-baseline", "middle")
@@ -456,13 +541,13 @@ private[frontend] object WorldBoardRenderer:
       label.textContent = round.toString
       group.appendChild(path)
       if round == track.round then
-        val current = dom.document.createElementNS("http://www.w3.org/2000/svg", "path")
+        val current = svgElement("path")
         current.setAttribute("d", segment.path)
         current.setAttribute("class", "round-current")
         group.appendChild(current)
       group.appendChild(label)
       if track.usurperLimited && round == track.limiterRound then
-        val marker = dom.document.createElementNS("http://www.w3.org/2000/svg", "text")
+        val marker = svgElement("text")
         marker.setAttribute("x", segment.markerX.toString)
         marker.setAttribute("y", segment.markerY.toString)
         marker.setAttribute("text-anchor", "middle"); marker.setAttribute("class", "limiter-marker")
@@ -471,6 +556,12 @@ private[frontend] object WorldBoardRenderer:
         group.appendChild(marker)
       svg.appendChild(group)
     }
+    // Over every segment, so the current round's wedge never hides one.
+    if empire then
+      val rolls = value.oathkeeper.flatMap(_.holderPlayerId)
+        .flatMap(id => value.players.find(_.playerId == id))
+        .exists(holder => RoleText.imperial(holder.role))
+      EndDieTargets.foreach(target => svg.appendChild(endDie(target, rolls)))
     section.appendChild(place(svg, MatLayout.roundWheel))
     // The tracker's words, in the clear band the mat leaves over the
     // Cradle's foot.
@@ -510,7 +601,7 @@ private[frontend] object WorldBoardRenderer:
     banks
 
   private def sharedBank(value: GameProjection,
-      options: BoardOptions): dom.Element =
+      options: BoardOptions, links: SitePowerLinks): dom.Element =
     val section = element("section", "shared-bank")
     section.appendChild(text("h3", "", "Shared Bank"))
     // The oath and its holder on lines of their own: run together, the
@@ -536,7 +627,7 @@ private[frontend] object WorldBoardRenderer:
       val banners = element("div", "shared-banners")
       value.banners.foreach(banner =>
         banners.appendChild(BannerFace.place(banner, options,
-          BannerFace.festivalSite(value))))
+          BannerFace.festivalSite(value), links)))
       section.appendChild(banners)
     // The Reliquary, facedown, while it holds a relic (Legacy in-play
     // powers ruling 9): a face only where its viewer may peek. Each relic
@@ -549,9 +640,4 @@ private[frontend] object WorldBoardRenderer:
         CardFace.render(card), card,
         Option.unless(card.hidden)(BoardOptions.cardKey(card)).toVector)))
       section.appendChild(reliquary)
-    // The setup cards close the bank: they are read once or twice a game,
-    // so they stand under what changes every turn.
-    if value.foundations.nonEmpty then
-      section.appendChild(FoundationStrip.render(
-        FoundationStrip.ofGame(value.foundations)))
     section

@@ -5,6 +5,7 @@ import distantlands.application.{GamePresentationProjector,
 import distantlands.catalog.ExecutableCatalog
 import distantlands.engine.ReplayStep
 import distantlands.gameplay.EmpireEndings
+import distantlands.gameplay.chronicle.ChronicleSteps
 import distantlands.gameplay.powerresolver.ModifierPicks
 import distantlands.gameplay.powers.{ConsentPowers, WalkerPowerCatalog}
 import distantlands.gameplay.walker.{FollowUpSkipped,
@@ -131,8 +132,8 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
       everyLine: Boolean): Vector[LogEntry] =
     val journal = new LogJournal(steps, applied)
     (0 until journal.size).foldLeft(
-        (Option.empty[Run], Vector.empty[LogEntry])) {
-      case ((run, entries), at) =>
+        (Option.empty[Run], Vector.empty[LogEntry], StepState.none)) {
+      case ((run, entries, stepState), at) =>
         val (lines, next) = eventLines(journal, run, at, viewer)
         val opened = if at == 0 then opening(journal) ++ lines else lines
         val filed = journal.event(at) match
@@ -142,15 +143,55 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
           case _: FollowUpSkipped | _: ConsentEvent => opened.map(_.copy(
             section = entries.reverseIterator.flatMap(_.section).nextOption()))
           case _ => opened
-        val posted = quietWake(entries.lastOption, filed)
+        val (stepped, steppedState) = underStep(journal, at, viewer,
+          stepState, filed)
+        val posted = quietWake(entries.lastOption, stepped)
         // Numbered first, then dropped for a viewer outside the line's
         // readers, so every other line keeps its (sequence, ordinal).
         (next, entries ++ posted.zipWithIndex.collect {
           case (entry, ordinal) if everyLine ||
               entry.readers.forall(readers => viewer.exists(readers)) =>
             LogEntry(journal.sequence(at), ordinal, entry.kind,
-              entry.spans, entry.section) })
+              entry.spans, entry.section) }, steppedState)
     }._2
+
+  /** The step whose lines are being posted, and the heading of one that has
+    * not posted a line yet (`ChronicleSteps`). A heading posts with its
+    * step's first line, never alone, so a step that writes nothing has none
+    * and a later journal never adds a heading above lines already posted. */
+  private final case class StepState(pending: Option[Posted],
+      current: Option[LogSection])
+  private object StepState:
+    val none: StepState = StepState(None, None)
+
+  /** `lines`, filed under the Chronicle step they fall in: the heading that
+    * opens it before its first line, and each line in its band. A headline
+    * (a new task, phase or round) ends the step. */
+  private def underStep(journal: LogJournal, at: Int, viewer: Option[PlayerId],
+      state: StepState, lines: Vector[Posted]): (Vector[Posted], StepState) =
+    val open = if lines.exists(_.kind.depth == 0) then StepState.none else state
+    val marked = heading(journal, at, viewer).fold(open)(posted =>
+      StepState(Some(posted), None))
+    val body = lines.filter(_.kind.depth > 0)
+    if body.isEmpty || marked == StepState.none then (lines, marked)
+    else
+      val section = marked.current.orElse(marked.pending.flatMap(_.section))
+      val opening = marked.pending.toVector
+      val filed = lines.map(line => if line.kind.depth > 0 &&
+          line.section.isEmpty then line.copy(section = section) else line)
+      (opening ++ filed, StepState(None, section))
+
+  /** The heading a step's marker note opens, in its band. The band's colour
+    * is the step's place in its task. */
+  private def heading(journal: LogJournal, at: Int,
+      viewer: Option[PlayerId]): Option[Posted] = journal.event(at) match
+    case LogNoted(power, note, _) if ChronicleSteps.isHeading(note.key) =>
+      for
+        position <- ChronicleSteps.position(note.key)
+        spans <- notes.spoken(power, note, Vector.empty, viewer)
+      yield Posted(LogKind.Section, spans, Some(LogSection(
+        journal.sequence(at), s"chronicle-step-$position")))
+    case _ => None
 
   /** A journal that does not begin with `GameStarted` began at a position
     * already in play (a test's Table): it opens with that position's round,
@@ -276,8 +317,11 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
           details.lines(journal, begun, at, viewer, log) ++
           notes.own(journal, begun, at, log.tag.nonEmpty, viewer)
         // A headline the run posts (a turn or phase change) is in no section.
-        val posted = lines.map(_.copy(section = section)) ++
-          headlines(journal, at)
+        val task = Option.when(at == begun.first)(
+          ChronicleSteps.taskTitle(begun.procedure)).flatten
+          .map(title => Posted(LogKind.Phase, Vector(Text(title))))
+        val posted = task.toVector ++
+          lines.map(_.copy(section = section)) ++ headlines(journal, at)
         val next = journal.event(at) match
           case _: WalkerCompleted => None
           case _ => Some(begun)
@@ -307,11 +351,14 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
   private def phaseWords(phase: Phase): Vector[LogSpan] = phase match
     case Phase.Wake => Vector(Text("Wake"))
     case Phase.Act => Vector(Text("Act"))
-    case Phase.Chronicle => Vector(Text("Chronicle"))
+    case Phase.Chronicle => Vector(Text("Chronicle Phase"))
     case _ => Vector(Text("Rest"))
 
+  /** Wake, Act and Rest sit under their turn. The Chronicle Phase follows
+    * the game's end, under no turn, so it stands level with the round. */
   private def phaseHeadline(phase: Phase): Posted =
-    Posted(LogKind.Phase, phaseWords(phase))
+    Posted(if phase == Phase.Chronicle then LogKind.Round else LogKind.Phase,
+      phaseWords(phase))
 
   private def roundHeadline(round: Int): Posted =
     Posted(LogKind.Round, Vector(Text(s"Round $round")))
@@ -322,10 +369,10 @@ private[application] final class GameLogFormatter(catalog: ExecutableCatalog,
   private def victory(player: PlayerId, rest: Vector[LogSpan]): Posted =
     Posted(LogKind.Victory, words.player(player) +: rest)
 
-  /** "The end die rolled 4. Stable Regime needed 5 or more." The die is
-    * rolled only at rounds 5 to 7, which all have a threshold. */
-  /** The roll, and with Arbiter's modifier the total (Legacy in-play
-    * powers R12), then what Stable Regime needed. */
+  /** "The end die rolled 4. Stable Regime needed 5 or more.": the roll,
+    * and with Arbiter's modifier the total (Legacy in-play powers R12),
+    * then what Stable Regime needed. The die is rolled only at rounds 5 to
+    * 7, which all have a threshold. */
   private def endDie(round: Int, face: Int, modifier: Int): String =
     val needed = EmpireEndings.threshold(round).fold("")(least =>
       s" Stable Regime needed $least${if least == 6 then "" else " or more"}.")

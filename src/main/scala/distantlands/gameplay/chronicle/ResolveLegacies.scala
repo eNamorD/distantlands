@@ -79,12 +79,15 @@ object ResolveLegacies:
     * they miss go dormant, in turn order. Imperials and the foundations
     * are untouched. These are the newly dormant legacies (ruling 2). A
     * Steadfast holder's other legacies stay active, read at the step's start
-    * (Legacy Chronicle powers design, ruling 5). */
+    * (Legacy Chronicle powers design, ruling 5). A seated Exile at Ruined
+    * Baths keeps every active legacy (catalog batch 13, ruling 15). */
   def dormancy(catalog: ExecutableCatalog): Vector[Operation] = Vector(
     Branch((state, _) =>
+      val bathed = BathsRules.exempt(state, EdificeSide.Ruined)
       val lapsed = for
         player <- LegacyGoals.turnOrder(state)
-          if Imperials.role(state, player).contains(Role.Exile)
+          if Imperials.role(state, player).contains(Role.Exile) &&
+            !bathed(player)
         steadfast = ChronicleLegacyRules.keepsOthersActive(state, player)
         legacy <- legaciesOf(state, player)
           if legacy.active && !meets(catalog, state, legacy.id, player) &&
@@ -109,8 +112,9 @@ object ResolveLegacies:
 
   /** `player`'s newly dormant legacies turned active, each with a
     * `reactivatedKey` line under `notesOf` (R19, R20). Every dormant legacy
-    * on a seated lineage after Sun step 3 is newly dormant (ruling 2).
-    * Crown Chancellor and Offer Citizenship both run it, then Iron Hand's
+    * on a seated lineage after Sun step 3 is newly dormant (ruling 2) but
+    * the ones Stone Baths kept, which `keptDormant` records (catalog batch
+    * 13, ruling 14). Crown Chancellor and Offer Citizenship both run it, then Iron Hand's
     * checkpoint, then `cap` as a later sibling: a walk resumed at the cap's
     * question rebuilds only the nodes on its path, and this branch would
     * read no dormant legacy by then (Legacy Chronicle powers R30). */
@@ -118,6 +122,7 @@ object ResolveLegacies:
       reactivatedKey: NoteKey): Operation =
     Branch((state, _) =>
       val dormant = legaciesOf(state, player).filterNot(_.active).map(_.id)
+        .filterNot(state.game.current.keptDormant)
       if dormant.isEmpty then Vector.empty
       else BuildOps((live, _) => Right(dormant.map(id => Flip(id,
           Location.Legacies(lineageOf(live, player)), Orientation.FaceUp))),
@@ -149,7 +154,7 @@ object ResolveLegacies:
           Vector(BuildOps((now, _) => Right(chosen.map(id => Move(
               Piece.Card(id),
               PositionedLocation(Location.Legacies(lineageOf(now, player))),
-              PositionedLocation(Location.Deck(CardDeck.Legacy))))),
+              PositionedLocation.legacyDeckBottom))),
               required = true)) ++
             chosen.map(id => Note(notesOf, _ => Some(cappedKey.sourceless(
               NoteArg.Player(player), NoteArg.Card(id))))))))
@@ -170,20 +175,30 @@ object ResolveLegacies:
   private def line(key: NoteKey, args: NoteArg*): Operation =
     Note(noteId, _ => Some(key.sourceless(args*)))
 
+  /** Step 2's dormant legacies: met ones turn active, unmet ones go to the
+    * bottom of the deck, except a Stone Baths player's, which stay dormant
+    * and are recorded as kept (catalog batch 13, ruling 14), so the
+    * reactivations below leave them dormant. The Baths write no line. */
   private def dormant(catalog: ExecutableCatalog): Operation =
     Branch((state, _) =>
+      val bathed = BathsRules.exempt(state, EdificeSide.Intact)
       val resolved = for
         player <- LegacyGoals.turnOrder(state)
         legacy <- legaciesOf(state, player) if !legacy.active
       yield (player, legacy.id, meets(catalog, state, legacy.id, player))
+      val (kept, settled) = resolved.partition((player, _, met) =>
+        !met && bathed(player))
       if resolved.isEmpty then Vector.empty
-      else BuildOps((live, _) => Right(resolved.map { (player, id, met) =>
+      else BuildOps((live, _) => Right(settled.map[CoreOperation] {
+          (player, id, met) =>
           val at = PositionedLocation(Location.Legacies(lineageOf(live, player)))
           if met then Flip(id, at.location, Orientation.FaceUp)
           else Move(Piece.Card(id), at,
-            PositionedLocation(Location.Deck(CardDeck.Legacy)))
-        }), required = true) +:
-        resolved.map((player, id, met) => line(if met then activated
+            PositionedLocation.legacyDeckBottom)
+        } ++ Option.when(kept.nonEmpty)(
+          LegaciesKeptDormant(kept.map(_._2))).toVector),
+        required = true) +:
+        settled.map((player, id, met) => line(if met then activated
           else discarded, NoteArg.Player(player), NoteArg.Card(id))))
 
   /** The public row, one legacy a pass, always the row's head: each pass
@@ -203,7 +218,7 @@ object ResolveLegacies:
       match
         case Vector() => Vector(BuildOps((_, _) => Right(Vector(Move(
             Piece.Card(legacy), PositionedLocation(Location.PublicLegacies),
-            PositionedLocation(Location.Deck(CardDeck.Legacy))))),
+            PositionedLocation.legacyDeckBottom))),
             required = true),
           line(returnedPublic, NoteArg.Card(legacy)))
         case Vector(player) => taken(legacy, player)

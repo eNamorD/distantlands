@@ -46,7 +46,7 @@ private[gamelog] final class DetailLines(words: LogWords,
   private def decision(journal: LogJournal, run: Run, at: Int,
       viewer: Option[PlayerId], log: ProcedureLog): Vector[Posted] =
     journal.event(at) match
-    case WalkerStepRecorded(_, ChoicePayload(id, answer, by), _)
+    case WalkerStepRecorded(_, ChoicePayload(id, answer, by, _), _)
         if !log.narrates(id) && !DetailLines.crossCutting(id) &&
           !narratedByPowers(id) =>
       val refs = answer match
@@ -129,7 +129,11 @@ private[gamelog] final class DetailLines(words: LogWords,
         line(LogSpan.Text(s"Moved $amount ") +:
           (whose(kind, amount, actor, before) ++
             Vector(LogSpan.Text(" to "), words.site(site))))
-      case Draw(player, cards, _, _, _) if run.procedure != ActionRef.Search =>
+      // A legacy draw has no generic line: Ancient Writ writes its own, and
+      // Setup's keep names only the keep (catalog batch 13, "Lines").
+      case Draw(player, cards, source, _, _)
+          if run.procedure != ActionRef.Search &&
+            source != Location.Deck(CardDeck.Legacy) =>
         line(words.subject(player, actor, "drew") ++
           words.cards(cards.map(card)))
       case discard: Discard.Denizen if !placedDiscard.contains(discard.card) =>
@@ -148,8 +152,10 @@ private[gamelog] final class DetailLines(words: LogWords,
       case discard: Discard.Relic =>
         line(words.subject(discard.actingPlayer, actor, "set aside") ++
           words.one(asItLay(discard.card)))
+      // A buried card is named as it lay: an edifice in the deck has no
+      // side, and a ruined one would read as its intact face.
       case Bury(buried, _, _) =>
-        line(LogSpan.Text("Buried ") +: words.one(card(buried.id)))
+        line(LogSpan.Text("Buried ") +: words.one(asItLay(buried.id)))
       // The Ear's, The Bright Beacon's and Seer's peeks only record what the
       // holder knows; each power writes its one line (Legacy Chronicle powers
       // R47, Legacy Setup powers R26).
@@ -196,9 +202,9 @@ private[gamelog] final class DetailLines(words: LogWords,
       : Option[CardId] =
     journal.answers(run, at).reverse.collectFirst {
       case Answered(id, ChooseOneAnswer(ref), _)
-          if id.startsWith(LogWords.PlacePrefix) &&
+          if id.startsWith(CardPlayProcedure.placementPrefix) &&
             CardPlayProcedure.playedAs(ref).contains(way) =>
-        LogWords.subjectCard(id.stripPrefix(LogWords.PlacePrefix))
+        CardPlayProcedure.cardOf(id)
     }.flatten
 
 private[gamelog] object DetailLines:

@@ -53,8 +53,8 @@ case object GrandScepter extends OperationRestriction with PrintedRule:
 /** The Grand Scepter's "IN NEGOTIATION: May offer Citizenship." No power
   * runs it: the Negotiation procedure's bounds offer its holder the
   * Citizenship term (`NegotiationDeal`), and the deal's settlement makes
-  * each named Exile a Citizen. Listed among the printed rules so that the
-  * power reads as implemented. */
+  * each named Exile a Citizen. It is listed among the printed rules,
+  * which the consent grid and the Game Log's notes read. */
 case object GrandScepterNegotiation extends PrintedRule:
   val id: PowerId = TheGrandScepterCard.negotiation.id
   val source: PowerSourceRef = PowerSourceRef.Card(TheGrandScepterCard.id)

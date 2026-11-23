@@ -8,10 +8,12 @@ import distantlands.model._
 
 /** The Throne task (CR p. 37, `docs/rules/chronicle.md` task 2), resolved
   * by the player holding its card. Each step is its own power window.
-  * Three empty windows hold the legacies' added steps: one at the start,
-  * where Reformer acts, one after Build Edifice, where Revolutionary does,
-  * and one before Scatter Relics, where Heirloom does (Legacy Chronicle
-  * powers design, rulings 11-13). */
+  * The window at the start hides the held relics (Last Chronicle powers
+  * design, ruling 3), then holds Reformer's, Hiding Place's and Blasted
+  * Pastures' steps; two empty windows hold the other legacies' added
+  * steps: one after Build Edifice, where Revolutionary acts, and one
+  * before Scatter Relics, where Heirloom does (Legacy Chronicle powers
+  * design, rulings 11-13). */
 object ChronicleThroneProcedure:
   def build(catalog: ExecutableCatalog, ready: ReadyGame, actor: PlayerId,
       args: Vector[DecisionOptionRef]): Either[OathViolation, Operation] =
@@ -20,27 +22,38 @@ object ChronicleThroneProcedure:
 
   /** The notes the Throne's steps write. */
   def noteKeys: Vector[NoteKey] = OfferCitizenship.noteKeys ++
+    ChronicleSteps.noteKeys(TriggeredProcedureRef.ChronicleThrone) ++
     ShapeEmpire.noteKeys ++
     BuildEdifice.noteKeys ++ LineageScoring.noteKeys ++ SwearOath.noteKeys ++
-    LegacyChroniclePowers.throneNoteKeys ++
-    IronHand.noteKeys(TriggeredProcedureRef.ChronicleThrone)
+    LegacyChroniclePowers.throneNoteKeys ++ RelicKeep.noteKeys ++
+    IronHand.noteKeys(TriggeredProcedureRef.ChronicleThrone) ++
+    BlastedPastures.throneNoteKeys
 
   private def steps(catalog: ExecutableCatalog): Vector[Operation] = Vector(
-    ChronicleWindows.step(PowerWindow.ChronicleStartOfThrone, Vector.empty),
-    ChronicleWindows.step(PowerWindow.ChronicleOfferCitizenship,
+    ChronicleWindows.step(ChronicleSteps.startOfThrone,
+      PowerWindow.ChronicleStartOfThrone,
+      ReliquaryAndRelics.hide),
+    ChronicleWindows.step(ChronicleSteps.offerCitizenship,
+      PowerWindow.ChronicleOfferCitizenship,
       OfferCitizenship.steps),
-    ChronicleWindows.step(PowerWindow.ChronicleShapeEmpire,
+    ChronicleWindows.step(ChronicleSteps.shapeEmpire,
+      PowerWindow.ChronicleShapeEmpire,
       ShapeEmpire.steps(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleBuildEdifice,
+    ChronicleWindows.step(ChronicleSteps.buildEdifice,
+      PowerWindow.ChronicleBuildEdifice,
       BuildEdifice.steps(catalog)),
     ChronicleWindows.step(PowerWindow.ChronicleAfterBuildEdifice,
       Vector.empty),
-    ChronicleWindows.step(PowerWindow.ChronicleStockReliquary,
+    ChronicleWindows.step(ChronicleSteps.stockReliquary,
+      PowerWindow.ChronicleStockReliquary,
       ReliquaryAndRelics.stock),
     ChronicleWindows.step(PowerWindow.ChronicleBeforeScatterRelics,
       Vector.empty),
-    ChronicleWindows.step(PowerWindow.ChronicleScatterRelics,
+    ChronicleWindows.step(ChronicleSteps.scatterRelics,
+      PowerWindow.ChronicleScatterRelics,
       ReliquaryAndRelics.scatter(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleScoreLineage,
+    ChronicleWindows.step(ChronicleSteps.scoreLineage,
+      PowerWindow.ChronicleScoreLineage,
       LineageScoring.steps(catalog)),
-    ChronicleWindows.step(PowerWindow.ChronicleSwearOath, SwearOath.steps))
+    ChronicleWindows.step(ChronicleSteps.swearOath,
+      PowerWindow.ChronicleSwearOath, SwearOath.steps))

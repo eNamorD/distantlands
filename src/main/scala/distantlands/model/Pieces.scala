@@ -30,3 +30,9 @@ final case class PositionedLocation(
     side: Option[SecretSide] = None):
   require(side.isEmpty || location.isInstanceOf[Location.PlayArea],
     "only secrets on a board have a side to move from")
+
+object PositionedLocation:
+  /** The bottom of the legacy deck, where every returned or discarded
+    * legacy goes (catalog batch 13, ruling 2). */
+  val legacyDeckBottom: PositionedLocation =
+    PositionedLocation(Location.Deck(CardDeck.Legacy), StackPosition.Bottom)

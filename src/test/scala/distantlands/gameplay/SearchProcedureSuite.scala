@@ -60,7 +60,7 @@ class SearchProcedureSuite extends munit.FunSuite:
       case Decide(SearchProcedure.sourceDecisionId, `actor`,
           DecisionQuery.ChooseOne(options, Some("Choose a Search source"),
             Some("Search")),
-          _, _, _, _) => options.map(_.ref)
+          _, _, _, _, _) => options.map(_.ref)
       case other => fail(s"not the source decision: $other")
     assertEquals(offered, Vector[DecisionOptionRef](
       DecisionOptionRef.Deck(CardDeck.World),

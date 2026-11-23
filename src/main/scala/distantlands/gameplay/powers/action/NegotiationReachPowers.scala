@@ -9,8 +9,7 @@ import distantlands.model._
   * with any player." (catalog batch 12, ruling 7).
   *
   * The rule is `NegotiationReach`, which the Negotiation reads at its
-  * start. This power hooks no window. It is registered so the card counts
-  * as implemented. It writes no line.
+  * start. This power hooks no window. It writes no line.
   */
 case object TravelingNegotiator extends ContributingPower:
   val id: PowerId = TravelingNegotiatorCard.power.id
@@ -24,8 +23,7 @@ case object TravelingNegotiator extends ContributingPower:
   * The rule is `NegotiationReach`: its users reach any player, and a deal
   * holding one opens binding promises, which the engine records in the Game
   * Log and never enforces. "Even into later games" is not tracked. This
-  * power hooks no window. It is registered so the card counts as
-  * implemented.
+  * power hooks no window.
   */
 case object TheTribunal extends ContributingPower:
   val id: PowerId = TheTribunalCard.intact.power.id
@@ -36,8 +34,7 @@ case object TheTribunal extends ContributingPower:
   * ruled by bandits may negotiate with each other." (catalog batch 12,
   * ruling 9). Persistent, so it applies to every player, ignoring access.
   *
-  * The rule is `NegotiationReach`. This power hooks no window. It is
-  * registered so the card counts as implemented.
+  * The rule is `NegotiationReach`. This power hooks no window.
   */
 case object BanditTribunal extends ContributingPower:
   val id: PowerId = TheTribunalCard.ruined.power.id

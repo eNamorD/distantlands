@@ -1,7 +1,7 @@
 package distantlands.gameplay.powers.economy
 
 import distantlands.catalog.{AdviserOnly, Denizen, ExecutableCatalog, Locked,
-  PrintedPower}
+  ModifierMark, PrintedPower}
 import distantlands.gameplay.actions.VowOfWanderingRule
 import distantlands.gameplay.actions.campaign.CampaignIds
 import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
@@ -12,6 +12,7 @@ import distantlands.model._
 object VowOfWanderingCard extends Denizen(VowOfWanderingRule.cardId, "Vow of Wandering", Suit.Nomad) with Locked with AdviserOnly:
   val muster = PrintedPower(PowerId("denizen.vow-of-wandering.muster"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.Action(MajorActionType.Muster)),
     text = "Gain two more warbands.")
   val power = PrintedPower(PowerId("denizen.vow-of-wandering"),
     persistent = true, cost = Cost.free,

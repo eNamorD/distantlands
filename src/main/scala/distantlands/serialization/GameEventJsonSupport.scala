@@ -147,13 +147,7 @@ private[serialization] trait GameEventJsonSupport:
       "world" -> ujson.Arr.from(chronicle.world.map(encodeStoredSite)),
       "worldDeck" -> stringArray(chronicle.worldDeck.map(_.value)),
       "relicDeck" -> stringArray(chronicle.relicDeck.map(_.value)),
-      "era" -> ujson.Obj(
-        "targetScore" -> chronicle.era.targetScore,
-        "games" -> ujson.Arr.from(chronicle.era.games.map(game => ujson.Obj(
-          "entries" -> ujson.Arr.from(game.entries.map(entry => ujson.Obj(
-            "lineage" -> entry.lineage.value,
-            "totalScore" -> entry.totalScore,
-            "endingRole" -> encodeRole(entry.endingRole)))))))),
+      "era" -> encodeEra(chronicle.era),
       "oathkeeperGoal" -> chronicle.oathkeeperGoal.key,
       "dispossessed" -> stringArray(chronicle.dispossessed.map(_.value)),
       "reliquary" -> stringArray(chronicle.reliquary.map(_.value)),
@@ -162,6 +156,22 @@ private[serialization] trait GameEventJsonSupport:
         .map { case (number, state) => encodeFoundationState(number, state) }),
       "lineages" -> ujson.Arr.from(chronicle.lineages.map(encodeLineageState))
     )
+
+  private def encodeEra(era: EraState): ujson.Value =
+    val encoded = ujson.Obj(
+      "targetScore" -> era.targetScore,
+      "games" -> ujson.Arr.from(era.games.map(game => ujson.Obj(
+        "entries" -> ujson.Arr.from(game.entries.map(entry => ujson.Obj(
+          "lineage" -> entry.lineage.value,
+          "totalScore" -> entry.totalScore,
+          "endingRole" -> encodeRole(entry.endingRole))))))))
+    // Written only when present, so a Chronicle without carried scores
+    // keeps the text, and the digest, it had before.
+    if era.carriedScores.nonEmpty then
+      encoded("carriedScores") = ujson.Arr.from(era.carriedScores.toVector
+        .sortBy(_._1.value).map((lineage, score) => ujson.Obj(
+          "lineage" -> lineage.value, "totalScore" -> score)))
+    encoded
 
   protected final def decodeChronicle(value: ujson.Value, path: String)
       : Either[WireError, Chronicle] = for
@@ -209,7 +219,17 @@ private[serialization] trait GameEventJsonSupport:
             InvalidValue(s"$gamePath.entries",
               s"duplicate lineage '${id.value}'"))
         yield EraGame(entries)
-    era <- Either.cond(target > 0, EraState(target, games),
+    carried <- traverse(value.obj.get("carriedScores").fold(Vector.empty)(
+        _.arr.toVector).zipWithIndex):
+      case (row, index) =>
+        val rowPath = s"$path.carriedScores[$index]"
+        for
+          id <- stringField(row.obj, "lineage", rowPath)
+          total <- safeIntField(row.obj, "totalScore", rowPath)
+        yield LineageId(id) -> total
+    _ <- duplicate(carried.map(_._1)).toLeft(()).left.map(id =>
+      InvalidValue(s"$path.carriedScores", s"duplicate lineage '${id.value}'"))
+    era <- Either.cond(target > 0, EraState(target, games, carried.toMap),
       InvalidValue(s"$path.targetScore", "must be positive"))
   yield era
 

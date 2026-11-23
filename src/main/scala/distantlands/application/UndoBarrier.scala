@@ -15,7 +15,14 @@ private[application] object UndoBarrier:
         events.exists(reveals) ||
           start.game.current.turn.activePlayer !=
             end.game.current.turn.activePlayer ||
-          end.game.current.result.nonEmpty
+          // Only the batch that sets the result: the Chronicle Phase runs
+          // after it with the result still set.
+          (start.game.current.result.isEmpty &&
+            end.game.current.result.nonEmpty) ||
+          // The evolved Chronicle shows every seat the relic deck's order
+          // and the lineages' dormant legacies.
+          (start.game.campaign.evolved.isEmpty &&
+            end.game.campaign.evolved.nonEmpty)
       case _ => true
 
   private def reveals(event: OathEvent): Boolean = event match

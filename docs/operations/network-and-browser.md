@@ -26,11 +26,12 @@ build's copy of the [alpha acceptance record](alpha-acceptance.md). Do not conve
 support claim without observed per-build evidence.
 
 The server exchanges `/s/{seat-code}` for an `HttpOnly`, `SameSite=Lax` cookie
-scoped to `/games/{game-id}`. An HTTPS public base URL also makes the cookie
-`Secure`. These attributes and their browser behavior are described in MDN's
+scoped to the seat's own page, `/games/{game-id}/seats/{player-id}`, and
+redirects there. An HTTPS public base URL also makes the cookie `Secure`. These
+attributes and their browser behavior are described in MDN's
 [Set-Cookie reference](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie).
-Use separate browser profiles for two seats in the same game, because those
-seats share one cookie name and game-scoped path.
+Because each seat's cookie has its own path, one browser profile can hold
+several seats of the same game, each in its own tab.
 
 ## Private LAN hosting
 
@@ -171,5 +172,5 @@ Before inviting players, verify from a separate machine that:
 - generated seat links start with exactly `https://oath.example.com/s/`;
 - visiting a seat link redirects to the same HTTPS origin;
 - the returned seat cookie has `Secure`, `HttpOnly`, `SameSite=Lax`, and the
-  expected `/games/{game-id}` path; and
+  expected `/games/{game-id}/seats/{player-id}` path; and
 - direct access to the backend port from the LAN or Internet fails.

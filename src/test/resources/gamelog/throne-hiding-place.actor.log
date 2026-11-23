@@ -1,0 +1,53 @@
+0.0 round 0 | Round 1
+0.1 turn 0 | [player:p3|p3]'s turn
+0.2 phase 0 | Act
+5.0 phase 0 | Rest
+9.0 round 0 | Round 2
+9.1 turn 0 | [player:p1|p1]'s turn
+9.2 phase 0 | Wake
+10.0 victory 0 | [player:p1|p1] won as the Usurper
+15.0 round 0 | Chronicle Phase
+17.0 phase 0 | The Sun
+20.0 section 1 chronicle-step-1@18 | Crown Chancellor
+20.1 delta 1 chronicle-step-1@18 | [player:p1|p1] became Chancellor
+23.0 section 1 chronicle-step-2@21 | Assign Tasks
+23.1 decision 1 chronicle-step-2@21 | [player:p1|p1] took the Throne task
+28.0 decision 1 chronicle-step-2@21 | [player:p1|p1] took the World task
+33.0 decision 1 chronicle-step-2@21 | [player:p1|p1] took the Beacon task
+41.0 decision 1 chronicle-step-2@21 | [player:p1|p1] gave [player:p2|p2] the World task
+43.0 phase 0 | The Throne
+49.0 section 1 chronicle-step-0@43 | Start of Throne
+49.1 decision 1 chronicle-step-0@43 | [player:p2|p2] kept a Relic with [card:E26|Hiding Place]
+55.0 section 1 chronicle-step-2@54 | Shape Empire
+55.1 delta 1 chronicle-step-2@54 | Moved 1 Imperial warband to [site:site:ancient-city|Ancient City]
+56.0 delta 1 chronicle-step-2@54 | Set aside [card:E26|Hiding Place]
+57.0 delta 1 chronicle-step-2@54 | [card:E26|Hallowed Spring] was discarded from [site:site:broken-peaks|Broken Peaks]
+63.0 section 1 chronicle-step-5@62 | Scatter Relics
+63.1 delta 1 chronicle-step-5@62 | [player:p2|p2] set aside a Relic
+67.0 section 1 chronicle-step-6@66 | Score Lineage Points
+67.1 delta 1 chronicle-step-6@66 | [player:p1|p1] scored [amount:3 lineage points]
+77.0 section 1 chronicle-step-7@72 | Swear an Oath
+77.1 decision 1 chronicle-step-7@72 | [player:p1|p1] declared an Oath of Protection
+79.0 phase 0 | The World
+84.0 section 1 chronicle-step-1@83 | Protect and Dispossess
+84.1 delta 1 chronicle-step-1@83 | Stack 1: [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+85.0 delta 1 chronicle-step-1@83 | Stack 2: [card:182|Pied Piper], [card:183|Mushrooms] and [card:100|Bandit Chief]
+90.0 decision 1 chronicle-step-1@83 | [player:p2|p2] protected the stack of [card:179|Threatening Roar], [card:180|Fae Merchant] and [card:181|Second Chance]
+95.0 decision 1 chronicle-step-1@83 | [player:p2|p2] kept a Denizen as a starting adviser
+96.0 delta 1 chronicle-step-1@83 | [cards:182 183 100 back denizen back denizen back denizen|6 cards] were dispossessed
+99.0 phase 0 | The Beacon
+109.0 section 1 chronicle-step-0@99 | Introduce Newcomers
+109.1 decision 1 chronicle-step-0@99 | [player:p1|p1] chose Discord, Arcane and Order
+120.0 section 1 chronicle-step-1@115 | Welcome a Stranger
+120.1 decision 1 chronicle-step-1@115 | [player:p1|p1] welcomed [card:21|Naysayers] as a starting adviser
+123.0 phase 0 | The Stars
+124.0 section 1 chronicle-step-0@123 | Archive Rival Sites
+124.1 delta 1 chronicle-step-0@123 | [site:site:broken-peaks|Broken Peaks] was archived
+125.0 delta 1 chronicle-step-0@123 | [site:site:buried-giant|Buried Giant] was archived
+126.0 delta 1 chronicle-step-0@123 | [site:site:deep-woods|Deep Woods] was archived
+127.0 delta 1 chronicle-step-0@123 | [site:site:desolate-shore|Desolate Shore] was archived
+128.0 delta 1 chronicle-step-0@123 | [site:site:dunes|Dunes] was archived
+129.0 delta 1 chronicle-step-0@123 | [site:site:fair-isle|Fair Isle] was archived
+130.0 delta 1 chronicle-step-0@123 | [site:site:golden-valley|Golden Valley] was archived
+132.0 section 1 chronicle-step-1@131 | Store
+132.1 delta 1 chronicle-step-1@131 | [site:site:ancient-city|Ancient City] stays in the Empire

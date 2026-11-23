@@ -364,7 +364,8 @@ private[projection] object ActionProjectionCodec:
 
   private[projection] def encodeOptionRow(row: DecisionOptionProjection)
       : ujson.Value =
-    ujson.Obj("kind" -> row.kind, "id" -> row.id, "label" -> row.label,
+    val written = ujson.Obj("kind" -> row.kind, "id" -> row.id,
+      "label" -> row.label,
       "card" -> option(row.card)(encodeCard),
       "details" -> encoded(row.details)(ujson.Str(_)),
       "badge" -> stringOption(row.badge), "state" -> row.state,
@@ -374,13 +375,16 @@ private[projection] object ActionProjectionCodec:
       "variant" -> stringOption(row.variant),
       "group" -> stringOption(row.group),
       "consent" -> option(row.consent)(ConsentProjectionCodec.encodeAsk))
+    // Written only when set, so every other row reads as it always did.
+    if row.preselected then written("preselected") = true
+    written
 
   private[projection] def decodeOptionRow(raw: ujson.Value, child: String)
       : Result[DecisionOptionProjection] = for
     row <- obj(raw, child)
     _ <- exact(row, Set("kind", "id", "label", "card", "details", "badge",
       "state", "reason", "replaces", "buries", "variant", "group",
-      "consent"), child)
+      "consent", "preselected"), child)
     kind <- string(row, "kind", child); id <- string(row, "id", child)
     label <- string(row, "label", child)
     card <- optionalAbsent(row, "card", child)(decodeCard)
@@ -396,8 +400,9 @@ private[projection] object ActionProjectionCodec:
     group <- optionalAbsent(row, "group", child)(string)
     consent <- optionalAbsent(row, "consent", child)(
       ConsentProjectionCodec.decodeAsk)
+    preselected <- boolOr(row, "preselected", child, false)
   yield DecisionOptionProjection(kind, id, label, card, details, badge, state,
-    reason, replaces, buries, variant, group, consent)
+    reason, replaces, buries, variant, group, consent, preselected)
 
   private def encodeTransfer(row: NegotiationTransferProjection): ujson.Value =
     ujson.Obj("authorPlayerId" -> row.authorPlayerId,

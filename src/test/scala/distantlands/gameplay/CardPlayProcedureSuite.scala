@@ -100,6 +100,29 @@ class CardPlayProcedureSuite extends munit.FunSuite:
     assertEquals(done.treeless.game.current.temporaryHands(actor),
       Vector.empty)
 
+  test("a card played to a site takes 1 favor from its suit's bank"):
+    val ready = atHome.hand(actor, card).bankFavor(Suit.Beast, 3).ready
+    val before = Look(ready).favor(actor)
+    val done = Outcomes.finished(parkOnPlacement(ready)
+      .place(DecisionOptionRef.SiteSlot(home, 0)))
+    assertEquals((Look(done.treeless).favor(actor),
+      Look(done.treeless).bankFavor(Suit.Beast)), (before + 1, 2))
+
+  test("a card played to a site takes no favor from an empty bank"):
+    val ready = atHome.hand(actor, card).bankFavor(Suit.Beast, 0).ready
+    val before = Look(ready).favor(actor)
+    val done = Outcomes.finished(parkOnPlacement(ready)
+      .place(DecisionOptionRef.SiteSlot(home, 0)))
+    assertEquals(Look(done.treeless).favor(actor), before)
+
+  test("an adviser play takes no favor"):
+    val ready = atHome.hand(actor, card).bankFavor(Suit.Beast, 3).ready
+    val before = Look(ready).favor(actor)
+    val done = Outcomes.finished(parkOnPlacement(ready)
+      .place(DecisionOptionRef.AdviserPlay(actor, 0, faceup = true)))
+    assertEquals((Look(done.treeless).favor(actor),
+      Look(done.treeless).bankFavor(Suit.Beast)), (before, 3))
+
   test("the discard pile discards the card to the region after the pawn's"):
     val done = Outcomes.finished(parkOnPlacement(handState)
       .place(DecisionOptionRef.DiscardPile(Region.Provinces)))

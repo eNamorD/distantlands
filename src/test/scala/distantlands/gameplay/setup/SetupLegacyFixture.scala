@@ -22,6 +22,18 @@ object SetupLegacyFixture:
     chronicle.copy(lineages =
       chronicle.lineages.filterNot(_.id == lineage) :+ record)
 
+  /** The legacies `player` draws at their Quiet Ambitions keep, when the
+    * deck holds at least 2 per player: the keeps run in turn order from
+    * the first player, and each draws the next 2 from the top of
+    * `orders.legacyOrder` (catalog batch 13, ruling 6). */
+  def drawn(orders: SetupOrders, player: PlayerId): Vector[LegacyId] =
+    val seats = orders.participants.map(_.playerId)
+    val start = seats.indexOf(orders.firstPlayer)
+    val at = (seats.drop(start) ++ seats.take(start)).indexOf(player)
+    if at < 0 then Vector.empty
+    else orders.legacyOrder.slice(LegacyDeal.QuietDraw * at,
+      LegacyDeal.QuietDraw * (at + 1))
+
   /** `chronicle` with `lineage` recorded as having sat out the previous
     * game (Legacy Setup powers R39). */
   def satOut(chronicle: Chronicle, lineage: LineageId): Chronicle =

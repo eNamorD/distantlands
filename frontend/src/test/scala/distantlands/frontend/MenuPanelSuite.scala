@@ -1,6 +1,8 @@
 package distantlands.frontend
 
-import distantlands.frontend.Dom.all
+import distantlands.frontend.Dom.{all, click}
+import distantlands.model.PlayerColor
+import distantlands.protocol.{GameIntent => Intent, WalkerStartArgWire}
 import distantlands.testkit.Unwrap.as
 import ParkedDecision.Surface
 import org.scalajs.dom
@@ -34,7 +36,9 @@ class MenuPanelSuite extends munit.FunSuite:
     val panel = dom.document.createElement("div")
     MenuPanel.render(Surface.Menu(WalkerDecisionState("act-menu",
       "phase.menu", query = Some(query)), query),
-      canControl = true, panel, ui)
+      TestProjections.actingProjection(
+        players = Vector(GamePlayer("red", "Red", "Citizen", PlayerColor.Red)),
+        activePlayer = Some("red")), canControl = true, panel, ui)
     panel
 
   test("a start with two ways to pay names both, the or set apart"):
@@ -69,6 +73,30 @@ class MenuPanelSuite extends munit.FunSuite:
     assert(!shown.textContent.contains("["), shown.textContent)
     assertEquals(shown.getAttribute("aria-label"),
       "Trade for secrets (1 Supply · 1 favor · 1 burnt favor)")
+
+  test("an askable power asks its granter before it sends"):
+    val ask = ConsentAskState(Vector("red"), Vector("Darkest Secret"))
+    val fountains = DecisionOptionState("edifice", "E15", "Marble Fountains",
+      state = "askable", reason = Some("Darkest Secret: needs consent"),
+      consent = Some(ask), group = Some("power"))
+    val ui = new RecordingControls()
+    var opened = Vector.empty[CardInspection.Request]
+    CardInspection.onOpen(request => opened :+= request)
+    try
+      val shown = all(draw(Vector(fountains, ending), ui), ".menu-option")
+        .head
+      assert(shown.classList.contains("walker-choice-askable"))
+      click(shown)
+      assertEquals(ui.submitted, Vector.empty)
+      opened match
+        case Vector(confirm: CardInspection.Request.Confirm) =>
+          assertEquals(confirm.question,
+            "Ask Red for consent to ignore Darkest Secret?")
+          confirm.confirm()
+        case other => fail(s"expected one confirmation, got $other")
+      assertEquals(ui.submitted, Vector(Intent.RequestConsent("phase.menu",
+        WalkerStartArgWire("edifice", "E15"))))
+    finally CardInspection.clear()
 
   test("an unavailable option is withheld and says why only in its note"):
     val panel = draw(Vector(recover, ending))

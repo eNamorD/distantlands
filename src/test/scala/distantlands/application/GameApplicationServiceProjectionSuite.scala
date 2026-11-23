@@ -17,13 +17,14 @@ import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseManyAnswer, ChooseOneAnswer,
   PartitionAnswer}
 import distantlands.server.GameHttpWire
-import distantlands.gameplay.setup.{LegacyDeal, SetupAdviserSteps,
+import distantlands.gameplay.setup.{LegacyKeep, SetupAdviserSteps, SetupLegacyFixture,
   SetupProcedure}
 import distantlands.gameplay.setup.FirstGameSetupFixture._
 import distantlands.model.OathState.Ready
 import distantlands.gameplay.actions.VisionRules
 import distantlands.gameplay.phases.PhaseMenu
-import distantlands.testkit.{Look, MenuPlay, Outcomes, PlacementPicks, Table}
+import distantlands.testkit.{DecisionAnswers, Look, MenuPlay, Outcomes,
+  PlacementPicks, Table}
 import distantlands.testkit.Table.{p1, p2, p3}
 import distantlands.testkit.Unwrap.{accepted, present}
 import ParkedServiceFixture.firstPlayer
@@ -223,18 +224,22 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
       GameCommand.Begin(chronicle, orders)))
     val waiting = LoadedGame(begun.state, begun.nextSequence)
     val holder = firstPlayer
-    val hand = projector.project("game-hand", waiting, holder)
+    val preview = projector.project("game-hand", waiting, holder)
       .temporaryHandPreview
+    val (legacies, hand) = preview.partition(_.cardKind == "legacy")
 
-    // Each seat is dealt 3 advisers.
+    // Each seat is dealt 3 advisers, and every seat drew its 2 legacies
+    // before the first pawn, so the holder places with them in hand.
     assertEquals(hand.size, 3)
-    assert(hand.forall(_.orientation.contains("face-up")), hand.toString)
-    assert(hand.forall(!_.hidden), hand.toString)
+    assertEquals(legacies.map(_.cardId),
+      drawnLegacies(holder).map(_.value))
+    assert(preview.forall(_.orientation.contains("face-up")), preview.toString)
+    assert(preview.forall(!_.hidden), preview.toString)
     // Every seat was dealt a hand, and each one is shown only its own.
-    val otherHand = projector.project("game-hand", waiting, p1)
+    val otherPreview = projector.project("game-hand", waiting, p1)
       .temporaryHandPreview
-    assertEquals(otherHand.size, 3)
-    assertEquals(otherHand.map(_.cardId).intersect(hand.map(_.cardId)),
+    assertEquals(otherPreview.size, 5)
+    assertEquals(otherPreview.map(_.cardId).intersect(preview.map(_.cardId)),
       Vector.empty)
     assertEquals(projector.projectPublic("game-hand", waiting)
       .temporaryHandPreview, Vector.empty)
@@ -325,8 +330,7 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
 
   /** The legacies Quiet Ambitions drew for `player`. */
   private def drawnLegacies(player: PlayerId): Vector[LegacyId] =
-    LegacyDeal.of(chronicle, orders.participants)
-      .drawn(orders.legacyOrder, player)
+    SetupLegacyFixture.drawn(orders, player)
 
   /** The first player, parked on Quiet Ambitions' keep, keeps the first
     * legacy drawn. */
@@ -334,9 +338,9 @@ class GameApplicationServiceProjectionSuite extends munit.FunSuite:
       placed: GameAccepted)(using munit.Location): GameAccepted =
     accepted(service.handle(gameId, placed.nextSequence,
       Commands.resolveWalker(firstPlayer, TreeDecision(
-        SetupProcedure.legacyDecisionId(firstPlayer),
-        ChooseOneAnswer(DecisionOptionRef.Legacy(
-          drawnLegacies(firstPlayer).head))))))
+        LegacyKeep.decisionId(firstPlayer),
+        DecisionAnswers.keepLegacy(drawnLegacies(firstPlayer).head,
+          drawnLegacies(firstPlayer).tail*)))))
 
   /** The first player's pawn placed, parked on Quiet Ambitions' keep. */
   private def askedForLegacy(service: GameApplicationService,

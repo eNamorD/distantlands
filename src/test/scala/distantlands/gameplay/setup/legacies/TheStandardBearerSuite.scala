@@ -2,17 +2,14 @@ package distantlands.gameplay.setup.legacies
 
 import distantlands.application.GameCommand
 import distantlands.gameplay.actions.ProcedureNotes
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.setup.{GameStartRules, LaterGameFixture,
-  LegacyKeep, SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
-import distantlands.gameplay.powers.setup.{GreatForge, GreatForgeCard}
-import distantlands.gameplay.walker.{ChoicePayload, LogNoted, WalkerPowers,
-  WalkerStepRecorded}
+  SetupLegacyFixture, SetupProcedure, SetupWalkDriver}
+import distantlands.gameplay.walker.WalkerPowers
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.model.DecisionAnswer.ChooseOneAnswer
-import distantlands.testkit.{Answers, ParkedNode, Situation, Table}
+import distantlands.testkit.{Answers, ParkedNode, Situation}
 import distantlands.testkit.Unwrap.{accepted, present}
 
 /** The Standard Bearer: "After placing your pawn, you may take a banner
@@ -51,6 +48,13 @@ class TheStandardBearerSuite extends munit.FunSuite:
     NoteText.said(ProcedureNotes.id(TriggeredProcedureRef.Setup),
       SetupProcedure.noteKeys, situation.events).map(_.text)
 
+  /** `situation` walked on to p2's adviser question, the step after their
+    * pawn window, and checked to stop there. */
+  private def pastWindow(situation: Situation): Situation =
+    val next = situation.parkedAt(SetupProcedure.adviserDecisionId(p2))()
+    assertEquals(decide(next).decisionId, SetupProcedure.adviserDecisionId(p2))
+    next
+
   private val taking: Answers =
     case park if park.decisionId == TheStandardBearer.decisionId(p2) =>
       ChooseOneAnswer(DecisionOptionRef.Banner(Banner.PeoplesFavor))
@@ -68,7 +72,7 @@ class TheStandardBearerSuite extends munit.FunSuite:
       "its resource on it"):
     val at = parkedAt(TheStandardBearer.decisionId(p2))
     val favor = at.ready.game.current.banners.peoplesFavor.favor
-    val after = at.withAnswers(taking).parkedAt(LegacyKeep.decisionId(p2))()
+    val after = pastWindow(at.withAnswers(taking))
       .ready.game.current.banners.peoplesFavor
     assertEquals(after.holder, Some(p2))
     assertEquals(after.favor, favor + 2)
@@ -76,10 +80,10 @@ class TheStandardBearerSuite extends munit.FunSuite:
   test("the Darkest Secret takes two secrets"):
     val at = parkedAt(TheStandardBearer.decisionId(p2))
     val secrets = at.ready.game.current.banners.darkestSecret.secrets
-    val after = at.withAnswers {
+    val after = pastWindow(at.withAnswers {
       case park if park.decisionId == TheStandardBearer.decisionId(p2) =>
         ChooseOneAnswer(DecisionOptionRef.Banner(Banner.DarkestSecret))
-    }.parkedAt(LegacyKeep.decisionId(p2))().ready.game.current.banners
+    }).ready.game.current.banners
       .darkestSecret
     assertEquals(after.holder, Some(p2))
     assertEquals(after.secrets, secrets + 2)
@@ -91,7 +95,7 @@ class TheStandardBearerSuite extends munit.FunSuite:
 
   test("declining changes nothing and writes no line"):
     val at = parkedAt(TheStandardBearer.decisionId(p2))
-    val after = at.parkedAt(LegacyKeep.decisionId(p2))()
+    val after = pastWindow(at)
     assertEquals(after.ready.game.current.banners,
       at.ready.game.current.banners)
     assert(!lines(after).exists(_.contains(TheStandardBearerCard.id.value)))
@@ -131,32 +135,5 @@ class TheStandardBearerSuite extends munit.FunSuite:
     assertEquals(walked.ready.game.current.banners.peoplesFavor.holder,
       Some(p1))
 
-  test("in the holder's pawn window Great Forge acts before The Standard " +
-      "Bearer (R27)"):
-    val started = accepted(GameStartRules.evolve(catalog, record,
-      LaterGameFixture.orders(record, p1)))
-    // The driver places every pawn at the first site in play.
-    val ready = Table.from(started).edifice(GreatForgeCard.id,
-      EdificeSide.Intact, at = started.game.current.map.inPlay.head).ready
-    val walked = SetupWalkDriver.driveWithEvents(ready, accepted(
-      SetupProcedure.build(catalog, ready, ready.game.current.turn
-        .activePlayer, Vector.empty)), TriggeredProcedureRef.Setup,
-      WalkerPowers.selected(WalkerPowerCatalog.default(catalog),
-        Vector.empty))
-    val forge = walked.events.indexWhere {
-      case LogNoted(GreatForge.id, note, _) =>
-        note.args.headOption.contains(NoteArg.Player(p2))
-      case _ => false
-    }
-    val bearer = walked.events.indexWhere {
-      case WalkerStepRecorded(_, ChoicePayload(id, _, _), _) =>
-        id == TheStandardBearer.decisionId(p2)
-      case _ => false
-    }
-    assert(forge >= 0 && bearer >= 0, s"forge $forge, bearer $bearer")
-    assert(forge < bearer, s"forge $forge, bearer $bearer")
-
-  test("the card has left holding and its power is registered"):
+  test("The Standard Bearer is registered among the setup legacies"):
     assert(LegacySetupPowers.all.contains(TheStandardBearer))
-    assert(PowerImplementationStatus.implemented(
-      TheStandardBearerCard.power.id))

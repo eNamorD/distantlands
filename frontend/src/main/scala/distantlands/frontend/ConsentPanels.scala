@@ -2,7 +2,7 @@ package distantlands.frontend
 
 import distantlands.protocol.{GameIntent => GameCommand}
 import org.scalajs.dom
-import ServerUiSupport.{button, element, text}
+import ServerUiSupport.{button, element, playerDisplayName, text}
 
 /** The asked ruler's prompt and the requester's waiting line (consent
   * design, user story steps 3 to 6). */
@@ -20,7 +20,7 @@ private[frontend] object ConsentPanels:
     * automatic power, "Use City Wall to deactivate Blue's Tyrant?"
     * (item 10b). */
   def prompt(value: GameProjection, asked: ConsentPromptState): String =
-    val requester = ConsentAsking.name(value, asked.requesterPlayerId)
+    val requester = playerDisplayName(value, asked.requesterPlayerId)
     val powers = ConsentAsking.listed(asked.powers)
     asked.use.fold(asking(asked, requester, powers))(card =>
       s"Use $powers to deactivate $requester's $card?")
@@ -39,10 +39,25 @@ private[frontend] object ConsentPanels:
     * 10b). */
   def waiting(value: GameProjection, wait: ConsentWaitingState): String =
     val names = wait.granterPlayerIds.map(id =>
-      s"${ConsentAsking.name(value, id)}'s")
+      s"${playerDisplayName(value, id)}'s")
     val awaited = wait.use.fold(" consent…")(card => s" decision on $card…")
     s"Waiting for ${names.mkString(if wait.either then " or " else " and ")}" +
       awaited
+
+  /** Where the granter can come back to this (reconsider design, "Prompt
+    * notice"; implementation ruling R21): "You can change this answer,
+    * and your consent preferences, by clicking on the Narrow Pass power."
+    * An automatic power's answer stays final, so its prompt keeps the
+    * older words about preferences. An ask nobody rules, a payer's or an
+    * Imperial law's, has no power to click and reads no notice. */
+  def notice(asked: ConsentPromptState): Option[String] =
+    val powers = ConsentAsking.listed(asked.powers)
+    asked.adjust match
+      case "answer" => Some("You can change this answer, and your " +
+        s"consent preferences, by clicking on the $powers power.")
+      case "preferences" => Some("You can adjust your consent " +
+        s"preferences by clicking on the $powers power.")
+      case _ => None
 
   /** The prompt, when the viewer is asked. */
   def render(value: GameProjection, canControl: Boolean, panel: dom.Element,
@@ -60,8 +75,7 @@ private[frontend] object ConsentPanels:
         row.appendChild(answer)
       }
       section.appendChild(row)
-      section.appendChild(text("p", "consent-notice",
-        "You can adjust your consent preferences by clicking on the " +
-          s"${ConsentAsking.listed(asked.powers)} power."))
+      notice(asked).foreach(words =>
+        section.appendChild(text("p", "consent-notice", words)))
       panel.appendChild(section)
     }

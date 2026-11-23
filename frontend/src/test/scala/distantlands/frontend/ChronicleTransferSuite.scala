@@ -10,14 +10,15 @@ import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 /** Import from a JSON file or a TTS string, with its name clash, and
-  * export as a JSON download or a copied TTS string. */
+  * export as a JSON download or a copied TTS string: the page's buttons and
+  * the dialogs they open, and the table's export controls. */
 class ChronicleTransferSuite extends munit.FunSuite:
-  /** The import section over `shelf`, mounted in `browser`; the returned
+  /** The import form over `shelf`, mounted in `browser`; the returned
     * buffer records each call of `imported`. */
   private def mountImportSection(browser: TestBrowser, shelf: ChronicleShelf,
       transport: JsonTransport, files: FakeChronicleFiles): ArrayBuffer[Unit] =
     val imported = ArrayBuffer.empty[Unit]
-    browser.mount.appendChild(ChronicleTransfer.importSection(shelf,
+    browser.mount.appendChild(ChronicleTransfer.importForm(shelf,
       ChronicleClient(transport), files, () => imported += (())))
     imported
 
@@ -26,6 +27,15 @@ class ChronicleTransferSuite extends munit.FunSuite:
       transport: JsonTransport, files: FakeChronicleFiles): Unit =
     browser.mount.appendChild(ChronicleTransfer.exportControls(chronicle,
       ChronicleClient(transport), files))
+
+  /** The page's Export button for `chronicle`, mounted in `browser`. */
+  private def mountExportButton(browser: TestBrowser,
+      chronicle: Option[distantlands.protocol.ChronicleEntry],
+      transport: JsonTransport, files: FakeChronicleFiles): dom.html.Button =
+    val open = ChronicleTransfer.exportButton(browser.mount, chronicle,
+      ChronicleClient(transport), files)
+    browser.mount.appendChild(open)
+    open
 
   private def freshShelf(): ChronicleShelf =
     new ChronicleShelf(new MemoryChronicleStorage(), ChronicleFixtures.clock)
@@ -243,4 +253,115 @@ class ChronicleTransferSuite extends munit.FunSuite:
         browser.settle
       }.map { _ =>
         assertEquals(browser.byClass("export-tts-text").size, 1)
+      }
+
+  test("Import opens a dialog: a file, a divider, then the TTS string"):
+    TestBrowser.useSynchronously(): browser =>
+      val open = ChronicleTransfer.importButton(browser.mount, freshShelf(),
+        ChronicleClient(convertingTransport()), FakeChronicleFiles(),
+        () => ())
+      browser.mount.appendChild(open)
+      assertEquals(open.textContent, "Import Chronicle")
+      assertEquals(browser.byClass("chronicle-dialog").size, 0)
+      browser.click("import-chronicle")
+      val dialog = present(browser.byClass("import-chronicle-dialog")
+        .headOption, "the import dialog")
+      assertEquals(dialog.getAttribute("role"), "dialog")
+      assertEquals(textOf(browser, "chronicle-dialog-heading"),
+        "Import Chronicle")
+      val form = present(browser.byClass("chronicle-import").headOption,
+        "the import form")
+      val order = (0 until form.children.length).toVector
+        .map(form.children(_)).map(child =>
+          if child.tagName == "HR" then "divider"
+          else Option(child.querySelector("span")).fold(
+            child.getAttribute("class"))(_.textContent))
+      assertEquals(order.take(4), Vector("Upload a Chronicle JSON file",
+        "divider", "Or paste a TTS string", "Its name"))
+      assertEquals(dom.document.activeElement,
+        browser.byClass("import-chronicle-file").head)
+
+  test("Close, Escape and the scrim close the dialog and refocus its " +
+      "button"):
+    TestBrowser.useSynchronously(): browser =>
+      val open = mountExportButton(browser, Some(entry("Ashen Crown")),
+        convertingTransport(), FakeChronicleFiles())
+      def closedBy(close: () => Unit): Unit =
+        browser.click("export-chronicle")
+        assertEquals(browser.byClass("export-chronicle-dialog").size, 1)
+        close()
+        assertEquals(browser.byClass("export-chronicle-dialog").size, 0)
+        assertEquals(dom.document.activeElement, open)
+      closedBy(() => browser.click("chronicle-dialog-close"))
+      closedBy(() => dom.document.dispatchEvent(new dom.KeyboardEvent(
+        "keydown", new dom.KeyboardEventInit { key = "Escape" })))
+      closedBy(() => as[dom.html.Element](browser.byClass(
+        "export-chronicle-dialog").head).click())
+
+  test("Export without a Chronicle is withheld with a reason"):
+    TestBrowser.useSynchronously(): browser =>
+      val open = mountExportButton(browser, None, convertingTransport(),
+        FakeChronicleFiles())
+      assertEquals(open.getAttribute("aria-disabled"), "true")
+      assertEquals(open.getAttribute(HoverTip.Attribute),
+        "Load a Chronicle to export it")
+      assertEquals(open.onclick, null)
+
+  test("the Export dialog shows the TTS string as it opens, and copies it"):
+    TestBrowser.use(): browser =>
+      val files = FakeChronicleFiles()
+      val requests = ArrayBuffer.empty[RecordedRequest]
+      mountExportButton(browser, Some(entry("Ashen Crown")),
+        convertingTransport(requests), files)
+      browser.click("export-chronicle")
+      assertEquals(textOf(browser, "export-status"),
+        "Writing the TTS string…")
+      browser.settle.flatMap { _ =>
+        assertEquals(sentRequests(requests), Vector(
+          ChronicleConvertRequest.FromJson(entry("Ashen Crown").json)))
+        val shown = as[dom.html.TextArea](present(
+          browser.byClass("export-tts-text").headOption, "the TTS box"))
+        assertEquals(shown.value, "TTS-STRING")
+        assert(shown.readOnly)
+        assertEquals(textOf(browser, "export-status"), "")
+        browser.click("export-chronicle-json")
+        assertEquals(files.downloads.toVector, Vector(
+          "Ashen Crown.chronicle.json" -> entry("Ashen Crown").json))
+        browser.click("export-chronicle-tts")
+        browser.settle
+      }.map { _ =>
+        assertEquals(files.copies.toVector, Vector("TTS-STRING"))
+        assertEquals(textOf(browser, "export-status"), "TTS string copied.")
+      }
+
+  test("the Export dialog says when TTS cannot hold the Chronicle"):
+    TestBrowser.use(): browser =>
+      mountExportButton(browser, Some(entry("Ashen Crown")),
+        convertingTransport(tts = None), FakeChronicleFiles())
+      browser.click("export-chronicle")
+      browser.settle.map { _ =>
+        assertEquals(textOf(browser, "export-status"),
+          "This Chronicle cannot be written as a TTS string.")
+        assertEquals(browser.byClass("export-tts-text").size, 0)
+        assertEquals(browser.byClass("export-chronicle-tts").size, 0)
+      }
+
+  test("in the Export dialog, a browser that will not copy leaves the " +
+      "string selected"):
+    TestBrowser.use(): browser =>
+      val files = FakeChronicleFiles()
+      files.copyWorks = false
+      mountExportButton(browser, Some(entry("Ashen Crown")),
+        convertingTransport(), files)
+      browser.click("export-chronicle")
+      browser.settle.flatMap { _ =>
+        browser.click("export-chronicle-tts")
+        browser.settle
+      }.map { _ =>
+        val shown = as[dom.html.TextArea](browser.byClass("export-tts-text")
+          .head)
+        assertEquals(textOf(browser, "export-status"), "Copy this TTS string.")
+        assertEquals(dom.document.activeElement, shown)
+        assertEquals((shown.selectionStart, shown.selectionEnd),
+          (0, "TTS-STRING".length))
       }

@@ -40,6 +40,22 @@ private[protocol] object CommandIntentDecoders:
         requester <- string(value, "requesterId", path)
         setting <- string(value, "setting", path)
       yield SetConsentPreference(power, requester, setting)
+    case "reconsiderConsent" =>
+      for
+        _ <- exact(value, Set("type", "requesterId", "decisionId", "target",
+          "allow"), path)
+        requester <- string(value, "requesterId", path)
+        id <- string(value, "decisionId", path)
+        target <- field(value, "target", path).flatMap(raw =>
+          CommandNestedCodecs.decodeStartArgsWire(ujson.Arr(raw),
+            s"$path.target"))
+          .flatMap:
+            case Vector(one) => Right(one)
+            case _ => Left(InvalidValue(s"$path.target",
+              "expected one consent target"))
+        allow <- field(value, "allow", path).flatMap(
+          boolean(_, s"$path.allow"))
+      yield ReconsiderConsent(requester, id, target, allow)
     case "savePlanAid" =>
       def amount(name: String) = field(value, name, path).flatMap(
         integer(_, s"$path.$name"))

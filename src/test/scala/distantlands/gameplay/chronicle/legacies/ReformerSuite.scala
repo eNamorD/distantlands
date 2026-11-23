@@ -6,8 +6,7 @@ import distantlands.gameplay.cards.{AncientCitySite, BrokenPeaksSite}
 import distantlands.gameplay.chronicle.ChronicleWalk
 import distantlands.gameplay.powers.action.FaeMerchantCard
 import distantlands.gameplay.powers.setup.GreatMarketCard
-import distantlands.gameplay.powers.{NoteText, PowerImplementationStatus,
-  WalkerPowerCatalog}
+import distantlands.gameplay.powers.{NoteText, WalkerPowerCatalog}
 import distantlands.gameplay.powers.whenplayed.ThreateningRoarCard
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
@@ -60,9 +59,6 @@ class ReformerSuite extends munit.FunSuite:
 
   private def denizen(card: distantlands.catalog.Denizen) =
     DecisionOptionRef.Denizen(card.id)
-
-  test("Reformer is implemented"):
-    assert(PowerImplementationStatus.implemented(ReformerCard.power.id))
 
   test("the winner moves a locked card to another site they rule with " +
       "room (ruling 12; Chronicle ruling 16)"):

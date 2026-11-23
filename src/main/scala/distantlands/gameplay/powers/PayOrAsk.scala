@@ -18,7 +18,10 @@ import distantlands.model._
   * for the rest of the turn (ruling 12), not every toll the card charges.
   */
 final case class PayOrAsk(power: PowerId, card: DenizenId,
-    decisionId: String, plain: NoteKey, consent: NoteKey):
+    decisionId: String, plain: NoteKey, consent: NoteKey,
+    /** The free option's label, which also names it once its step is no
+      * longer parked (reconsider design, "Projection"). */
+    freeLabel: String):
   val source: PowerSourceRef = PowerSourceRef.Card(card)
 
   /** `operations` with the step `payer` answers on `occasion` first and what

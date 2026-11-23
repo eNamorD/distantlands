@@ -5,10 +5,13 @@ numbered across its slices. Each says which plan raised it. They continue
 the design's rulings 1-27 in the "Legacy in-play powers rulings" section
 of `docs/rules/ambiguities.md`.
 
+The owner reviewed the run's rulings on 2026-11-14: they re-ruled R24, asked
+for R36, and confirmed the rest.
+
 ## Slice 1
 
 [Plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice1.md).
-Ruled by the owner on 2026-11-14.
+Ruled by the orchestrator on 2026-11-14.
 
 - **R1. Does "If you are an Imperial" cover Golden Key's ACTION as well
   as its peek?** *Decision:* yes, it gates both; an Exile holder's menu
@@ -43,7 +46,7 @@ Ruled by the owner on 2026-11-14.
 ## Slice 2
 
 [Plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice2.md).
-Ruled by the owner on 2026-11-14.
+Ruled by the orchestrator on 2026-11-14.
 
 - **R6. Does Pathfinder also ignore Lost Lagoon?** *Decision:* yes.
   *Reason:* Lost Lagoon makes its site an Island and is the Island power
@@ -73,7 +76,7 @@ Ruled by the owner on 2026-11-14.
 
 ### Slice 2 review
 
-Ruled by the owner on 2026-11-14, from the review of slice 2.
+Ruled by the orchestrator on 2026-11-14, from the review of slice 2.
 
 - **R15. Which of Lost Lagoon's powers does Pathfinder ignore?**
   *Decision:* only its Island add on arriving at its site, never its Coast
@@ -104,7 +107,7 @@ Ruled by the owner on 2026-11-14, from the review of slice 2.
 ## Slice 3
 
 [Plan](../../plans/2026-11/2026-11-14-legacy-in-play-powers-slice3.md).
-Ruled by the owner on 2026-11-14.
+Ruled by the orchestrator on 2026-11-14.
 
 - **R11. Where does Arbiter's choice wait for the end die?** *Decision:* a
   journaled `SetEndDieModifier` writes `CurrentGameState.endDieModifier`,
@@ -214,7 +217,7 @@ open questions, ruled on 2026-11-14.
   and the design's ruling 23 reads under R4. *Slice/files:* slice 4,
   Task 1.
 
-Ruled by the owner on 2026-11-14, from the review of slice 4.
+Ruled by the orchestrator on 2026-11-14, from the review of slice 4.
 
 - **R31. Which cards does The Mouth's goal reading count?** *Decision:*
   during the game, only faceup advisers and faceup relics, for every
@@ -235,7 +238,7 @@ Ruled by the owner on 2026-11-14, from the review of slice 4.
   writes the victory line itself, and removing the case would make the
   match non-exhaustive. *Slice/files:* slice 4 fix; `GameLogFormatter`.
 
-Ruled by the owner on 2026-11-14, from the R24 change.
+Ruled by the orchestrator on 2026-11-14, from the R24 change.
 
 - **R34. Who starts the Chronicle before the Sun compares the
   prediction?** *Superseded by R36.* *Decision:* keep as is: Start Chronicle belongs to the
@@ -252,7 +255,7 @@ Ruled by the owner on 2026-11-14, from the R24 change.
   this batch are affected. *Slice/files:* slice 4, R24 change;
   `ProcedureRef`, `ConspiratorReveal`.
 
-Ruled by the owner on 2026-11-14.
+R36 ruled by the owner on 2026-11-14; R37 by the orchestrator.
 
 - **R36. When do Royal Line and Conspirator's comparison run?**
   *Decision:* Royal Line's choice and then Conspirator's comparison run in
@@ -274,3 +277,12 @@ Ruled by the owner on 2026-11-14.
   journals may not format their old Sun notes. *Reason:* no release
   contains Royal Line or Conspirator; only dev-database games from this
   batch are affected, as under R35. *Slice/files:* slice 4, R36 change.
+
+After the run, at the owner's request, two ROADMAP cleanups closed the
+R36 and R37 leftovers. Royal Line's decision id is now
+`chronicle.final-winner.royal-line.<player>`, after the step it runs in,
+and the Sun's empty first window, `ChronicleStartOfSun`
+(`chronicle.sun.start-of-sun`), is removed, so the Sun opens with Reveal
+Relics. The three dev-database games created during the batch
+(`game-nvruop2xq65z`, `game-sd5uqootvi3e` and `game-rj5bxx5xlnnw`) are
+deleted. None had reached a game end or Start Chronicle.

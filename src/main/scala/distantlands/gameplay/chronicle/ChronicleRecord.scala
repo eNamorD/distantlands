@@ -26,20 +26,19 @@ object ChronicleRecord:
     val campaign = ready.game.campaign
     val seatedBy = ready.game.current.players
       .map(player => player.lineage -> player.player).toMap
-    // A seated lineage the baseline lists is its live state: game start
-    // seated it from its record (`GameStartRules`). A lineage that sat this
-    // game out was in no previous game of the next one, so it is recorded
-    // with no previous player (Legacy Setup powers R39).
-    val kept = campaign.baseline.lineages.map(lineage =>
-      campaign.lineages.get(lineage.id)
-        .map(_.copy(previousPlayer = seatedBy.get(lineage.id)))
-        .getOrElse(lineage.copy(previousPlayer = None, role =
-          campaign.boxRoles.getOrElse(lineage.id, lineage.role))))
-    val known = kept.map(_.id).toSet
-    val added = campaign.lineages.values.toVector
-      .filterNot(lineage => known(lineage.id)).sortBy(_.id.value)
-      .map(live => LineageState(live.id, seatedBy.get(live.id), live.role,
-        live.legacies, live.startingAdvisers, live.startingRelics))
+    // Every lineage as it stands (`CampaignState.standingLineages`): a
+    // seated one is its live state, since game start seated it from its
+    // record (`GameStartRules`), and a boxed one takes the role this game
+    // gave it in the box. The baseline's lineages keep the baseline's
+    // order; the ones it lacks follow by id. A lineage that sat this game
+    // out was in no previous game of the next one, so it is recorded with
+    // no previous player (Legacy Setup powers R39).
+    val standing = campaign.standingLineages
+    val listed = campaign.baseline.lineages.map(_.id)
+    val byId = standing.map(lineage => lineage.id -> lineage).toMap
+    val lineages = (listed.map(byId) ++
+      standing.filterNot(lineage => listed.contains(lineage.id)))
+      .map(lineage => lineage.copy(previousPlayer = seatedBy.get(lineage.id)))
     campaign.baseline.copy(era = campaign.era,
       oathkeeperGoal = campaign.oathkeeperGoal,
-      foundations = campaign.foundations, lineages = kept ++ added)
+      foundations = campaign.foundations, lineages = lineages)

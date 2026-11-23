@@ -85,6 +85,20 @@ class ChronicleOperationWireSuite extends munit.FunSuite:
       Left(WireError.InvalidValue("$[0].payload.step.ops[0].legacies",
         "scores at least one legacy")))
 
+  test("legacies kept dormant name each legacy, and an empty list decodes " +
+      "to a typed WireError"):
+    val encoded = encodedStreamThatRoundTrips("legacies-kept-dormant",
+      Vector(recordedOperation(LegaciesKeptDormant(Vector(LegacyId("L02"),
+        LegacyId("L22"))))))
+    assertEquals(ujson.read(encoded)(0)("payload")("step")("ops")(0),
+      ujson.Obj("kind" -> "legacies-kept-dormant",
+        "legacies" -> ujson.Arr("L02", "L22")))
+    val injected = ujson.read(encoded).arr
+    injected(0)("payload")("step")("ops")(0)("legacies") = ujson.Arr()
+    assertEquals(GameEventWire.decodeStream(ujson.write(injected)),
+      Left(WireError.InvalidValue("$[0].payload.step.ops[0].legacies",
+        "keeps at least one legacy")))
+
   test("a kept starting relic names its player and its relic"):
     val encoded = encodedStreamThatRoundTrips("starting-relic-kept",
       Vector(recordedOperation(StartingRelicKept(PlayerId("red"),

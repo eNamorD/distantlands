@@ -89,6 +89,12 @@ object OathEvent:
     * (ruling 17). */
   final case class ConsentPreferencesCleared(granter: PlayerId,
       power: PowerId) extends ConsentEvent
+  /** `granter` changed the answer they gave `requester` about `target` at
+    * `decisionId` this turn (reconsider design, "Events"): a grant when
+    * `granted`, else a refusal. It answers no parked decision. */
+  final case class ConsentReconsidered(granter: PlayerId,
+      requester: PlayerId, decisionId: String, target: DecisionOptionRef,
+      granted: Boolean) extends ConsentEvent
   /** `ally`'s whole offer for `window`, replacing their earlier one. */
   final case class PlanAidSaved(ally: PlayerId, window: AidWindow,
       offer: AidOffer) extends PlanAidEvent

@@ -1,5 +1,6 @@
 package distantlands.gameplay.walker
 
+import distantlands.gameplay.consent.ConsentUseMarks
 import distantlands.gameplay.operations.{OperationExecutor, PayCostSettlement}
 import distantlands.model.{ActionRef, Answered, CoreOperation, OathState, OathViolation, PendingTree, ReadyGame, WalkerEvent}
 
@@ -42,7 +43,8 @@ private[walker] object WalkerReplay:
     * `ops`, in order, so the vector is as long as `ops`. Replay keeps only
     * the last; the game log reads them all, to judge a line about one
     * operation against the states around that operation. One fold serves
-    * both, so the two cannot drift.
+    * both, so the two cannot drift. It is not `OathViolation.traverse`:
+    * each operation applies to the state the one before it left.
     */
   def applyBatch(ready: ReadyGame, ops: Vector[CoreOperation])
       : Either[OathViolation, Vector[ReadyGame]] =
@@ -89,14 +91,26 @@ private[walker] object WalkerReplay:
           outcome <- WalkerRolls.outcomeForRecorded(ready, pool, faces)
         yield WalkerRolls.write(ready, outcome)
 
+      // A choice the walker made alone was never parked on, so it is
+      // checked as an automatic roll is. Its answer joins the walk's
+      // answers all the same, under a pending position the walk's first
+      // park, if any, sets (catalog batch 13, ruling 4).
       case step @ WalkerStepRecorded(_,
-          ChoicePayload(decisionId, payload, by), _) =>
+          ChoicePayload(decisionId, payload, by, alone), _) =>
         for
-          pending <- validateParkedStep(step)
+          pending <-
+            if alone then validateStep(step).map(_ =>
+              ready.game.current.walkerPending.getOrElse(
+                PendingTree(Vector.empty, Vector.empty)))
+            else validateParkedStep(step)
           answered = pending.copy(answered = pending.answered :+
             Answered(decisionId, payload, by))
-        yield ready.copy(game = ready.game.copy(current =
-          ready.game.current.copy(walkerPending = Some(answered))))
+        // The answer may act on a granted consent request: the mark is
+        // set here, from the ledger this replay position holds
+        // (reconsider design, "State").
+        yield ConsentUseMarks.answered(ready.copy(game = ready.game.copy(
+          current = ready.game.current.copy(walkerPending =
+            Some(answered)))), decisionId, payload, by)
 
       case step @ WalkerStepRecorded(_, DeltaPayload(ops), _) =>
         for

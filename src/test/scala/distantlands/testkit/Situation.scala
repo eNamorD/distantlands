@@ -3,6 +3,7 @@ package distantlands.testkit
 import distantlands.application.{CampaignDicePort, EventStreamRepository,
   GameCommand, GameApplicationService}
 import distantlands.catalog.ExecutableCatalog
+import distantlands.gameplay.chronicle.BuildEdifice
 import distantlands.gameplay.phases.PhaseMenu
 import distantlands.gameplay.phases.rest.RoundEndRandomPort
 import distantlands.gameplay.powerresolver.PhasePowers
@@ -110,20 +111,24 @@ final case class Situation(state: OathState, events: Vector[OathEvent],
 
 object Situation:
   /** The answer a park gets when the test names none. `ChooseOne`: the first
-    * available option. `Partition`: the first option kept in the first section that
+    * available option, except Build Edifice's, which builds nothing. `Partition`: the first option kept in the first section that
     * demands one, every other option in another section -- the "keep one,
     * discard the rest" shape of Setup's adviser choice. `ChooseMany`: the
-    * first `min` available options. `ChooseAmount`: `min`. `Distribute`:
+    * options it opens selected, else the first `min` available options. `ChooseAmount`: `min`. `Distribute`:
     * each slot its minimum, when those sum within the bounds.
     * `ChooseAmounts`: the suggested amounts. Anything else
     * is not answered by default and fails the walk naming the decision.
     */
   val defaultAnswer: Answers =
-    case Park(Decide(_, _, one: DecisionQuery.ChooseOne, _, _, _, _),
+    // Build Edifice builds nothing: the first option would bury a card.
+    case Park(Decide(BuildEdifice.cardDecisionId, _, _, _, _, _, _, _),
+        _, _, _) =>
+      DecisionAnswer.ChooseOneAnswer(BuildEdifice.skip)
+    case Park(Decide(_, _, one: DecisionQuery.ChooseOne, _, _, _, _, _),
         _, _, _) if one.options.exists(_.available) =>
       DecisionAnswer.ChooseOneAnswer(one.options.filter(_.available).head.ref)
     case Park(Decide(_, _, partition: DecisionQuery.Partition,
-        _, _, _, _), _, _, _)
+        _, _, _, _, _), _, _, _)
         if partition.sections.nonEmpty && partition.options.nonEmpty =>
       val (sections, options) = (partition.sections, partition.options)
       val keep = sections.find(_.minRequired > 0).getOrElse(sections.head)
@@ -131,18 +136,19 @@ object Situation:
       val refs = options.map(_.ref)
       DecisionAnswer.PartitionAnswer(DecisionPlacement(refs.head, keep.key) +:
         refs.tail.map(DecisionPlacement(_, discard.key)))
-    case Park(Decide(_, _, many: DecisionQuery.ChooseMany, _, _, _, _),
+    case Park(Decide(_, _, many: DecisionQuery.ChooseMany, _, _, _, _, _),
         _, _, _) if many.options.count(_.available) >= many.min =>
       DecisionAnswer.ChooseManyAnswer(
-        many.options.filter(_.available).take(many.min).map(_.ref))
-    case Park(Decide(_, _, amount: DecisionQuery.ChooseAmount, _, _, _, _),
+        if many.selected.nonEmpty then many.selected.map(_.ref)
+        else many.options.filter(_.available).take(many.min).map(_.ref))
+    case Park(Decide(_, _, amount: DecisionQuery.ChooseAmount, _, _, _, _, _),
         _, _, _) =>
       DecisionAnswer.ChooseAmountAnswer(amount.min)
-    case Park(Decide(_, _, amounts: DecisionQuery.ChooseAmounts, _, _, _, _),
+    case Park(Decide(_, _, amounts: DecisionQuery.ChooseAmounts, _, _, _, _, _),
         _, _, _) if amounts.slots.forall(_.suggested.nonEmpty) =>
       DecisionAnswer.DistributeAnswer(amounts.slots.map(slot =>
         DistributeAmount(slot.ref, slot.suggested.get)))
-    case Park(Decide(_, _, spread: DecisionQuery.Distribute, _, _, _, _),
+    case Park(Decide(_, _, spread: DecisionQuery.Distribute, _, _, _, _, _),
         _, _, _) if spread.slots.map(_.minimum).sum >= spread.minTotal &&
           spread.slots.map(_.minimum).sum <= spread.maxTotal =>
       DecisionAnswer.DistributeAnswer(spread.slots.map(slot =>

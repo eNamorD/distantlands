@@ -1,9 +1,14 @@
 package distantlands.application
 
+import distantlands.gameplay.actions.ImperialLaws
+import distantlands.gameplay.actions.travel.TravelProcedure
 import distantlands.gameplay.cards.{AncientCitySite, NarrowPassSite}
 import distantlands.gameplay.powers.cardplay.SecretPoliceCard
 import distantlands.gameplay.powers.poweruse.{CityWall, CityWallCard}
-import distantlands.gameplay.powers.travel.{TravelFixture, TyrantCard}
+import distantlands.gameplay.powers.recover.RelicPatrolsCard
+import distantlands.gameplay.powers.PayOrAsk
+import distantlands.gameplay.powers.travel.{TollRoads, TravelFixture,
+  TyrantCard}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
 import distantlands.protocol.projection._
@@ -87,7 +92,7 @@ class ConsentProjectionSuite extends munit.FunSuite:
     val (service, _) = ConsentFixture.service()
     val asked = asking(service)
     assertEquals(view(asked, p2).consentPrompt, Some(ConsentPromptProjection(
-      "p1", Vector("Narrow Pass"), "Dunes")))
+      "p1", Vector("Narrow Pass"), "Dunes", adjust = "answer")))
     assertEquals(view(asked, p2).consentWaiting, None)
     Vector(view(asked, p3), projector.projectPublic(gameId, asked.loaded))
       .foreach { shown =>
@@ -107,6 +112,219 @@ class ConsentProjectionSuite extends munit.FunSuite:
     assertEquals(view(set, p1).consentPreferences, Vector.empty)
     assertEquals(projector.projectPublic(gameId, set.loaded)
       .consentPreferences, Vector.empty)
+
+  private val destination = TravelProcedure.destinationDecisionId
+
+  private def requestsShownTo(viewer: PlayerId, at: GameAccepted)
+      : Vector[ConsentRequestRowProjection] =
+    view(at, viewer).consentPreferences.flatMap(_.requests)
+
+  private def changing(service: GameApplicationService, at: GameAccepted,
+      allow: Boolean)(using munit.Location): GameAccepted =
+    accepted(service.handle(gameId, at.nextSequence,
+      Commands.reconsiderConsent(p2, p1, destination, dunes, allow)))
+
+  /** `base` projected for p2 with `ledger` as its consent ledger: a
+    * position the service cannot be played to. */
+  private def shownToP2With(base: ReadyGame, ledger: ConsentState)
+      : GameProjection =
+    projector.project(gameId, LoadedGame(OathState.Ready(
+      base.copy(consent = ledger)), 0L), p2)
+
+  /** `on` after p2 answered p1's request about `target`. */
+  private def answeredByP2(asks: Vector[ConsentAsk],
+      target: DecisionOptionRef, granted: Boolean, on: ConsentState,
+      base: ReadyGame, decisionId: String = destination): ConsentState =
+    accepted(accepted(on.requested(ConsentRequest(p1, decisionId, target,
+      asks))).answered(p2, granted, ConsentTurn.of(base)))
+
+  private val passAsk = Vector(ConsentAsk(p2, Vector(NarrowPassSite.pass)))
+
+  test("a power with no requests this turn carries an empty list"):
+    val (service, _) = ConsentFixture.service()
+    assertEquals(view(startTravel(service), p2).consentPreferences
+      .map(_.requests), Vector(Vector.empty))
+
+  test("the ruler's answered request is listed as answered and open to " +
+      "change, and nobody else sees it"):
+    val (service, _) = ConsentFixture.service()
+    val no = answering(service, asking(service), ConsentChoice.No)
+    assertEquals(requestsShownTo(p2, no), Vector(ConsentRequestRowProjection(
+      "p1", destination, "site", dunes.wireId, "Dunes", "refused",
+      Vector.empty, None, "open")))
+    assertEquals(requestsShownTo(p1, no), Vector.empty)
+    assertEquals(requestsShownTo(p3, no), Vector.empty)
+    assertEquals(projector.projectPublic(gameId, no.loaded)
+      .consentPreferences, Vector.empty)
+    val granted = changing(service, no, allow = true)
+    assertEquals(requestsShownTo(p2, granted).map(row =>
+      (row.answer, row.change)), Vector(("allowed", "open")))
+
+  test("an entry the requester acted on is used, and open again after " +
+      "their undo"):
+    val (service, _) = ConsentFixture.service()
+    val yes = answering(service, asking(service), ConsentChoice.Yes)
+    assertEquals(requestsShownTo(p2, yes).map(row =>
+      (row.answer, row.change)), Vector(("allowed", "used")))
+    val undone = accepted(service.handle(gameId, yes.nextSequence,
+      Commands.undo(p1)))
+    assertEquals(requestsShownTo(p2, undone).map(row =>
+      (row.answer, row.change)), Vector(("allowed", "open")))
+
+  test("an automatic power's answer is listed as automatic, with its " +
+      "card"):
+    val (service, _) = ConsentFixture.service(tyrantBesideAWalledCoast)
+    val waiting = travelledToTheWalledCoast(service, 0L)
+    val no = accepted(service.handle(gameId, waiting.nextSequence,
+      Commands.answerConsent(p2, ConsentChoice.No)))
+    assertEquals(requestsShownTo(p2, no).map(row =>
+      (row.use, row.answer, row.change)),
+      Vector((Some("Tyrant"), "refused", "automatic")))
+
+  test("an entry waits while a request about the same option does"):
+    val base = passRuledByP2
+    val answered = answeredByP2(passAsk, dunes, granted = true,
+      base.consent, base)
+    val waiting = answered.copy(pending = Some(ConsentRequest(p1,
+      destination, dunes, Vector(ConsentAsk(p3,
+        Vector(NarrowPassSite.pass))))))
+    assertEquals(shownToP2With(base, waiting).consentPreferences
+      .flatMap(_.requests).map(_.change), Vector("waiting"))
+
+  test("the list is newest first, names the other powers an ask covered, " +
+      "and marks an answer that covers a power the viewer lost"):
+    val police = SecretPoliceCard.power.id
+    val both = TravelFixture.on(passRuledByP2)(_.denizen(
+      SecretPoliceCard.id, at = TravelFixture.pass))
+    val coast = DecisionOptionRef.Site(TravelFixture.coast)
+    val first = answeredByP2(passAsk, dunes, granted = true, both.consent,
+      both)
+    val second = answeredByP2(Vector(ConsentAsk(p2,
+      Vector(NarrowPassSite.pass, police))), coast, granted = false, first,
+      both)
+    val shown = shownToP2With(both, second).consentPreferences
+    assertEquals(shown.find(_.powerId == NarrowPassSite.pass.value)
+      .toVector.flatMap(_.requests).map(row =>
+        (row.optionId, row.alsoPowers, row.change)), Vector(
+      (coast.wireId, Vector("Secret Police"), "open"),
+      (dunes.wireId, Vector.empty, "open")))
+    assertEquals(shown.find(_.powerId == police.value).toVector
+      .flatMap(_.requests).map(row => (row.optionId, row.alsoPowers)),
+      Vector((coast.wireId, Vector("Narrow Pass"))))
+    // Without the Police on the map, p2 rules the Pass alone.
+    assertEquals(shownToP2With(passRuledByP2, second).consentPreferences
+      .flatMap(_.requests).map(row => (row.optionId, row.change)), Vector(
+      (coast.wireId, "lapsed"), (dunes.wireId, "open")))
+
+  test("a button whose decision is no longer parked reads the log's " +
+      "fallback label"):
+    val base = passRuledByP2
+    val answered = answeredByP2(passAsk,
+      DecisionOptionRef.Button("give-way"), granted = true, base.consent,
+      base, decisionId = "not-parked")
+    assertEquals(shownToP2With(base, answered).consentPreferences
+      .flatMap(_.requests).map(_.label), Vector("Give Way"))
+
+  test("a toll's free option keeps its own words in the list after the " +
+      "traveller has paid and the step is gone"):
+    val (service, _) = ConsentFixture.service(TollConsentFixture.tolled)
+    val asked = accepted(service.handle(gameId,
+      TollConsentFixture.atTheStep(service).nextSequence,
+      TollConsentFixture.requestFree))
+    val no = answering(service, asked, ConsentChoice.No)
+    assertEquals(requestsShownTo(p2, no).map(_.label),
+      Vector("Travel without paying"))
+    val paid = accepted(service.handle(gameId, no.nextSequence,
+      Commands.resolveWalker(p1, TreeDecision(TollRoads.decisionId,
+        DecisionAnswer.ChooseOneAnswer(PayOrAsk.pay)))))
+    assertEquals(requestsShownTo(p2, paid).map(_.label),
+      Vector("Travel without paying"))
+
+  test("once the game is over an entry stays listed and cannot be " +
+      "changed (R24)"):
+    val base = passRuledByP2
+    val answered = answeredByP2(passAsk, dunes, granted = true,
+      base.consent, base)
+    val over = base.updateCurrent(_.copy(result =
+      Some(GameResult(p1, VictoryKind.Usurper))))
+    assertEquals(shownToP2With(over, answered).consentPreferences
+      .flatMap(_.requests).map(_.change), Vector("over"))
+
+  test("an answer given to a request that still waits is listed to its " +
+      "giver first, as waiting (R26)"):
+    val base = passRuledByP2
+    val earlier = answeredByP2(passAsk, dunes, granted = true,
+      base.consent, base)
+    val coast = DecisionOptionRef.Site(TravelFixture.coast)
+    val waiting = accepted(accepted(earlier.requested(ConsentRequest(p1,
+      destination, coast, Vector(
+        ConsentAsk(p2, Vector(NarrowPassSite.pass), alternative = true),
+        ConsentAsk(p3, Vector(NarrowPassSite.pass), alternative = true)))))
+      .answered(p2, granted = false, ConsentTurn.of(base)))
+    assert(waiting.pending.nonEmpty)
+    assertEquals(shownToP2With(base, waiting).consentPreferences
+      .flatMap(_.requests).map(row =>
+        (row.optionId, row.answer, row.change)), Vector(
+      (coast.wireId, "refused", "waiting"), (dunes.wireId, "allowed", "open")))
+    assertEquals(projector.project(gameId, LoadedGame(OathState.Ready(
+      base.copy(consent = waiting)), 0L), p3).consentPreferences
+      .flatMap(_.requests), Vector.empty)
+
+  test("an option answered before and again in a waiting request is " +
+      "listed once, as the waiting answer"):
+    val base = passRuledByP2
+    val earlier = answeredByP2(passAsk, dunes, granted = true,
+      base.consent, base)
+    val waiting = accepted(accepted(earlier.requested(ConsentRequest(p1,
+      destination, dunes, Vector(
+        ConsentAsk(p2, Vector(NarrowPassSite.pass), alternative = true),
+        ConsentAsk(p3, Vector(NarrowPassSite.pass), alternative = true)))))
+      .answered(p2, granted = false, ConsentTurn.of(base)))
+    assertEquals(shownToP2With(base, waiting).consentPreferences
+      .flatMap(_.requests).map(row =>
+        (row.optionId, row.answer, row.change)),
+      Vector((dunes.wireId, "refused", "waiting")))
+
+  test("the prompt names a card its granter may not identify as a hidden " +
+      "card, and its id stays on the server (R25)"):
+    val base = TravelFixture.on(passRuledByP2)(_.adviser(p1, TyrantCard,
+      facedown = true))
+    val asked = base.copy(consent = accepted(base.consent.requested(
+      ConsentRequest(p1, "not-parked",
+        DecisionOptionRef.Denizen(TyrantCard.id), passAsk))))
+    val shown = projector.project(gameId, LoadedGame(OathState.Ready(asked),
+      0L), p2)
+    assertEquals(shown.consentPrompt.map(_.target), Some("a hidden card"))
+    assert(!GameProjectionCodec.encode(shown).contains(
+      "\"" + TyrantCard.id.value + "\""))
+
+  test("an entry whose option the viewer may not identify is not listed, " +
+      "so its id never leaves the server (R19)"):
+    // p1 holds Tyrant facedown: p2 may not name it.
+    val base = TravelFixture.on(passRuledByP2)(_.adviser(p1, TyrantCard,
+      facedown = true))
+    val answered = answeredByP2(passAsk,
+      DecisionOptionRef.Denizen(TyrantCard.id), granted = true,
+      base.consent, base, decisionId = "not-parked")
+    val shown = shownToP2With(base, answered)
+    assertEquals(shown.consentPreferences.flatMap(_.requests), Vector.empty)
+    assert(!GameProjectionCodec.encode(shown).contains(
+      "\"" + TyrantCard.id.value + "\""))
+
+  test("the prompt says what its granter may adjust later: the answer, " +
+      "the preferences for an automatic power, nothing for an ask nobody " +
+      "rules"):
+    val (service, _) = ConsentFixture.service()
+    assertEquals(view(asking(service), p2).consentPrompt.map(_.adjust),
+      Some("answer"))
+    val (walled, _) = ConsentFixture.service(tyrantBesideAWalledCoast)
+    assertEquals(view(travelledToTheWalledCoast(walled, 0L), p2)
+      .consentPrompt.map(_.adjust), Some("preferences"))
+    val law = passRuledByP2.copy(consent = ConsentState(pending = Some(
+      ConsentRequest(p1, destination, dunes, Vector(ConsentAsk(p2,
+        Vector(ImperialLaws.chancellorsEye)))))))
+    assertEquals(projector.project(gameId, LoadedGame(OathState.Ready(law),
+      0L), p2).consentPrompt.map(_.adjust), Some("none"))
 
   test("a site power carries its power id"):
     val (service, _) = ConsentFixture.service()
@@ -138,6 +356,27 @@ class ConsentProjectionSuite extends munit.FunSuite:
     assertEquals(projector.project(gameId, LoadedGame(OathState.Ready(ready),
       0L), p2).consentPreferences.map(entry => (entry.powerId, entry.cardId)),
       Vector(("denizen.secret-police", Some(police.value))))
+
+  test("a ruined edifice's waivable power is named for its ruined face"):
+    val home = AncientCitySite.id
+    def named(side: EdificeSide): Vector[String] =
+      val ready = Table.start.edifice(RelicPatrolsCard, side, at = home)
+        .warbandsAt(home, p2, 2).ready
+      projector.project(gameId, LoadedGame(OathState.Ready(ready), 0L), p2)
+        .consentPreferences.map(_.power)
+    assertEquals(named(EdificeSide.Ruined), Vector("Bandit Patrols"))
+    assertEquals(named(EdificeSide.Intact), Vector("Relic Patrols"))
+
+  test("the Festival's holder sees its preferences keyed by the banner, " +
+      "and no card"):
+    val ready = Table.start
+      .darkestSecret(Some(p2), 1, face = DarkestSecretFace.Festival).ready
+    assertEquals(projector.project(gameId, LoadedGame(OathState.Ready(ready),
+      0L), p2).consentPreferences.map(entry =>
+        (entry.power, entry.cardId, entry.bannerKey)),
+      Vector(("Darkest Secret", None, Some("darkest-secret"))))
+    assertEquals(projector.project(gameId, LoadedGame(OathState.Ready(ready),
+      0L), p1).consentPreferences, Vector.empty)
 
   test("City Wall's ruler is asked whether to deactivate the traveller's " +
       "Tyrant, and the traveller waits on that decision"):

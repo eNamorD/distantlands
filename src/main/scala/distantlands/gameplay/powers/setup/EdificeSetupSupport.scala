@@ -9,6 +9,11 @@ import distantlands.model._
   * E22). Where an edifice stands is `CurrentGameState.edificeSite`.
   */
 object EdificeSetupSupport:
+  /** The option naming `edifice` in the placer's power-order question
+    * (catalog batch 13, ruling 4). */
+  def option(edifice: EdificeId): DecisionOption =
+    DecisionOption.Edifice(DecisionOptionRef.Edifice(edifice))
+
   /** Whether a face standing at `site` resolves at the node `ctx` hooks.
     * At Setup it resolves wherever it stands. WHEN EXPLORED "triggers when
     * the card is placed on the map by the Explore action" (rulebook, "Setup

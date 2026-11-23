@@ -85,7 +85,7 @@ class OathDriverSuite extends munit.FunSuite:
       "decision"):
     // The result is arranged directly: the queue left behind is the subject.
     val over = table.update(_.updateCurrent(_.copy(
-      result = Some(GameResult(p2)),
+      result = Some(GameResult(p2, VictoryKind.Usurper)),
       queue = Vector(offer(ActionRef.Campaign))))).state
     val driven = accepted(FollowUpPlay.dequeued(rules, over))
     assert(!driven.events.exists(_.isInstanceOf[ProcedureDequeued]),

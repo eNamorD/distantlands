@@ -21,7 +21,8 @@ object GameProjectionCodec:
     "walkerDecision", "walkerWaiting", "viewerPlayerId",
     "supplyMaximum", "supplyBands", "undo", "redo", "logRevision",
     "consentWaiting", "consentPrompt", "consentPreferences", "chronicle",
-    "planAidPrompt", "foundations", "publicLegacies", "reliquary")
+    "planAidPrompt", "foundations", "publicLegacies", "reliquary",
+    "publicPreview", "chronicleDetails")
 
   def encode(value: GameProjection): String = ujson.write(encodeValue(value))
   def decode(json: String): Either[ProtocolDecodeFailure, GameProjection] =
@@ -83,7 +84,10 @@ object GameProjectionCodec:
       "rulesText" -> f.rulesText)),
     "publicLegacies" -> encoded(value.publicLegacies)(
       WorldProjectionCodec.encodeCard),
-    "reliquary" -> encoded(value.reliquary)(WorldProjectionCodec.encodeCard))
+    "reliquary" -> encoded(value.reliquary)(WorldProjectionCodec.encodeCard),
+    "publicPreview" -> option(value.publicPreview)(encodePublicPreview),
+    "chronicleDetails" -> option(value.chronicleDetails)(
+      ChronicleDetailsCodec.encode))
     value.viewerPlayerId.foreach(player => result("viewerPlayerId") = ujson.Str(player))
     value.planAidPrompt.foreach(prompt => result("planAidPrompt") =
       PlanAidProjectionCodec.encodePrompt(prompt))
@@ -160,6 +164,12 @@ object GameProjectionCodec:
       Vector.empty[ujson.Value])(array)
     reliquary <- traverse(reliquaryRaws, s"$path.reliquary")(
       WorldProjectionCodec.decodeCard)
+    publicPreview <- optionalAbsent(value, "publicPreview", path)(
+      decodePublicPreview)
+    // Required: a snapshot without it is refused (Chronicle Details
+    // design, slice 1).
+    chronicleDetails <- optional(value, "chronicleDetails", path)(
+      ChronicleDetailsCodec.decode)
   yield GameProjection(game, sequence, phase, active, players, world, pawns,
     ready, completed, resources, siteResources,
     deckCount, deckTop, boards, oathkeeper, banners,
@@ -167,7 +177,30 @@ object GameProjectionCodec:
     walkerDecision, walkerWaiting, viewer,
     supplyMaximum, bands, undo, redo, logRevision,
     consentWaiting, consentPrompt, consentPreferences, chronicle,
-    planAidPrompt, foundations, publicLegacies, reliquary)
+    planAidPrompt, foundations, publicLegacies, reliquary, publicPreview,
+    chronicleDetails)
+
+  private def encodePublicPreview(value: PublicPreviewProjection): ujson.Value =
+    ujson.Obj("sections" -> encoded(value.sections)(section =>
+      ujson.Obj("title" -> section.title, "cards" ->
+        encoded(section.cards)(WorldProjectionCodec.encodeCard))))
+
+  private def decodePublicPreview(raw: ujson.Value, path: String)
+      : Result[PublicPreviewProjection] = for
+    row <- obj(raw, path)
+    _ <- exact(row, Set("sections"), path)
+    sectionRaws <- array(row, "sections", path)
+    sections <- traverse(sectionRaws, s"$path.sections")(decodeSection)
+  yield PublicPreviewProjection(sections)
+
+  private def decodeSection(raw: ujson.Value, path: String)
+      : Result[PublicPreviewSection] = for
+    row <- obj(raw, path)
+    _ <- exact(row, Set("title", "cards"), path)
+    title <- string(row, "title", path)
+    cardRaws <- array(row, "cards", path)
+    cards <- traverse(cardRaws, s"$path.cards")(WorldProjectionCodec.decodeCard)
+  yield PublicPreviewSection(title, cards)
 
   private def decodeFoundation(raw: ujson.Value, path: String)
       : Result[FoundationProjection] = for

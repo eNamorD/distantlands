@@ -39,6 +39,8 @@ class PendingWalkerInvariantSuite extends munit.FunSuite:
     Commands.requestConsent(actor, "not-parked",
       DecisionOptionRef.Button("go")),
     Commands.answerConsent(actor, ConsentChoice.Yes),
+    Commands.reconsiderConsent(actor, PlayerId("p2"), "not-parked",
+      DecisionOptionRef.Button("go"), allow = true),
     Commands.savePlanAid(actor, AidOffer()))
 
   private def isStepCommand(command: GameCommand): Boolean = command match

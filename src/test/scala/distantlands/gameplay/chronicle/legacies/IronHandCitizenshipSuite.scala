@@ -28,7 +28,7 @@ class IronHandCitizenshipSuite extends munit.FunSuite:
   private val scepter = DecisionOptionRef.Relic(TheGrandScepterCard.id)
   private val discard = Move(Piece.Card(IronHandCard.id),
     PositionedLocation(Location.Legacies(LineageId("l1"))),
-    PositionedLocation(Location.Deck(CardDeck.Legacy)))
+    PositionedLocation.legacyDeckBottom)
 
   /** GrandScepterActionSuite's table: p2 the Chancellor; p1, an Exile in
     * their Act at Broken Peaks, holds the Grand Scepter and 2 board
