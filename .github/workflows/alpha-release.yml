@@ -146,7 +146,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - runner: macos-14
+          - runner: macos-26
             target: macos-arm64
             extension: tgz
           - runner: windows-latest
