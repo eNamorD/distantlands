@@ -89,8 +89,8 @@ class PhaseMenuSuite extends munit.FunSuite:
     // secret at the site, there is no button to take one.
     assertEquals(options(waking.phaseMenuParked.state), Vector[DecisionOption](
       DecisionOption.Button(favor, "Take Wealth: 1 favor"),
-      DecisionOption.Unavailable(
-        DecisionOption.Site(DecisionOptionRef.Site(ancientCity)),
+      DecisionOption.Unavailable(DecisionOption.Named(
+        DecisionOption.Site(DecisionOptionRef.Site(ancientCity)), "River"),
         OptionReason.Written("Nothing to do now")),
       DecisionOption.Button(PhaseMenu.Menu.Wake.endingOption, "End Wake")))
 

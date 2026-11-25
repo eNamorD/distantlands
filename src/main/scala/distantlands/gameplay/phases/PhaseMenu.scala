@@ -158,7 +158,13 @@ object PhaseMenu:
         if sourced.count(_._3 == ref) > 1 then
           Some(DecisionOption.Button(powerButton(power.id),
             power.buttonName.getOrElse(power.id.value)))
-        else DecisionOption.forRef(ref)
+        else DecisionOption.forRef(ref).map(option => ref match
+          // A site's own name says nothing of what its power does, so the
+          // option reads as the power (River, not Headwaters). The
+          // reference stays the site's, which the journal records.
+          case _: DecisionOptionRef.Site =>
+            power.buttonName.fold(option)(DecisionOption.Named(option, _))
+          case _ => option)
       val refused = PhasePowerProcedure.refusals(catalog, ready, actor,
         power, found, phasePowers.useRestrictions)
       shown.toVector.map(option =>
