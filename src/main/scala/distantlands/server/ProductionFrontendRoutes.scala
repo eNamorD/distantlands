@@ -15,6 +15,10 @@ object ProductionFrontendRoutes:
     "public, max-age=0, must-revalidate"
   )
 
+  // The same asset URL answers gzip or plain bytes by Accept-Encoding, so a
+  // shared cache must key on it.
+  private val VaryOnEncoding = RawHeader("Vary", "Accept-Encoding")
+
   /** The one font the stylesheet loads, served by name so the assets prefix
     * stays a fixed list rather than a directory. */
   private val Atkinson = "atkinson-hyperlegible-next-latin-wght-normal.woff2"
@@ -32,13 +36,16 @@ object ProductionFrontendRoutes:
       path("new-game") {
         gamePage
       } ~
+      // Compress when the browser asks (gzip or deflate); the bundle shrinks
+      // about 7x, which a home upload link feels on every first load.
       pathPrefix("assets"):
-        respondWithHeader(AssetCacheControl):
-          path("main.js") {
-            getFromResource("distantlands/frontend/main.js")
-          } ~
-            path("styles.css") {
-              getFromResource("distantlands/frontend/styles.css")
+        encodeResponse:
+          respondWithHeaders(AssetCacheControl, VaryOnEncoding):
+            path("main.js") {
+              getFromResource("distantlands/frontend/main.js")
             } ~
-            path("fonts" / Atkinson):
-              getFromResource(s"distantlands/frontend/fonts/$Atkinson")
+              path("styles.css") {
+                getFromResource("distantlands/frontend/styles.css")
+              } ~
+              path("fonts" / Atkinson):
+                getFromResource(s"distantlands/frontend/fonts/$Atkinson")
