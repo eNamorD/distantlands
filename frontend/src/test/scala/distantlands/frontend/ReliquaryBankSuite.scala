@@ -26,3 +26,7 @@ class ReliquaryBankSuite extends munit.FunSuite:
 
   test("an empty Reliquary is not shown"):
     assertEquals(firstMatch(bank(), ".shared-reliquary"), None)
+
+  test("the Reliquary's relics split into even rows"):
+    assert(one(bank(back, back), ".shared-reliquary").classList
+      .contains("even-rows"))

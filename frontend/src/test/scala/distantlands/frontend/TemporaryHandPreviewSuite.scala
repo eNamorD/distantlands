@@ -36,6 +36,14 @@ class TemporaryHandPreviewSuite extends munit.FunSuite:
     assertEquals(panel(Vector.empty)
       .querySelectorAll(".temporary-hand-preview").length, 0)
 
+  test("the hand's cards and a public preview's cards split into even rows"):
+    val shown = panel(Vector(card), Some(PublicPreviewProjection(Vector(
+      PublicPreviewSection("Available edifices", Vector(card))))))
+    val rows = shown.querySelectorAll(".temporary-hand-preview > .decision-cards")
+      .toVector.map(_.asInstanceOf[dom.Element])
+    assertEquals(rows.map(_.classList.contains("even-rows")),
+      Vector(true, true))
+
   test("a public preview is drawn under its own title, whatever the hand"):
     val shown = panel(Vector.empty, Some(PublicPreviewProjection(Vector(
       PublicPreviewSection("Available edifices",

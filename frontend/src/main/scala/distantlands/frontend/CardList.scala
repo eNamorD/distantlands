@@ -12,7 +12,7 @@ private[frontend] object CardList:
   def render(title: String, cards: Vector[CardDetails]): dom.Element =
     val list = element("section", "card-list")
     list.appendChild(text("h3", "card-list-title", title))
-    val grid = element("ol", "card-list-grid")
+    val grid = EvenRows.watch(element("ol", "card-list-grid"))
     cards.foreach { card =>
       val item = element("li", "card-list-item")
       item.appendChild(CardFace.render(card))

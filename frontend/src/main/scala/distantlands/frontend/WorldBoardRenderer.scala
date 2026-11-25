@@ -633,7 +633,7 @@ private[frontend] object WorldBoardRenderer:
     // powers ruling 9): a face only where its viewer may peek. Each relic
     // is keyed by its card when known, so Golden Key's question marks it.
     if value.reliquary.nonEmpty then
-      val reliquary = element("div", "shared-reliquary")
+      val reliquary = EvenRows.watch(element("div", "shared-reliquary"))
       reliquary.setAttribute("aria-label", "Reliquary")
       reliquary.appendChild(text("h4", "shared-reliquary-label", "Reliquary"))
       value.reliquary.foreach(card => reliquary.appendChild(options.card(

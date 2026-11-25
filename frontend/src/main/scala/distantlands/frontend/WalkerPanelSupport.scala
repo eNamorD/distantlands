@@ -122,7 +122,7 @@ private[frontend] object WalkerPanelSupport:
         // A relic at the site the actor stands on is one they can read, so
         // the option is the card itself. The button takes it; a click on the
         // card still opens the inspector, as everywhere else.
-        val relics = element("div", "card-choices")
+        val relics = EvenRows.watch(element("div", "card-choices"))
         query.options.foreach { option =>
           val choice = element("div", "card-choice")
           option.card.foreach(card => choice.appendChild(
