@@ -175,8 +175,8 @@ Every printed card power now runs.
   Oathkeeper cards in the catalog and as a presentable option kind. The
   same options are built by True Oath and The Red Seer, so they should
   show the cards too.
-- [ ] **Edit Chronicle.** The Chronicle page shows the button disabled,
-  "Coming in a later release". Edits a saved Chronicle's fields in the
+- [ ] **Edit Chronicle.** While a Chronicle is loaded, the Chronicle page
+  shows the button disabled, "Coming in a later release". Edits a saved Chronicle's fields in the
   browser.
 
 ### Phase - Settings Feature
