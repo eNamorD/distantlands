@@ -52,7 +52,7 @@ class ChroniclePageSuite extends munit.FunSuite:
     row.querySelector(s".$className").asInstanceOf[dom.html.Button].click()
 
   test("an empty browser keeps the Loaded Chronicle box with None, offers " +
-      "New, leaves out Load, and withholds Edit and Export with reasons"):
+      "New, and leaves out Load, Edit and Export"):
     TestBrowser.useSynchronously(): browser =>
       renderChroniclePage(browser)
       val box = browser.byClass("chronicle-loaded").head
@@ -65,13 +65,9 @@ class ChroniclePageSuite extends munit.FunSuite:
       assert(shows(browser, "import-chronicle"))
       // With nothing saved there is nothing to load, so no Load button.
       assert(!shows(browser, "open-load-chronicle"))
-      Vector("edit-chronicle" -> "Coming in a later release",
-        "export-chronicle" -> "Load a Chronicle to export it").foreach {
-        case (name, reason) =>
-          val control = browser.byClass(name).head
-          assertEquals(control.getAttribute("aria-disabled"), "true")
-          assertEquals(control.getAttribute(HoverTip.Attribute), reason)
-      }
+      // With nothing loaded there is nothing to edit or export.
+      assert(!shows(browser, "edit-chronicle"))
+      assert(!shows(browser, "export-chronicle"))
       assert(!shows(browser, "chronicle-storage-refused"))
 
   test("Load Chronicle opens a dialog listing the saved entries"):
@@ -100,6 +96,10 @@ class ChroniclePageSuite extends munit.FunSuite:
       assert(!shows(browser, "chronicle-loaded-none"))
       assert(!browser.byClass("export-chronicle").head
         .hasAttribute("aria-disabled"))
+      val edit = browser.byClass("edit-chronicle").head
+      assertEquals(edit.getAttribute("aria-disabled"), "true")
+      assertEquals(edit.getAttribute(HoverTip.Attribute),
+        "Coming in a later release")
 
   test("a loaded entry shows no foundations, though its summary lists them"):
     TestBrowser.useSynchronously(): browser =>
@@ -246,6 +246,8 @@ class ChroniclePageSuite extends munit.FunSuite:
         Vector("Iron Vow"))
       assertEquals(textOf(browser, "chronicle-loaded-none"), "None")
       assert(!shows(browser, "continue-chronicle"))
+      assert(!shows(browser, "edit-chronicle"))
+      assert(!shows(browser, "export-chronicle"))
 
   test("deleting the last entry says nothing is saved, in the dialog"):
     TestBrowser.useSynchronously(): browser =>

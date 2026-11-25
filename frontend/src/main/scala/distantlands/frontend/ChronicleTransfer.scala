@@ -20,16 +20,13 @@ private[frontend] object ChronicleTransfer:
     open
 
   /** "Export Chronicle", opening the loaded Chronicle's export in a dialog
-    * in `host`; withheld while no Chronicle is loaded. */
-  def exportButton(host: dom.Element, entry: Option[ChronicleEntry],
+    * in `host`. The page draws it only while a Chronicle is loaded. */
+  def exportButton(host: dom.Element, chronicle: ChronicleEntry,
       client: ChronicleClient, files: ChronicleFiles): dom.html.Button =
     val open = button("Export Chronicle", "export-chronicle")
-    entry match
-      case None => HoverTip.withhold(open, "Load a Chronicle to export it")
-      case Some(chronicle) =>
-        open.onclick = _ => ChronicleDialog.open(host, open,
-          "export-chronicle-dialog", "Export Chronicle",
-          exportPanel(chronicle, client, files))
+    open.onclick = _ => ChronicleDialog.open(host, open,
+      "export-chronicle-dialog", "Export Chronicle",
+      exportPanel(chronicle, client, files))
     open
 
   /** A JSON file to upload or, below a divider, a TTS string to paste. */
