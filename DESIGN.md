@@ -818,6 +818,17 @@ table.
   persistent power. The modifier tab stands on its left end at 2.8em, and
   the power's cost sits on its middle as token glyphs on a `#1b1811` pill,
   so the text below no longer opens with the cost symbols.
+- **Rows that wrap:** a row of cards that needs more than one line splits
+  its cards evenly: as many lines as plain wrapping needs, the same count on
+  each, give or take one. Six cards with room for five sit three and three,
+  not five and one; seven sit four and three. Cards of mixed widths, a
+  legacy among denizens, even out by line length instead. The row is capped
+  at the narrowest width that keeps plain wrapping's line count, and is
+  re-measured as its pane resizes (`EvenRows`). It applies
+  to a decision's card wells (the temporary hand and a public preview such
+  as the available edifices), the relics on offer, card lists and the
+  Reliquary. A partition's zones are left to wrap plainly, since balancing
+  would reshuffle them under a drag, and a row set not to wrap is untouched.
 
 ### Dice
 A rolled die is a face-shaped chip: 1.9em minimum width, 1.5em tall, 1px

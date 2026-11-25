@@ -36,6 +36,11 @@ class InspectPanelSuite extends munit.FunSuite:
       Vector("d1", "hidden"))
     assert(faces(1).classList.contains("card-face-down"))
 
+  test("the listed cards split into even rows"):
+    val panel = render(canControl = true, new RecordingControls())
+    assert(panel.querySelector(".card-list-grid").classList
+      .contains("even-rows"))
+
   test("Done answers with its one button, and only for a player in control"):
     val ui = new RecordingControls()
     doneButton(render(canControl = true, ui)).click()

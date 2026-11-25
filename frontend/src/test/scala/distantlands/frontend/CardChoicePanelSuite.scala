@@ -45,6 +45,10 @@ class CardChoicePanelSuite extends munit.FunSuite:
     assertEquals(takes.map(_.getAttribute("aria-label")),
       Vector("Take Ancient Crown facedown", "Take Brass Horn facedown"))
 
+  test("the relics on offer split into even rows"):
+    assert(Dom.one(recoverRelics(), ".card-choices").classList
+      .contains("even-rows"))
+
   test("taking a relic submits the option the button belongs to"):
     val ui = new RecordingControls()
     val panel = recoverRelics(ui)
