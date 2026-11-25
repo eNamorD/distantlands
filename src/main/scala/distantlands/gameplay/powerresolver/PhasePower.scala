@@ -50,8 +50,8 @@ trait PhasePower extends NotingPower:
     * at the start of its phase and is never offered or accepted as an
     * optional use. Only WAKE powers are forced today. */
   def forced: Boolean = false
-  /** The power's own name, for a menu button when its source carries two
-    * powers of one phase. */
+  /** The power's own name, for a menu option that names the power rather
+    * than its source: a source carrying two powers of one phase, or a site. */
   def buttonName: Option[String] = None
   /** Power-specific preconditions beyond access and once-per-turn.
     * `catalog` is the game's card catalog, which a power that looks other

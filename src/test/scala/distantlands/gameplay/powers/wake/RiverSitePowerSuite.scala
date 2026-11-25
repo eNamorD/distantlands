@@ -4,7 +4,8 @@ import distantlands.gameplay.cards.BrokenPeaksSite
 import distantlands.gameplay.powers.{NoteText, PhasePowerCatalog, PowerFixture}
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
 import distantlands.model._
-import distantlands.testkit.{Look, PhasePowerHarness, Refusals, Table}
+import distantlands.testkit.{Look, MenuPlay, PhasePowerHarness, Refusals,
+  Table}
 import distantlands.testkit.Unwrap.accepted
 
 class RiverSitePowerSuite extends munit.FunSuite:
@@ -38,6 +39,25 @@ class RiverSitePowerSuite extends munit.FunSuite:
   test("it is usable in the Wake at a River while another River is in play"):
     assertEquals(rivers(staged(Vector(riverbank, tidalMarshes), Phase.Wake)),
       Vector(river.id -> source))
+
+  test("the Wake menu names it River, under its site's reference"):
+    // The site's own name says nothing of the power. The answer still names
+    // the site, as saved games record the pick.
+    val ready = staged(Vector(riverbank), Phase.Wake)
+    val option = MenuPlay.menuOptionFor(catalog, ready,
+      ActionRef.UsePower(river.id), Vector(source))
+    assert(option.available)
+    assertEquals(option.ref, source)
+    assertEquals(menuLabel(option), Some("River"))
+
+  /** The label a `Named` wrapper gives `option`, through any other
+    * wrappers. */
+  private def menuLabel(option: DecisionOption): Option[String] =
+    option match
+      case DecisionOption.Named(_, label) => Some(label)
+      case DecisionOption.Unavailable(inner, _) => menuLabel(inner)
+      case wrapping: DecisionOption.Wrapping => menuLabel(wrapping.option)
+      case _ => None
 
   test("it is not usable when no other River is in play"):
     val alone = staged(Vector.empty, Phase.Wake)
