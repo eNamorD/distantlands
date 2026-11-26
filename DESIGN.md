@@ -65,6 +65,7 @@ colors:
   die-round: "#9b59b6"
   festival-teal: "#0f8285"
   festival-rim: "#062b2c"
+  round-marker: "#cfcac0"
   player-purple: "#d9b8ff"
   player-blue: "#8ecbff"
   player-red: "#ffaaa5"
@@ -257,6 +258,9 @@ suit, token, die and player colors of the physical board.
 These come from the physical components. They are semantic and must not be
 reused for UI meaning.
 
+- **Round Marker** (`round-marker`): the silver of the game's cylinder
+  that stands on the current round of the round wheel. Used for that
+  disc and nothing else.
 - **Favor** (`token-favor`) and **Burnt Favor** (`token-favor-burnt`): the
   gold coin and its cracked, dulled twin. Favor also colors the player title
   pill.
@@ -1072,13 +1076,32 @@ hover note.
   player's colour measured 4.17 : 1 on a translucent ground over white
   art. A pile's count stands on Base too (13.2 : 1). The tracker's line
   takes a Base halo.
-- **Site powers.** A site's power buttons are controls, not print: over
-  the site's art each shows as a chip, its label on the name band's fill
-  (`#1a1610d9`; cream on it measures 9.8 : 1 over white art and 15.8 : 1
-  over black), where and as large as the button is on the drawn face.
+- **Site powers.** A site's power buttons are controls, not print; over
+  the site's art their labels hide with the print and the buttons keep
+  their place, focusable, with their hover notes.
+- **A site's box.** The site's card covers the frame the mat prints and
+  the frame's line: the frame grown by 8 mat pixels a side, the image
+  fitted with `cover`. The drawn face has the same box.
 - **The mat.** Over the mat a favor bank drops its own pill, unless a
   decision offers it, and an empty pile drops its fill: the mat prints
-  both.
+  both. The tracker's lines are chips on Base (cream on Base, 15.6 : 1).
+  An empty card slot's dashed line is Bright Cream with a Base line
+  under it; its width follows the map's scale so it stays about a pixel
+  on screen, with art on and off.
+- **Favor banks.** A bank's parts stand where the mat prints them, at
+  every zoom, with art on and off: the suit's glyph on the emblem, the
+  favor filling the circle, and the count over the favor on a Base disc
+  (62% of the circle, the figure 44% of it). On the far zoomed-out map
+  the count takes the whole circle, so it holds about 9px on a phone.
+- **The round wheel.** The current round carries the round marker, a
+  disc in Round Marker silver with a Line Mid rim, in the outer half of
+  its wedge, with art on and off. Over the mat the current wedge keeps
+  its Bright Cream border and drops its brass fill. The Usurper's token
+  fills the limiter's wedge, its point to the hub; drawn, it is the
+  wedge's own shape in the limiter's red with a diamond.
+- **The Oath goal.** In the shared bank the Oath goal is its card, the
+  goal's ratio at a banner's height, with the holder in words under it;
+  drawn, the plate holds the goal's title.
 - **Glyphs.** A token glyph keeps its `svg` and holds the symbol's image
   inside it, fitted to the glyph's square. A card's text shows the printed
   symbol; favor and secrets lying in play show the token itself, and

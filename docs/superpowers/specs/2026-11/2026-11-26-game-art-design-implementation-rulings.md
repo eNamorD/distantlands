@@ -146,6 +146,8 @@ Slice/files: slice 1 review; `StylesheetArtSuite.scala`.
 ## Slice 2
 
 **R13. Foundations, the Oath goal and a board's legacies.**
+Amended by R37: the Oath goal is a card in the shared bank. Foundations
+and a board's legacies keep this ruling.
 Question: the design lists "the legacy and foundation strips, and the oath
 goal" among the card faces, but on the table a foundation is a one-line
 row, the Oath goal a text button and a board's legacy a pill; none is a
@@ -217,6 +219,7 @@ Slice/files: slice 2; `ArtCatalog.scala`.
 ## Slice 2 browser check
 
 **R20. A site's power buttons over its art.**
+Replaced by R45: the owner asked for no power words over a site's art.
 Question: with their printed labels hidden, the buttons were invisible
 controls with no cue.
 Decision: on a ready site each site-power button shows as a small chip:

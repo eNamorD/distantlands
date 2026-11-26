@@ -168,22 +168,31 @@ Every surface swaps art through one helper, `ArtLayer.attach(box, key)`.
 
 ## The surfaces
 
-- **Card faces:** `CardFace` and `BannerFace` on the table. A foundation,
-  the Oath goal and a board's legacy are words on the table (a row, a
-  button, a pill) and keep that form; each shows its image in the
-  inspection overlay
-  ([implementation ruling R13](2026-11-26-game-art-design-implementation-rulings.md)). A face-up card gets its face; a card the
+- **Card faces:** `CardFace` and `BannerFace` on the table, and the Oath
+  goal's card in the shared bank
+  ([implementation ruling R37](2026-11-26-game-art-design-implementation-rulings.md)). A
+  foundation and a board's legacy are words on the table (a row, a pill)
+  and keep that form; each shows its image in the inspection overlay
+  ([R13](2026-11-26-game-art-design-implementation-rulings.md)). A banner's overlay shows the
+  banner's face ([R43](2026-11-26-game-art-design-implementation-rulings.md)). A face-up card gets its face; a card the
   viewer cannot identify gets its kind's back. A Vision in a denizen box
   shows its landscape image turned a quarter, as `card-face-vision`
   already turns the drawn face. The inspection overlay shows the image
   large; its rules text is not printed and stays.
-- **The site card:** its face in the frame. The site-power buttons are
-  controls, not print (R9): over the image each shows as a chip, its
-  label on the name band's ground, in the place it has on the drawn face
-  ([implementation rulings R15 and R20](2026-11-26-game-art-design-implementation-rulings.md)).
+- **The site card:** its face in the frame the mat prints, covering the
+  frame's line; the image fills the box with `cover`
+  ([implementation ruling R38](2026-11-26-game-art-design-implementation-rulings.md)). The site-power buttons are
+  controls, not print (R9): their labels hide with the print and the
+  buttons keep their place ([R45](2026-11-26-game-art-design-implementation-rulings.md))
+  until the printed power symbols become their click targets.
 - **The mat:** one image behind the slots of `.mat-board`. The drawn
   washes, frames, region names and slot labels are printed and hide when
-  it is ready. The live layer does not change.
+  it is ready. The live layer keeps its places and reads on the picture:
+  the tracker's lines are chips on Base, an empty card slot's line turns
+  Bright Cream, a favor bank shows its favor filling the mat's circle
+  with the count over it, the current round keeps its border and carries
+  the round marker, and the Usurper's token fills its wedge
+  ([implementation rulings R39 to R42 and R44](2026-11-26-game-art-design-implementation-rulings.md)).
 - **Symbols in text:** in `RulesTextRenderer` and the glyph chips, each
   glyph keeps its `svg` and holds the symbol's image inside it, fitted to
   the glyph's square; the drawn sprite hides when the image has loaded
