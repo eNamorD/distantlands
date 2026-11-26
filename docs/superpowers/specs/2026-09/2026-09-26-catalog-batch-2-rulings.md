@@ -66,7 +66,7 @@ faceup advisers.
 | 228 Spoiled Supplies | Cost 1 favor placed. Every other player whose pawn is at the player's site loses 1 Supply, never below zero. Nothing is asked. |
 | 131 Charming Friend | Adviser-only. Cost 1 secret placed. Choose another player whose pawn is at the player's site and `Take` 1 favor from their board, so other powers may restrict it. With no such player, the cost is paid and nothing happens, as for Sleight of Hand. A chosen player with no favor gives nothing. |
 | 116 Siege Engines | Cost 1 favor placed. Choose a site in the region of the player's pawn, any ruler, and kill up to 2 warbands there, the player's own and bandits included. A site left empty is refilled with bandits by the existing refill after the action. |
-| R36 Barbed Net | Cost 3 secrets burnt. Peek at every relic at the player's site, then take one facedown, as Recover does. The existing minor action that reveals an owned relic covers "you may keep it facedown". A site with no relic: the cost is paid and nothing happens. |
+| R36 Barbed Net | Cost 3 favor burnt (corrected 2026-11-26 from the card image; the old catalog said secrets). Peek at every relic at the player's site, then take one facedown, as Recover does. The existing minor action that reveals an owned relic covers "you may keep it facedown". A site with no relic: the cost is paid and nothing happens. |
 | R19 Book of Records | Cost 1 secret placed and 2 secrets burnt. Choose a banner held by a player whose pawn is at the player's site, the player's own banner included. Take up to 2 of what it holds: favor from the People's Favor, secrets from the Darkest Secret. |
 
 ## Slice 5: triggers and when played
