@@ -251,6 +251,17 @@ class StylesheetArtSuite extends munit.FunSuite:
   test("on a ready site a power button's label hides with the print"):
     assert(!css.contains(".site.art-ready .site-power"))
 
+  /** Over the mat an empty slot's dashed line was lost (R44). */
+  test("an empty card slot shows on the mat, and an offered one keeps " +
+      "its ring"):
+    val slot = rule(
+      """.mat-board.art-ready .card-slot-empty:not([class*="board-option"])""")
+    Vector("border-color: var(--cream-bright)",
+      "box-shadow: inset 0 0 0 1px var(--base)")
+      .foreach(part => assert(slot.contains(part), part))
+    Vector("padding", "margin", "width", "height").foreach(part =>
+      assert(!slot.contains(part), part))
+
   test("an empty pile on a ready mat drops its fill, so the mat's slot " +
       "shows (R21)"):
     val empty = rule(".mat-board.art-ready .deck-card.pile-empty")

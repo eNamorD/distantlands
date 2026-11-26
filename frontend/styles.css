@@ -2415,6 +2415,12 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    fill would hide the wedge the mat prints (R40). */
 .mat-board.art-ready .round-current { fill: none; }
 .festival-plate-printed.art-ready > :not(.art) { opacity: 0; }
+/* The mat prints no outline for a card slot, and a thin dashed line is
+   lost on its picture: over the mat an empty slot's line is Bright Cream
+   with a dark line under it. A slot a decision offers keeps its ring. */
+.mat-board.art-ready .card-slot-empty:not([class*="board-option"]) {
+  border-color: var(--cream-bright);
+  box-shadow: inset 0 0 0 1px var(--base); }
 /* The mat prints each pile's slot, so an empty pile gives way to it. */
 .mat-board.art-ready .deck-card.pile-empty { border-color: transparent;
   background: none; }
