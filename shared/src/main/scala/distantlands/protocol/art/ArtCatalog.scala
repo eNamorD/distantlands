@@ -270,7 +270,7 @@ object ArtCatalog:
     * `docs/catalog/asset-proportions.md`. */
   private val dieCrops: Vector[(String, DieCrop)] =
     def face(die: String, x: Int, y: Int, side: Int): DieCrop =
-      DieCrop(dieSheets.toMap.apply(die), x, y, side, side, 2048, 2048)
+      DieCrop(dieSheet(die).get, x, y, side, side, 2048, 2048)
     Vector(
       "two-swords-skull" -> face("attack", 14, 702, 638),
       "hollow-sword" -> face("attack", 698, 702, 638),
