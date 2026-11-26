@@ -9,8 +9,8 @@ import distantlands.model._
 object BanditPrinceCard extends Denizen(DenizenId("226"), "Bandit Prince", Suit.Discord) with Locked with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.bandit-prince"),
     persistent = false, cost = Cost.free,
-    text = "**WHEN PLAYED,** you may replace all bandits at any sites " +
-      "you choose with your warbands.")
+    text = "**WHEN PLAYED,** you may replace all bandits at any " +
+      "sites you choose with warbands from your warband bank.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Bandit Prince (card 226, adviser-only, locked), WHEN PLAYED: you may

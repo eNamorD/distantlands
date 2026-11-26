@@ -10,8 +10,8 @@ object WizardsConclaveCard extends Denizen(DenizenId("208"), "Wizard's Conclave"
   val power = PrintedPower(PowerId("denizen.wizard-s-conclave"),
     persistent = false, cost = Cost.free,
     text = "**WHEN PLAYED,** the player who rules the most " +
-      "[suit-arcane] cards takes the Darkest Secret. You decide " +
-      "ties. _Don't remove secrets from it._")
+      "[suit-arcane] cards takes the Darkest Secret. You " +
+      "decide ties. _Don't remove [secret] from it._")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Wizard's Conclave (card 208), WHEN PLAYED: the player who rules the most

@@ -14,8 +14,8 @@ object ForestWardenCard extends Denizen(DenizenId("218"), "Forest Warden",
   val power = PrintedPower(PowerId("denizen.forest-warden"),
     persistent = false, cost = Cost.free,
     modifier = Some(ModifierMark.Action(MajorActionType.Search)),
-    text = "If you play a [suit-beast] card to a site, you may bury a " +
-      "card at the site first.")
+    text = "If you play a [suit-beast] card to a site, you may bury " +
+      "a denizen at the site first.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Forest Warden (card 218), a selected Search modifier with no cost: "If
