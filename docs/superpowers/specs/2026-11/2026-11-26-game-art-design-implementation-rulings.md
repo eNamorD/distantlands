@@ -367,3 +367,89 @@ stylesheet pins (R12) and by the browser check's rectangle comparison.
 Reason: the test browser has no layout engine.
 Slice/files: `CardArtSuite`, `WorldArtSuite`, `PieceArtSuite`,
 `DieArtSuite`.
+
+## Slice 4: the owner's review of the running table
+
+**R37. The Oath goal in the shared bank.**
+Question: the owner asked for "the Oathkeeper image" in place of the
+words "Oathkeeper of Supremacy"; the folder has the Oath goal card and the
+Oathkeeper title.
+Decision: the Oath goal card. It is a card box at the goal's ratio and
+the banners' height, before the banners, and still the button that opens
+the goal's overlay. The holder is a line of words under it. With art off
+the box holds the drawn goal face at the same size. This amends R13 for
+the Oath goal; foundations and a board's legacies keep R13.
+Reason: the section names the goal, and the title's art already has its
+plate.
+Slice/files: slice 4; `WorldBoardRenderer.sharedBank`,
+`frontend/styles.css`.
+
+**R38. A site card and the frame the mat prints.**
+Question: the mat's frame line showed around a site's card.
+Decision: the site's box is the frame's rectangle grown by the line's
+measured half-thickness on every side, and the image fills it with
+`object-fit: cover`. The site's row and its neighbours do not move. The
+drawn face takes the same box.
+Reason: a one percent trim of the picture is invisible; scaling the card
+whole would make sites taller than denizens.
+Slice/files: slice 4; `MatLayout.siteCard`,
+`docs/catalog/asset-proportions.md`.
+
+**R39. The Usurper's token on the wheel.**
+Question: the token was far smaller than the real one.
+Decision: the token fills its wedge, its point to the hub. The drawn
+fallback takes the same wedge shape. The round marker and the current
+wedge's border lie over it.
+Reason: that is the real token's size and place.
+Slice/files: slice 4; `WorldBoardRenderer.roundTracker`, `ArtLayer`.
+
+**R40. The round marker.**
+Question: how the current round is shown.
+Decision: a silver disc on the current round's wedge, for the game's
+round marker, with art on and off. It takes a new colour,
+`--round-marker`, recorded in `DESIGN.md`. Over a ready mat the current
+wedge drops its brass fill and keeps its border and the disc; with art
+off the fill stays.
+Reason: the brass fill hid the mat's own wedge.
+Slice/files: slice 4; `WorldBoardRenderer.roundTracker`,
+`frontend/styles.css`, `DESIGN.md`.
+
+**R41. Labels on the mat.**
+Question: the tracker's lines could not be read over the mat's art.
+Decision: over a ready mat each line is a chip on opaque Base. With art
+off the lines are unchanged.
+Reason: the drawn mat already gives them contrast; the complaint was
+about the art.
+Slice/files: slice 4; `frontend/styles.css`.
+
+**R42. Favor banks.**
+Question: a bank's favor and count were too small to read.
+Decision: the favor token fills the mat's circle, the count stands
+centred over it on a small Base disc, as large as the disc allows, and
+the suit's glyph stands on the mat's emblem. The drawn fallback has the
+same three places.
+Reason: legibility at Fit is the point of the request.
+Slice/files: slice 4; `MatLayout`, `WorldBoardRenderer.favorBanks`,
+`frontend/styles.css`.
+
+**R43. A banner's overlay.**
+Decision: the overlay shows the banner's own face at the overlay's size,
+left of its rules, as a card's overlay shows the card.
+Slice/files: slice 4; `BannerFace`, `CardInspection`,
+`CardInspectionOverlay`.
+
+**R44. Empty card slots on the mat.**
+Decision: over a ready mat an empty slot's dashed outline is Bright Cream
+with a dark line under it; a slot a decision offers keeps its ring. If
+one pixel is too thin at a phone's Fit, the border's width follows the
+map's scale, with art on and off alike.
+Slice/files: slice 4; `frontend/styles.css`.
+
+**R45. Site powers between slices 4 and 5.**
+Question: R20's chips are removed (the owner's item 5) before slice 5
+builds the click targets on the site's printed power symbols.
+Decision: accepted for the time between the two slices; the buttons stay
+focusable with their hover notes. If slice 5's click targets are deferred
+to the roadmap, this is reopened before the branch is done. R20 is
+replaced.
+Slice/files: slice 4; `frontend/styles.css`.
