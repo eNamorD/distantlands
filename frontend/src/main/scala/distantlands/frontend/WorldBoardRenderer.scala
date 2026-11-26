@@ -650,7 +650,10 @@ private[frontend] object WorldBoardRenderer:
       // stands over it, as large as it can be read (R42).
       val token = element("span", "favor-bank-token")
       token.appendChild(RulesTextRenderer.piece("favor"))
-      token.appendChild(text("span", "favor-bank-count", bank.count.toString))
+      val count = text("span", "favor-bank-count", bank.count.toString)
+      // Two figures are set smaller where the count fills its circle.
+      count.setAttribute("data-figures", bank.count.toString.length.toString)
+      token.appendChild(count)
       box.appendChild(token)
       options.decorate(box,
         Vector(BoardOptionViews.key("favor-bank", bank.suit)))

@@ -462,6 +462,10 @@ class StylesheetArtSuite extends munit.FunSuite:
     val tiny = rule(".map-tiny .mat-board .favor-bank-count")
     Vector("width: 100cqw", "height: 100cqw", "font-size: 78cqw")
       .foreach(part => assert(tiny.contains(part), part))
+    // Two figures at that size are wider than the disc: 52cqw sets them
+    // about 62cqw wide, inside the circle.
+    assert(rule(".map-tiny .mat-board .favor-bank-count[data-figures=\"2\"]")
+      .contains("font-size: 52cqw"))
     // The old grid, which sized a bank's parts from the text, is gone.
     assert(!css.contains(".mat-board .favor-bank { display: grid"))
     assert(!css.contains(".favor-bank > .token-favor"))

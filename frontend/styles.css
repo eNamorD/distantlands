@@ -577,6 +577,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    count takes all of it, so it stays near a readable size. */
 .map-tiny .mat-board .favor-bank-count { width: 100cqw; height: 100cqw;
   font-size: 78cqw; }
+.map-tiny .mat-board .favor-bank-count[data-figures="2"] { font-size: 52cqw; }
 /* An empty card slot's line keeps about a pixel on screen at any zoom;
    the slot's box does not grow with it. */
 .mat-board .card-slot-empty {

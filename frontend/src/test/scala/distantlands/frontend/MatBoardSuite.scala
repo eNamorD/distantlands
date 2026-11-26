@@ -153,6 +153,19 @@ class MatBoardSuite extends munit.FunSuite:
     assertEquals(one(arcane, ".favor-bank-count").textContent, "3")
     assert(!one(arcane, ".favor-bank-count").classList.contains("printed"))
 
+  /** The review's finding: on the far zoomed-out map a count of two
+    * figures left its disc. The count says how many figures it has, so
+    * the stylesheet can set two smaller. */
+  test("a bank's count says how many figures it has"):
+    def countOf(favor: Int): dom.Element =
+      one(WorldBoardRenderer.world(table.copy(favorBanks = Vector(
+        FavorBankState("arcane", favor))), BoardOptions.none),
+        ".favor-bank-count")
+    assertEquals(countOf(9).getAttribute("data-figures"), "1")
+    assertEquals(countOf(10).getAttribute("data-figures"), "2")
+    assertEquals(countOf(10).textContent, "10")
+    assertEquals(countOf(36).getAttribute("data-figures"), "2")
+
   /** The owner could not read a bank's favor (game art ruling R42): the
     * favor fills the mat's circle with the count over it, and the suit's
     * glyph stands on the mat's emblem. */
