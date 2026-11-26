@@ -2365,7 +2365,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .mat-board.art-ready .favor-bank:not([class*="board-option"]) {
   border-color: transparent; background: none; }
 /* What lies on a site's card in play keeps a ground of its own over the
-   art: opaque Base, on which every player colour measures 6.7 : 1 or
+   art: opaque Base, on which every player colour measures 6.6 : 1 or
    better. It is a fill and a shadow of one colour, so nothing moves. The pawns' ground is their row's: a pawn is an option
    a decision can mark, and its ring, glow and selected fill are its own
    background and shadow. The row clips, so it takes the fill alone. The
@@ -2411,6 +2411,18 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 /* The mat prints each pile's slot, so an empty pile gives way to it. */
 .mat-board.art-ready .deck-card.pile-empty { border-color: transparent;
   background: none; }
+/* A die face is a crop of its die's sheet: a square as tall as the chip,
+   centred in it, showing only the face. The chip's own glyphs hide when
+   the sheet has loaded, and so does the doubler's "×2", which its side
+   of the sheet prints; the chip keeps its size, fill and border. */
+.die-face:has(> .art-crop) { position: relative; }
+.art-crop { position: absolute; top: 0; bottom: 0; left: 50%;
+  aspect-ratio: 1; overflow: hidden; transform: translateX(-50%);
+  border-radius: inherit; pointer-events: none; }
+.art-crop > .art { right: auto; bottom: auto; z-index: auto;
+  max-width: none; object-fit: fill; }
+.die-face.art-ready > svg { opacity: 0; }
+.die-face.art-ready { color: transparent; }
 
 
 /* Document level, above .game-pane -- which is what lets that pane keep

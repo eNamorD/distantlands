@@ -191,7 +191,7 @@ class StylesheetArtSuite extends munit.FunSuite:
     // Opaque Base, not the name band's translucent fill: forces and pawns
     // wear player colours, and the black player's measured 4.17 : 1 on
     // the translucent ground over white art; on Base every player colour
-    // is 6.7 : 1 or better (slice 3, measured).
+    // is 6.6 : 1 or better (slice 3, measured).
     Vector("background: var(--base)", "box-shadow: 0 0 0 3px var(--base)",
       "border-radius: 3px").foreach(part =>
       assert(onSite.contains(part), part))
@@ -251,6 +251,25 @@ class StylesheetArtSuite extends munit.FunSuite:
     val empty = rule(".mat-board.art-ready .deck-card.pile-empty")
     Vector("border-color: transparent", "background: none")
       .foreach(part => assert(empty.contains(part), part))
+
+  test("a die face's crop is a square as tall as its chip, centred, " +
+      "showing only the face; the chip keeps its size (R25)"):
+    val chip = rule(".die-face:has(> .art-crop)")
+    assert(chip.contains("position: relative"))
+    val crop = rule(".art-crop")
+    Vector("position: absolute", "top: 0", "bottom: 0", "left: 50%",
+      "aspect-ratio: 1", "overflow: hidden", "transform: translateX(-50%)")
+      .foreach(part => assert(crop.contains(part), part))
+    val sheet = rule(".art-crop > .art")
+    Vector("z-index: auto", "max-width: none", "object-fit: fill",
+      "right: auto", "bottom: auto")
+      .foreach(part => assert(sheet.contains(part), part))
+    // The glyphs hide; the doubler's own "×2" too, since its side of the
+    // sheet prints it.
+    assert(rule(".die-face.art-ready > svg").contains("opacity: 0"))
+    assert(rule(".die-face.art-ready").contains("color: transparent"))
+    Vector("width", "height", "padding", "margin").foreach(part =>
+      assert(!rule(".die-face.art-ready").contains(part), part))
 
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */

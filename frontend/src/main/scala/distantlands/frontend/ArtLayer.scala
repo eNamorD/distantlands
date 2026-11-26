@@ -1,6 +1,6 @@
 package distantlands.frontend
 
-import distantlands.protocol.art.ArtKey
+import distantlands.protocol.art.{ArtKey, DieCrop}
 import org.scalajs.dom
 
 /** The one way a surface swaps licensed art in for what it draws (game
@@ -69,6 +69,32 @@ private[frontend] object ArtLayer:
     image.setAttribute("href", url)
     image
 
+  /** Lays a die face over `box`: a square holding the die's sheet, sized
+    * and offset so only the face's crop shows (game art design, "Dice").
+    * The square is centred in the box and as tall as it; the box keeps
+    * its size. A sheet that fails takes the square with it. */
+  def attachCrop(box: dom.Element, crop: Option[DieCrop]): Unit =
+    for face <- crop; url <- wanted(Some(face.sheet)) do
+      val frame = dom.document.createElement("span")
+      frame.setAttribute("class", "art-crop")
+      frame.setAttribute("aria-hidden", "true")
+      val image = dom.document.createElement("img")
+        .asInstanceOf[dom.html.Image]
+      image.className = "art"
+      image.alt = ""
+      image.setAttribute("decoding", "async")
+      def percent(value: Double): String =
+        f"${value * 100}%.4f".reverse.dropWhile(_ == '0')
+          .dropWhile(_ == '.').reverse + "%"
+      image.style.width = percent(face.sheetW.toDouble / face.w)
+      image.style.height = percent(face.sheetH.toDouble / face.h)
+      image.style.left = percent(-face.x.toDouble / face.w)
+      image.style.top = percent(-face.y.toDouble / face.h)
+      watch(image, url, box, remove = frame)
+      image.src = url
+      frame.appendChild(image)
+      box.appendChild(frame)
+
   /** The URL to ask for: `GameArt` has one for `key`, and it has not
     * failed on this page. */
   private def wanted(key: Option[ArtKey]): Option[String] =
@@ -79,8 +105,9 @@ private[frontend] object ArtLayer:
     * fresh image; the browser already holds one it has loaded, so the
     * fresh box is ready at once and a redraw never flashes the drawn
     * face. */
-  private def watch(image: dom.Element, url: String, marked: dom.Element)
-      : Unit =
+  private def watch(image: dom.Element, url: String, marked: dom.Element,
+      remove: dom.Element | Null = null): Unit =
+    val gone = if remove == null then image else remove
     if GameArt.hasLoaded(url) then marked.classList.add("art-ready")
     image.addEventListener("load", (_: dom.Event) =>
       GameArt.markLoaded(url)
@@ -88,6 +115,6 @@ private[frontend] object ArtLayer:
     image.addEventListener("error", (_: dom.Event) =>
       GameArt.markFailed(url)
       marked.classList.remove("art-ready")
-      image.asInstanceOf[dom.Node].parentNode match
+      gone.asInstanceOf[dom.Node].parentNode match
         case null => ()
-        case parent => parent.removeChild(image))
+        case parent => parent.removeChild(gone))

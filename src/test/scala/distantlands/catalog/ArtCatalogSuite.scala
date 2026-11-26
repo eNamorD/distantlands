@@ -192,3 +192,42 @@ class ArtCatalogSuite extends munit.FunSuite:
       "symbols/symbol-dicep.png").foreach(path =>
       assertEquals(ArtCatalog.allPaths.count(_ == path), 1, path))
 
+  test("every die face has a square crop inside its die's sheet"):
+    import distantlands.protocol.projection.DieFace
+    DieFace.values.foreach { face =>
+      val crop = ArtCatalog.dieFace(face.key).getOrElse(fail(face.key))
+      assertEquals(Some(crop.sheet), ArtCatalog.dieSheet(face.die.key),
+        face.key)
+      assertEquals(crop.w, crop.h, face.key)
+      assertEquals((crop.sheetW, crop.sheetH), (2048, 2048), face.key)
+      assert(crop.x >= 0 && crop.y >= 0 && crop.x + crop.w <= crop.sheetW &&
+        crop.y + crop.h <= crop.sheetH, face.key)
+    }
+    assertEquals(ArtCatalog.dieFace("unknown"), None)
+
+  test("two faces of one die do not share a crop"):
+    import distantlands.protocol.projection.DieFace
+    val crops = DieFace.values.toVector.flatMap(face =>
+      ArtCatalog.dieFace(face.key))
+    for one <- crops; other <- crops if !(one eq other) &&
+        one.sheet == other.sheet do
+      assert(one.x + one.w <= other.x || other.x + other.w <= one.x ||
+        one.y + one.h <= other.y || other.y + other.h <= one.y,
+        s"$one overlaps $other")
+
+  test("asset-proportions.md records the die crops the catalog holds"):
+    import distantlands.protocol.projection.DieFace
+    val page = Files.readString(Path.of("docs", "catalog",
+      "asset-proportions.md"))
+    val rows = page.linesIterator.dropWhile(_ != "## Die faces")
+      .takeWhile(_ != "## The mat").collect {
+        case s"| $face | $die | $x | $y | $w | $h |" if face != "Face" &&
+            !face.startsWith("-") =>
+          (face, die, x.toInt, y.toInt, w.toInt, h.toInt)
+      }.toVector
+    assertEquals(rows.toSet, DieFace.values.toVector.map { face =>
+      val crop = ArtCatalog.dieFace(face.key).get
+      (face.key, face.die.key, crop.x, crop.y, crop.w, crop.h)
+    }.toSet)
+    assertEquals(rows.size, DieFace.values.size)
+

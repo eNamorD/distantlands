@@ -5,6 +5,12 @@ package distantlands.protocol.art
   * key is a path the server may serve. */
 final case class ArtKey private[art] (path: String)
 
+/** One face of a die: a square of its die's sheet, in the sheet's pixels
+  * from its upper left, with the sheet's size, so a renderer can show the
+  * face alone (game art design, "Dice"). */
+final case class DieCrop(sheet: ArtKey, x: Int, y: Int, w: Int, h: Int,
+    sheetW: Int, sheetH: Int)
+
 /** Where each game identifier's image lies in the host's art folder. The
   * server serves exactly `allPaths`, and the client asks for nothing else,
   * so the two read one table. It holds file names only; the art is the
@@ -256,6 +262,25 @@ object ArtCatalog:
   private val dieSheets: Vector[(String, ArtKey)] = Vector(
     "attack" -> ArtKey("tts/attack-die/attack_die.png"),
     "defense" -> ArtKey("tts/defense-die/defense_die.png"))
+
+  /** Each die face's square on its die's sheet, by the face's wire key.
+    * Both sheets are 2048×2048 and lay six sides out three by two in
+    * their lower two thirds; a face printed on several sides is read
+    * from one. The numbers are recorded, with how they were measured, in
+    * `docs/catalog/asset-proportions.md`. */
+  private val dieCrops: Vector[(String, DieCrop)] =
+    def face(die: String, x: Int, y: Int, side: Int): DieCrop =
+      DieCrop(dieSheets.toMap.apply(die), x, y, side, side, 2048, 2048)
+    Vector(
+      "two-swords-skull" -> face("attack", 14, 702, 638),
+      "hollow-sword" -> face("attack", 698, 702, 638),
+      "one-sword" -> face("attack", 1392, 702, 638),
+      "blank" -> face("defense", 10, 707, 642),
+      "one-shield" -> face("defense", 700, 707, 642),
+      "two-shields" -> face("defense", 10, 1387, 642),
+      "doubler" -> face("defense", 1391, 1387, 642))
+
+  def dieFace(key: String): Option[DieCrop] = dieCrops.toMap.get(key)
 
   def symbol(token: String): Option[ArtKey] = symbols.toMap.get(token)
   def restriction(kind: String): Option[ArtKey] = restrictions.toMap.get(kind)

@@ -36,6 +36,29 @@ denizen box; upright, it is the legacy box.
 Token and die glyph boxes are square; a token image is fitted inside its
 box.
 
+## Die faces
+
+Each die's sheet is 2048×2048 px. Its six sides lie three by two in the
+sheet's lower two thirds. A face is shown as a square crop of the sheet;
+a face printed on several sides is read from one. Numbers are in the
+sheet's pixels, from its upper left.
+
+| Face | Die | x | y | w | h |
+|---|---|---|---|---|---|
+| two-swords-skull | attack | 14 | 702 | 638 | 638 |
+| hollow-sword | attack | 698 | 702 | 638 | 638 |
+| one-sword | attack | 1392 | 702 | 638 | 638 |
+| blank | defense | 10 | 707 | 642 | 642 |
+| one-shield | defense | 700 | 707 | 642 | 642 |
+| two-shields | defense | 10 | 1387 | 642 | 642 |
+| doubler | defense | 1391 | 1387 | 642 | 642 |
+
+How they were measured: each sheet was drawn to a canvas in the browser
+and scanned along rows and columns for runs of the side's flat colour
+(orange on the attack die, blue on the defense die). A side's run is 640
+px on the attack sheet and 643 px on the defense sheet; each crop is the
+run less a pixel at each edge. The doubler's side prints its own "2×".
+
 ## The mat
 
 The mat image is 5787×2303 px (2.513 : 1). All numbers below are in its
