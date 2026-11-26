@@ -61,9 +61,7 @@ class StylesheetArtSuite extends munit.FunSuite:
         found.group(2).contains("opacity")).map(_.group(1).trim).toVector
     assertEquals(setters, Vector(".printed", ".end-die-idle.printed",
       ".map-compact .card-header.printed > *,\n" +
-        ".map-compact .card-header.printed > .card-emblems > *",
-      // By ruling R20: a site's power is a control, so its label shows.
-      ".site.art-ready .site-power > .printed"))
+        ".map-compact .card-header.printed > .card-emblems > *"))
 
   /** Opacity reaches nothing through an element with no box. On the
     * compact map a card's header and its emblems column are
@@ -247,17 +245,11 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(rule(".festival-plate-printed.art-ready > :not(.art)")
       .contains("opacity: 0"))
 
-  /** A site's power is a control, not print (R9, R20): over the site's
-    * art its button is a chip, where and as large as it already is. */
-  test("on a ready site a power button shows as a chip on the name " +
-      "band's ground, and its label stays visible"):
-    assert(rule(".site.art-ready .site-power > .printed")
-      .contains("opacity: 1"))
-    val chip = rule(".site.art-ready .site-power")
-    Vector("background: #1a1610d9", "box-shadow: 0 0 0 3px #1a1610d9",
-      "border-radius: 3px").foreach(part => assert(chip.contains(part), part))
-    Vector("padding", "margin", "width", "height", "border:").foreach(part =>
-      assert(!chip.contains(part), part))
+  /** The owner asked for no power words over a site's art (R45, which
+    * replaces R20): the label hides with the rest of the print and the
+    * button keeps its place. */
+  test("on a ready site a power button's label hides with the print"):
+    assert(!css.contains(".site.art-ready .site-power"))
 
   test("an empty pile on a ready mat drops its fill, so the mat's slot " +
       "shows (R21)"):
