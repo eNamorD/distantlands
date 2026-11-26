@@ -26,11 +26,11 @@ class CrystalVialSuite extends munit.FunSuite:
   private val theirs = BattleHonorsCard.id
   private val other = p2
 
-  /** p1, in Act at Ancient City, holds the Vial and Wrestlers, with 2
-    * faceup secrets; p2 holds Battle Honors. */
+  /** p1, in Act at Ancient City, holds the Vial and Wrestlers, with 1
+    * faceup secret and 1 favor; p2 holds Battle Honors. */
   private def staged = Table.start
     .pawn(p1, AncientCitySite).relic(p1, vial).adviser(p1, held)
-    .secrets(p1, faceUp = 2)
+    .secrets(p1, faceUp = 1).favor(p1, 1)
     .adviser(p2, theirs)
     .ready
   private def secretsOf(ready: ReadyGame) =
@@ -41,18 +41,19 @@ class CrystalVialSuite extends munit.FunSuite:
       case d: DenizenState => "denizen" -> d.id.value
       case e: EdificeState => "edifice" -> e.id.value }
   private def worldDeck(ready: ReadyGame) = ready.game.current.commonCards.worldDeck
-  /** p1, at Ancient City, holds the Vial and 2 faceup secrets, and no
+  /** p1, at Ancient City, holds the Vial, 1 faceup secret and 1 favor, and no
     * adviser; the site holds no card. */
   private def bare: ReadyGame =
     Table.start.pawn(p1, AncientCitySite).relic(p1, vial)
-      .secrets(p1, faceUp = 2).ready
+      .secrets(p1, faceUp = 1).favor(p1, 1).ready
 
-  test("the cost is one secret placed on the Vial and one burnt"):
+  test("the cost is one secret placed on the Vial and one favor burnt"):
     val t = accepted(use(staged, power, source))
     assert(awaits(t, CrystalVial.decisionId),
       parked.parkedDecision(t.state).toString)
     assertEquals(Look(after(t)).tokensOn(vial), Tokens(0, 1))
     assertEquals(secretsOf(after(t)), (0, 0))
+    assertEquals(Look(after(t)).favor(actor), 0)
 
   test("it offers the actor's advisers in either orientation and the cards " +
       "at the actor's site, and nobody else's"):
@@ -132,13 +133,15 @@ class CrystalVialSuite extends munit.FunSuite:
     assertEquals(Look(after(t)).tokensOn(vial), Tokens(0, 1))
     assertEquals(secretsOf(after(t)), (0, 0))
 
-  test("it needs two faceup secrets"):
-    Vector((1, 0), (1, 5)).foreach { case (up, down) =>
-      val ready = Table.from(staged).secrets(actor, up, down).ready
-      assertEquals(usableNow(ready), Vector.empty, s"$up up, $down down")
-      assertEquals(use(ready, power, source).left.toOption,
-        Some(OathViolation.InsufficientSecrets(2, 1)))
-    }
+  test("it needs a faceup secret and a favor"):
+    val noSecret = Table.from(staged).secrets(actor, 0, 5).ready
+    assertEquals(usableNow(noSecret), Vector.empty)
+    assertEquals(use(noSecret, power, source).left.toOption,
+      Some(OathViolation.InsufficientSecrets(1, 0)))
+    val noFavor = Table.from(staged).favor(actor, 0).ready
+    assertEquals(usableNow(noFavor), Vector.empty)
+    assertEquals(use(noFavor, power, source).left.toOption,
+      Some(OathViolation.InsufficientFavor(1, 0)))
 
   test("it writes the card it buried in place of the generic line"):
     val t = accepted(use(staged, power, source))

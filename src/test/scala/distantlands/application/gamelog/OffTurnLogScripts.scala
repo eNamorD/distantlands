@@ -1,9 +1,8 @@
 package distantlands.application.gamelog
 
 import distantlands.gameplay.actions.campaign.CampaignIds
-import distantlands.gameplay.actions.travel.TravelProcedure
 import distantlands.gameplay.cards.{AncientCitySite, BuriedGiantSite}
-import distantlands.gameplay.powers.campaign.{SecondWindCard, SneakAttackCard}
+import distantlands.gameplay.powers.campaign.SneakAttackCard
 import distantlands.gameplay.walker.FollowUpOffer
 import distantlands.model._
 import distantlands.model.DecisionAnswer.{ChooseAmountAnswer,
@@ -51,41 +50,3 @@ object OffTurnLogScripts:
       Dice.blanks)
     raidAnswers(act, everyOffer(FollowUpOffer.skip)).after(menuCampaign)
     Script("sneak-attack-skipped", service, p1)
-
-  /** Whether the parked follow-up offer is for a Travel. */
-  private def offersTravel(park: Park): Boolean =
-    park.ready.game.current.walkerEntry.exists(_.procedure == ActionRef.Travel)
-
-  /** Whether the parked plan window still offers `card`. */
-  private def stillOffers(park: Park, card: DenizenId): Boolean =
-    park.decide.query match
-      case one: DecisionQuery.ChooseOne => one.options.exists(option =>
-        option.available && option.ref == DecisionOptionRef.Denizen(card))
-      case _ => false
-
-  /** p2 rules Ancient City with 2 warbands and holds Second Wind faceup,
-    * with a faceup secret and a favor; p1 conquers there with blank dice
-    * and loses. p2 picks Second Wind, travels to Buried Giant off turn,
-    * then skips the Campaign. */
-  def secondWindDefenderTravels(using munit.Location): Script =
-    val secondWind = SecondWindCard.id
-    val table = Table.start.pawn(p1, AncientCitySite)
-      .pawn(p3, BuriedGiantSite).warbandsAt(AncientCitySite, p2, 2)
-      .adviser(p2, secondWind).secrets(p2, faceUp = 1).favor(p2, 1)
-      .banditsRefilled
-    val (service, act) = atTable("second-wind-defender", table, Dice.blanks)
-    raidAnswers(act, noSacrifice.orElse {
-      case park if park.decisionId == CampaignIds.kind =>
-        ChooseOneAnswer(DecisionOptionRef.Button("conquest"))
-      case park if park.decisionId == CampaignIds.defenderPlan &&
-          stillOffers(park, secondWind) =>
-        ChooseOneAnswer(DecisionOptionRef.Denizen(secondWind))
-      case park if park.decisionId == FollowUpOffer.decisionId =>
-        ChooseOneAnswer(
-          if offersTravel(park) then FollowUpOffer.take
-          else FollowUpOffer.skip)
-      case park if park.decisionId == TravelProcedure.destinationDecisionId =>
-        ChooseOneAnswer(DecisionOptionRef.Site(
-          BuriedGiantSite.id))
-    }).after(menuCampaign)
-    Script("second-wind-defender", service, p1)

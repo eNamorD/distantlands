@@ -7,16 +7,16 @@ import distantlands.model._
 object ThreateningRoarCard extends Denizen(DenizenId("179"), "Threatening Roar", Suit.Beast):
   val power = PrintedPower(PowerId("denizen.threatening-roar"),
     persistent = false, cost = Cost.free,
-    text = "**WHEN PLAYED:** discard all [suit-nomad] and [suit-beast] " +
-      "cards at sites in your region.")
+    text = "**WHEN PLAYED,** discard all [suit-nomad] and other " +
+      "[suit-beast] cards at sites in your region.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-/** Threatening Roar (card 179), WHEN PLAYED: discard all Nomad and Beast
-  * cards at sites in your region.
+/** Threatening Roar (card 179), WHEN PLAYED: discard all Nomad and other
+  * Beast cards at sites in your region.
   *
   * The discard is [[RegionDiscard]]'s, as Dazzle's is, with Nomad and Beast
-  * kept. Played to a site, it is a Beast card at a site in the region, so it
-  * discards itself.
+  * kept. Played to a site, it is a Beast card at a site in the region; the
+  * card says "other", so it spares itself.
   */
 case object ThreateningRoar extends WhenPlayedPower:
   val id: PowerId = ThreateningRoarCard.power.id
@@ -28,7 +28,8 @@ case object ThreateningRoar extends WhenPlayedPower:
   notes.include(RegionDiscard.notes)
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  private val region = new RegionDiscard(id, ThreateningRoar.suits)
+  private val region = new RegionDiscard(id, ThreateningRoar.suits,
+    spared = Set(ThreateningRoarCard.id))
 
   def effect(ctx: PowerCtx): Vector[Operation] =
     region.effect(ctx.catalog, id, cardId, ctx.actor)

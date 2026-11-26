@@ -11,12 +11,12 @@ object GiantPythonCard extends Denizen(DenizenId("186"), "Giant Python", Suit.Be
   val action = PrintedPower(PowerId("denizen.giant-python.action"),
     persistent = false, cost = Cost(secret = 1),
     text = "**ACTION:** If you hold the Darkest Secret, move Giant " +
-      "Python to another site, and you may discard a card there " +
-      "first.")
+      "Python to another site, and you may discard a denizen " +
+      "there first.")
   val restriction = PrintedPower(PowerId("denizen.giant-python.restriction"),
     persistent = true, cost = Cost.free,
     text = "Other cards at this site **cannot** be used for " +
-      "non-persistent powers or placing [favor] / [secret].")
+      "non-persistent powers or placing [favor]/[secret].")
   val powers: Vector[PrintedPower] = Vector(action, restriction)
 
 /** Giant Python's ACTION (card 186, site-only): "If you hold the Darkest

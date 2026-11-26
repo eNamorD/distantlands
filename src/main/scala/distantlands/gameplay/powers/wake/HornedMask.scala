@@ -10,9 +10,9 @@ import distantlands.model._
 object HornedMaskCard extends Relic(RelicId("R06"), "Horned Mask", value = 48, defense = 2):
   val power = PrintedPower(PowerId("relic.horned-mask"),
     persistent = false, cost = Cost.free,
-    text = "**WAKE:** You may take a non-edifice denizen from your site " +
-      "as a facedown adviser _(once per turn, like all Wake " +
-      "powers)_.")
+    text = "**WAKE:** You may take a denizen, but not an edifice, " +
+      "from your site as a facedown adviser. _(Once per turn, " +
+      "like all Wake powers.)_")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Horned Mask (relic R06), WAKE: take a non-edifice denizen from your pawn's

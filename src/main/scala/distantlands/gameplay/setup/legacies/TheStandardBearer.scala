@@ -12,9 +12,9 @@ object TheStandardBearerCard extends Legacy(LegacyId("L18"), "The Standard Beare
     LegacyGoal.PeoplesFavor, Suit.Arcane):
   val power = PrintedPower(PowerId("legacy.the-standard-bearer"),
     persistent = false, cost = Cost.free,
-    text = "**SETUP:** After placing your pawn, you may take a banner " +
-      "from the shared bank and place two more [favor] or [secret] " +
-      "on it from the shared bank.")
+    text = "**SETUP:** After placing your pawn, you may take a " +
+      "banner from the shared bank and place two more " +
+      "[favor]/[secret] on it from the shared bank.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** The Standard Bearer (legacy L18), its SETUP power (Legacy Setup powers

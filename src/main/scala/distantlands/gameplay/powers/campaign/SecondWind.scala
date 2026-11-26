@@ -6,12 +6,12 @@ import distantlands.model._
 object SecondWindCard extends Denizen(DenizenId("16"), "Second Wind", Suit.Discord):
   val power = PrintedPower(PowerId("denizen.second-wind"),
     persistent = false, cost = Cost(secret = 1, favorBurnt = 1),
-    modifier = Some(ModifierMark.EitherSidePlan),
+    modifier = Some(ModifierMark.AttackPlan),
     text = "After you're victorious, you may travel and then may " +
       "campaign, spending no Supply for either.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-/** Second Wind (card 16), a battle plan: "[secret] [favor-burnt]
+/** Second Wind (card 16), an attacker's battle plan: "[secret] [favor-burnt]
   * After you're victorious, you may travel and then may campaign, spending no
   * Supply for either."
   *
@@ -23,15 +23,13 @@ object SecondWindCard extends Denizen(DenizenId("16"), "Second Wind", Suit.Disco
   * two entries are independent: skipping the Travel still offers the
   * Campaign.
   *
-  * Offered to either side (catalog batch 8, slice 14, ruling 11). A winning
-  * defender's Travel and Campaign are queued at the back with the defender
-  * as their actor, so they are walked off turn after the attacker's
-  * follow-ups, and the defender pays the plan's cost off turn.
+  * The card prints the attacker's red, so a defender is not offered it
+  * (card audit of 2026-11-26, which withdrew catalog batch 8, slice 14,
+  * ruling 11).
   */
 case object SecondWind extends DenizenPlan(SecondWindCard,
     SecondWindCard.power):
-  def sides: Set[CampaignPlanSide] =
-    Set(CampaignPlanSide.Attacker, CampaignPlanSide.Defender)
+  def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Attacker)
 
   def plan(context: PlanContext): Option[CampaignPlanOffer] =
     context.denizen(cardId).map(source => CampaignPlanOffer(source,

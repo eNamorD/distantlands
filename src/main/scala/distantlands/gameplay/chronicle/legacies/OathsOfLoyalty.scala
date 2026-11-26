@@ -13,9 +13,9 @@ object OathsOfLoyaltyCard extends Legacy(LegacyId("L25"), "Oaths of Loyalty",
   val power = PrintedPower(PowerId("legacy.oaths-of-loyalty"),
     persistent = false, cost = Cost.free,
     text = "When you would gain a starting adviser, bury it, except " +
-      "for—**CHRONICLE (WORLD):** In Gather Denizens, keep your " +
-      "faceup advisers. They will be your facedown starting " +
-      "advisers in the next game.")
+      "for—**CHRONICLE (WORLD):** In Gather Denizens, " +
+      "keep up to 3 faceup advisers of yours. They will be " +
+      "your facedown starting advisers in the next game.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Oaths of Loyalty (legacy L25): "When you would gain a starting adviser,

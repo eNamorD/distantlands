@@ -6,11 +6,11 @@ import distantlands.model._
 
 object DemonTailCard extends Relic(RelicId("R46"), "Demon Tail", value = 69, defense = 1):
   val power = PrintedPower(PowerId("relic.demon-tail"),
-    persistent = false, cost = Cost(secretBurnt = 3),
+    persistent = false, cost = Cost(favorBurnt = 3),
     text = "**ACTION:** Gain 2 Supply.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-/** Demon Tail (relic R46), ACTION: burn 3 secrets, then gain 2 Supply, up to
+/** Demon Tail (relic R46), ACTION: burn 3 favor, then gain 2 Supply, up to
   * the track's maximum. Its own line reads the Supply the track allowed, as
   * Wayside Inn's does.
   */

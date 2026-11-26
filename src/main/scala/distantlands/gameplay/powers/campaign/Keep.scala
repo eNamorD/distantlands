@@ -1,41 +1,40 @@
 package distantlands.gameplay.powers.campaign
 
-import distantlands.catalog.{Denizen, PrintedPower, SiteOnly}
+import distantlands.catalog.{Denizen, ModifierMark, PrintedPower, SiteOnly}
 import distantlands.gameplay.actions.campaign.CampaignSetup
-import distantlands.gameplay.powerresolver.{ContributingPower, Contribution,
-  PowerCtx, PowerUse, Transform}
 import distantlands.model._
 
 object KeepCard extends Denizen(DenizenId("5"), "Keep", Suit.Order) with SiteOnly:
   val power = PrintedPower(PowerId("denizen.keep"),
     persistent = false, cost = Cost.free,
+    modifier = Some(ModifierMark.DefensePlan),
     text = "If defeated in a raid, after the attacker takes what they " +
       "targeted, place your pawn at this site and end the action. " +
       "_Do not burn favor, move pawn, etc._")
   val powers: Vector[PrintedPower] = Vector(power)
 
-/** Keep (card 5, site-only), a rule of a faceup site card: "If defeated in
-  * a raid, after the attacker takes what they targeted, place your pawn at
+/** Keep (card 5, site-only), a defender's battle plan: "If defeated in a
+  * raid, after the attacker takes what they targeted, place your pawn at
   * this site and end the action. Do not burn favor, move pawn, etc."
   *
-  * It applies when the Raid's defeated defender defends Keep's site once the
-  * battle's losses are made: its ruler, or for a site the Empire holds the
-  * Chancellor, on every turn (`CampaignSetup.defenderAt`, ruling R14). The takes stand. The Raid's consequences (the
-  * facedown discards, the set-aside relics, the half-favor burn) are
-  * dropped, and the relocation question is replaced: the defender's pawn
-  * moves to Keep's site, or stays when it is already there. Nothing else in
-  * the Raid follows; the effects at the Campaign's end still run.
+  * The card prints the defender's blue braid and crest, so it is a plan the
+  * defender chooses, not a rule that applies by itself (card audit of
+  * 2026-11-26). It is offered in a Raid to the defender of Keep's site: its
+  * ruler, or for a site the Empire holds the Chancellor, on every turn
+  * (`CampaignSetup.defenderAt`, ruling R14). It costs nothing.
   *
-  * The catalog marks the power `persistent: false`, but it is not a choice,
-  * so it keeps the default automatic resolution. Its line, "Ended the Raid
-  * with {Blue}'s pawn at {site}.", restates a pawn move and covers it, so
-  * the Campaign's closing line does not say the pawn was sent there.
+  * Chosen, it applies once the defender is defeated and the battle's losses
+  * are made. The takes stand. The Raid's consequences (the facedown
+  * discards, the set-aside relics, the half-favor burn) are dropped, and the
+  * relocation question is replaced: the defender's pawn moves to Keep's
+  * site, or stays when it is already there. Nothing else in the Raid
+  * follows; the effects at the Campaign's end still run.
+  *
+  * Its line, "Ended the Raid with {Blue}'s pawn at {site}.", restates a
+  * pawn move and covers it, so the Campaign's closing line does not say the
+  * pawn was sent there.
   */
-case object KeepRule extends ContributingPower:
-  val cardId: DenizenId = KeepCard.id
-  val id: PowerId = KeepCard.power.id
-  def source: RuleSourceRef = RuleSourceRef.GameRule(id.value)
-
+case object Keep extends DenizenPlan(KeepCard, KeepCard.power):
   private val notes = NoteSet(id)
   /** "Ended the Raid with {Blue}'s pawn at {site}." */
   val ended: NoteKey = notes.key("ended", Vector(
@@ -44,30 +43,29 @@ case object KeepRule extends ContributingPower:
 
   override def noteKeys: Vector[NoteKey] = notes.declared
 
-  def contributions: Map[PowerWindow, Vector[Contribution]] = Map(
-    PowerWindow.CampaignRaidConsequences ->
-      Vector(Transform((_, _) => Vector.empty)),
-    PowerWindow.CampaignRaidRelocation -> Vector(Transform((ctx, _) =>
-      kept(ctx.state).toVector.map((defender, site) =>
-        placed(defender, site)))))
+  def sides: Set[CampaignPlanSide] = Set(CampaignPlanSide.Defender)
 
-  override def applicable(ctx: PowerCtx): Boolean = kept(ctx.state).nonEmpty
+  def plan(context: PlanContext): Option[CampaignPlanOffer] =
+    context.denizen(cardId)
+      .filter(_ => context.setup.kind == CampaignKind.Raid)
+      .map(source => CampaignPlanOffer(source,
+        "Keep: if defeated, lose only what was targeted and move here",
+        Vector.empty, Vector.empty))
 
-  /** The defender's use of Keep, which a power-use restriction judges where
-    * its window folds: it replaces the Raid's consequences, so it cannot sit
-    * in an `AutomaticUse` (catalog batch 8, slice 10). */
-  override def use(ctx: PowerCtx): Option[PowerUse] =
-    kept(ctx.state).map((defender, _) =>
-      PowerUse.automatic(defender, id, cardId))
+  override def wrapping: Map[PowerWindow, BattlePlan.Wrap] = Map(
+    PowerWindow.CampaignRaidConsequences -> ((_, use, children) =>
+      kept(use).fold(children)(_ => Vector.empty)),
+    PowerWindow.CampaignRaidRelocation -> ((_, use, children) =>
+      kept(use).fold(children)((defender, site) =>
+        Vector(placed(defender, site)))))
 
   /** The Raid's defeated defender and Keep's site, when that defender
-    * defends it. Both windows Keep folds come only after a Raid's victory,
-    * so the recorded result is this Raid's. */
-  def kept(ready: ReadyGame): Option[(PlayerId, SiteId)] = for
-    result <- ready.game.current.lastCampaignResult
+    * chose Keep and still defends its site. */
+  private def kept(use: PlanUse): Option[(PlayerId, SiteId)] = for
+    result <- use.result if result.attackerWins
     defender <- result.defender.player
-    site <- ready.game.current.faceUpDenizenSite(cardId)
-    if CampaignSetup.defenderAt(ready, site)
+    site <- use.ready.game.current.faceUpDenizenSite(cardId)
+    if CampaignSetup.defenderAt(use.ready, site)
       .contains(CampaignDefender.Player(defender))
   yield (defender, site)
 

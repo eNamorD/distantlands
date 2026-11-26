@@ -10,12 +10,13 @@ object IronHandCard extends Legacy(LegacyId("L01"), "Iron Hand",
     LegacyGoal.MostSites, Suit.Order):
   val power = PrintedPower(PowerId("legacy.iron-hand"),
     persistent = false, cost = Cost.free,
-    text = "**If you are Imperial, discard Iron Hand.**\n\n**SETUP:** If " +
-      "you were in the previous game, you place one warband on all " +
-      "sites coming from the Atlas until the Empire divider, and " +
-      "players may place their pawn at any site.\n\n**CHRONICLE:** " +
-      "Score your legacies in addition to the winner, and perform " +
-      "Shape Empire and Build Edifice (Throne). Your sites are " +
+    text = "**If you are an Imperial, discard Iron " +
+      "Hand.**\n\n**SETUP:** If you were in the previous game, " +
+      "you place one warband on all sites coming from the " +
+      "Atlas until the Empire divider, and players may place " +
+      "their pawn at any site.\n\n**CHRONICLE:** Score your " +
+      "legacies in addition to the winner, and perform Shape " +
+      "Empire and Build Edifice (Throne). Your sites are " +
       "stored in place of the Empire (Stars).")
   val powers: Vector[PrintedPower] = Vector(power)
 

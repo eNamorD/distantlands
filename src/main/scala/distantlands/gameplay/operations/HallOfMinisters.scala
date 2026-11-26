@@ -8,9 +8,9 @@ object HallOfMinistersCard extends Edifice(EdificeId("E16"), Suit.Order):
   object intact extends EdificeFace("Hall of Ministers") with Locked:
     val power = PrintedPower(PowerId("edifice.e16.intact"),
       persistent = true, cost = Cost.free,
-      text = "Enemies of this card's ruler **cannot** discard cards from " +
-        "sites ruled by this card's ruler. _They can still be " +
-        "buried._")
+      text = "Enemies of this card's ruler **cannot** discard " +
+        "denizens from sites ruled by this card's ruler. _They " +
+        "can still be buried._")
     val powers: Vector[PrintedPower] = Vector(power)
   object ruined extends EdificeFace("Hall of Bandits"):
     val power = PrintedPower(PowerId("edifice.e16.ruined"),

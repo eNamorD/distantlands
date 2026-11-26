@@ -10,13 +10,13 @@ import distantlands.model._
 
 object WineOfWelcomeCard extends Relic(RelicId("R33"), "Wine of Welcome", value = 7, defense = 1):
   val power = PrintedPower(PowerId("relic.wine-of-welcome"),
-    persistent = false, cost = Cost.free,
+    persistent = false, cost = Cost(secret = 1),
     modifier = Some(ModifierMark.Action(MajorActionType.Search)),
     text = "Draw from the bottom of the world deck instead of the top.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-/** Wine of Welcome (relic R33), a free selected Search modifier: a Search
-  * of the world deck draws from its bottom, stopping after a Vision as
+/** Wine of Welcome (relic R33), a selected Search modifier costing 1
+  * secret placed on it: a Search of the world deck draws from its bottom, stopping after a Vision as
   * usual (catalog batch 6, slice 3). It folds before the draw extensions
   * ([[BottomDraw.Priority]]), so they add cards from the bottom too.
   *
@@ -47,6 +47,7 @@ case object WineOfWelcome extends SelectedModifier:
   val withMushrooms: String = "Wine of Welcome does nothing with Mushrooms"
 
   val card: Relic = WineOfWelcomeCard
+  override def cost: Cost = WineOfWelcomeCard.power.cost
   def actions: Set[MajorActionType] = Set(MajorActionType.Search)
   override def priority: Int = BottomDraw.Priority
 

@@ -47,13 +47,13 @@ class ThreateningRoarSuite extends munit.FunSuite:
     assertEquals(said(power, done.events), Vector(discarded(inMapOrder(
       homeSite -> Vector(errandBoy), nearSite -> Vector(wildMounts, ruined)))))
 
-  test("played to a site it discards itself with the rest"):
+  test("played to a site it discards the other Beast cards and stays"):
     val ready = p1AtHomeSite.denizen(roar, at = homeSite)
       .denizen(wildMounts, at = homeSite).ready
     val done = Outcomes.finished(fire(ready, power, hookAt(roar, homeSite)))
-    assertEquals(Look(done.treeless).cardsAt(homeSite), Vector.empty)
+    assertEquals(Look(done.treeless).cardsAt(homeSite), Vector[CardId](roar))
     assertEquals(said(power, done.events),
-      Vector(discarded(Vector(roar, wildMounts))))
+      Vector(discarded(Vector(wildMounts))))
 
   test("with nothing to discard it says so"):
     val ready = p1AtHomeSite.adviser(p1, roar)

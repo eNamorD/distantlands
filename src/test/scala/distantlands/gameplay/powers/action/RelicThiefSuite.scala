@@ -45,7 +45,7 @@ class RelicThiefSuite extends munit.FunSuite:
   /** The walk Relic Thief started on `before` and the walk after `relic` was
     * chosen, the dice showing `dice`. */
   private def chooseRelic(before: ReadyGame, relic: RelicId,
-      dice: WalkerDice = WalkerDice.unavailable): UsedAndAnswered =
+      dice: WalkerDice): UsedAndAnswered =
     val rolling = rules(dice)
     val started = accepted(use(rolling, before, RelicThief.id, source))
     UsedAndAnswered(started, accepted(answer(rolling, started.state,
@@ -86,10 +86,13 @@ class RelicThiefSuite extends munit.FunSuite:
         s"Rolled a shield; ${p2.value} kept ${whistle.value}.",
         covers = false)))
 
-  test("a relic of defense 0 is taken without a roll"):
-    // The dice are unavailable, so a roll would fail the command.
-    val walked = chooseRelic(staged.relic(p2, harp).ready, harp)
-    assertEquals(Look(ready(walked.answered.state)).relics(p1), Vector(harp))
+  test("a relic of defense 0 still rolls one die: a shield keeps it"):
+    val kept = chooseRelic(staged.relic(p2, harp).ready, harp,
+      defenseDice(DefenseDieFace.OneShield))
+    assert(Look(ready(kept.answered.state)).relics(p2).contains(harp))
+    val taken = chooseRelic(staged.relic(p2, harp).ready, harp,
+      defenseDice(DefenseDieFace.Blank))
+    assertEquals(Look(ready(taken.answered.state)).relics(p1), Vector(harp))
 
   test("a relic Lost Tongue protects is not offered"):
     // p1 rules no Nomad card, so p2's faceup Lost Tongue keeps Whistle.

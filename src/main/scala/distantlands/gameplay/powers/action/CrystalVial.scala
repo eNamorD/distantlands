@@ -7,13 +7,13 @@ import distantlands.model._
 
 object CrystalVialCard extends Relic(RelicId("R21"), "Crystal Vial", value = 71, defense = 1):
   val power = PrintedPower(PowerId("relic.crystal-vial"),
-    persistent = false, cost = Cost(secret = 1, secretBurnt = 1),
+    persistent = false, cost = Cost(secret = 1, favorBurnt = 1),
     text = "**ACTION:** Bury an adviser of yours or a denizen at your " +
       "site. _(Bury ignores the locked restriction.)_")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Crystal Vial (relic R21), ACTION: place 1 secret on this relic and burn
-  * 1, then bury an adviser of yours (a denizen or a Vision, in either
+  * 1 favor, then bury an adviser of yours (a denizen or a Vision, in either
   * orientation) or a card in the card list at your pawn's site (a denizen or
   * the edifice, in either state). The burial uses the standard returns:
   * favor to the card's suit bank, secrets to the acting player facedown.

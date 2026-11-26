@@ -6,8 +6,9 @@ import distantlands.model._
 object GrandMaskCard extends Relic(RelicId("R05"), "Grand Mask", value = 36, defense = 1):
   val power = PrintedPower(PowerId("relic.grand-mask"),
     persistent = true, cost = Cost.free,
-    text = "If you're an Exile, during your turn you rule cards except " +
-      "battle plans at Imperial sites, and Imperial players do not.")
+    text = "If you're an Exile, during your turn you rule denizens " +
+      "except battle plans at Imperial sites, and Imperials do " +
+      "not.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Grand Mask (R05): while its holder is an Exile, during their own turn,

@@ -9,8 +9,8 @@ object TruthfulHarpCard extends Relic(RelicId("R04"), "Truthful Harp", value = 3
   val power = PrintedPower(PowerId("relic.truthful-harp"),
     persistent = false, cost = Cost.free,
     modifier = Some(ModifierMark.Action(MajorActionType.Search)),
-    text = "You may draw 2 more cards. If you do, you **must** reveal " +
-      "every card you draw and the card you keep.")
+    text = "You may draw 2 more cards. If you do, you **must** show " +
+      "every card you draw and the card you keep to everyone.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** The Truthful Harp (relic R04), a selected Search modifier: a Search draws 2
