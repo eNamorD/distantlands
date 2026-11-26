@@ -6,7 +6,8 @@ questions the design and its plans did not settle. Each entry gives the
 question, the decision and the reason. The design's own decisions are not
 repeated here.
 
-Plans: [slice 1](../../plans/2026-11/2026-11-26-game-art-slice1.md).
+Plans: [slice 1](../../plans/2026-11/2026-11-26-game-art-slice1.md),
+[slice 2](../../plans/2026-11/2026-11-26-game-art-slice2.md).
 
 ## Slice 1
 
@@ -91,3 +92,51 @@ Reason: each is the least surprising behaviour and none conflicts with the
 design.
 Slice/files: slice 1; `ArtRoutes.scala`, `SettingsDialog.scala`,
 `GameTableShell.scala`, `CardFace.scala`, `frontend/styles.css`.
+
+## Slice 1 browser check
+
+**R8. Which way a Vision's image is turned in a denizen box.**
+Question: the image is landscape and the box portrait, so the image is
+turned a quarter; the design did not say which way.
+Decision: `rotate(-90deg)`. The card's top edge points left and its text
+reads from the foot of the box upward.
+Reason: a quarter turn clockwise by the player gives the upright view, as
+with a physical card laid sideways.
+Slice/files: slice 1; `frontend/styles.css`.
+
+**R9. Where the Settings dialog opens on a phone.**
+Question: on a phone the dialog opens at the upper right and covers the
+Actions and Log switch while it is open.
+Decision: keep it there, as the development panel is.
+Reason: one pattern for both panels; it closes with Close or Escape.
+Slice/files: slice 1; `frontend/styles.css`.
+
+## Slice 1 review
+
+**R10. Symbolic links in the art folder.**
+Question: the scan keeps a catalog path whose file is a symbolic link, so
+a served file may lie outside the folder.
+Decision: accept, on purpose: a host may link `cards/` to a `bgs-cards`
+clone. A test pins that a linked file under a catalog path is listed and
+served, and `game-art.md` says so.
+Reason: the host owns the folder; whoever can write there can already
+place any file under a catalog name.
+Slice/files: slice 1 review; `ArtLibrary.scala`,
+`docs/operations/game-art.md`.
+
+**R11. `/art` and the seat check.**
+Question: the manifest and the images are served to anyone who can reach
+the server, with no seat cookie.
+Decision: `/art` stays outside the seat check.
+Reason: the manifest and the images carry no game state, the page shell
+is public too, and a seat check would break the browser's image cache
+across seats. The orchestrator flags it to the owner.
+Slice/files: slice 1 review; `ServerRoutes.scala`.
+
+**R12. What the stylesheet suite pins.**
+Question: `StylesheetArtSuite` asserts the text of declarations, not what
+a browser lays out.
+Decision: accepted. The layout-invariance tests and the browser check
+cover behaviour.
+Reason: the test browser has no CSS engine.
+Slice/files: slice 1 review; `StylesheetArtSuite.scala`.
