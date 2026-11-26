@@ -355,3 +355,14 @@ option target; a pawn a decision offers keeps its own background and
 shadow for its option states. Box sizes do not change.
 Reason: a strip hides art for nothing.
 Slice/files: slice 3; `frontend/styles.css`.
+
+## Whole-feature review
+
+**R36. What the layout-invariance tests cover.**
+Question: the invariance tests compare markup with art attached but never
+dispatch `load`, so they do not compare the ready state.
+Decision: they need not. The ready state's layout is covered by the
+stylesheet pins (R12) and by the browser check's rectangle comparison.
+Reason: the test browser has no layout engine.
+Slice/files: `CardArtSuite`, `WorldArtSuite`, `PieceArtSuite`,
+`DieArtSuite`.

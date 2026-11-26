@@ -49,10 +49,15 @@ own server runs with `--art-path reference/assets`:
   cards/    a copy of bgs-cards content/card-images/oath/en-US
             (a card's "(NF)" file where the set has one, else its
             base file; other files are ignored)
-  symbols/  the 21 symbol-*.png from bgs-cards content/card-symbols/oath
+  symbols/  the symbol-*.png from bgs-cards content/card-symbols/oath
+            (the table uses 19 of the 21)
   tts/      mat/, backs/, tokens/, pieces/, markers/, titles/,
-            attack-die/, defense-die/, round-die-texture/
+            attack-die/, defense-die/
 ```
+
+Files no surface draws are not listed and not served: two of the symbols,
+the round die's texture, the suit tiles, the first player marker and the
+festival marker's back ([implementation ruling R33](2026-11-26-game-art-design-implementation-rulings.md)).
 
 File names are the source names: `cards/Alchemist (NF).png`,
 `cards/Wrestlers.png` for a denizen New Foundations did not reprint
@@ -184,11 +189,15 @@ Every surface swaps art through one helper, `ArtLayer.attach(box, key)`.
   the glyph's square; the drawn sprite hides when the image has loaded
   ([implementation ruling R22](2026-11-26-game-art-design-implementation-rulings.md)).
   The fallback is per glyph, and the glyph keeps its spoken label.
-- **Pieces and tokens:** `TokenSprite` draws pawns and warbands by player
-  colour, and favor, secret, bandits, the titles, the Festival, the first
-  player marker and the Visions Drawn marker, each fitted into its square
-  glyph box. The black warband gets a light outline (`drop-shadow`) so it
-  reads on the dark table.
+- **Pieces and tokens:** pawns and warbands by player colour, favor and
+  secrets where they lie in play, bandits, the Visions Drawn marker on its
+  cell and the Usurper's mark on the round wheel, each fitted into the box
+  the drawn piece has. The black warband and the black pawn get a light
+  outline (`drop-shadow`) so they read on the dark table (R27). The
+  titles and the whole festival marker show their image in the
+  inspection overlay; the festival's band on the map and the first player
+  marker stay drawn, and the round's wedge needs no art
+  ([implementation rulings R28 to R31 and R33](2026-11-26-game-art-design-implementation-rulings.md)).
 - **Dice:** `DieFaceChip` shows the die's sheet inside an overflow-hidden
   box, offset to the face's crop rectangle.
 
