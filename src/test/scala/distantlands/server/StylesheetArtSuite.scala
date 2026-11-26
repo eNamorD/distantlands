@@ -55,7 +55,7 @@ class StylesheetArtSuite extends munit.FunSuite:
     val setters = rules.findAllMatchIn(uncommented).filter(found =>
       found.group(1).contains(".printed") &&
         found.group(2).contains("opacity")).map(_.group(1).trim).toVector
-    assertEquals(setters, Vector(".printed",
+    assertEquals(setters, Vector(".printed", ".end-die-idle.printed",
       ".map-compact .card-header.printed > *,\n" +
         ".map-compact .card-header.printed > .card-emblems > *"))
 
@@ -133,3 +133,13 @@ class StylesheetArtSuite extends munit.FunSuite:
 
   test("a hidden reason takes no room"):
     assert(rule(".setting-reason[hidden]").contains("display: none"))
+
+  /** The idle end die is printed and dimmed. `.printed` sets opacity
+    * too, later in the sheet, so the dimming carries the art layer's
+    * answer itself (slice 1 review). */
+  test("the idle end die stays dimmed, and hides with the mat"):
+    assert(rule(".end-die-idle.printed")
+      .contains("opacity: calc(0.4 * var(--printed-opacity, 1))"))
+    assert(css.indexOf(".end-die-idle.printed {") >
+      css.indexOf(".printed { opacity"))
+    assert(!css.contains(".end-die-idle { opacity"))

@@ -432,7 +432,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    made. */
 .end-die-face { fill: var(--die-round); stroke: var(--brass); stroke-width: 1.5; }
 .end-die-pip { fill: var(--brass-bright); }
-.end-die-idle { opacity: 0.4; }
 .target-detail-badge { display: inline-block; margin-left: 0.4rem; padding: 0.08rem 0.35rem;
   border: 1px solid #a98b58; border-radius: 999px; background: var(--base);
   color: var(--brass-bright); font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
@@ -2317,6 +2316,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .printed { opacity: var(--printed-opacity, 1); }
 :is(.card-face, .card-hover-summary) { --printed-opacity: 1; }
 :is(.card-face, .card-hover-summary).art-ready { --printed-opacity: 0; }
+/* The end die of a roll nobody makes is dimmed. It is printed too, and
+   the rule above would otherwise set its opacity alone, so its dimming
+   carries the layer's answer. */
+.end-die-idle.printed { opacity: calc(0.4 * var(--printed-opacity, 1)); }
 /* Opacity reaches nothing through an element with no box. On the compact
    map a card's header and its emblems column are `display: contents`, so
    their parts take the box's answer themselves. */
