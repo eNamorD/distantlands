@@ -885,6 +885,11 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   position: absolute; inset: 0; z-index: 1; border-radius: inherit;
   pointer-events: none;
   box-shadow: inset 0 0 0 var(--option-ring) var(--option-line); }
+/* A site's card reaches past its row by the line of the frame the mat
+   prints, at the left, the top and the foot (the face's own offsets in
+   the row, each negative): the ring runs along the card's edge there. */
+.mat-board .site.board-option::after { top: var(--face-bottom, 0);
+  bottom: var(--face-bottom, 0); left: var(--face-left, 0); }
 .mat-board :is(.site, .deck-body).board-option:is(:hover, :focus-visible,
   .board-option-hover)::after {
   box-shadow: inset 0 0 0 var(--option-ring) var(--cream-bright),

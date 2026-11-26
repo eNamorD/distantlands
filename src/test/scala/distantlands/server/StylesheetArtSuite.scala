@@ -347,6 +347,20 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(!current.contains("stroke"))
     assert(rule(".round-current").contains("stroke: var(--cream-bright)"))
 
+  /** The review's finding: the site card grew past its row by the
+    * frame's line (R38) and an offered site's ring stayed on the row, 8
+    * mat px inside the card on three sides. The ring's layer reaches the
+    * card's edge on those sides: the face's own offsets in the row, which
+    * are negative, and equal at the top and the foot. */
+  test("an offered site's ring runs along its grown card's edge"):
+    val ring = rule(".mat-board .site.board-option::after")
+    Vector("top: var(--face-bottom, 0)", "bottom: var(--face-bottom, 0)",
+      "left: var(--face-left, 0)")
+      .foreach(part => assert(ring.contains(part), part))
+    assert(!ring.contains("right"), ring)
+    assert(css.indexOf(".mat-board .site.board-option::after {") >
+      css.indexOf(".mat-board :is(.site, .deck-body).board-option::after {"))
+
   /** A colour variable's value, as `#rrggbb`. */
   private def colour(name: String)(using munit.Location): (Int, Int, Int) =
     val hex = s"--$name: #([0-9a-f]{6});".r.findFirstMatchIn(css)
