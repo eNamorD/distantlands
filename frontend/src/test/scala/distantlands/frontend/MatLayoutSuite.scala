@@ -73,6 +73,76 @@ class MatLayoutSuite extends munit.FunSuite:
       assert(math.abs(card.ratio / (770.0 / 596) - 1) < 0.02, card.toString)
     }
 
+  private def assertRect(actual: MatRect, x: Double, y: Double, w: Double,
+      h: Double)(using munit.Location): Unit =
+    assertEqualsDouble(actual.x, x, 0.01, actual.toString)
+    assertEqualsDouble(actual.y, y, 0.01, actual.toString)
+    assertEqualsDouble(actual.w, w, 0.01, actual.toString)
+    assertEqualsDouble(actual.h, h, 0.01, actual.toString)
+
+  /** The pieces on a site stand in two rows on its card (game art
+    * rulings R48, R49): pawns from 19% of the frame's height for 30%,
+    * warbands from 50% for 20%, both 4% in from each side. The card
+    * prints its resources and its die above them and its power shield
+    * and name below. */
+  test("a site's pawns and warbands have a row each on its card, between " +
+      "the print's resources and its power shield"):
+    assertRect(sitePawnRow(0, 0), 97.76, 524.71, 615.48, 152.7)
+    assertRect(siteWarbandRow(0, 0), 97.76, 682.5, 615.48, 101.8)
+    sites.foreach { (column, row) =>
+      val frame = siteFrame(column, row)
+      val pawns = sitePawnRow(column, row)
+      val warbands = siteWarbandRow(column, row)
+      assert(pawns.within(frame) && warbands.within(frame))
+      assert(!pawns.overlaps(warbands))
+      // The print's coins and die end 18% down the card.
+      assert(pawns.y >= frame.y + frame.h * 0.18)
+      assert(warbands.bottom <= sitePowerShield(column, row).y)
+    }
+
+  /** The shield a site card prints its powers in is the same on all 24
+    * site images (770 by 596): x 21 to 160, from its peak at y 425 to
+    * the card's foot. The image covers the card's box, scaled to its
+    * width and trimmed evenly at the top and the foot. */
+  test("the power shield lies where the site card prints it, through " +
+      "the image's cover fit"):
+    assertRect(sitePowerShield(0, 0), 81.68, 795.48, 123.66, 149.52)
+    sites.foreach { (column, row) =>
+      val shield = sitePowerShield(column, row)
+      assert(shield.within(siteCard(column, row)), shield.toString)
+      assertEqualsDouble(shield.bottom, siteCard(column, row).bottom, 0.001)
+    }
+
+  /** One or two powers a site (game art ruling R55). The projection's
+    * order is not the print's, so the side comes from the power's kind. */
+  test("one power takes the whole shield; two stand as the card prints " +
+      "them, in the order they were given"):
+    val shield = sitePowerShield(0, 0)
+    assertEquals(sitePowerRegions(Vector("mountain"), 0, 0), Vector(shield))
+    assertEquals(sitePowerRegions(Vector.empty, 0, 0), Vector.empty)
+    // The red line stands at x 90 of the image: 61.38 of the shield's
+    // 123.66 lie left of it.
+    val left = MatRect(shield.x, shield.y, 61.38, shield.h)
+    val right = MatRect(shield.x + 61.38, shield.y, 62.27, shield.h)
+    def assertRegions(kinds: Vector[String], expected: Vector[MatRect])(
+        using munit.Location): Unit =
+      val regions = sitePowerRegions(kinds, 0, 0)
+      assertEquals(regions.size, expected.size)
+      regions.zip(expected).foreach((region, rect) =>
+        assertRect(region, rect.x, rect.y, rect.w, rect.h))
+    // Headwaters arrives as River, Mountain and prints Mountain left.
+    assertRegions(Vector("river", "mountain"), Vector(right, left))
+    // Ancient City: Enduring left, River right.
+    assertRegions(Vector("enduring", "river"), Vector(left, right))
+    // Tidal Marshes: River left, Coast right.
+    assertRegions(Vector("coast", "river"), Vector(right, left))
+    // The islands print the Coast's ship above the Island's "+2", which
+    // begins at y 527 of the image: 90.74 of the shield's 149.52.
+    val upper = MatRect(shield.x, shield.y, shield.w, 90.74)
+    val lower = MatRect(shield.x, shield.y + 90.74, shield.w, 58.78)
+    assertRegions(Vector("coast", "island"), Vector(upper, lower))
+    assertRegions(Vector("island", "coast"), Vector(lower, upper))
+
   test("a site's row spans its frame and its three slots"):
     sites.foreach { (column, row) =>
       // The row and its site card together: what a box must hold to show

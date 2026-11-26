@@ -85,6 +85,8 @@ pixels, from its upper left.
 | Favor bank emblem (a square about its ring) | centre − 212 | 2067 | 122 | 122 |
 | Tracker's line of text | 71 | 1500 | 1790 | 80 |
 | Visions Drawn label | 1680 | 1650 | 210 | 150 |
+| Pawn row on a site (shares of its frame) | 4% in | 19% down | 92% | 30% |
+| Warband row on a site (shares of its frame) | 4% in | 50% down | 92% | 20% |
 
 The mat prints a frame for each site and none for its cards. A site frame
 is 669×509 by its nominal rectangle, but the mat is drawn by hand: each
@@ -105,3 +107,21 @@ one line at the glance size; the lettering itself spans about 580 px.
 
 Not on the mat and not drawn at their proportions: player boards and the
 reliquary board, which the table keeps abstract.
+
+## The power shield on a site card
+
+Every one of the 24 site card images (770×596) prints its powers in a
+shield at its lower left, in the same place, with no spread between
+cards: x 21 to 160, from its peak at y 425 (at x 90) to the card's foot.
+`MatLayout.sitePowerShield` maps that rectangle through the image's
+`cover` fit onto the site's box.
+
+| Form | Sites | Where each power is |
+|---|---|---|
+| One power | the other 19 | the whole shield |
+| Two, side by side | Ancient City, Headwaters, Tidal Marshes | left and right of a red line at x 89 to 91 |
+| Two, one above the other | Fair Isle, Sunken Isles | the Coast's ship above y 527, the Island's "+2" below |
+
+Side by side, the left power is the earlier of Enduring, Mountain, River,
+Coast: Ancient City prints Enduring and River, Headwaters Mountain and
+River, Tidal Marshes River and Coast. No card disagrees with that order.
