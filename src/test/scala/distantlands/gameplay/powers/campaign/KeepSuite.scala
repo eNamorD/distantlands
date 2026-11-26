@@ -10,10 +10,12 @@ import distantlands.model._
 import distantlands.testkit.Outcomes.assertWireRoundTrips
 import distantlands.testkit.{ActPowerHarness, Look}
 
-/** Keep: a defender who rules Keep's site and loses a Raid gives up only
-  * what was targeted, and their pawn goes to Keep's site. */
+/** Keep: a defender's battle plan. A defender who rules Keep's site, chooses
+  * it and loses a Raid gives up only what was targeted, and their pawn goes
+  * to Keep's site. */
 class KeepSuite extends munit.FunSuite:
   private val keep = KeepCard.id
+  private val ref: DecisionOptionRef = DecisionOptionRef.Denizen(keep)
   private val bookBurning = BookBurningCard.id
 
   /** An in-play site that is neither the Raid's origin nor where the
@@ -36,12 +38,16 @@ class KeepSuite extends munit.FunSuite:
 
   /** A Raid on the rival's relic and People's Favor, committing the
     * actor's 4 warbands, played until it ends or asks something past the
-    * plan windows. */
+    * plan windows. The rival chooses Keep as their plan unless `chosen` is
+    * false. */
   private def raidOnRelicAndPeoplesFavor(b: Board, relic: RelicId,
-      game: OathRules = rules(winningDice)): Run =
-    commit(game, b, 4, targets = Vector(DecisionOptionRef.Relic(relic),
+      game: OathRules = rules(winningDice), chosen: Boolean = true): Run =
+    val begun = commit(game, b, 4, targets = Vector(
+      DecisionOptionRef.Relic(relic),
       DecisionOptionRef.Banner(Banner.PeoplesFavor)), raid = true)
-      .finishPlanWindows
+      .finishAttackerPlans(b.actor)
+    (if chosen then begun.pick(b.rival, CampaignIds.defenderPlan, ref)
+      else begun).finishPlanWindows
 
   private def keepLine(defender: PlayerId, site: SiteId, covers: Boolean)
       : NoteText.Said = NoteText.Said("ended",
@@ -74,7 +80,7 @@ class KeepSuite extends munit.FunSuite:
     assertEquals(rival.pawnSite, Some(site))
     // Nothing more is asked: the Campaign is over.
     parked.assertResumed(done.state, Phase.Act, b.actor)
-    assertEquals(said(KeepRule, done.events),
+    assertEquals(said(Keep, done.events),
       Vector(keepLine(b.rival, site, covers = true)))
     assertEquals(ActPowerHarness.replayed(done.game, b.ready, done.events),
       ready(done.state))
@@ -92,17 +98,34 @@ class KeepSuite extends munit.FunSuite:
       case move @ Move(Piece.Pawn(_), _, _, _, _) => move }
     assertEquals(pawnMoves, Vector.empty)
     parked.assertResumed(done.state, Phase.Act, b.actor)
-    assertEquals(said(KeepRule, done.events),
+    assertEquals(said(Keep, done.events),
       Vector(keepLine(b.rival, b.origin, covers = false)))
 
-  test("Keep at a site another player rules changes nothing"):
+  test("a defender who does not choose it suffers the Raid as usual"):
+    val raid = raidBoardWithKeepAt(keepSite, _.rival)
+    val b = raid.board
+    val run = raidOnRelicAndPeoplesFavor(b, raid.relic, chosen = false)
+    assert(awaits(run, b.actor, CampaignIds.relocation))
+    assertEquals(Look(run.state).player(b.rival).board.favor, 5 - 5 / 2)
+    assertEquals(said(Keep, run.events), Vector.empty)
+
+  test("it is not offered in a Conquest"):
+    val base = rivalRulesOriginAndHoldsOathkeeper(
+      board(warbands = 5, supply = 7))
+    val b = on(base)(_.denizen(keep, at = base.origin))
+    val run = commit(rules(winningDice), b, 4)
+    assert(awaits(run, b.rival, CampaignIds.defenderPlan))
+    assert(!run.offered(b.rival).contains(ref))
+
+  test("Keep at a site another player rules is not offered, and changes " +
+      "nothing"):
     val raid = raidBoardWithKeepAt(keepSite, _.bystander)
     val b = raid.board
-    val run = raidOnRelicAndPeoplesFavor(b, raid.relic)
+    val run = raidOnRelicAndPeoplesFavor(b, raid.relic, chosen = false)
     assert(awaits(run, b.actor, CampaignIds.relocation))
     assertEquals(Look(run.state).player(b.rival).board.favor, 5 - 5 / 2)
     assertEquals(Look(run.state).player(b.rival).advisers, Vector.empty)
-    assertEquals(said(KeepRule, run.events), Vector.empty)
+    assertEquals(said(Keep, run.events), Vector.empty)
 
   test("the effects at the Campaign's end still run: Book Burning still " +
       "burns the defender's secrets"):
@@ -113,6 +136,8 @@ class KeepSuite extends munit.FunSuite:
       targets = Vector(DecisionOptionRef.Relic(raid.relic)), raid = true)
       .pick(b.actor, CampaignIds.attackerPlan,
         DecisionOptionRef.Denizen(bookBurning))
+      .finishAttackerPlans(b.actor)
+      .pick(b.rival, CampaignIds.defenderPlan, ref)
       .finishPlanWindows
     assertEquals(done.winner, Some(true))
     assertEquals(Look(done.state).player(b.rival).pawnSite,
@@ -133,5 +158,5 @@ class KeepSuite extends munit.FunSuite:
     assertEquals(done.winner, Some(true))
     assertEquals(Look(done.state).player(b.rival).pawnSite, Some(site))
     assertEquals(Look(done.state).player(b.rival).board.favor, 5)
-    assertEquals(said(KeepRule, done.events),
+    assertEquals(said(Keep, done.events),
       Vector(keepLine(b.rival, site, covers = true)))
