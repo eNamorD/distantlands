@@ -167,6 +167,32 @@ class StylesheetArtSuite extends munit.FunSuite:
   test("a plate is a positioned box, so its image fills it"):
     assert(rule(".card-plate:has(> .art)").contains("position: relative"))
 
+  /** Found in the slice 2 browser check: a bank's own pill covered the
+    * emblem and the circle the mat prints for it. */
+  test("over the mat a favor bank drops its own pill"):
+    val bank = rule(".mat-board.art-ready .favor-bank")
+    Vector("border-color: transparent", "background: none")
+      .foreach(part => assert(bank.contains(part), part))
+
+  /** Found in the slice 2 browser check: forces and tokens were hard to
+    * read on a site's art. The ground is a fill and a shadow of one
+    * colour, the name band's, so nothing moves. */
+  test("what lies on a site's card or on the mat in play keeps a ground " +
+      "over the art, without moving"):
+    val onSite = rule(".site.art-ready :is(.site-forces, " +
+      ".site-forces-short, .site-tokens, .pawn)")
+    Vector("background: #1a1610d9", "box-shadow: 0 0 0 3px #1a1610d9",
+      "border-radius: 3px").foreach(part =>
+      assert(onSite.contains(part), part))
+    Vector("padding", "margin", "width", "height", "border:").foreach(part =>
+      assert(!onSite.contains(part), part))
+    assert(rule(".mat-board.art-ready .track-note")
+      .contains("text-shadow: 0 0 3px var(--base), 0 0 3px var(--base)"))
+
+  test("a pile on the mat that holds an image is a positioned box"):
+    assert(rule(".mat-board .deck-card:has(> .art)")
+      .contains("position: relative"))
+
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
   private val rendererSources: String =
