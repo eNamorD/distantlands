@@ -158,8 +158,12 @@ class StylesheetArtSuite extends munit.FunSuite:
 
   test("a pile's count stays readable over its back"):
     val count = rule(".deck-card.art-ready > .pile-count")
-    Vector("background: var(--base)", "border-radius", "padding")
+    Vector("background: var(--base)", "border-radius",
+      "box-shadow: 0 0 0 0.3em var(--base)")
       .foreach(part => assert(count.contains(part), part))
+    // A ground that takes no room: the count's box is the same with art
+    // and without (slice 2 browser check).
+    assert(!count.contains("padding"))
 
   test("the mat's image fills the board"):
     assert(rule(".mat-board > .art").contains("object-fit: fill"))
