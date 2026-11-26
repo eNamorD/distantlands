@@ -257,8 +257,13 @@ class StylesheetArtSuite extends munit.FunSuite:
     val slot = rule(
       """.mat-board.art-ready .card-slot-empty:not([class*="board-option"])""")
     Vector("border-color: var(--cream-bright)",
-      "box-shadow: inset 0 0 0 1px var(--base)")
+      "box-shadow: inset 0 0 0 calc(1px / var(--map-scale, 1)) var(--base)")
       .foreach(part => assert(slot.contains(part), part))
+    // One pixel on the board is a sixth of one on a phone's screen at
+    // Fit, so the line's width follows the map's scale, with art on and
+    // off alike (R44). The slot's box is border-box: it does not grow.
+    assert(rule(".mat-board .card-slot-empty")
+      .contains("border-width: calc(1px / var(--map-scale, 1))"))
     Vector("padding", "margin", "width", "height").foreach(part =>
       assert(!slot.contains(part), part))
 
@@ -366,6 +371,11 @@ class StylesheetArtSuite extends munit.FunSuite:
       "border-radius: 50%", "background: var(--base)", "font-size: 44cqw")
       .foreach(part => assert(count.contains(part), part))
     assert(!count.contains("padding"))
+    // On the far zoomed-out map the circle is some 11px across on a
+    // phone: there the count takes the whole circle, to stay near 9px.
+    val tiny = rule(".map-tiny .mat-board .favor-bank-count")
+    Vector("width: 100cqw", "height: 100cqw", "font-size: 78cqw")
+      .foreach(part => assert(tiny.contains(part), part))
     // The old grid, which sized a bank's parts from the text, is gone.
     assert(!css.contains(".mat-board .favor-bank { display: grid"))
     assert(!css.contains(".favor-bank > .token-favor"))
