@@ -427,6 +427,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .round-segment { fill: var(--site); stroke: var(--line-mid); stroke-width: 2; }
 .round-current { fill: var(--brass); stroke: var(--cream-bright); stroke-width: 3; }
 .round-tracker text { fill: var(--cream-bright); font-weight: 700; }
+/* The current round's number stands on the wedge's brass. */
+.round-tracker .round-number-current { fill: var(--base); }
 /* Qualified by the tracker so it outranks the tracker's text rule below. */
 .round-tracker .limiter-marker { fill: #ff8c7f; fill-opacity: 0.45;
   stroke: #ff8c7f; stroke-width: 2; }

@@ -55,7 +55,7 @@ class ServerUiSupportSuite extends FunSuite:
 
   test("round tracker geometry is eight circular ring wedges"):
     // The tracker is drawn on a 200 by 200 viewBox, so its center is
-    // (100, 100); a round label sits 68 from it, inside the 30 to 170 band.
+    // (100, 100); a round label sits 59 from it, inside the 30 to 170 band.
     val segments = (1 to 8).map(WorldBoardRenderer.roundSegment)
     assertEquals(segments.map(_.path).distinct.size, 8)
     segments.foreach { segment =>
@@ -66,14 +66,14 @@ class ServerUiSupportSuite extends FunSuite:
       assert(segment.labelX >= 30.0 && segment.labelX <= 170.0)
       assert(segment.labelY >= 30.0 && segment.labelY <= 170.0)
     }
-    // The segments start at round 1, so index 3 is round 4. The marker the
-    // tracker draws on a limiter round sits farther out than its label.
+    // The segments start at round 1, so index 3 is round 4. The round
+    // marker and the limiter's diamond stand farther out than the label.
     val roundFour = segments(3)
-    val markerRadius = Math.hypot(roundFour.markerX - 100.0,
-      roundFour.markerY - 100.0)
+    val discRadius = Math.hypot(roundFour.discX - 100.0,
+      roundFour.discY - 100.0)
     val labelRadius = Math.hypot(roundFour.labelX - 100.0,
       roundFour.labelY - 100.0)
-    assert(markerRadius > labelRadius)
+    assert(discRadius > labelRadius)
 
   test("winner banner class resolves the winner's stable color token"):
     assertEquals(ServerUiSupport.playerColorClass(

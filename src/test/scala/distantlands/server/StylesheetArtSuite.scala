@@ -347,6 +347,50 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(!current.contains("stroke"))
     assert(rule(".round-current").contains("stroke: var(--cream-bright)"))
 
+  /** A colour variable's value, as `#rrggbb`. */
+  private def colour(name: String)(using munit.Location): (Int, Int, Int) =
+    val hex = s"--$name: #([0-9a-f]{6});".r.findFirstMatchIn(css)
+      .getOrElse(fail(s"no colour --$name")).group(1)
+    (Integer.parseInt(hex.substring(0, 2), 16),
+      Integer.parseInt(hex.substring(2, 4), 16),
+      Integer.parseInt(hex.substring(4, 6), 16))
+
+  /** The WCAG contrast ratio of two sRGB colours. */
+  private def contrast(one: (Int, Int, Int), other: (Int, Int, Int)): Double =
+    def luminance(value: (Int, Int, Int)): Double =
+      def linear(channel: Int): Double =
+        val share = channel / 255.0
+        if share <= 0.03928 then share / 12.92
+        else math.pow((share + 0.055) / 1.055, 2.4)
+      0.2126 * linear(value._1) + 0.7152 * linear(value._2) +
+        0.0722 * linear(value._3)
+    val (light, dark) = (luminance(one) max luminance(other),
+      luminance(one) min luminance(other))
+    (light + 0.05) / (dark + 0.05)
+
+  /** The review's finding on the drawn wheel: a number must read at
+    * 4.5 : 1 on whatever lies under it. The marker and the diamond stand
+    * clear of it (`RoundWheelSuite`), so its ground is its wedge's fill:
+    * the segment's, the limiter's tint over it, or the current round's
+    * brass, on which the number is Base. */
+  test("a round's number reads on each wedge fill the drawn wheel has"):
+    val cream = colour("cream-bright")
+    val site = colour("site")
+    assert(rule(".round-tracker text").contains("fill: var(--cream-bright)"))
+    assert(rule(".round-segment").contains("fill: var(--site)"))
+    assert(contrast(cream, site) >= 4.5)
+    val limiter = rule(".round-tracker .limiter-marker")
+    assert(limiter.contains("fill: #ff8c7f"))
+    assert(limiter.contains("fill-opacity: 0.45"))
+    def over(tint: Int, ground: Int): Int =
+      math.round(0.45 * tint + 0.55 * ground).toInt
+    assert(contrast(cream, (over(0xff, site._1), over(0x8c, site._2),
+      over(0x7f, site._3))) >= 4.5)
+    assert(rule(".round-current").contains("fill: var(--brass)"))
+    assert(rule(".round-tracker .round-number-current")
+      .contains("fill: var(--base)"))
+    assert(contrast(colour("base"), colour("brass")) >= 4.5)
+
   /** A site's box is the mat's frame and its line (R38), a little off
     * the card's own ratio, so the image covers it and loses a sliver. */
   test("a site's image covers its box, and its name band stands at the " +

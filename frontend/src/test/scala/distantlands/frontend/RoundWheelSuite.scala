@@ -28,16 +28,47 @@ class RoundWheelSuite extends munit.FunSuite:
   test("the current round's wedge holds the round marker, a disc in its " +
       "outer half, and no other wedge does"):
     val wheel = wheelAt(round = 3, limiter = 5)
-    val segment = WorldBoardRenderer.roundSegment(3)
     val disc = one(round(wheel, 3), "circle.round-marker")
-    assertEquals(disc.getAttribute("cx").toDouble, segment.discX, 0.001)
-    assertEquals(disc.getAttribute("cy").toDouble, segment.discY, 0.001)
-    assertEquals(disc.getAttribute("r"), "11")
+    // Round 3's middle is 22.5 degrees below the right; the disc stands
+    // 76 of the wheel's 100 from its hub.
+    assertEqualsDouble(disc.getAttribute("cx").toDouble, 170.215, 0.001)
+    assertEqualsDouble(disc.getAttribute("cy").toDouble, 129.084, 0.001)
+    assertEquals(disc.getAttribute("r"), "10")
     assertEquals(Option(disc.closest(".printed")), None)
     assertEquals(all(wheel, ".round-marker").size, 1)
-    // 74 of the wheel's 100 from its hub: the outer half of the wedge.
-    assertEquals(math.hypot(segment.discX - 100, segment.discY - 100), 74.0,
-      0.001)
+
+  /** The review's finding: cream figures on the silver disc measured
+    * 1.47 : 1, and on the limiter's diamond 2.0 : 1. Each wedge's number
+    * stands in its inner half, 59 from the hub, and the disc and the
+    * diamond in its outer half, 76 from it, so neither lies under a
+    * number: the number keeps the wedge's own fill as its ground. */
+  test("a round's number stands clear of the round marker and of the " +
+      "limiter's diamond"):
+    val wheel = wheelAt(round = 3, limiter = 4)
+    def fromHub(node: dom.Element, x: String, y: String): Double =
+      math.hypot(node.getAttribute(x).toDouble - 100,
+        node.getAttribute(y).toDouble - 100)
+    val number = one(round(wheel, 3), "text.round-number")
+    assertEqualsDouble(number.getAttribute("x").toDouble, 154.509, 0.001)
+    assertEqualsDouble(number.getAttribute("y").toDouble, 122.578, 0.001)
+    all(wheel, "text.round-number").foreach(label =>
+      assertEqualsDouble(fromHub(label, "x", "y"), 59.0, 0.001))
+    // The number is 22 units tall at most: 8 either side of its middle.
+    val numberOuter = 59.0 + 8
+    val disc = one(wheel, "circle.round-marker")
+    assert(fromHub(disc, "cx", "cy") - disc.getAttribute("r").toDouble >=
+      numberOuter - 1)
+    val diamond = one(round(wheel, 4), "text.limiter-diamond")
+    assertEqualsDouble(diamond.getAttribute("x").toDouble, 129.084, 0.001)
+    assertEqualsDouble(diamond.getAttribute("y").toDouble, 170.215, 0.001)
+
+  test("the current round's number is marked, for its colour on the " +
+      "wedge's brass, and no other is"):
+    val wheel = wheelAt(round = 3, limiter = 5)
+    assertEquals(all(wheel, "text.round-number-current").map(
+      _.textContent), Vector("3"))
+    assert(one(wheel, "text.round-number-current").classList
+      .contains("printed"))
 
   test("the current wedge keeps its border, under the round marker"):
     val group = round(wheelAt(round = 3, limiter = 5), 3)
@@ -62,19 +93,18 @@ class RoundWheelSuite extends munit.FunSuite:
       "hub (R39)"):
     TestArt.listingWholeCatalog()
     val wheel = wheelAt(round = 1, limiter = 4)
-    val segment = WorldBoardRenderer.roundSegment(4)
     val image = one(round(wheel, 4), "image.art")
     assertEquals(image.getAttribute("href"), "/art/tts/tokens/usurper.png")
     assertEquals(image.getAttribute("style"), "width: 54px; height: 55px;")
-    assertEquals(image.getAttribute("x").toDouble, segment.centreX - 27,
-      0.001)
-    assertEquals(image.getAttribute("y").toDouble, segment.centreY - 27.5,
-      0.001)
+    // Round 4's middle is 67.5 degrees below the right, and its wedge's
+    // centre 68.5 from the hub, at (126.214, 163.286); the token's box is
+    // centred there.
+    assertEqualsDouble(image.getAttribute("x").toDouble, 99.214, 0.001)
+    assertEqualsDouble(image.getAttribute("y").toDouble, 135.786, 0.001)
     // The file stands point up; turned by the wedge's angle less a
     // quarter, its point faces the hub.
     assertEquals(image.getAttribute("transform"),
-      f"rotate(${segment.middle - 90}%.2f ${segment.centreX}%.2f " +
-        f"${segment.centreY}%.2f)")
+      "rotate(-22.50 126.21 163.29)")
     image.dispatchEvent(new dom.Event("load"))
     assert(one(round(wheel, 4), ".limiter-marker").classList
       .contains("art-ready"))
