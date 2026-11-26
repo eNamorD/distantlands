@@ -37,6 +37,13 @@ private[frontend] object GameArt:
   /** The switch's position once flipped on this page, which holds even
     * when the browser refuses to store it. */
   private var chosen = Option.empty[Boolean]
+  /** The stored preference, read once when the store is put in place:
+    * `url` is asked for every box and glyph of every redraw. */
+  private var stored = true
+  private def use(store: ChronicleStorage): Unit =
+    storage = store
+    stored = !store.read(PreferenceKey).contains("off")
+    chosen = None
   private var listener: () => Unit = () => ()
   private var loaded = Set.empty[String]
   private var failed = Set.empty[String]
@@ -54,8 +61,7 @@ private[frontend] object GameArt:
     * when the browser stores nothing, and fetches the manifest once. */
   def start(transport: JsonTransport, browser: Option[ChronicleStorage])
       : Future[Unit] =
-    storage = browser.getOrElse(new MemoryChronicleStorage())
-    chosen = None
+    use(browser.getOrElse(new MemoryChronicleStorage()))
     transport.request("GET", ManifestUrl, None).map { answer =>
       current = answer.toOption
         .filter(response => response.status >= 200 && response.status < 300)
@@ -69,8 +75,7 @@ private[frontend] object GameArt:
   /** Puts a manifest and a store in place without a fetch. */
   def install(manifest: Manifest, store: ChronicleStorage): Unit =
     current = manifest
-    storage = store
-    chosen = None
+    use(store)
     changes += 1
     listener()
 
@@ -78,8 +83,7 @@ private[frontend] object GameArt:
     * changes: the table redraws. */
   def onChange(listener: () => Unit): Unit = this.listener = listener
 
-  def enabled: Boolean =
-    chosen.getOrElse(!storage.read(PreferenceKey).contains("off"))
+  def enabled: Boolean = chosen.getOrElse(stored)
 
   def setEnabled(on: Boolean): Unit =
     chosen = Some(on)
@@ -106,8 +110,7 @@ private[frontend] object GameArt:
   /** Back to a page that has asked for nothing, for the suites. */
   def reset(): Unit =
     current = Manifest.Pending
-    storage = new MemoryChronicleStorage()
-    chosen = None
+    use(new MemoryChronicleStorage())
     listener = () => ()
     changes += 1
     loaded = Set.empty

@@ -187,10 +187,24 @@ object ArtCatalog:
   /** The mat the World pane is laid out on. */
   val mat: ArtKey = ArtKey("tts/mat/mat.jpg")
 
-  def banner(face: String): Option[ArtKey] = banners.toMap.get(face)
+  // Each table as a map, built once on first use: the lookups below run
+  // for every glyph and box of every redraw.
+  private lazy val bannersByKey = banners.toMap
+  private lazy val foundationsByKey = foundations.toMap
+  private lazy val oathGoalsByKey = oathGoals.toMap
+  private lazy val dieCropsByKey = dieCrops.toMap
+  private lazy val symbolsByKey = symbols.toMap
+  private lazy val restrictionsByKey = restrictions.toMap
+  private lazy val tokensByKey = tokens.toMap
+  private lazy val pawnsByKey = pawns.toMap
+  private lazy val warbandsByKey = warbands.toMap
+  private lazy val titlesByKey = titles.toMap
+  private lazy val dieSheetsByKey = dieSheets.toMap
+
+  def banner(face: String): Option[ArtKey] = bannersByKey.get(face)
   def foundation(number: Int, name: String): Option[ArtKey] =
-    foundations.toMap.get((number, name))
-  def oathGoal(goal: String): Option[ArtKey] = oathGoals.toMap.get(goal)
+    foundationsByKey.get((number, name))
+  def oathGoal(goal: String): Option[ArtKey] = oathGoalsByKey.get(goal)
 
   /** Every card with a "(NF)" file. */
   private val reprinted: Vector[String] =
@@ -280,19 +294,19 @@ object ArtCatalog:
       "two-shields" -> face("defense", 10, 1387, 642),
       "doubler" -> face("defense", 1391, 1387, 642))
 
-  def dieFace(key: String): Option[DieCrop] = dieCrops.toMap.get(key)
+  def dieFace(key: String): Option[DieCrop] = dieCropsByKey.get(key)
 
-  def symbol(token: String): Option[ArtKey] = symbols.toMap.get(token)
-  def restriction(kind: String): Option[ArtKey] = restrictions.toMap.get(kind)
-  def token(token: String): Option[ArtKey] = tokens.toMap.get(token)
-  def pawn(colour: String): Option[ArtKey] = pawns.toMap.get(colour)
+  def symbol(token: String): Option[ArtKey] = symbolsByKey.get(token)
+  def restriction(kind: String): Option[ArtKey] = restrictionsByKey.get(kind)
+  def token(token: String): Option[ArtKey] = tokensByKey.get(token)
+  def pawn(colour: String): Option[ArtKey] = pawnsByKey.get(colour)
   /** A force's warband: a player's colour, "empire" or "bandit" (R26). */
   def warband(force: String): Option[ArtKey] = force match
-    case "empire" => warbands.toMap.get("purple")
+    case "empire" => warbandsByKey.get("purple")
     case "bandit" => Some(banditWarband)
-    case colour => warbands.toMap.get(colour)
-  def title(side: String): Option[ArtKey] = titles.toMap.get(side)
-  def dieSheet(die: String): Option[ArtKey] = dieSheets.toMap.get(die)
+    case colour => warbandsByKey.get(colour)
+  def title(side: String): Option[ArtKey] = titlesByKey.get(side)
+  def dieSheet(die: String): Option[ArtKey] = dieSheetsByKey.get(die)
 
   /** The face of the card printed `name`, when the folder may hold one. */
   def cardFace(name: String): Option[ArtKey] = faces.get(name)
