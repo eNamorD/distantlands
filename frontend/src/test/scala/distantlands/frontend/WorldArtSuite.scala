@@ -133,9 +133,12 @@ class WorldArtSuite extends munit.FunSuite:
   test("what lies on the mat in play is not printed"):
     val board = one(boardWithTheWorld(), ".mat-board")
     Vector(".vision-marker", ".pile-count", ".favor-bank-count",
-      ".site-pawns .pawn").foreach(selector =>
-      all(board, selector).foreach(node =>
-        assertEquals(Option(node.closest(".printed")), None, selector)))
+      ".site-pawns .pawn").foreach { selector =>
+      val found = all(board, selector)
+      assert(found.nonEmpty, selector)
+      found.foreach(node =>
+        assertEquals(Option(node.closest(".printed")), None, selector))
+    }
 
   test("a pile on the mat holds the back of its top card's kind, and " +
       "keeps its count"):
@@ -187,3 +190,50 @@ class WorldArtSuite extends munit.FunSuite:
     TestArt.listingWholeCatalog()
     GameArt.setEnabled(false)
     assertEquals(all(boardWithTheWorld(), "img"), Vector.empty)
+
+  /** A world whose relic deck is empty and whose Cradle discard holds
+    * cards of a kind the viewer may not know. */
+  private def boardWithAnEmptyDeckAndAHiddenDiscard(): dom.Element =
+    WorldBoardRenderer.world(TestProjections.actingProjection(
+      players = Vector(red),
+      world = Vector(GameRegion("cradle", Vector(deepWoods),
+        discardCount = 2, discardTopCardKind = None))).copy(
+      worldDeckCount = 40, worldDeckTopCardKind = Some("denizen"),
+      relicDeckCount = 0,
+      tracks = Some(GameTracksProjection(round = 1, visionsDrawn = 0,
+        usurperLimited = false, limiterRound = 5, firstPlayerId = "red"))),
+      BoardOptions.none)
+
+  test("an empty pile and a pile whose top card's kind is hidden hold no " +
+      "image (R16)"):
+    TestArt.listingWholeCatalog()
+    val board = one(boardWithAnEmptyDeckAndAHiddenDiscard(), ".mat-board")
+    def pile(caption: String): dom.Element =
+      all(board, ".deck-figure").find(figure =>
+        one(figure, ".deck-caption").textContent == caption).map(figure =>
+        one(figure, ".deck-card")).get
+    assertEquals(all(pile("Relic deck"), "img"), Vector.empty)
+    assert(pile("Relic deck").classList.contains("pile-empty"))
+    assertEquals(all(pile("Discard"), "img"), Vector.empty)
+    assertEquals(one(pile("Discard"), ".pile-count").textContent, "×2")
+    // The world deck beside them, whose top kind is known, has its back.
+    assertEquals(images(pile("World deck")),
+      Vector("/art/tts/backs/denizen-back.jpg"))
+
+  /** Chronicle Details draws the Atlas's Recent site with the world's own
+    * site renderer, inside the table (implementation ruling R17). */
+  test("Chronicle Details' Atlas row shows its site's card, and the row " +
+      "turns ready"):
+    import distantlands.protocol.projection.ChronicleDetailsProjection
+    TestArt.listingWholeCatalog()
+    val body = ChronicleDetailsContent.render(
+      TestProjections.actingProjection().copy(chronicleDetails = Some(
+        ChronicleDetailsProjection(20, Vector.empty, Vector.empty,
+          Some(quietSite("site:deep-woods", "Deep Woods"))))))
+    val row = one(body, ".chronicle-details-atlas-board > article.site")
+    val image = one(row, ":scope > .site-face > img.art")
+    assertEquals(image.getAttribute("src"),
+      "/art/cards/Deep%20Woods%20(NF).png")
+    image.dispatchEvent(new dom.Event("load"))
+    assert(row.classList.contains("art-ready"))
+
