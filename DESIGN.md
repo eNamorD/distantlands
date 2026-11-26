@@ -1048,8 +1048,9 @@ same place, 360px wide, on Base with a Brass Line border; the two never
 show together.
 
 ### Game Art
-A player may switch **Game art** on in Settings; the table then shows the
-host's licensed images in place of what it draws. The switch is a
+**Game art** is a switch in Settings, on by default; a player may turn it
+off or on. While it is on the table shows the host's licensed images in
+place of what it draws. The switch is a
 full-width Control 44px tall, its name at the left and On or Off at the
 right; on, it wears the selection colours. When the server has no art it
 wears the Withheld face, with the reason on the line below and in its
