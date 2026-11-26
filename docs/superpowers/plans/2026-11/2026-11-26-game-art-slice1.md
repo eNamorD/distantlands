@@ -32,31 +32,27 @@ plan runs go in the
 [implementation rulings](../../specs/2026-11/2026-11-26-game-art-design-implementation-rulings.md).
 Read the spec in full before starting.
 
-## Open questions this plan waits on
+## Rulings folded in
 
-The plan is written to one answer for each, named below. No production
-code is written until the orchestrator rules. A ruling that differs changes
-only the steps that name the question.
+The orchestrator ruled on the plan's open questions; each is recorded in
+the implementation rulings.
 
-- **Q1. Denizens with no "(NF)" file.** The catalog has 255 denizens; only
-  33 have a file among the 240 "(NF)" files. The other 222 have only the
-  base file `<Name>.png`, which the spec's folder leaves out. The plan
-  follows the spec as written: those 222 denizens have no catalog path and
-  stay drawn (Task 2, Task 3).
-- **Q2. A card the viewer knows but that lies facedown** (`card-face-knowable`).
-  The plan puts the back's image on the box and the face's image on the
-  hover summary, which is a box of its own (Task 7).
-- **Q3. Which printed content a ready box hides.** The spec's rule
-  `.art-ready .printed { opacity: 0 }` reaches into boxes nested in a ready
-  box, so a nested box whose own image is missing would lose its drawn
-  content. The plan hides printed content by its nearest box (Task 6).
-- **Q4. `--art-path` naming a folder that does not exist.** The plan starts
-  the server with no art and logs a warning (Task 4).
-- **Q5. `DLQ_ART_PATH`.** Every other option has an environment variable.
-  The plan adds one (Task 1).
-- **Q6. How much of the catalog slice 1 holds.** The plan gives
-  `ArtCatalog` the cards and backs this slice draws; slices 2 and 3 add
-  their own keys with their surfaces (Task 2).
+- **R1.** A card's path is its "(NF)" file when the set has one, else its
+  base file `cards/<Name>.png`. The catalog lists both forms by name
+  (Task 2, Task 3).
+- **R2.** A knowable card has its back's image on the box and its face's
+  image on the hover summary, a box of its own (Task 7).
+- **R3.** Printed content is hidden by its nearest box, through
+  `--printed-opacity` (Task 6).
+- **R4.** An art path that is not a folder serves no art and logs a line
+  (Task 4).
+- **R5.** `DLQ_ART_PATH` (Task 1). Slice 3 documents it.
+- **R6.** The catalog holds the cards and backs this slice draws; later
+  slices add theirs (Task 2).
+- **R7.** The manifest is `no-cache`; "Loading the art list…" while
+  pending; a disabled switch shows Off; Settings and Dev tools close each
+  other; the Vision's turn is confirmed by eye and matches the overlay's
+  long edge; a known dormant legacy gets its face (Tasks 4, 7, 8, 9).
 
 ## Global Constraints
 
@@ -151,7 +147,7 @@ names the edit:
 **Interfaces:**
 - Produces: `ServerConfig.artPath: Option[java.nio.file.Path]`, the last
   field, default `None`; absolute and normalised when set. Read from
-  `--art-path DIR`, then `DLQ_ART_PATH` (Q5).
+  `--art-path DIR`, then `DLQ_ART_PATH` (R5).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -259,14 +255,16 @@ git log -3
   - `ArtCatalog.cardBack(cardKind: String): Option[ArtKey]`, for the
     projection's kinds `"denizen"`, `"vision"`, `"relic"`, `"legacy"`
   - `ArtCatalog.allPaths: Vector[String]`
-  - `ArtCatalog.denizens`, `relics`, `edificeFaces`, `legacies`, `visions`:
-    `Vector[String]`, the printed names with a face image.
+  - `ArtCatalog.reprintedDenizens`, `baseDenizens`, `relics`,
+    `edificeFaces`, `legacies`, `visions`: `Vector[String]`, the printed
+    names with a face image.
 - Consumes: nothing. The shared module references only
   `distantlands.protocol`.
 
 The card names below were read from the card objects and checked against
-the file names in the art folder. Under Q1 as planned, `denizens` holds the
-33 denizens New Foundations reprints and no other.
+the file names in the `bgs-cards` clone. `reprintedDenizens` holds the 33
+denizens with a "(NF)" file and `baseDenizens` the 222 with only a base
+file (R1).
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -297,16 +295,19 @@ class ArtCatalogSuite extends munit.FunSuite:
     names.foreach(name =>
       assertEquals(pathOf(name), Some(s"cards/$name (NF).png"), name))
 
-  test("the catalog's denizens are exactly the 33 New Foundations " +
-      "reprints, each a real denizen"):
-    assertEquals(ArtCatalog.denizens.size, 33)
-    val real = catalog.denizens.map(_.name).toSet
-    ArtCatalog.denizens.foreach(name => assert(real(name), name))
-    ArtCatalog.denizens.foreach(name =>
+  test("every denizen has one face path: its New Foundations file when " +
+      "the set has one, else its base file"):
+    assertEquals(ArtCatalog.reprintedDenizens.size, 33)
+    assertEquals(ArtCatalog.baseDenizens.size, 222)
+    assertEquals((ArtCatalog.reprintedDenizens ++ ArtCatalog.baseDenizens)
+      .sorted, catalog.denizens.map(_.name).sorted)
+    ArtCatalog.reprintedDenizens.foreach(name =>
       assertEquals(pathOf(name), Some(s"cards/$name (NF).png"), name))
+    ArtCatalog.baseDenizens.foreach(name =>
+      assertEquals(pathOf(name), Some(s"cards/$name.png"), name))
 
-  test("a denizen New Foundations did not reprint has no face path"):
-    assertEquals(pathOf("Wrestlers"), None)
+  test("a name no card prints has no face path"):
+    assertEquals(pathOf("Facedown denizen"), None)
 
   test("the lists hold no name the card objects do not print"):
     assertEquals(ArtCatalog.relics.toSet, catalog.relics.map(_.name).toSet)
@@ -326,8 +327,9 @@ class ArtCatalogSuite extends munit.FunSuite:
 
   test("no two faces share a path, and every path is listed once"):
     assertEquals(ArtCatalog.allPaths.distinct, ArtCatalog.allPaths)
-    val faces = ArtCatalog.denizens ++ ArtCatalog.relics ++
-      ArtCatalog.edificeFaces ++ ArtCatalog.legacies ++ ArtCatalog.visions
+    val faces = ArtCatalog.reprintedDenizens ++ ArtCatalog.baseDenizens ++
+      ArtCatalog.relics ++ ArtCatalog.edificeFaces ++ ArtCatalog.legacies ++
+      ArtCatalog.visions
     assertEquals(faces.distinct, faces)
     assertEquals(ArtCatalog.allPaths.size, faces.size + 4)
 
@@ -364,6 +366,7 @@ final case class ArtKey private[art] (path: String)
   *
   * A card is known by its printed name, which is also its file's name: an
   * edifice has one name for each face, so a name is a card and its side.
+  * It grows with the surfaces that draw art (implementation ruling R6).
   */
 object ArtCatalog:
   /** A list written as names parted by semicolons, wrapped freely. */
@@ -371,8 +374,8 @@ object ArtCatalog:
     list.split(';').toVector.map(_.trim.replaceAll("\\s+", " "))
       .filter(_.nonEmpty)
 
-  /** The denizens New Foundations reprints. */
-  val denizens: Vector[String] = names("""
+  /** The denizens New Foundations reprints, whose files end "(NF)". */
+  val reprintedDenizens: Vector[String] = names("""
     A Round of Ale; Alchemist; Ancient Pact; Ballot Box; Bandit
     Chief; Bewitch; Book Burning; Bracken; Deed Writer; Defame;
     Disgraced Captain; Family Wagon; Forest Council; Forgotten
@@ -381,6 +384,61 @@ object ArtCatalog:
     Relic Breaker; Relic Thief; Relic Worship; Riots; Royal
     Ambitions; Salt the Earth; Tinker's Fair; Vow of Division; Vow
     of Silence; Vow of Union
+    """)
+
+  /** The denizens New Foundations left as the base game printed them,
+    * whose files carry the bare name. */
+  val baseDenizens: Vector[String] = names("""
+    A Fast Steed; A Small Favor; Acting Troupe; Ancient Binding;
+    Ancient Bloodline; Animal Host; Animal Playmates; Arcane Armor;
+    Arcane Brokers; Armed Mob; Assassin; Augury; Autumn Wind;
+    Awaited Return; Bandit Paymaster; Bandit Prince; Banner
+    Breakers; Baron; Battle Axes; Battle Honors; Bear Traps; Beast
+    Tamer; Bed of Roots; Billowing Fog; Birdsong; Blackmail; Blood
+    Pact; Bog; Book Binders; Call for Help; Captains; Careful Plans;
+    Catacombs; Chaos Cult; Charlatan; Charming Friend; City Wall;
+    Code of Honor; Convoys; Council Arbiter; Council Seat; Cracked
+    Sage; Cracking Ground; Crop Rotation; Curfew; Dark Enforcer;
+    Dazzle; Diplomat; Disciples; Dissent; Downtrodden; Dream Thief;
+    Elders; Enchantress; Encirclement; Errand Boy; Extra Provisions;
+    Fabled Feast; Fae Battalion; Fae Merchant; Faithful Friend;
+    False Prophet; Family Heirloom; Favored Son; Fearsome General;
+    Field Promotion; Fire Talkers; Firebrand; Forced Labor; Forest
+    Paths; Forest Warden; Friendly Familiar; Gambling Hall;
+    Garrison; Garrison Armory; Glamor; Gleaming Armor; Golem
+    Legions; Grasping Vines; Great Crusade; Great Feast; Great Herd;
+    Hearts and Minds; Herald; Homesteaders; Honor Guard; Horse
+    Archers; Hospital; Hospitality; Hunger; Hunting Party;
+    Initiation Rite; Insect Swarm; Insomnia; Jinx; Key to the City;
+    Kindred Warriors; Knights Errant; Lancers; Land Warden; League
+    Treaty; Levelers; Longbows; Lost Tongue; Map Library; Marriage;
+    Marsh Spirit; Master at Arms; Master of Disguise; Memory of
+    Nature; Mercenaries; Messenger; Military Parade; Mountain Giant;
+    Mounted Library; Mounted Patrol; Moving Market; Mushrooms;
+    Nature Worship; Naysayers; New Growth; News from Afar;
+    Observatory; Old Songs; Oracle; Outriders; Palanquin; Peace
+    Envoy; Pied Piper; Pilgrimage; Plague Engines; Pledge of
+    Defense; Pledge to Discord; Pressgangs; Quartermaster; Rain
+    Boots; Rangers; Relic Hunter; Reliquary Raid; Resettle;
+    Revelation; Rival Khan; Roving Terror; Rowdy Pub; Royal Stables;
+    Royal Tax; Rusting Ray; Saddle Makers; Salad Days; Scouts;
+    Scryer; Sealing Ward; Search Party; Second Chance; Second Wind;
+    Secret Police; Secret Signal; Shield Wall; Shifting Fog; Siege
+    Engines; Signal Trees; Silver Tongue; Skilled Merchants; Sleight
+    of Hand; Small Friends; Sneak Attack; Special Envoy; Specialist;
+    Spell Breaker; Spinning Bee; Spirit Snare; Spoiled Supplies;
+    Storm Caller; Storyteller; Taming Charm; Tavern Songs; Tents;
+    Terror Spells; The Gathering; The Great Levy; The Old Oak; The
+    Red Seer; Threatening Roar; Toll Roads; Town Meeting; Tracker;
+    Traveling Doctor; Traveling Negotiator; Tribute Spoils; True
+    Names; True Oath; Tutor; Twin Brother; Tyrant; Unstable Summon;
+    Village Constable; Village Idiot; Vow of Beastkin; Vow of
+    Kinship; Vow of Obedience; Vow of Peace; Vow of Poverty; Vow of
+    Wandering; Vow of Wisdom; Walled Garden; War Tortoise; Ward of
+    Silence; Warning Signals; Watchdog; Way Station; Wayside Inn;
+    Welcoming Party; Whispering Leaves; Wild Allies; Wild Cry; Wild
+    Mounts; Witch's Bargain; Wizard School; Wizard's Conclave;
+    Wolves; Wrestlers; Zealots
     """)
 
   /** Every relic. */
@@ -436,13 +494,18 @@ object ArtCatalog:
     "Vision of Conquest; Vision of Faith; Vision of Rebellion; " +
       "Vision of Sanctuary; Conspiracy")
 
-  private val cardNames: Vector[String] =
-    denizens ++ relics ++ edificeFaces ++ legacies ++ visions
+  /** Every card with a "(NF)" file. */
+  private val reprinted: Vector[String] =
+    reprintedDenizens ++ relics ++ edificeFaces ++ legacies ++ visions
 
-  private def cardPath(name: String): String = s"cards/$name (NF).png"
+  /** Each card's file: the New Foundations file when the set has one,
+    * else the base game's (implementation ruling R1). */
+  private val facePaths: Vector[(String, String)] =
+    reprinted.map(name => name -> s"cards/$name (NF).png") ++
+      baseDenizens.map(name => name -> s"cards/$name.png")
 
   private val faces: Map[String, ArtKey] =
-    cardNames.map(name => name -> ArtKey(cardPath(name))).toMap
+    facePaths.map((name, path) => name -> ArtKey(path)).toMap
 
   /** The back of each kind of card a viewer may be unable to identify, by
     * the projection's card kind. */
@@ -461,14 +524,14 @@ object ArtCatalog:
   /** Every path the client can ask for, each once: the server's allowlist
     * and the list in `docs/operations/game-art.md`. */
   val allPaths: Vector[String] =
-    cardNames.map(cardPath) ++ Vector("denizen", "vision", "relic", "legacy")
+    facePaths.map(_._2) ++ Vector("denizen", "vision", "relic", "legacy")
       .map(kind => backs(kind).path)
 ```
 
 - [ ] **Step 4: Run the tests to verify they pass**
 
 Run: `./sbtw "root/testOnly distantlands.catalog.ArtCatalogSuite"`
-Expected: PASS, 7 tests.
+Expected: PASS, every test.
 
 Run: `python3 scripts/check-architecture.py`
 Expected: no error names `ArtCatalog.scala`.
@@ -544,9 +607,11 @@ face for that one card.
     backs/  card backs
 ```
 
-- `cards/` holds the New Foundations card images of the Buried Giant card
-  database (`bgs-cards`, `content/card-images/oath/en-US`): the files whose
-  names end in ` (NF).png`. Other files in the folder are ignored.
+- `cards/` is a copy of the Buried Giant card database's Oath images
+  (`bgs-cards`, `content/card-images/oath/en-US`), the whole directory.
+  A card New Foundations reprints is read from its file ending
+  ` (NF).png`; a denizen it left alone is read from the base file that
+  carries the bare name. Files the list below does not name are ignored.
 - `tts/backs/` holds the card backs of the Tabletop Simulator mod
   "Oath: New Foundations": the denizen, Vision, relic and legacy backs,
   saved under the names below.
@@ -568,15 +633,17 @@ typing slip; the test is the real check.
 python3 - <<'PY' >> docs/operations/game-art.md
 import re
 source = open("shared/src/main/scala/distantlands/protocol/art/ArtCatalog.scala").read()
-names = []
-for block in re.findall(r'names\(\s*"""(.*?)"""', source, re.S):
-    names += [" ".join(n.split()) for n in block.split(";") if n.strip()]
-visions = re.search(r'val visions.*?names\((.*?)\)\n', source, re.S).group(1)
-names += [" ".join(n.split()) for n in
-          "".join(re.findall(r'"(.*?)"', visions)).split(";") if n.strip()]
+def listed(name):
+    block = re.search(r'val %s: Vector\[String\] = names\((.*?)\)\n' % name,
+                      source, re.S).group(1)
+    text = "".join(re.findall(r'"+(.*?)"+', block, re.S))
+    return [" ".join(n.split()) for n in text.split(";") if n.strip()]
 print()
-for name in names:
-    print(f"- `cards/{name} (NF).png`")
+for group in ("reprintedDenizens", "relics", "edificeFaces", "legacies", "visions"):
+    for name in listed(group):
+        print(f"- `cards/{name} (NF).png`")
+for name in listed("baseDenizens"):
+    print(f"- `cards/{name}.png`")
 for kind in ("denizen", "vision", "relic", "legacy"):
     print(f"- `tts/backs/{kind}-back.jpg`")
 PY
@@ -1390,7 +1457,7 @@ git log -3
   does nothing.
 - Produces, in CSS: `.art`; the class `art-ready` on a box whose image has
   loaded; the custom property `--printed-opacity`, which `.printed` reads
-  and each box sets (Q3).
+  and each box sets (R3).
 
 **How the layer is stacked.** A box that holds an image isolates its
 stacking (`:has(> .art)`), and the image takes `z-index: -1`: above the
@@ -1400,7 +1467,7 @@ rule of its own, whether it is positioned or in the flow. No class is
 added to the box when the image is attached, so a box with art and a box
 without differ only by the `img.art` element until the image loads.
 
-**How printed content is hidden (Q3).** `.printed` reads
+**How printed content is hidden (R3).** `.printed` reads
 `--printed-opacity`. Each box kind sets it to 1, and a ready box sets it
 to 0. A custom property inherits, so printed content follows its nearest
 box: a ready box never hides the drawn content of a box inside it whose
@@ -1700,7 +1767,7 @@ git log -3
 | Face up | the face | `cardFace(name)` |
 | Hidden (the viewer cannot identify it) | the back | `cardBack(cardKind)` |
 | Dormant legacy the viewer knows | the face, with its Dormant tag | `cardFace(name)` |
-| Knowable (facedown, the viewer knows it) | the back; the hover summary is a box of its own | `cardBack(cardKind)` on the box, `cardFace(name)` on the summary (Q2) |
+| Knowable (facedown, the viewer knows it) | the back; the hover summary is a box of its own | `cardBack(cardKind)` on the box, `cardFace(name)` on the summary (R2) |
 
 The inspection overlay calls `CardFace.render` with the card turned face
 up, so it shows the face's image at the overlay's size with no code of its
@@ -1790,9 +1857,15 @@ class CardArtSuite extends munit.FunSuite:
     assertEquals(images(node),
       Vector("/art/cards/Vision%20of%20Faith%20(NF).png"))
 
-  test("a card with no file in the catalog stays drawn"):
+  test("a denizen New Foundations did not reprint holds its base file"):
     TestArt.listingWholeCatalog()
-    val node = CardFace.render(CardDetails("1", "denizen", "Wrestlers",
+    assertEquals(images(CardFace.render(CardDetails("1", "denizen",
+      "Wrestlers", suit = Some("order"), orientation = Some("face-up")))),
+      Vector("/art/cards/Wrestlers.png"))
+
+  test("a card the catalog does not name stays drawn"):
+    TestArt.listingWholeCatalog()
+    val node = CardFace.render(CardDetails("x", "denizen", "Old Oak",
       suit = Some("order"), orientation = Some("face-up")))
     assertEquals(all(node, "img"), Vector.empty)
 
@@ -2626,7 +2699,7 @@ tools:
 2. With art on: a relic, an edifice, a legacy and a reprinted denizen show
    their images in their boxes; a facedown adviser and a facedown site
    relic show their backs; tokens on a card lie over the image; a denizen
-   with no file stays drawn. A Vision in a row reads turned a quarter, and
+   New Foundations did not reprint shows its base file. A Vision in a row reads turned a quarter, and
    upright in the overlay.
 3. The inspection overlay shows the image large, with the rules text
    beside it.
@@ -2639,7 +2712,7 @@ tools:
 6. A blocked file stays drawn: check with
    `document.querySelectorAll('.card-face:not(.art-ready) > img.art')`
    after the load settles, and by renaming nothing in the art folder. Use
-   the Wrestlers-kind denizen (no file) and one request blocked in the
+   a card the catalog does not name and one request blocked in the
    network tools if the tools allow it; report which was done.
 7. Restart the scratch server without `--art-path` and reload: the switch
    is disabled with "This server has no game art."

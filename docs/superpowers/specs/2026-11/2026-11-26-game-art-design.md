@@ -47,13 +47,16 @@ own server runs with `--art-path reference/assets`:
 ```
 <art-path>/
   cards/    a copy of bgs-cards content/card-images/oath/en-US
-            (the 240 "(NF)" files; other files are ignored)
+            (a card's "(NF)" file where the set has one, else its
+            base file; other files are ignored)
   symbols/  the 21 symbol-*.png from bgs-cards content/card-symbols/oath
   tts/      mat/, backs/, tokens/, pieces/, markers/, titles/,
             attack-die/, defense-die/, round-die-texture/
 ```
 
 File names are the source names: `cards/Alchemist (NF).png`,
+`cards/Wrestlers.png` for a denizen New Foundations did not reprint
+([implementation ruling R1](2026-11-26-game-art-design-implementation-rulings.md)),
 `symbols/symbol-suit-arcane.png`, `tts/pieces/pawn-red.png`. A new tracked
 page, `docs/operations/game-art.md`, lists every path the client can ask
 for and where its file comes from. It holds names only, never art. The
@@ -83,7 +86,8 @@ extension is `png`, `jpg` or `webp` and whose path is in `ArtCatalog.allPaths`
 `ArtCatalog` lives in the `shared` module, so the server and the client read
 one table. It maps each game identifier to a path relative to the folder:
 
-- a card and its side to `cards/<Name> (NF).png`;
+- a card and its side to `cards/<Name> (NF).png`, or to the base file
+  `cards/<Name>.png` where New Foundations has none;
 - a card kind to its back under `tts/backs/`;
 - a symbol to `symbols/symbol-<name>.png`;
 - a piece and a player colour to `tts/pieces/<piece>-<colour>.png`;
@@ -141,10 +145,15 @@ Every surface swaps art through one helper, `ArtLayer.attach(box, key)`.
 - Otherwise it appends `<img class="art" alt="" aria-hidden="true"
   decoding="async" loading="lazy">`, absolutely positioned to fill the box
   with `object-fit: contain`. The image never sizes the box.
-- On `load` it adds `art-ready` to the box. The stylesheet rule
-  `.art-ready .printed { opacity: 0 }` hides the drawn content. Opacity,
-  not `display: none`, keeps the drawn text's space and keeps it in the
-  accessibility tree, so a screen reader still reads the card's name.
+- On `load` it adds `art-ready` to the box. The stylesheet then hides the
+  box's drawn content with opacity. Printed content follows its nearest
+  box: `.printed` reads the custom property `--printed-opacity`, which
+  each box kind sets to 1 and a ready box sets to 0, so a ready box never
+  hides what a box inside it draws when that box's own image is missing
+  ([implementation ruling R3](2026-11-26-game-art-design-implementation-rulings.md)).
+  Opacity, not `display: none`, keeps the drawn text's space and keeps it
+  in the accessibility tree, so a screen reader still reads the card's
+  name.
 - On `error` it removes the image and the box stays drawn.
 - The table re-renders on every poll, which builds a fresh image. A URL
   `GameArt` remembers as loaded marks the box `art-ready` at once, since
