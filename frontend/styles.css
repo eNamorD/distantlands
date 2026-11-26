@@ -631,7 +631,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    banner's height, a control that opens the goal's words. */
 .table-edge .oathkeeper-status > .oathkeeper-goal {
   height: var(--banner-edge-side); margin: 0 0 4px; overflow: hidden;
-  font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+  font-size: 0.8em; font-weight: 700; cursor: pointer; }
+/* Zoomed out, the drawn goal is its short name at the glance size, as a
+   banner is. */
+.map-compact .table-edge .oathkeeper-goal { font-size: var(--glance-text); }
+.map-compact .table-edge .oathkeeper-goal > .card-name { display: none; }
+.map-compact .table-edge .oathkeeper-goal > .card-name-short {
+  max-height: none; font-size: 1em; }
 .table-edge .oathkeeper-goal:hover, .table-edge .oathkeeper-goal:focus-visible {
   outline: var(--option-ring) solid var(--cream-focus);
   outline-offset: calc(var(--option-ring) * -1.5); }

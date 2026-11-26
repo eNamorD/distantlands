@@ -194,6 +194,22 @@ class PlateArtSuite extends munit.FunSuite:
     all(copy, ".art").foreach(_.remove())
     assertEquals(copy.outerHTML, drawn.outerHTML)
 
+  /** The review's finding: the zoomed-out edge had no readable name for
+    * the drawn goal. The card carries a short name, as a banner does. */
+  test("the Oath goal's card carries its goal's short name for the " +
+      "zoomed-out edge, printed and not read twice"):
+    Vector("supremacy" -> "Su", "protection" -> "Pr", "devotion" -> "De",
+      "the-people" -> "tP").foreach { (key, short) =>
+      val goal = one(WorldBoardRenderer.world(TestProjections
+        .actingProjection().copy(oathkeeper = Some(OathkeeperProjection(key,
+          None, "oathkeeper", usurperLimited = false,
+          winnerPlayerId = None))), BoardOptions.none), ".oathkeeper-goal")
+      val name = one(goal, ":scope > .card-name-short")
+      assertEquals(name.textContent, short)
+      assertEquals(name.getAttribute("aria-hidden"), "true")
+      assert(name.classList.contains("printed"))
+    }
+
   test("the Oath's holder stands in words under the goal's card"):
     Vector((None, "oathkeeper", "Oathkeeper: unheld"),
       (Some("Red"), "oathkeeper", "Oathkeeper: Red"),

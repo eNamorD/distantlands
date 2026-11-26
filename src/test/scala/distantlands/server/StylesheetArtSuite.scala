@@ -441,6 +441,29 @@ class StylesheetArtSuite extends munit.FunSuite:
     // It is no longer a line of link text.
     assert(!css.contains(".oathkeeper-status > .oathkeeper-goal:not(:hover)"))
 
+  /** The review's finding: the card's own font size outranked the edge's
+    * glance rule, so the drawn goal's title was about 2px at a phone's
+    * Fit. Its words follow the edge's size (em, not rem), and zoomed out
+    * it shows its short name at the glance size, as a banner does. */
+  test("the drawn Oath goal keeps a readable name on the zoomed-out edge"):
+    val card = rule(".table-edge .oathkeeper-status > .oathkeeper-goal")
+    assert(card.contains("font-size: 0.8em"), card)
+    assert(!card.contains("rem;"), card)
+    assert(rule(".map-compact .table-edge .oathkeeper-goal")
+      .contains("font-size: var(--glance-text)"))
+    assert(rule(".map-compact .table-edge .oathkeeper-goal > .card-name")
+      .contains("display: none"))
+    val short = rule(
+      ".map-compact .table-edge .oathkeeper-goal > .card-name-short")
+    Vector("max-height: none", "font-size: 1em")
+      .foreach(part => assert(short.contains(part), part))
+    // The card's ring on hover and focus, inside its own box.
+    val ring = rule(".table-edge .oathkeeper-goal:hover, " +
+      ".table-edge .oathkeeper-goal:focus-visible")
+    Vector("outline: var(--option-ring) solid var(--cream-focus)",
+      "outline-offset: calc(var(--option-ring) * -1.5)")
+      .foreach(part => assert(ring.contains(part), part))
+
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
   private val rendererSources: String =

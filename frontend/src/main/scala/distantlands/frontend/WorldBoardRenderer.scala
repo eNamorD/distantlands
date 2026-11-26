@@ -687,6 +687,12 @@ private[frontend] object WorldBoardRenderer:
       goal.setAttribute("aria-label", title)
       HoverTip.set(goal, title)
       goal.appendChild(text("span", "card-name printed", title))
+      // The zoomed-out edge shows the goal's own word in short, as a
+      // banner shows its name's initials.
+      val short = text("span", "card-name-short printed",
+        CardFace.initials(title.stripPrefix("Oathkeeper of ")))
+      short.setAttribute("aria-hidden", "true")
+      goal.appendChild(short)
       ArtLayer.attach(goal, ArtCatalog.oathGoal(oath.goal))
       goal.onclick = _ => CardInspection.openText(title,
         presented.fold(Vector.empty[String])(_.lines), goal, Some("oath-goal"),

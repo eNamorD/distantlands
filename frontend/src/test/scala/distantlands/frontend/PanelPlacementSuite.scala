@@ -34,7 +34,9 @@ class PanelPlacementSuite extends munit.FunSuite:
       oath.copy(goal = "supremacy", holderPlayerId = None)))
     val status = Dom.firstMatch(world(value), ".shared-bank .oathkeeper-status")
       .getOrElse(fail("no oath line in the shared bank"))
-    assertEquals(Dom.all(status, ":scope > *").map(_.textContent),
+    assertEquals(Dom.all(status,
+      ":scope > .oathkeeper-goal > .card-name, :scope > .oathkeeper-holder")
+      .map(_.textContent),
       Vector("Oathkeeper of Supremacy", "Oathkeeper: unheld"))
 
   /** The Oath is a printed card the table shows as words, so its goal opens
@@ -72,7 +74,7 @@ class PanelPlacementSuite extends munit.FunSuite:
   test("a goal other than supremacy is named as itself"):
     assertEquals(Dom.firstMatch(world(projection(oathkeeper =
       Some(oath.copy(goal = "the-people", holderPlayerId = Some("Blue"))))),
-      ".shared-bank .oathkeeper-goal").map(_.textContent),
+      ".shared-bank .oathkeeper-goal > .card-name").map(_.textContent),
       Some("Oathkeeper of the People"))
 
   private val foundations = Vector(
