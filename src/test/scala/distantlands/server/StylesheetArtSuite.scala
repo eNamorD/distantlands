@@ -286,6 +286,38 @@ class StylesheetArtSuite extends munit.FunSuite:
       "transform: translate(-50%, -50%) rotate(-90deg)")
       .foreach(part => assert(title.contains(part), part))
 
+  /** `.art` gives every image the whole of its box, and a stylesheet
+    * outranks an SVG size attribute: an SVG image with a size of its own
+    * must set it as an inline style (`ArtLayer.attachMark`). The slice 3
+    * review saw the Usurper's piece drawn as large as the wheel. Glyph
+    * images want the whole glyph and need nothing more. */
+  test("no art rule but the layer's own sizes an image, so an inline " +
+      "size is the only override"):
+    val rules = """([^{}]+)\{([^{}]*)\}""".r
+    val sizing = rules.findAllMatchIn(uncommented).filter(found =>
+      found.group(1).split(",").exists(_.trim.endsWith(".art")) &&
+        """(?<![-\w])(width|height)\s*:""".r.findFirstIn(found.group(2))
+          .nonEmpty).map(_.group(1).trim.replaceAll("\\s+", " ")).toVector
+    assertEquals(sizing, Vector(".art",
+      ".card-face-vision:not(.card-face-down) > .art, " +
+        ".card-face-vision > .card-hover-summary > .art",
+      ".card-overlay-body > .card-face-vision:not(.card-face-down) > .art",
+      ".card-overlay-body > .card-face-vision.card-face-down > .art",
+      ".mat-board .deck-sideways > .art",
+      ".card-plate-oathkeeper-title > .art"))
+    val source = Files.readString(Path.of("frontend", "src", "main", "scala",
+      "distantlands", "frontend", "ArtLayer.scala"))
+    assert(source.contains(
+      """s"width: ${size.toInt}px; height: ${size.toInt}px;""""))
+
+  test("an empty pile's count keeps its ground on a ready mat"):
+    val count = rule(
+      ".mat-board.art-ready .deck-card.pile-empty > .pile-count")
+    Vector("background: var(--base)", "border-radius: 0.3em",
+      "box-shadow: 0 0 0 0.3em var(--base)")
+      .foreach(part => assert(count.contains(part), part))
+    assert(!count.contains("padding"))
+
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
   private val rendererSources: String =

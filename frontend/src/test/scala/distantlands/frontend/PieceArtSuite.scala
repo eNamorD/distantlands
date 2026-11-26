@@ -100,6 +100,15 @@ class PieceArtSuite extends munit.FunSuite:
     // every image the whole of its box, and a stylesheet outranks an
     // SVG size attribute. Seen live: the piece was as large as the wheel.
     assertEquals(image.getAttribute("style"), "width: 24px; height: 24px;")
+    // A 24-unit square whose centre is the drawn mark's place, lifted by
+    // the 8 units the mark's baseline sits under its middle.
+    val mark = one(round, ".limiter-marker")
+    assertEquals(image.getAttribute("x").toDouble,
+      mark.getAttribute("x").toDouble - 12, 0.001)
+    assertEquals(image.getAttribute("y").toDouble,
+      mark.getAttribute("y").toDouble - 8 - 12, 0.001)
+    assertEquals(image.getAttribute("width"), null)
+    assertEquals(image.getAttribute("height"), null)
     image.dispatchEvent(new dom.Event("load"))
     assert(one(round, ".limiter-marker").classList.contains("art-ready"))
     assertEquals(all(wheel, "image.art").size, 1)

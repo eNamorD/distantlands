@@ -2412,6 +2412,11 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 /* The mat prints each pile's slot, so an empty pile gives way to it. */
 .mat-board.art-ready .deck-card.pile-empty { border-color: transparent;
   background: none; }
+/* Its count then lies on the mat's print, so it takes the ground a count
+   has over a pile's back. */
+.mat-board.art-ready .deck-card.pile-empty > .pile-count {
+  border-radius: 0.3em; background: var(--base);
+  box-shadow: 0 0 0 0.3em var(--base); }
 /* A die face is a crop of its die's sheet: a square as tall as the chip,
    centred in it, showing only the face. The chip's own glyphs hide when
    the sheet has loaded, and so does the doubler's "×2", which its side
