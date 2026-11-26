@@ -149,7 +149,7 @@ names the edit:
   field, default `None`; absolute and normalised when set. Read from
   `--art-path DIR`, then `DLQ_ART_PATH` (R5).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `ServerConfigSuite`, inside the class. The suite's `parse` helper
 returns the parsed configuration; use `rejected` for the error case as the
@@ -180,13 +180,13 @@ neighbouring tests do.
     assert(ServerConfig.usage.contains("[--art-path DIR]"))
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "root/testOnly distantlands.server.ServerConfigSuite"`
 Expected: compilation fails with `value artPath is not a member of
 distantlands.server.ServerConfig`.
 
-- [ ] **Step 3: Implement the option**
+- [x] **Step 3: Implement the option**
 
 In `ServerConfig.scala`:
 
@@ -223,12 +223,12 @@ final case class ServerConfig(
    pass `artPath.toOption.get` as the last argument of the `ServerConfig`
    built on success.
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `./sbtw "root/testOnly distantlands.server.ServerConfigSuite"`
 Expected: PASS, every test.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/main/scala/distantlands/server/ServerConfig.scala \
@@ -266,7 +266,7 @@ the file names in the `bgs-cards` clone. `reprintedDenizens` holds the 33
 denizens with a "(NF)" file and `baseDenizens` the 222 with only a base
 file (R1).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `src/test/scala/distantlands/catalog/ArtCatalogSuite.scala`:
 
@@ -341,13 +341,13 @@ class ArtCatalogSuite extends munit.FunSuite:
     }
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "root/testOnly distantlands.catalog.ArtCatalogSuite"`
 Expected: compilation fails with `value art is not a member of
 distantlands.protocol`.
 
-- [ ] **Step 3: Write `ArtCatalog`**
+- [x] **Step 3: Write `ArtCatalog`**
 
 Create `shared/src/main/scala/distantlands/protocol/art/ArtCatalog.scala`:
 
@@ -528,7 +528,7 @@ object ArtCatalog:
       .map(kind => backs(kind).path)
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `./sbtw "root/testOnly distantlands.catalog.ArtCatalogSuite"`
 Expected: PASS, every test.
@@ -536,7 +536,7 @@ Expected: PASS, every test.
 Run: `python3 scripts/check-architecture.py`
 Expected: no error names `ArtCatalog.scala`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add shared/src/main/scala/distantlands/protocol/art/ArtCatalog.scala \
@@ -561,7 +561,7 @@ git log -3
   `configuration.md`. Its "Paths" section holds one bullet per path, the
   path in backticks, in `allPaths` order.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `ArtCatalogSuite`, with `import java.nio.file.{Files, Path}` at
 the top of the file:
@@ -576,13 +576,13 @@ the top of the file:
     assertEquals(listed, ArtCatalog.allPaths)
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `./sbtw "root/testOnly distantlands.catalog.ArtCatalogSuite"`
 Expected: the new test FAILS with `java.nio.file.NoSuchFileException:
 docs/operations/game-art.md`.
 
-- [ ] **Step 3: Write the page**
+- [x] **Step 3: Write the page**
 
 Create `docs/operations/game-art.md` with this text, then the bullets:
 
@@ -651,7 +651,7 @@ PY
 
 Read the page's tail to check the bullets are there and well formed.
 
-- [ ] **Step 4: Run the test and the link check**
+- [x] **Step 4: Run the test and the link check**
 
 Run: `./sbtw "root/testOnly distantlands.catalog.ArtCatalogSuite"`
 Expected: PASS, 8 tests.
@@ -659,7 +659,7 @@ Expected: PASS, 8 tests.
 Run: `python3 scripts/check-markdown-links.py`
 Expected: no error.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/operations/game-art.md \
@@ -694,7 +694,7 @@ git log -3
   - `ServerRoutes.route(runtime, blockingExecutionContext, config,
     readiness, art: ArtLibrary = ArtLibrary.empty): Route`
 
-- [ ] **Step 1: Write the failing scan tests**
+- [x] **Step 1: Write the failing scan tests**
 
 Create `src/test/scala/distantlands/server/ArtLibrarySuite.scala`:
 
@@ -775,12 +775,12 @@ object ArtFolders:
     folder
 ```
 
-- [ ] **Step 2: Run the scan tests to verify they fail**
+- [x] **Step 2: Run the scan tests to verify they fail**
 
 Run: `./sbtw "root/testOnly distantlands.server.ArtLibrarySuite"`
 Expected: compilation fails with `Not found: ArtLibrary`.
 
-- [ ] **Step 3: Write `ArtLibrary`**
+- [x] **Step 3: Write `ArtLibrary`**
 
 Create `src/main/scala/distantlands/server/ArtLibrary.scala`:
 
@@ -840,12 +840,12 @@ object ArtLibrary:
     }
 ```
 
-- [ ] **Step 4: Run the scan tests to verify they pass**
+- [x] **Step 4: Run the scan tests to verify they pass**
 
 Run: `./sbtw "root/testOnly distantlands.server.ArtLibrarySuite"`
 Expected: PASS, 7 tests.
 
-- [ ] **Step 5: Write the failing route tests**
+- [x] **Step 5: Write the failing route tests**
 
 Create `src/test/scala/distantlands/server/ArtRoutesSuite.scala`:
 
@@ -924,12 +924,12 @@ class ArtRoutesSuite extends munit.FunSuite:
     }
 ```
 
-- [ ] **Step 6: Run the route tests to verify they fail**
+- [x] **Step 6: Run the route tests to verify they fail**
 
 Run: `./sbtw "root/testOnly distantlands.server.ArtRoutesSuite"`
 Expected: compilation fails with `Not found: ArtRoutes`.
 
-- [ ] **Step 7: Write `ArtRoutes`**
+- [x] **Step 7: Write `ArtRoutes`**
 
 Create `src/main/scala/distantlands/server/ArtRoutes.scala`:
 
@@ -980,12 +980,12 @@ pass because `pathPrefix("art")` leaves them unmatched, they fall to the
 server's own 404, which the test also accepts; keep the final
 `complete(StatusCodes.NotFound)` for paths under `/art/`.
 
-- [ ] **Step 8: Run the route tests to verify they pass**
+- [x] **Step 8: Run the route tests to verify they pass**
 
 Run: `./sbtw "root/testOnly distantlands.server.ArtRoutesSuite"`
 Expected: PASS, 4 tests.
 
-- [ ] **Step 9: Write the failing wiring test**
+- [x] **Step 9: Write the failing wiring test**
 
 Append to `ServerRoutesSuite`, inside the class:
 
@@ -1025,7 +1025,7 @@ Append to `ServerRoutesSuite`, inside the class:
 Run: `./sbtw "root/testOnly distantlands.server.ServerRoutesSuite"`
 Expected: compilation fails, `too many arguments for method route`.
 
-- [ ] **Step 10: Wire the routes and the startup log**
+- [x] **Step 10: Wire the routes and the startup log**
 
 In `ServerRoutes.scala`, add the parameter and serve the routes in every
 mode:
@@ -1057,12 +1057,12 @@ before `val route`:
 
 and pass `art` as the last argument of `ServerRoutes.route(...)`.
 
-- [ ] **Step 11: Run the server suites**
+- [x] **Step 11: Run the server suites**
 
 Run: `./sbtw "root/testOnly distantlands.server.*"`
 Expected: PASS, every suite.
 
-- [ ] **Step 12: Commit**
+- [x] **Step 12: Commit**
 
 ```bash
 git add src/main/scala/distantlands/server/ArtLibrary.scala \
@@ -1119,7 +1119,7 @@ renderers ask a slot. Until `start` or `install` runs, the manifest is
 `Pending` and `url` answers `None`, so every existing suite sees the drawn
 table.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `frontend/src/test/scala/distantlands/frontend/TestArt.scala`:
 
@@ -1266,12 +1266,12 @@ class GameArtSuite extends munit.FunSuite:
     assert(!GameArt.hasLoaded("/art/a.png") && !GameArt.hasFailed("/art/b.png"))
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.GameArtSuite"`
 Expected: compilation fails with `Not found: GameArt`.
 
-- [ ] **Step 3: Write `GameArt`**
+- [x] **Step 3: Write `GameArt`**
 
 Create `frontend/src/main/scala/distantlands/frontend/GameArt.scala`:
 
@@ -1381,7 +1381,7 @@ private[frontend] object GameArt:
     failed = Set.empty
 ```
 
-- [ ] **Step 4: Tell the architecture check the key is not a package**
+- [x] **Step 4: Tell the architecture check the key is not a package**
 
 `"distantlands.art"` in a string would read as a reference to a package
 named `art`. In `scripts/check-architecture.py`, change the comment and the
@@ -1394,7 +1394,7 @@ qualified_reference = re.compile(
     r"\bdistantlands\.(?!(?:art|chronicles|log|table)\b)([A-Za-z0-9_]+)(?:\.([A-Za-z0-9_]+))?")
 ```
 
-- [ ] **Step 5: Start `GameArt` when the page loads**
+- [x] **Step 5: Start `GameArt` when the page loads**
 
 In `Main.scala`, `main` builds one transport and starts `GameArt` with it:
 
@@ -1415,7 +1415,7 @@ In `Main.scala`, `main` builds one transport and starts `GameArt` with it:
 `Main.start`, the tested seam, does not fetch: the suites' scripted
 transports see no new request.
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.GameArtSuite"`
 Expected: PASS, 12 tests.
@@ -1423,7 +1423,7 @@ Expected: PASS, 12 tests.
 Run: `python3 scripts/check-architecture.py`
 Expected: no error.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/GameArt.scala \
@@ -1473,7 +1473,7 @@ to 0. A custom property inherits, so printed content follows its nearest
 box: a ready box never hides the drawn content of a box inside it whose
 own image is missing.
 
-- [ ] **Step 1: Write the failing `ArtLayer` tests**
+- [x] **Step 1: Write the failing `ArtLayer` tests**
 
 Create `frontend/src/test/scala/distantlands/frontend/ArtLayerSuite.scala`:
 
@@ -1566,12 +1566,12 @@ class ArtLayerSuite extends munit.FunSuite:
     assertEquals(all(box, "img"), Vector.empty)
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.ArtLayerSuite"`
 Expected: compilation fails with `Not found: ArtLayer`.
 
-- [ ] **Step 3: Write `ArtLayer`**
+- [x] **Step 3: Write `ArtLayer`**
 
 Create `frontend/src/main/scala/distantlands/frontend/ArtLayer.scala`:
 
@@ -1617,12 +1617,12 @@ private[frontend] object ArtLayer:
     }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.ArtLayerSuite"`
 Expected: PASS, 7 tests.
 
-- [ ] **Step 5: Write the failing stylesheet tests**
+- [x] **Step 5: Write the failing stylesheet tests**
 
 Create `src/test/scala/distantlands/server/StylesheetArtSuite.scala`:
 
@@ -1690,7 +1690,7 @@ class StylesheetArtSuite extends munit.FunSuite:
 Run: `./sbtw "root/testOnly distantlands.server.StylesheetArtSuite"`
 Expected: FAIL, `no rule .art`.
 
-- [ ] **Step 6: Add the rules**
+- [x] **Step 6: Add the rules**
 
 First check that no existing rule sets opacity on a printed element:
 
@@ -1723,12 +1723,12 @@ closing brace, before the comment that starts `/* Document level, above
 
 ```
 
-- [ ] **Step 7: Run the stylesheet suites**
+- [x] **Step 7: Run the stylesheet suites**
 
 Run: `./sbtw "root/testOnly distantlands.server.Stylesheet*"`
 Expected: PASS, every suite.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/ArtLayer.scala \
@@ -1783,7 +1783,7 @@ quarter and sized to the box: the image's width is the box's height. In
 the overlay the Vision's box is landscape, so the face is upright and the
 back is the one turned.
 
-- [ ] **Step 1: Write the failing surface tests**
+- [x] **Step 1: Write the failing surface tests**
 
 Create `frontend/src/test/scala/distantlands/frontend/CardArtSuite.scala`:
 
@@ -1960,13 +1960,13 @@ If `TestSites.withRelics` or `BoardOptions.none` has another shape than
 `PrintedLayerSuite` uses, build the board as `PrintedLayerSuite` does and
 keep the helper's name and the assertion.
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.CardArtSuite"`
 Expected: FAIL. The tests that expect an image fail with
 `Vector() != Vector("/art/...")`; "with art off ..." passes.
 
-- [ ] **Step 3: Attach art in `CardFace.render`**
+- [x] **Step 3: Attach art in `CardFace.render`**
 
 In `CardFace.scala`, add the import
 `import distantlands.protocol.art.ArtCatalog`, and replace the block from
@@ -2008,12 +2008,12 @@ file already imports `distantlands.protocol._`; if `art.ArtCatalog`
 resolves through it, write `art.ArtCatalog.cardBack(cardKind)` and add no
 import).
 
-- [ ] **Step 4: Run the card suites**
+- [x] **Step 4: Run the card suites**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.CardArtSuite distantlands.frontend.CardFaceSuite distantlands.frontend.PrintedLayerSuite distantlands.frontend.CardInspectionOverlaySuite"`
 Expected: PASS, every test, with no edit to the three existing suites.
 
-- [ ] **Step 5: Write the failing stylesheet test for the Vision**
+- [x] **Step 5: Write the failing stylesheet test for the Vision**
 
 Append to `StylesheetArtSuite`:
 
@@ -2046,7 +2046,7 @@ Append to `StylesheetArtSuite`:
 Run: `./sbtw "root/testOnly distantlands.server.StylesheetArtSuite"`
 Expected: the new test FAILS with `no rule .card-face-vision:not(...)`.
 
-- [ ] **Step 6: Add the Vision's rules**
+- [x] **Step 6: Add the Vision's rules**
 
 In `frontend/styles.css`, after the three `--printed-opacity` rules from
 Task 6, add:
@@ -2073,7 +2073,7 @@ Task 6, add:
 `StylesheetProportionsSuite` allows each ratio's numbers once; these rules
 read `var(--ratio-denizen)` and write no number.
 
-- [ ] **Step 7: Run the stylesheet suites and the frontend suites**
+- [x] **Step 7: Run the stylesheet suites and the frontend suites**
 
 Run: `./sbtw "root/testOnly distantlands.server.Stylesheet*"`
 Expected: PASS.
@@ -2081,7 +2081,7 @@ Expected: PASS.
 Run: `./sbtw frontend/test`
 Expected: PASS, every suite; no existing suite edited.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/CardFace.scala \
@@ -2157,7 +2157,7 @@ the CSS step.
   while it is open. `refresh` changes attributes and text in place and
   never rebuilds the switch, so focus stays on it.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create
 `frontend/src/test/scala/distantlands/frontend/SettingsDialogSuite.scala`:
@@ -2360,13 +2360,13 @@ class SettingsDialogSuite extends munit.FunSuite:
 
 The last test builds its own shell because it calls `update`.
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.SettingsDialogSuite"`
 Expected: FAIL, `expected exactly one .settings-toggle, found 0` and its
 like.
 
-- [ ] **Step 3: Write `SettingsDialog`**
+- [x] **Step 3: Write `SettingsDialog`**
 
 Create
 `frontend/src/main/scala/distantlands/frontend/SettingsDialog.scala`:
@@ -2497,7 +2497,7 @@ private[frontend] object SettingsDialog:
   val Hint = "Card faces, the mat and pieces drawn from the host's art."
 ```
 
-- [ ] **Step 4: Wire the dialog into the shell and the table**
+- [x] **Step 4: Wire the dialog into the shell and the table**
 
 In `GameTableShell.scala`:
 
@@ -2550,7 +2550,7 @@ In `ServerModeUi.start`, before `session.open(...)`:
     GameArt.onChange(() => screen.render())
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.SettingsDialogSuite"`
 Expected: PASS, 12 tests.
@@ -2562,7 +2562,7 @@ selector that named `.pane-header > .dev-toggle` now needs
 `.pane-header .dev-toggle`. Change only that selector and list the change
 as a deviation.
 
-- [ ] **Step 6: Write the failing stylesheet tests**
+- [x] **Step 6: Write the failing stylesheet tests**
 
 Append to `StylesheetArtSuite`:
 
@@ -2610,7 +2610,7 @@ Append to `StylesheetArtSuite`:
 Run: `./sbtw "root/testOnly distantlands.server.StylesheetArtSuite"`
 Expected: the four new tests FAIL.
 
-- [ ] **Step 7: Add the dialog's rules**
+- [x] **Step 7: Add the dialog's rules**
 
 In `frontend/styles.css`:
 
@@ -2660,7 +2660,7 @@ Run: `grep -n -e "--selection-fill:" -e "--selection:" -e "--brass-bright:" -e "
 Expected: one definition of each. If one is missing, use the property the
 neighbouring Control rules use and list the change as a deviation.
 
-- [ ] **Step 8: Run the stylesheet suites and the frontend suites**
+- [x] **Step 8: Run the stylesheet suites and the frontend suites**
 
 Run: `./sbtw "root/testOnly distantlands.server.Stylesheet*"`
 Expected: PASS.
@@ -2668,7 +2668,7 @@ Expected: PASS.
 Run: `./sbtw frontend/test`
 Expected: PASS.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/SettingsDialog.scala \
@@ -2690,7 +2690,7 @@ git log -3
 **Files:** none, unless a check finds a defect; a defect is fixed
 test-first in its own commit.
 
-- [ ] **Step 1: Run the full gate**
+- [x] **Step 1: Run the full gate**
 
 ```bash
 ./sbtw test
@@ -2701,7 +2701,7 @@ python3 scripts/check-markdown-links.py
 
 Expected: each passes. Record the test counts for the report.
 
-- [ ] **Step 2: Start a scratch server with the art folder**
+- [x] **Step 2: Start a scratch server with the art folder**
 
 The scratch database lives in the session's scratchpad, never under
 `var/`. Run in the background:
@@ -2715,7 +2715,7 @@ Expected in the server's output: one line `art: <n> files from
 /Users/roman/projects/distantlands/reference/assets`, and either no
 warning or a warning naming the lacking paths. Record both for the report.
 
-- [ ] **Step 3: Check the table in the browser**
+- [x] **Step 3: Check the table in the browser**
 
 Open `http://127.0.0.1:8083/?mode=server`, create a game and open the
 table. At 1440×900, 1024×768 and a phone width (375×812), with the browser
@@ -2746,12 +2746,12 @@ tools:
 
 Record what each step showed, with screenshots or page text.
 
-- [ ] **Step 4: Stop the scratch server**
+- [x] **Step 4: Stop the scratch server**
 
 Stop the background server. Check nothing listens on 8083:
 `lsof -nP -iTCP:8083 -sTCP:LISTEN` prints nothing.
 
-- [ ] **Step 5: Report**
+- [x] **Step 5: Report**
 
 Report to the orchestrator: commits (hash and subject), gate results with
 the real numbers, what the browser check showed, deviations, open
