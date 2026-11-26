@@ -1074,8 +1074,7 @@ hover note.
   decision offers it, so its option ring stays its own. Every player
   colour measures 6.6 : 1 or better on it, where the black
   player's colour measured 4.17 : 1 on a translucent ground over white
-  art. A pile's count stands on Base too (13.2 : 1). The tracker's line
-  takes a Base halo.
+  art. A pile's count stands on Base too (13.2 : 1).
 - **Site powers.** A site's power buttons are controls, not print; over
   the site's art their labels hide with the print and the buttons keep
   their place, focusable, with their hover notes.
@@ -1095,13 +1094,19 @@ hover note.
   the count takes the whole circle, so it holds about 9px on a phone.
 - **The round wheel.** The current round carries the round marker, a
   disc in Round Marker silver with a Line Mid rim, in the outer half of
-  its wedge, with art on and off. Over the mat the current wedge keeps
+  its wedge, with art on and off. A wedge's number stands in its inner
+  half, clear of the marker, and the current round's number is Base on
+  the wedge's brass (8 : 1). Over the mat the current wedge keeps
   its Bright Cream border and drops its brass fill. The Usurper's token
-  fills the limiter's wedge, its point to the hub; drawn, it is the
-  wedge's own shape in the limiter's red with a diamond.
+  fills the limiter's wedge, its point to the hub, in a box 54 by 55 of
+  the wheel's 200 units; drawn, it is the wedge's own shape in the
+  limiter's red with a diamond in its outer half.
+- **An offered site or bank.** A site's ring runs along its card's edge,
+  frame line included; a favor bank's ring is drawn over its favor.
 - **The Oath goal.** In the shared bank the Oath goal is its card, the
   goal's ratio at a banner's height, with the holder in words under it;
-  drawn, the plate holds the goal's title.
+  drawn, the plate holds the goal's title, and on the zoomed-out edge
+  the goal's short name at the glance size, as a banner's.
 - **Glyphs.** A token glyph keeps its `svg` and holds the symbol's image
   inside it, fitted to the glyph's square. A card's text shows the printed
   symbol; favor and secrets lying in play show the token itself, and

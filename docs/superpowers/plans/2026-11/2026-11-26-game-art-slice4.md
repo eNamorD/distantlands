@@ -174,15 +174,14 @@ Answers screenshots 8 and 9.
   round's group, under the round marker when the rounds coincide.
 
 The wedge spans radii 49 to 88 and 41 degrees. The token's box is 54 wide
-(the chord near the outer edge) and 39 tall (the radial depth), centred
-on the wedge's middle, turned by the wedge's middle angle plus 90 degrees
-so its foot faces the rim. The exact turn depends on how the file stands
-(point up or down); Step 3 settles it in the browser and the test pins
-the number.
+and 55 tall (the file's own shape, sized in the browser to the wedge the
+mat prints; the plan first said 39, the radial depth), centred on the
+wedge's middle. The file stands point up, so it is turned by the wedge's
+middle angle less 90 degrees and its point faces the hub.
 
 - [x] **Step 1: Write the failing tests**
   - "the Usurper's token fills the limiter's wedge": the image's style is
-    `width: 54px; height: 39px;`, its `x`/`y` centre it on
+    `width: 54px; height: 55px;`, its `x`/`y` centre it on
     (`centreX`, `centreY`), its `transform` is `rotate(<turn> <cx> <cy>)`.
   - "with art off the limiter's wedge is drawn as a wedge with its
     diamond": `path.limiter-marker` has the segment's `d`;

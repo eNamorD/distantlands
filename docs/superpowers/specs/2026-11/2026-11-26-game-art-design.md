@@ -200,8 +200,9 @@ Every surface swaps art through one helper, `ArtLayer.attach(box, key)`.
   The fallback is per glyph, and the glyph keeps its spoken label.
 - **Pieces and tokens:** pawns and warbands by player colour, favor and
   secrets where they lie in play, bandits, the Visions Drawn marker on its
-  cell and the Usurper's mark on the round wheel, each fitted into the box
-  the drawn piece has. The black warband and the black pawn get a light
+  cell, each fitted into the box the drawn piece has, and the Usurper's
+  token, which fills the limiter's wedge on the round wheel with its
+  point to the hub (R39). The black warband and the black pawn get a light
   outline (`drop-shadow`) so they read on the dark table (R27). The
   titles and the whole festival marker show their image in the
   inspection overlay; the festival's band on the map and the first player

@@ -456,3 +456,20 @@ focusable with their hover notes. If slice 5's click targets are deferred
 to the roadmap, this is reopened before the branch is done. R20 is
 replaced.
 Slice/files: slice 4; `frontend/styles.css`.
+
+## Slice 4 review
+
+**R46. The limiter's round as the current round, drawn.**
+Question: with art off, the current round's brass fill covers the drawn
+limiter's wedge when both are one round.
+Decision: accepted, no change. The server clears the limiter at round 4,
+so the two never coincide in play.
+Reason: an unreachable state needs no drawing.
+Slice/files: slice 4 review; none.
+
+**R47. Tests that read `MatLayout.siteCard`.**
+Question: `MatBoardSuite` and `SiteRowSuite` compare a face's box with
+`MatLayout.siteCard` instead of literals.
+Decision: allowed. `MatLayoutSuite` pins the rectangle in literals, so
+the other suites may read it.
+Slice/files: slice 4 review; the three suites.
