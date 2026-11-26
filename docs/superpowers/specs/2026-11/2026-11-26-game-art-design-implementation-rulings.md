@@ -20,8 +20,15 @@ catalog holds the explicit name list for each form. `game-art.md` lists
 both and says the folder is a copy of the whole `en-US` directory, whose
 unused files are ignored. The design's folder section is amended to match.
 Reason: with the "(NF)" files alone most of the world deck stays drawn,
-which defeats the feature.
-Confidence: low; it widens the design's letter.
+which defeats the feature. The owner confirmed it: a file is labelled
+"(NF)" because it replaces base game art.
+Source of truth: the `bgs-cards` clone's card data
+(`content/card-data/oath/en-US`). A card uses the image its entry tagged
+"New Foundations" names. The catalog's name lists are checked against
+that data, not guessed from file names: all 255 denizens, 48 relics, 60
+edifice faces, 36 legacies, 24 sites, the four Visions and the Conspiracy
+were checked on 2026-11-26, and no entry names a file outside the two
+forms.
 Slice/files: slice 1; `ArtCatalog.scala`, `docs/operations/game-art.md`,
 the design's "The art folder".
 
