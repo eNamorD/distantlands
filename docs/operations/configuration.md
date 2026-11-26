@@ -42,7 +42,9 @@ supplies; Distant Lands ships none. The server reads the folder once at
 startup and logs how many files it found and which it lacks. Each player
 can then switch **Game art** on or off in the table's Settings. A path
 that is not a folder serves no art and logs one line saying so; the game
-runs either way. The folder's layout and every file name are in
+runs either way. Browsers keep an art file for a day, so after a file is
+replaced players may need a hard reload. The folder's layout, every file
+name, the Start file's setting and a container example are in
 [game art](game-art.md).
 
 ## Universal archive

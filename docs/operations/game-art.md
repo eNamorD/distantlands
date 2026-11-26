@@ -43,6 +43,29 @@ face for that one card.
   and die textures, saved under the names below. The pawns and the
   secret token are pictures of the mod's 3D pieces.
 
+A host who starts the server with a Start file sets the folder in the
+settings file the first start creates (`distantlands.properties`; the
+server's window names it): remove the `#` from the `DLQ_ART_PATH` line,
+write the folder's path there, and restart. On Windows write the path
+with forward slashes.
+
+In a container, mount the folder read-only beside the data volume and
+point `DLQ_ART_PATH` at it. The image runs as UID 10001, which must be
+able to read the folder and its files:
+
+```sh
+docker run --detach --name distantlands \
+  --publish 8080:8080 \
+  --env DLQ_PUBLIC_BASE_URL=http://192.168.1.20:8080 \
+  --env DLQ_ART_PATH=/var/lib/distantlands-art \
+  --volume distantlands-data:/var/lib/distantlands \
+  --volume /home/alex/distantlands-art:/var/lib/distantlands-art:ro \
+  "$DLQ_IMAGE_REFERENCE"
+```
+
+A browser keeps an art file for a day. After replacing a file in the
+folder and restarting, a player may need a hard reload to see the new one.
+
 The server follows symbolic links, so `cards/` may be a link to a clone
 of the card database, and any single file may be a link.
 
