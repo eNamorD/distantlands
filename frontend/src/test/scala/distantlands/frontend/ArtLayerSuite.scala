@@ -13,7 +13,15 @@ class ArtLayerSuite extends munit.FunSuite:
   override def beforeEach(context: BeforeEach): Unit = imagesComplete(true)
   override def afterEach(context: AfterEach): Unit =
     GameArt.reset()
-    scala.scalajs.js.special.delete(
+    // Put jsdom's own `complete` back: deleting the stub would leave the
+    // prototype with none, and every later suite's images undefined.
+    scala.scalajs.js.Dynamic.global.Object.defineProperty(
+      scala.scalajs.js.Dynamic.global.HTMLImageElement.prototype, "complete",
+      jsdomComplete)
+
+  /** jsdom's own `complete`, read before any test replaces it. */
+  private val jsdomComplete = scala.scalajs.js.Dynamic.global.Object
+    .getOwnPropertyDescriptor(
       scala.scalajs.js.Dynamic.global.HTMLImageElement.prototype, "complete")
 
   /** Makes every image report `complete` as `value`. */
