@@ -43,7 +43,7 @@ class PanelPlacementSuite extends munit.FunSuite:
   test("the oath's goal opens its card with the Oath goal's plate"):
     var opened = Vector.empty[(String, Vector[String], Option[String])]
     CardInspection.onOpen:
-      case CardInspection.Request.Text(title, lines, _, plate, _) =>
+      case CardInspection.Request.Text(title, lines, _, plate, _, _) =>
         opened :+= (title, lines, plate)
       case _ => ()
     val status = Dom.one(world(projection()), ".shared-bank .oathkeeper-status")
@@ -58,7 +58,7 @@ class PanelPlacementSuite extends munit.FunSuite:
   test("a goal the table does not know opens as its key, with no lines"):
     var opened = Vector.empty[(String, Vector[String])]
     CardInspection.onOpen:
-      case CardInspection.Request.Text(title, lines, _, _, _) =>
+      case CardInspection.Request.Text(title, lines, _, _, _, _) =>
         opened :+= title -> lines
       case _ => ()
     Dom.one(world(projection(oathkeeper = Some(oath.copy(goal = "unknown")))),

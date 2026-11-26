@@ -72,10 +72,12 @@ private[frontend] object BannerFace:
     val grid = links.bannerGrid(banner.key)
     Option.when(lines.nonEmpty)(title(banner) -> (origin =>
       if banner.face == "festival" then
-        CardInspection.openFestival(heading, lines, festivalAt, grid, origin)
-      else grid.fold(CardInspection.openText(heading, lines, origin))(
+        CardInspection.openFestival(heading, lines, festivalAt, grid, origin,
+          Some(banner))
+      else grid.fold(CardInspection.openText(heading, lines, origin,
+          banner = Some(banner)))(
         ruled => CardInspection.openPower(heading, lines, Some(ruled),
-          origin))))
+          origin, Some(banner)))))
 
   /** The face; `festivalAt` is [[festivalSite]], which only the Festival
     * face reads. `links` finds the viewer's consent grid for it. */

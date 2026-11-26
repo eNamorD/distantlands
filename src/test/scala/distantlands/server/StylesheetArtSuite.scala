@@ -370,6 +370,12 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(!css.contains(".mat-board .favor-bank { display: grid"))
     assert(!css.contains(".favor-bank > .token-favor"))
 
+  test("a banner's face in its overlay is as large as a card's (R43)"):
+    val face = rule(".card-overlay-body > .banner-face")
+    Vector("width: var(--card-h)", "height: var(--card-h)")
+      .foreach(part => assert(face.contains(part), part))
+    assert(rule(".card-overlay-body > .card-face").contains("font-size: 1.9em"))
+
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
   private val rendererSources: String =

@@ -213,10 +213,12 @@ private[frontend] final class GameTableShell(mount: dom.Element,
   private val inspector = new CardInspectionOverlay(mount)
   CardInspection.onOpen:
     case CardInspection.Request.Card(card, origin) => inspector.show(card, origin)
-    case CardInspection.Request.Text(title, lines, origin, plate, art) =>
-      inspector.showText(title, lines, origin, plate, art)
-    case CardInspection.Request.Festival(title, lines, at, grid, origin) =>
-      inspector.showFestival(title, lines, at, grid, origin)
+    case CardInspection.Request.Text(title, lines, origin, plate, art,
+          banner) =>
+      inspector.showText(title, lines, origin, plate, art, banner)
+    case CardInspection.Request.Festival(title, lines, at, grid, origin,
+          banner) =>
+      inspector.showFestival(title, lines, at, grid, origin, banner)
     case CardInspection.Request.FestivalMarker(grid, origin) =>
       inspector.showFestivalMarker(grid, origin)
     case CardInspection.Request.Supply(panel, origin) =>
@@ -227,8 +229,8 @@ private[frontend] final class GameTableShell(mount: dom.Element,
       inspector.showConfirm(question, confirm, origin)
     case CardInspection.Request.Choices(question, choices, origin) =>
       inspector.showChoices(question, choices, origin)
-    case CardInspection.Request.Power(title, lines, grid, origin) =>
-      inspector.showPower(title, lines, grid, origin)
+    case CardInspection.Request.Power(title, lines, grid, origin, banner) =>
+      inspector.showPower(title, lines, grid, origin, banner)
     case CardInspection.Request.RuledCard(card, grid, origin) =>
       inspector.showRuled(card, grid, origin)
   // Chronicle Details (Chronicle Details design, slice 4): modal as the

@@ -73,3 +73,46 @@ class PlateArtSuite extends munit.FunSuite:
         distantlands.protocol.art.ArtCatalog.foundation(1, "Wide Horizons"))
       assertEquals(plateImages(mount), Vector.empty)
     }
+
+  /** The owner's review (game art ruling R43): a banner's overlay shows
+    * the banner's own face, large, as a card's overlay shows the card. */
+  test("a banner's overlay shows the banner's face, with its image and " +
+      "what it holds, before its rules"):
+    TestArt.listingWholeCatalog()
+    withShell { mount =>
+      val mob = BannerFace.render(BannerState("peoples-favor", "mob", None,
+        3), None)
+      mount.appendChild(mob)
+      mob.click()
+      val body = one(mount, ".card-overlay-body")
+      val face = one(body, ":scope > .banner-face")
+      assertEquals(all(body, ":scope > *").map(_.getAttribute("class")
+        .split(" ").head), Vector("card-face", "card-overlay-details"))
+      assertEquals(all(face, ":scope > img.art").map(_.getAttribute("src")),
+        Vector("/art/cards/Banner%20of%20the%20People's%20Favor%20-%20" +
+          "Mob%20(NF).png"))
+      assertEquals(one(face, ".card-token-count").textContent, "3")
+      val festival = BannerFace.render(BannerState("darkest-secret",
+        "festival", None, 1), None)
+      mount.appendChild(festival)
+      festival.click()
+      assertEquals(all(one(mount, ".card-overlay-body"),
+        ":scope > .banner-face.banner-darkest-secret > img.art").size, 1)
+    }
+
+  test("with art off a banner's overlay shows its drawn face, and a " +
+      "text overlay that is no banner shows none"):
+    withShell { mount =>
+      val mob = BannerFace.render(BannerState("peoples-favor", "mob", None,
+        3), None)
+      mount.appendChild(mob)
+      mob.click()
+      val face = one(mount, ".card-overlay-body > .banner-face")
+      assertEquals(all(face, "img"), Vector.empty)
+      assertEquals(all(face, ".banner-side").map(_.textContent),
+        Vector("Mob"))
+      CardInspection.openText("Supply", Vector("Line"), mob)
+      assertEquals(all(mount, ".card-overlay-body > .banner-face"),
+        Vector.empty)
+    }
+

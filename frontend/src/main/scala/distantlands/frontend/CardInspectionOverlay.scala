@@ -122,8 +122,11 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     */
   def showText(title: String, lines: Vector[String],
       origin: dom.html.Element, plate: Option[String] = None,
-      art: Option[ArtKey] = None): Unit =
+      art: Option[ArtKey] = None, banner: Option[BannerState] = None): Unit =
     clear()
+    // A banner's own face first, large, as a card's overlay shows the
+    // card (game art ruling R43).
+    banner.foreach(value => body.appendChild(BannerFace.render(value, None)))
     // Named for what it shows: it is not a card, so "Card details" would
     // misname it.
     node.setAttribute("aria-label", title)
@@ -148,8 +151,9 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     * picture is not the map's control, and the words beside it name it.
     * Below, the holder's consent preferences for the Festival (ruling 16). */
   def showFestival(title: String, lines: Vector[String], at: Option[String],
-      grid: Option[ConsentGrid], origin: dom.html.Element): Unit =
-    showText(title, lines, origin)
+      grid: Option[ConsentGrid], origin: dom.html.Element,
+      banner: Option[BannerState] = None): Unit =
+    showText(title, lines, origin, banner = banner)
     val copy = element("div", "rules-power festival-copy")
     val plate = FestivalMarker.plate(withRule = false)
     plate.setAttribute("aria-hidden", "true")
@@ -185,8 +189,9 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
   /** A power's printed text, and below it the viewer's consent preferences
     * when they rule it (ruling 16). */
   def showPower(title: String, lines: Vector[String],
-      grid: Option[ConsentGrid], origin: dom.html.Element): Unit =
-    showText(title, lines, origin)
+      grid: Option[ConsentGrid], origin: dom.html.Element,
+      banner: Option[BannerState] = None): Unit =
+    showText(title, lines, origin, banner = banner)
     grid.foreach(drawColumn)
 
   /** A card, and below it the viewer's consent preferences for the power it

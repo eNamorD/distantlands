@@ -104,7 +104,7 @@ class PieceArtSuite extends munit.FunSuite:
     TestArt.listingWholeCatalog()
     var asked = Vector.empty[Option[String]]
     CardInspection.onOpen {
-      case CardInspection.Request.Text(_, _, _, plate, art) =>
+      case CardInspection.Request.Text(_, _, _, plate, art, _) =>
         if plate.contains("oathkeeper-title") then
           asked :+= art.map(_.path)
       case _ => ()
