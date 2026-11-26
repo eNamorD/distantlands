@@ -83,9 +83,24 @@ private[frontend] object BannerFace:
     * face reads. `links` finds the viewer's consent grid for it. */
   def render(banner: BannerState, festivalAt: Option[String],
       links: SitePowerLinks = SitePowerLinks.none): dom.html.Button =
-    val name = bannerLabel(banner.key)
-    val node = dom.document.createElement("button").asInstanceOf[dom.html.Button]
+    val node = drawn(banner, "button").asInstanceOf[dom.html.Button]
     node.`type` = "button"
+    HoverTip.set(node, title(banner))
+    inspect(banner, festivalAt, links).foreach((_, open) =>
+      node.onclick = _ => open(node))
+    node
+
+  /** The banner as a picture, for its own overlay: the same face, which
+    * nothing presses and no keyboard stops on (game art ruling R43). */
+  def picture(banner: BannerState): dom.html.Element =
+    val node = drawn(banner, "span")
+    node.setAttribute("role", "img")
+    node
+
+  /** The face's box and what it shows, in an element of `tag`. */
+  private def drawn(banner: BannerState, tag: String): dom.html.Element =
+    val name = bannerLabel(banner.key)
+    val node = dom.document.createElement(tag).asInstanceOf[dom.html.Element]
     node.className =
       s"card-face card-face-relic banner-face banner-${banner.key}"
     // The compact face fits the short name, since the prefix is hidden there.
@@ -93,7 +108,6 @@ private[frontend] object BannerFace:
       (math.round(CardFace.nameWidthEm(name) * 100) / 100.0).toString)
     node.setAttribute("aria-label",
       s"${title(banner)}, ${side(banner.face)}, ${holds(banner)}")
-    HoverTip.set(node, title(banner))
     node.appendChild(text("span", "banner-side printed", side(banner.face)))
     val header = element("span", "card-header printed")
     val full = element("span", "card-name")
@@ -110,8 +124,6 @@ private[frontend] object BannerFace:
       banner.resources.toString))
     node.appendChild(tokens)
     ArtLayer.attach(node, ArtCatalog.banner(banner.face))
-    inspect(banner, festivalAt, links).foreach((_, open) =>
-      node.onclick = _ => open(node))
     node
 
   /** The face, marked when it is an option: then the face picks it and an

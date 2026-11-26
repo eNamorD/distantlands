@@ -125,8 +125,8 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
       art: Option[ArtKey] = None, banner: Option[BannerState] = None): Unit =
     clear()
     // A banner's own face first, large, as a card's overlay shows the
-    // card (game art ruling R43).
-    banner.foreach(value => body.appendChild(BannerFace.render(value, None)))
+    // card (game art ruling R43): a picture, not the table's control.
+    banner.foreach(value => body.appendChild(BannerFace.picture(value)))
     // Named for what it shows: it is not a card, so "Card details" would
     // misname it.
     node.setAttribute("aria-label", title)

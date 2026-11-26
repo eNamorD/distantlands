@@ -116,6 +116,55 @@ class PlateArtSuite extends munit.FunSuite:
         Vector.empty)
     }
 
+  /** The face in the overlay is a picture of the banner, not the
+    * table's control: pressing it changes nothing, and a keyboard does
+    * not stop on it. */
+  private def assertOverlayFaceIsInert(mount: dom.Element): Unit =
+    val face = one(mount, ".card-overlay-body > .banner-face")
+    assertNotEquals(face.tagName.toLowerCase, "button")
+    assert(!face.hasAttribute("tabindex"))
+    val before = one(mount, ".card-overlay-body").innerHTML
+    face.asInstanceOf[dom.html.Element].click()
+    assertEquals(one(mount, ".card-overlay-body").innerHTML, before)
+
+  test("the Festival's face in its overlay is inert: a press keeps where " +
+      "the marker lies"):
+    withShell { mount =>
+      val festival = BannerFace.render(BannerState("darkest-secret",
+        "festival", None, 1), Some("Mines"))
+      mount.appendChild(festival)
+      festival.click()
+      assertEquals(one(mount, ".festival-copy-where").textContent,
+        "Festival marker: at Mines")
+      assertOverlayFaceIsInert(mount)
+      assertEquals(one(mount, ".festival-copy-where").textContent,
+        "Festival marker: at Mines")
+    }
+
+  test("a plain banner's face in its overlay is inert"):
+    withShell { mount =>
+      val mob = BannerFace.render(BannerState("peoples-favor", "mob", None,
+        3), None)
+      mount.appendChild(mob)
+      mob.click()
+      assertOverlayFaceIsInert(mount)
+    }
+
+  test("a ruled banner's face in its overlay is inert: a press keeps the " +
+      "consent grid"):
+    withShell { mount =>
+      val origin = dom.document.createElement("button")
+        .asInstanceOf[dom.html.Element]
+      mount.appendChild(origin)
+      CardInspection.openPower("Banner of the Darkest Secret · Wandering " +
+        "Flame", Vector("Line"), Some(ConsentGrid(Vector(
+          ConsentGridRow("Blue", "Blue", "ask")), None)), origin,
+        Some(BannerState("darkest-secret", "wandering-flame", None, 1)))
+      assertEquals(all(mount, ".card-overlay .consent-grid").size, 1)
+      assertOverlayFaceIsInert(mount)
+      assertEquals(all(mount, ".card-overlay .consent-grid").size, 1)
+    }
+
   /** The Oath goal in the shared bank with `holder` and `side`. */
   private def sharedBankWithOath(holder: Option[String], side: String)
       : dom.Element =
