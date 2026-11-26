@@ -29,6 +29,7 @@ private[frontend] object ArtLayer:
       image.setAttribute("loading", "lazy")
       watch(image, url, ready.getOrElse(box))
       image.src = url
+      readyAtOnce(url, ready.getOrElse(box), held = image.complete)
       box.appendChild(image)
     }
 
@@ -70,6 +71,10 @@ private[frontend] object ArtLayer:
     image.setAttribute("aria-hidden", "true")
     watch(image, url, marked)
     image.setAttribute("href", url)
+    // An SVG image cannot say whether the browser holds it, so a
+    // remembered one is taken as held: a glyph is small, and a frame of
+    // an empty glyph is the lesser fault beside a flash of its sprite.
+    readyAtOnce(url, marked, held = true)
     image
 
   /** Lays a die face over `box`: a square holding the die's sheet, sized
@@ -95,6 +100,7 @@ private[frontend] object ArtLayer:
       image.style.top = percent(-face.y.toDouble / face.h)
       watch(image, url, box, remove = frame)
       image.src = url
+      readyAtOnce(url, box, held = image.complete)
       frame.appendChild(image)
       box.appendChild(frame)
 
@@ -103,15 +109,21 @@ private[frontend] object ArtLayer:
   private def wanted(key: Option[ArtKey]): Option[String] =
     key.flatMap(GameArt.url).filterNot(GameArt.hasFailed)
 
+  /** The table is rebuilt on every poll, which builds a fresh image. When
+    * `url` loaded before on this page and the browser still `held` it for
+    * the fresh image, the box is ready at once, so a redraw never flashes
+    * the drawn face. When the browser must fetch or decode it again, the
+    * box waits for the image's `load`, so it never shows neither face nor
+    * art. */
+  private def readyAtOnce(url: String, marked: dom.Element, held: Boolean)
+      : Unit =
+    if held && GameArt.hasLoaded(url) then marked.classList.add("art-ready")
+
   /** Marks `marked` ready when `image` loads, and takes the image out
-    * when it fails. The table is rebuilt on every poll, which builds a
-    * fresh image; the browser already holds one it has loaded, so the
-    * fresh box is ready at once and a redraw never flashes the drawn
-    * face. */
+    * when it fails. */
   private def watch(image: dom.Element, url: String, marked: dom.Element,
       remove: dom.Element | Null = null): Unit =
     val gone = if remove == null then image else remove
-    if GameArt.hasLoaded(url) then marked.classList.add("art-ready")
     image.addEventListener("load", (_: dom.Event) =>
       GameArt.markLoaded(url)
       marked.classList.add("art-ready"))
