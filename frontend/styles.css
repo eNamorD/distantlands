@@ -908,16 +908,30 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   box-shadow: none; }
 .mat-board .site:is(.board-option-selected, .board-option-locked,
   .board-option-played)::before { z-index: 2; }
-/* The favor banks stand near the board's foot, which clips what lies
-   outside it, so their hover glow is drawn inside the ring. */
+/* A favor bank's favor fills its circle and would cover a ring drawn on
+   the bank, so the ring is drawn over it, on a layer that takes no
+   pointer, as a site's is; the selected fill stays the bank's own, under
+   the favor. The banks stand near the board's foot, which clips what
+   lies outside it, so their hover glow is drawn inside the ring. */
+.mat-board .favor-bank.board-option { box-shadow: none; }
+.mat-board .favor-bank.board-option::after { content: "";
+  position: absolute; inset: 0; z-index: 1; border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 var(--option-ring) var(--option-line); }
 .mat-board .favor-bank.board-option:is(:hover, :focus-visible,
-  .board-option-hover) {
+  .board-option-hover)::after {
   box-shadow: inset 0 0 0 var(--option-ring) var(--cream-bright),
     inset 0 0 0 calc(var(--option-ring) * 3) var(--option-glow); }
+.mat-board .favor-bank:is(.board-option-selected, .board-option-locked,
+  .board-option-played)::after {
+  box-shadow: inset 0 0 0 var(--option-ring) var(--selection); }
+.mat-board .favor-bank.board-option-askable::after {
+  box-shadow: inset 0 0 0 var(--option-ring) var(--consent-amber); }
 .mat-board .favor-bank.board-option-askable:is(:hover, :focus-visible,
-  .board-option-hover) {
+  .board-option-hover)::after {
   box-shadow: inset 0 0 0 var(--option-ring) var(--cream-bright),
     inset 0 0 0 calc(var(--option-ring) * 3) rgba(232, 163, 61, 0.5); }
+.mat-board .favor-bank.board-option-unavailable::after { box-shadow: none; }
 /* A card and its inspect button share one box: a button may not hold a
    button. The button sits over the card's bottom-right corner, where no
    card content is drawn, on every card, banner and deck; the top-right

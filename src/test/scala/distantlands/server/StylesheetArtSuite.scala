@@ -361,6 +361,34 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(css.indexOf(".mat-board .site.board-option::after {") >
       css.indexOf(".mat-board :is(.site, .deck-body).board-option::after {"))
 
+  /** The review's finding: the favor filling a bank's circle (R42)
+    * covered part of an offered bank's ring. The ring is drawn on a
+    * layer over the favor, as a site's is; the bank's own box draws
+    * none. Its hover glow stays inside the ring, since the board's foot
+    * clips what lies outside. */
+  test("an offered favor bank's ring is drawn over its favor"):
+    assert(rule(".mat-board .favor-bank.board-option")
+      .contains("box-shadow: none"))
+    val ring = rule(".mat-board .favor-bank.board-option::after")
+    Vector("content: \"\"", "position: absolute", "inset: 0", "z-index: 1",
+      "border-radius: inherit", "pointer-events: none",
+      "box-shadow: inset 0 0 0 var(--option-ring) var(--option-line)")
+      .foreach(part => assert(ring.contains(part), part))
+    val hover = rule(".mat-board .favor-bank.board-option:is(:hover, " +
+      ":focus-visible,\n  .board-option-hover)::after")
+    assert(hover.contains(
+      "inset 0 0 0 calc(var(--option-ring) * 3) var(--option-glow)"))
+    assert(rule(".mat-board .favor-bank:is(.board-option-selected, " +
+      ".board-option-locked,\n  .board-option-played)::after").contains(
+      "box-shadow: inset 0 0 0 var(--option-ring) var(--selection)"))
+    assert(rule(".mat-board .favor-bank.board-option-askable::after")
+      .contains("var(--consent-amber)"))
+    assert(rule(".mat-board .favor-bank.board-option-unavailable::after")
+      .contains("box-shadow: none"))
+    // No ring is left on the bank's own box, under the favor.
+    assert(!css.contains(".mat-board .favor-bank.board-option:is(:hover, " +
+      ":focus-visible,\n  .board-option-hover) {"))
+
   /** A colour variable's value, as `#rrggbb`. */
   private def colour(name: String)(using munit.Location): (Int, Int, Int) =
     val hex = s"--$name: #([0-9a-f]{6});".r.findFirstMatchIn(css)
