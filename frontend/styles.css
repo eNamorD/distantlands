@@ -2402,6 +2402,15 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .vision-marker.art-ready::after { opacity: 0; }
 .round-tracker .limiter-marker.art-ready { fill: transparent; }
 .festival-plate-printed.art-ready > :not(.art) { opacity: 0; }
+/* A site's power is a control, not print (R9, R20): over the site's art
+   its button shows as a chip, the label on the name band's ground, where
+   and as large as the button already is. */
+.site.art-ready .site-power { border-radius: 3px; background: #1a1610d9;
+  box-shadow: 0 0 0 3px #1a1610d9; }
+.site.art-ready .site-power > .printed { opacity: 1; }
+/* The mat prints each pile's slot, so an empty pile gives way to it. */
+.mat-board.art-ready .deck-card.pile-empty { border-color: transparent;
+  background: none; }
 
 
 /* Document level, above .game-pane -- which is what lets that pane keep

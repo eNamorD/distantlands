@@ -172,8 +172,10 @@ Every surface swaps art through one helper, `ArtLayer.attach(box, key)`.
   shows its landscape image turned a quarter, as `card-face-vision`
   already turns the drawn face. The inspection overlay shows the image
   large; its rules text is not printed and stays.
-- **The site card:** its face in the frame. The site-power buttons stay
-  unmarked controls (R9), so they stay clickable over the image.
+- **The site card:** its face in the frame. The site-power buttons are
+  controls, not print (R9): over the image each shows as a chip, its
+  label on the name band's ground, in the place it has on the drawn face
+  ([implementation rulings R15 and R20](2026-11-26-game-art-design-implementation-rulings.md)).
 - **The mat:** one image behind the slots of `.mat-board`. The drawn
   washes, frames, region names and slot labels are printed and hide when
   it is ready. The live layer does not change.
