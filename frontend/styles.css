@@ -2271,6 +2271,25 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 }
 
 
+/* Licensed art, laid over the box that draws the same thing (game art
+   design). The image fills the box and never sizes it: every box has its
+   real proportions already, so the layout is the same with art or
+   without. A box that holds an image isolates its stacking, and the image
+   lies over the box's fill and under everything else in the box, so what
+   lies on a card in play is over the art with no rule of its own. */
+.art { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%;
+  object-fit: contain; pointer-events: none; }
+:has(> .art) { isolation: isolate; }
+/* Once its image has loaded a box is ready, and what the box prints is
+   hidden with opacity: the drawn text keeps its space and stays in the
+   accessibility tree. Printed content follows its nearest box, so a ready
+   box never hides what a box inside it draws when that box's own image is
+   missing. */
+.printed { opacity: var(--printed-opacity, 1); }
+:is(.card-face, .card-hover-summary) { --printed-opacity: 1; }
+:is(.card-face, .card-hover-summary).art-ready { --printed-opacity: 0; }
+
+
 /* Document level, above .game-pane -- which is what lets that pane keep
    overflow: hidden without clipping anything a card needs to show. It sits
    one step above the log overlay, so a card list opened from the full log
