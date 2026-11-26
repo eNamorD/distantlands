@@ -2367,15 +2367,15 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   border-color: transparent; background: none; }
 /* What lies on a site's card in play keeps a ground of its own over the
    art: opaque Base, on which every player colour measures 6.6 : 1 or
-   better. It is a fill and a shadow of one colour, so nothing moves. The pawns' ground is their row's: a pawn is an option
-   a decision can mark, and its ring, glow and selected fill are its own
-   background and shadow. The row clips, so it takes the fill alone. The
+   better. It is a fill and a shadow of one colour, so nothing moves. A pawn takes the fill alone, since its row clips a
+   shadow, and only while no decision offers it: an offered pawn's ring,
+   glow and selected fill are its own background and shadow (R35). The
    tracker's line lies on the mat's picture and takes a halo instead: its
    lines span the whole strip. */
 .site.art-ready :is(.site-forces, .site-forces-short, .site-tokens) {
   border-radius: 3px; background: var(--base);
   box-shadow: 0 0 0 3px var(--base); }
-.site.art-ready .site-pawns:has(> .pawn) { border-radius: 3px;
+.site.art-ready .pawn:not([class*="board-option"]) { border-radius: 3px;
   background: var(--base); }
 .site.art-ready .site-tokens:empty { background: none; box-shadow: none; }
 .mat-board.art-ready .track-note {

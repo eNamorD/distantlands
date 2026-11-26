@@ -1063,7 +1063,7 @@ hover note.
   its nearest box, so each box falls back to its drawing alone when its
   image is slow, missing or failed.
 - **What stays over art.** Tokens, forces, pawns, counts, option rings
-  and badges. On a site's art, forces, loose tokens and the pawns' row
+  and badges. On a site's art, forces, loose tokens and each pawn
   stand on opaque Base (a fill and a same-colour 3px shadow, no padding):
   every player colour measures 6.6 : 1 or better on it, where the black
   player's colour measured 4.17 : 1 on a translucent ground over white

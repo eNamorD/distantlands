@@ -199,8 +199,12 @@ class StylesheetArtSuite extends munit.FunSuite:
       assert(!onSite.contains(part), part))
     // A pawn can be an option, so the ground is its row's, and the pawn
     // keeps its own background and shadow for its option states.
-    val pawns = rule(".site.art-ready .site-pawns:has(> .pawn)")
+    // The ground hugs each pawn (R35); a pawn a decision offers is left
+    // alone, so its option states keep its background and shadow.
+    val pawns = rule(
+      """.site.art-ready .pawn:not([class*="board-option"])""")
     assert(pawns.contains("background: var(--base)"))
+    assert(!css.contains(".site.art-ready .site-pawns"))
     Vector("box-shadow", "padding", "margin", "width", "height", "border:")
       .foreach(part => assert(!pawns.contains(part), part))
     assert(rule(".mat-board.art-ready .track-note")

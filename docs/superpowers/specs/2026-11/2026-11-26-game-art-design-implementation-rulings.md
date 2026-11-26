@@ -336,3 +336,22 @@ draws it as a mark on the limiter's round, so it takes
 is words and stays.
 Reason: R6; a piece in play is drawn as its piece.
 Slice/files: slice 3; `ArtCatalog.scala`, `WorldBoardRenderer.scala`.
+
+## Slice 3 browser check
+
+**R34. The ground under forces, loose tokens and pawns.**
+Question: on the name band's translucent fill the black player's colour
+measured 4.17 : 1 over white art.
+Decision: forces, loose tokens and pawns on a site's art stand on opaque
+Base.
+Reason: measured contrast; black fails on the translucent ground.
+Slice/files: slice 3; `frontend/styles.css`.
+
+**R35. The pawns' ground.**
+Question: the ground was the pawns' whole row, a dark strip across the
+site's art for one pawn.
+Decision: the ground hugs the pawns. It lies on each pawn that is not an
+option target; a pawn a decision offers keeps its own background and
+shadow for its option states. Box sizes do not change.
+Reason: a strip hides art for nothing.
+Slice/files: slice 3; `frontend/styles.css`.
