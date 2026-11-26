@@ -960,7 +960,10 @@ On the scratch server, at 1440×900, 1024×768 and 375×812:
 10. What earlier slices could not observe, if reachable: tokens lying on
     an art card, a Replace badge above the art, a Vision in a row and in
     the overlay, a dormant legacy.
-11. No error in the browser console.
+11. A decision that offers a player as a target: the pawn on a ready site
+    shows its ring, its hover glow and its selected fill over the art,
+    and so does a favor bank offered on the ready mat (slice 2 review).
+12. No error in the browser console.
 
 - [ ] **Step 3: Stop the scratch server and report**
 
