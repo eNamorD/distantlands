@@ -81,6 +81,7 @@ pixels, from its upper left.
 | Visions Drawn cells 0 to 5 | 805, 1000, 1120, 1295, 1415, 1535 | 1690 | 103 | 159 |
 | Favor bank circle centres, Discord to Nomad | 2438, 2839, 3241, 3642, 4044, 4449 | 2155 | radius 93 | |
 | Favor bank box (suit emblem and circle) | centre − 217 | 2050 | 310 | 240 |
+| Favor bank emblem (a square about its ring) | centre − 212 | 2067 | 122 | 122 |
 | Tracker's line of text | 71 | 1500 | 1790 | 80 |
 | Visions Drawn label | 1680 | 1650 | 210 | 150 |
 

@@ -554,18 +554,23 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   background: var(--brass-bright); }
 
 /* A favor bank on the mat's pair of circles: the suit, the count, favor. */
-.mat-board .favor-bank { padding: 0 6px; border-radius: 999px;
-  background: #1a1610b3; font-size: 1.05rem; line-height: 1.1; }
-/* Each part of a bank has its own place, so hiding one moves no other: the
-   suit's glyph, the count, favor. The suit's name does not fit beside them
-   in the place the mat gives a bank at any scale, so it steps out of sight
-   and stays in the bank's words ("Arcane: 3"). */
-.mat-board .favor-bank { display: grid; grid-template-columns: 1.25em auto 1.25em;
-  column-gap: 0.2em; align-items: center; justify-content: center; }
-.mat-board .favor-bank > .token-glyph { width: 1.25em; height: 1.25em; }
-.mat-board .favor-bank > .token-glyph:first-child { grid-column: 1; }
-.mat-board .favor-bank > .favor-bank-count { grid-column: 2; grid-row: 1; }
-.mat-board .favor-bank > .token-favor { grid-column: 3; grid-row: 1; }
+.mat-board .favor-bank { padding: 0; border-radius: 999px;
+  background: #1a1610b3; }
+/* Each part of a bank has the place the mat prints for it, so hiding one
+   moves no other and each keeps its size at every zoom: the suit's glyph
+   on the emblem, the favor filling the circle, and the count over the
+   favor on a disc, as large as the disc allows (game art ruling R42). The
+   suit's name does not fit beside them, so it steps out of sight and
+   stays in the bank's words ("Arcane: 3"). */
+.mat-board .favor-bank { display: block; }
+.mat-board .favor-bank-token { container-type: size; }
+.mat-board .favor-bank-token > .token-glyph { position: absolute; inset: 0;
+  width: 100%; height: 100%; }
+.mat-board .favor-bank-count { position: absolute; top: 50%; left: 50%;
+  display: flex; align-items: center; justify-content: center;
+  width: 62cqw; height: 62cqw; border-radius: 50%;
+  transform: translate(-50%, -50%); background: var(--base);
+  font-size: 44cqw; font-weight: 700; line-height: 1; }
 .mat-board .favor-bank > .printed:not(.token-glyph) { position: absolute;
   width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
   white-space: nowrap; }
@@ -646,7 +651,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   text-overflow: ellipsis; }
 .map-compact .mat-board :is(.site-tokens, .site-defense, .site-pawns,
   .site-forces, .site-footer, .target-detail-badge, .track-note,
-  .vision-cell, .visions-drawn-label, .deck-caption, .favor-bank) {
+  .vision-cell, .visions-drawn-label, .deck-caption) {
   font-size: var(--glance-text); }
 /* One line of powers, cut, beside the requirement: each power's words are
    its hover note and open in the overlay. */
@@ -702,14 +707,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .map-compact .mat-board .track-summary { display: none; }
 /* Smaller still, a site's face keeps its name, its tokens, who stands
    there, who rules it and its defense, the last two in a short form
-   (implementation ruling R5). Its powers, the wheel's numbers and a bank's
-   favor glyph would fall under a readable size and leave the board: the
+   (implementation ruling R5). Its powers and the wheel's numbers would
+   fall under a readable size and leave the board: the
    powers are read and opened on a zoom or in the overlay, the wheel's
-   numbers and end dice are in the tracker's name, and the bank's count says favor in
-   its own words. */
+   numbers and end dice are in the tracker's name. */
 .map-tiny .mat-board :is(.site-footer,
-  .round-tracker text:not(.limiter-diamond), .end-die,
-  .favor-bank > .token-favor) {
+  .round-tracker text:not(.limiter-diamond), .end-die) {
   display: none; }
 /* What carries a name or state steps out of sight without leaving the
    accessibility tree: the tracker's words, the slots' names and the track's
@@ -742,12 +745,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .map-tiny .mat-board .site-pawns { top: calc(6px + var(--row) * 2);
   font-size: min(var(--glance-text), 32px); line-height: 1.05; }
 .map-tiny .mat-board .site-tokens .site-token-count { margin-right: 0.1em; }
-/* A bank is its suit's glyph and its count there, the glyph a little
-   smaller so a two-digit count fits the bank's place. */
-.map-tiny .mat-board .favor-bank { grid-template-columns: 0.75em auto;
-  column-gap: 0.05em; padding: 0; }
-.map-tiny .mat-board .favor-bank > .token-glyph { width: 0.75em;
-  height: 0.75em; }
 .map-tiny .mat-board .site-pawns .pawn-initial { display: none; }
 /* A phone's face holds two rows under the name. Defense steps out first
    (ruling R5); the pawns share the forces' row, forces at its left and

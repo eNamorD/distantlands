@@ -153,6 +153,21 @@ class MatBoardSuite extends munit.FunSuite:
     assertEquals(one(arcane, ".favor-bank-count").textContent, "3")
     assert(!one(arcane, ".favor-bank-count").classList.contains("printed"))
 
+  /** The owner could not read a bank's favor (game art ruling R42): the
+    * favor fills the mat's circle with the count over it, and the suit's
+    * glyph stands on the mat's emblem. */
+  test("a bank's suit stands on its emblem, and its favor fills its " +
+      "circle with the count over it"):
+    val arcane = one(world, ".favor-bank.suit-arcane")
+    val bank = MatLayout.favorBank("arcane").get
+    assertEquals(box(one(arcane, ":scope > .token-suit-arcane")),
+      at(MatLayout.favorBankEmblem("arcane").get, bank))
+    val token = one(arcane, ":scope > .favor-bank-token")
+    assertEquals(box(token), at(MatLayout.favorBankCircle("arcane").get, bank))
+    assertEquals(all(token, ":scope > *").map(_.getAttribute("class")),
+      Vector("token-glyph token-favor", "favor-bank-count"))
+    assertEquals(Option(token.closest(".printed")), None)
+
   /** An offered card is wrapped with its inspect button; the wrapper is what
     * stands in the slot, and a relic inside one still takes the square top. */
   test("an offered relic's wrapper stands in the square top of its slot"):

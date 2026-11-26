@@ -350,6 +350,26 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(rule(".mat-board .site-name")
       .contains("bottom: var(--face-bottom, 0)"))
 
+  /** A bank's parts take their size from the mat, not from the text
+    * (R42): the favor fills its circle and the count is as large as its
+    * disc allows, at every zoom. */
+  test("a bank's favor fills its circle and its count stands over it " +
+      "on a Base disc"):
+    val token = rule(".mat-board .favor-bank-token")
+    assert(token.contains("container-type: size"))
+    val favor = rule(".mat-board .favor-bank-token > .token-glyph")
+    Vector("position: absolute", "inset: 0", "width: 100%", "height: 100%")
+      .foreach(part => assert(favor.contains(part), part))
+    val count = rule(".mat-board .favor-bank-count")
+    Vector("position: absolute", "top: 50%", "left: 50%",
+      "transform: translate(-50%, -50%)", "width: 62cqw", "height: 62cqw",
+      "border-radius: 50%", "background: var(--base)", "font-size: 44cqw")
+      .foreach(part => assert(count.contains(part), part))
+    assert(!count.contains("padding"))
+    // The old grid, which sized a bank's parts from the text, is gone.
+    assert(!css.contains(".mat-board .favor-bank { display: grid"))
+    assert(!css.contains(".favor-bank > .token-favor"))
+
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
   private val rendererSources: String =

@@ -642,12 +642,22 @@ private[frontend] object WorldBoardRenderer:
       // The suit's name is printed beside the mat's circle; the count is
       // play. Together they read as before: "Arcane: 3".
       box.appendChild(text("span", "printed", s"${bank.suit.capitalize}: "))
-      box.appendChild(text("span", "favor-bank-count", bank.count.toString))
-      // The count is favor, drawn as the favor token is everywhere else.
-      box.appendChild(RulesTextRenderer.piece("favor"))
+      // The favor fills the circle the mat prints for it, and its count
+      // stands over it, as large as it can be read (R42).
+      val token = element("span", "favor-bank-token")
+      token.appendChild(RulesTextRenderer.piece("favor"))
+      token.appendChild(text("span", "favor-bank-count", bank.count.toString))
+      box.appendChild(token)
       options.decorate(box,
         Vector(BoardOptionViews.key("favor-bank", bank.suit)))
-      MatLayout.favorBank(bank.suit).foreach(rect => place(box, rect))
+      for
+        whole <- MatLayout.favorBank(bank.suit)
+        emblem <- MatLayout.favorBankEmblem(bank.suit)
+        circle <- MatLayout.favorBankCircle(bank.suit)
+      do
+        place(box, whole)
+        place(suit, emblem, whole)
+        place(token, circle, whole)
       banks.appendChild(box)
     }
     banks

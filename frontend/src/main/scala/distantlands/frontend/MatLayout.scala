@@ -134,6 +134,18 @@ private[frontend] object MatLayout:
   private val BankCentre =
     Vector(2438.0, 2839.0, 3241.0, 3642.0, 4044.0, 4449.0)
 
+  /** The circle the mat prints for a suit's favor: a square about it. */
+  def favorBankCircle(suit: String): Option[MatRect] =
+    Option(FavorBankSuits.indexOf(suit)).filter(_ >= 0)
+      .map(at => MatRect(BankCentre(at) - 93, 2155 - 93, 186, 186))
+
+  /** The suit's emblem the mat prints beside the circle: a square about
+    * its ring, centred 151 px left of the circle's centre and 27 px
+    * above it, radius 61. */
+  def favorBankEmblem(suit: String): Option[MatRect] =
+    Option(FavorBankSuits.indexOf(suit)).filter(_ >= 0)
+      .map(at => MatRect(BankCentre(at) - 151 - 61, 2128 - 61, 122, 122))
+
   /** A suit's emblem and its bank circle, as one box. */
   def favorBank(suit: String): Option[MatRect] =
     Option(FavorBankSuits.indexOf(suit)).filter(_ >= 0)

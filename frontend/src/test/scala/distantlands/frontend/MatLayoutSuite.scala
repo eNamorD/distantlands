@@ -99,6 +99,22 @@ class MatLayoutSuite extends munit.FunSuite:
       assert(marker.h < first.h / 4, marker.toString)
     }
 
+  /** A bank's two printed circles (game art ruling R42): the large one
+    * the favor lies in and the suit's emblem beside it. */
+  test("a bank's circle and its emblem are squares inside the bank's " +
+      "box, the emblem at the circle's left, their rings touching"):
+    FavorBankSuits.foreach { suit =>
+      val bank = favorBank(suit).get
+      val circle = favorBankCircle(suit).get
+      val emblem = favorBankEmblem(suit).get
+      assert(near(circle.ratio, 1.0) && near(emblem.ratio, 1.0), suit)
+      assertEquals((circle.w, emblem.w), (186.0, 122.0), suit)
+      assert(circle.within(bank) && emblem.within(bank), suit)
+      assert(emblem.x < circle.x && emblem.right <= circle.x + 5, suit)
+    }
+    assertEquals(favorBankCircle("no-such-suit"), None)
+    assertEquals(favorBankEmblem("no-such-suit"), None)
+
   test("a discard and the world deck are denizen cards on their side"):
     ((0 until 3).map(discard) :+ worldDeck).foreach(rect =>
       assert(near(rect.ratio, 596.0 / 381), rect.toString))
