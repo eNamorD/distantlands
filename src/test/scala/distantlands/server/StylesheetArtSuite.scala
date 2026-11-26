@@ -376,6 +376,17 @@ class StylesheetArtSuite extends munit.FunSuite:
       .foreach(part => assert(face.contains(part), part))
     assert(rule(".card-overlay-body > .card-face").contains("font-size: 1.9em"))
 
+  /** The Oath goal's card on the table's edge (R37): the goal's ratio at
+    * the banners' height. */
+  test("the Oath goal's card is as tall as a banner on the table's edge"):
+    val card = rule(".table-edge .oathkeeper-status > .oathkeeper-goal")
+    Vector("height: var(--banner-edge-side)", "overflow: hidden",
+      "cursor: pointer").foreach(part => assert(card.contains(part), part))
+    assert(rule(".card-plate-oath-goal")
+      .contains("aspect-ratio: var(--ratio-oath-goal)"))
+    // It is no longer a line of link text.
+    assert(!css.contains(".oathkeeper-status > .oathkeeper-goal:not(:hover)"))
+
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
   private val rendererSources: String =

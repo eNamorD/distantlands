@@ -676,8 +676,14 @@ private[frontend] object WorldBoardRenderer:
       val presented = distantlands.protocol.projection
         .OathkeeperPresentation.byGoal.get(oath.goal)
       val title = presented.fold(oath.goal)(_.title)
-      val goal = button(title, "oathkeeper-goal card-link")
+      // The goal's card, at its ratio (game art ruling R37): its image
+      // where the host's art has one, its title on the plate otherwise.
+      val goal = button("", "oathkeeper-goal card-plate card-plate-oath-goal")
       goal.`type` = "button"
+      goal.setAttribute("aria-label", title)
+      HoverTip.set(goal, title)
+      goal.appendChild(text("span", "card-name printed", title))
+      ArtLayer.attach(goal, ArtCatalog.oathGoal(oath.goal))
       goal.onclick = _ => CardInspection.openText(title,
         presented.fold(Vector.empty[String])(_.lines), goal, Some("oath-goal"),
         ArtCatalog.oathGoal(oath.goal))

@@ -116,3 +116,44 @@ class PlateArtSuite extends munit.FunSuite:
         Vector.empty)
     }
 
+  /** The Oath goal in the shared bank with `holder` and `side`. */
+  private def sharedBankWithOath(holder: Option[String], side: String)
+      : dom.Element =
+    one(WorldBoardRenderer.world(TestProjections.actingProjection().copy(
+      oathkeeper = Some(OathkeeperProjection("supremacy", holder, side,
+        usurperLimited = false, winnerPlayerId = None))), BoardOptions.none),
+      ".shared-bank")
+
+  /** The owner's review (game art ruling R37): the shared bank shows the
+    * Oath goal's card, not its title in words. */
+  test("the shared bank shows the Oath goal as a card at its ratio, with " +
+      "its image, and the drawn goal with art off"):
+    val drawn = one(sharedBankWithOath(None, "oathkeeper"), ".oathkeeper-goal")
+    assertEquals(drawn.tagName, "BUTTON")
+    assertEquals(drawn.getAttribute("class"),
+      "oathkeeper-goal card-plate card-plate-oath-goal")
+    assertEquals(drawn.getAttribute("aria-label"), "Oathkeeper of Supremacy")
+    assertEquals(all(drawn, ":scope > .card-name.printed")
+      .map(_.textContent), Vector("Oathkeeper of Supremacy"))
+    assertEquals(all(drawn, "img"), Vector.empty)
+    TestArt.listingWholeCatalog()
+    val withArt = one(sharedBankWithOath(None, "oathkeeper"),
+      ".oathkeeper-goal")
+    assertEquals(all(withArt, ":scope > img.art").map(_.getAttribute("src")),
+      Vector("/art/cards/Supremacy%20Oath%20(NF).png"))
+    val copy = withArt.cloneNode(true).asInstanceOf[dom.Element]
+    all(copy, ".art").foreach(_.remove())
+    assertEquals(copy.outerHTML, drawn.outerHTML)
+
+  test("the Oath's holder stands in words under the goal's card"):
+    Vector((None, "oathkeeper", "Oathkeeper: unheld"),
+      (Some("Red"), "oathkeeper", "Oathkeeper: Red"),
+      (Some("Red"), "usurper", "Usurper: Red")).foreach {
+      (holder, side, words) =>
+        val status = one(sharedBankWithOath(holder, side),
+          ".oathkeeper-status")
+        assertEquals(all(status, ":scope > *").map(_.getAttribute("class")
+          .split(" ").head), Vector("oathkeeper-goal", "oathkeeper-holder"))
+        assertEquals(one(status, ".oathkeeper-holder").textContent, words)
+    }
+

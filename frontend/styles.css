@@ -617,9 +617,14 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   display: none; }
 .map-tiny .table-edge .public-legacies-cards .card-name-short {
   font-size: 1em; }
-/* The Oath goal is a control: a hit area of 24px on screen at any zoom. */
-.table-edge .oathkeeper-status > .oathkeeper-goal { display: flex;
-  align-items: center; min-height: calc(24px / var(--map-scale, 1)); }
+/* The Oath goal is its card (game art ruling R37): the goal's ratio at a
+   banner's height, a control that opens the goal's words. */
+.table-edge .oathkeeper-status > .oathkeeper-goal {
+  height: var(--banner-edge-side); margin: 0 0 4px; overflow: hidden;
+  font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+.table-edge .oathkeeper-goal:hover, .table-edge .oathkeeper-goal:focus-visible {
+  outline: var(--option-ring) solid var(--cream-focus);
+  outline-offset: calc(var(--option-ring) * -1.5); }
 /* The Chronicle Details button beside the Shared Bank (Chronicle Details
    design, slice 4): a rectangular Control as tall as the edge (R18) and as
    wide as a site's three denizen slots (R23): 3 card widths and 2 slot gaps
@@ -1561,11 +1566,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* The oath and its holder each take a line, so the holder never wraps
    mid-phrase. */
 .oathkeeper-status > * { display: block; }
-/* The goal opens the Oath's card, a link in the line's own colour and
-   weight. */
-.oathkeeper-status > .oathkeeper-goal { font-weight: inherit; text-align: left; }
-/* At rest only, so the link's hover colour still answers the pointer. */
-.oathkeeper-status > .oathkeeper-goal:not(:hover) { color: inherit; }
 /* A banner is drawn as its component: square, its side across the top in
    the banner's own colour and its name in the middle. The People's Favor
    is amber and the Darkest Secret teal, as printed. The frame is the
