@@ -90,3 +90,22 @@ class WorldArtSuite extends munit.FunSuite:
     all(row, ".site-power").foreach(control =>
       assert(Option(control.closest(".printed")).isEmpty))
     assertEquals(all(row, ".site-face *:not(img)"), Vector.empty)
+
+  test("a banner holds the image of the face it shows, and keeps what " +
+      "it holds over it"):
+    TestArt.listingWholeCatalog()
+    val board = boardWithTheWorld()
+    val favor = one(board, ".banner-peoples-favor")
+    assertEquals(images(favor), Vector(
+      "/art/cards/Banner%20of%20the%20People's%20Favor%20-%20Mob%20(NF).png"))
+    assertEquals(images(one(board, ".banner-darkest-secret")), Vector(
+      "/art/cards/Banner%20of%20the%20Darkest%20Secret%20-%20Festival%20(NF).png"))
+    assertEquals(all(favor, ".card-tokens:not(.printed)").size, 1)
+    assertEquals(all(favor, ".printed").map(_.getAttribute("class")
+      .split(" ").head), Vector("banner-side", "card-header"))
+
+  test("a banner on a face the catalog does not know stays drawn"):
+    TestArt.listingWholeCatalog()
+    assertEquals(all(BannerFace.render(
+      BannerState("peoples-favor", "unknown", None, 0), None), "img"),
+      Vector.empty)

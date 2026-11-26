@@ -1,5 +1,6 @@
 package distantlands.frontend
 
+import distantlands.protocol.art.ArtCatalog
 import org.scalajs.dom
 import ServerUiSupport._
 
@@ -106,6 +107,7 @@ private[frontend] object BannerFace:
     tokens.appendChild(text("span", "card-token-count",
       banner.resources.toString))
     node.appendChild(tokens)
+    ArtLayer.attach(node, ArtCatalog.banner(banner.face))
     inspect(banner, festivalAt, links).foreach((_, open) =>
       node.onclick = _ => open(node))
     node
