@@ -54,11 +54,23 @@ class MatLayoutSuite extends munit.FunSuite:
       }
     }
 
-  test("a site card has the site ratio and lies inside its frame"):
+  /** The mat draws each frame by hand: its 5 to 6 px line strays up to 8
+    * px outside the nominal rectangle. The site's card covers the frame
+    * and its line (game art ruling R38); the image is fitted with
+    * `cover`, which trims about one percent of its height. */
+  test("a site card covers its frame and the frame's line, and reaches " +
+      "no neighbour"):
     sites.foreach { (column, row) =>
       val card = siteCard(column, row)
-      assert(near(card.ratio, 770.0 / 596), card.toString)
-      assert(card.within(siteFrame(column, row)), card.toString)
+      val frame = siteFrame(column, row)
+      assertEquals(card, MatRect(frame.x - 8, frame.y - 8, frame.w + 16,
+        frame.h + 16))
+      assert(!card.overlaps(cardSlot(column, row, 0)), card.toString)
+      if sites.contains((column, row + 1)) then
+        assert(!card.overlaps(siteCard(column, row + 1)), card.toString)
+      assert(card.within(Mat), card.toString)
+      // Close to the site card's own ratio: the trim is under 2%.
+      assert(math.abs(card.ratio / (770.0 / 596) - 1) < 0.02, card.toString)
     }
 
   test("a site's row spans its frame and its three slots"):

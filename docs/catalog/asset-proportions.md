@@ -85,9 +85,17 @@ pixels, from its upper left.
 | Visions Drawn label | 1680 | 1650 | 210 | 150 |
 
 The mat prints a frame for each site and none for its cards. A site frame
-is 669×509, a little wider than a site card of the same height (657.6), so
-the card is centred in it. The three card slots are derived: the frame's
-height, the denizen ratio's width, 48 px apart.
+is 669×509 by its nominal rectangle, but the mat is drawn by hand: each
+frame's line is 5 to 6 px thick and strays up to 8 px outside that
+rectangle (the Provinces' second frame reaches 7 px past its right edge,
+the Cradle's first 5 px above its top). The site card's box is therefore
+the frame grown by 8 px on every side, 685×525, so the card covers the
+line; its image (770×596) fills the box with `cover`, which trims about
+one percent of its height. The line was measured by drawing the mat to a
+canvas and scanning rows and columns across each of eight frames' four
+edges for runs of the line's yellow. The three card slots are derived:
+the frame's height, the denizen ratio's width, 48 px apart from the
+frame's nominal right edge.
 
 The region name band starts a little left of the frames, where the mat's
 lettering starts, and stops short of the discard, so the longest name keeps

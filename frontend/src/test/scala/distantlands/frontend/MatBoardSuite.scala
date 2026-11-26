@@ -56,6 +56,9 @@ class MatBoardSuite extends munit.FunSuite:
     val faceBox = at(MatLayout.siteCard(1, 1), row).toMap
     assertEquals(style.getPropertyValue("--face-left"), faceBox("left"))
     assertEquals(style.getPropertyValue("--face-w"), faceBox("width"))
+    // The face reaches past the row's foot by the frame's line, and the
+    // name band stands at the face's foot.
+    assertEquals(style.getPropertyValue("--face-bottom"), "-1.5717%")
 
   test("a site's cards stand in the three slots to its right, a relic " +
       "in the square top of its slot"):

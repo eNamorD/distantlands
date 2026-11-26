@@ -293,6 +293,11 @@ private[frontend] object WorldBoardRenderer:
     val style = control.asInstanceOf[dom.html.Element].style
     style.setProperty("--face-left", faceBox("left"))
     style.setProperty("--face-w", faceBox("width"))
+    // The face reaches past the row's foot by the frame's line; the name
+    // band stands at the face's foot, not the row's.
+    style.setProperty("--face-bottom", MatRect(0, 0, 1,
+      rowRect.bottom - faceRect.bottom).percentOf(MatRect(0, 0, 1, rowRect.h))
+      .toMap.apply("height"))
     val siteKeys = Vector(BoardOptionViews.key("site", site.siteId))
     options.decorate(control, siteKeys)
     // The card itself: drawn wherever its image is missing.

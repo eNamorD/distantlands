@@ -342,6 +342,14 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(!current.contains("stroke"))
     assert(rule(".round-current").contains("stroke: var(--cream-bright)"))
 
+  /** A site's box is the mat's frame and its line (R38), a little off
+    * the card's own ratio, so the image covers it and loses a sliver. */
+  test("a site's image covers its box, and its name band stands at the " +
+      "face's foot"):
+    assert(rule(".site-face > .art").contains("object-fit: cover"))
+    assert(rule(".mat-board .site-name")
+      .contains("bottom: var(--face-bottom, 0)"))
+
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
   private val rendererSources: String =

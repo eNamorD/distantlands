@@ -483,7 +483,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    upper left, where the card prints its starting resources, then the pawns
    and the forces. */
 .mat-board .site-heading { display: contents; }
-.mat-board .site-name { position: absolute; bottom: 0; left: var(--face-left);
+.mat-board .site-name { position: absolute; bottom: var(--face-bottom, 0); left: var(--face-left);
   width: var(--face-w); box-sizing: border-box; padding: 4px 8px;
   border-radius: 0 0 9px 9px; background: #1a1610d9; line-height: 1.15; }
 /* The lines from the top stand on rows of one height, `--row`, so a line
@@ -2447,6 +2447,9 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   width: calc(100% / (var(--ratio-oathkeeper-title)));
   height: calc(100% * (var(--ratio-oathkeeper-title)));
   transform: translate(-50%, -50%) rotate(-90deg); }
+/* A site's box is the frame the mat prints and the frame's line (R38), a
+   little off the card's own ratio: the image covers it. */
+.site-face > .art { object-fit: cover; }
 
 
 /* Document level, above .game-pane -- which is what lets that pane keep

@@ -68,10 +68,18 @@ private[frontend] object MatLayout:
   def siteFrame(column: Int, row: Int): MatRect =
     MatRect(FrameLeft(column), RowTop + row * RowPitch, FrameW, CardH)
 
-  /** The site card, centred in the frame the mat prints for it. */
+  /** How far the line of a frame the mat prints strays outside the
+    * frame's nominal rectangle: the frames are drawn by hand, each a
+    * little off its place (`docs/catalog/asset-proportions.md`). */
+  private val FrameLine = 8.0
+
+  /** The site card: the frame the mat prints for it and the frame's
+    * line, which the card covers (game art ruling R38). The card's image
+    * fills this box with `cover`. */
   def siteCard(column: Int, row: Int): MatRect =
     val frame = siteFrame(column, row)
-    MatRect(frame.x + (frame.w - SiteW) / 2, frame.y, SiteW, CardH)
+    MatRect(frame.x - FrameLine, frame.y - FrameLine,
+      frame.w + 2 * FrameLine, frame.h + 2 * FrameLine)
 
   def cardSlot(column: Int, row: Int, slot: Int): MatRect =
     val frame = siteFrame(column, row)
