@@ -46,7 +46,7 @@ private[frontend] final class GameTableShell(mount: dom.Element,
     * the table and the developer panel behind it are inert, so Tab cannot
     * leave it and no second dialog opens under it. */
   private def inertBehind(open: Boolean): Unit =
-    Vector(table, dev).foreach(node =>
+    Vector(table, dev, settings.node).foreach(node =>
       if open then node.setAttribute("inert", "") else node.removeAttribute("inert"))
   // The heading opens the whole log (spec, "Overlay").
   log.heading.tabIndex = 0
@@ -170,7 +170,6 @@ private[frontend] final class GameTableShell(mount: dom.Element,
   private val devToggle = button("Dev tools", "dev-toggle")
   devToggle.setAttribute("aria-controls", "development-panel")
   devToggle.setAttribute("aria-expanded", "false")
-  if developmentTools then players.header.appendChild(devToggle)
   private val dev = element("aside", "development-panel").asInstanceOf[dom.html.Element]
   dev.id = "development-panel"
   dev.setAttribute("hidden", "")
@@ -187,8 +186,22 @@ private[frontend] final class GameTableShell(mount: dom.Element,
   dev.appendChild(devHeader)
   dev.appendChild(devContent)
   mount.appendChild(dev)
+  /** Hides the development panel without moving focus: Settings is
+    * opening in its place. */
+  private def hideDev(): Unit =
+    dev.setAttribute("hidden", "")
+    devToggle.setAttribute("aria-expanded", "false")
+  // Settings for every player; Dev tools beside it where they are shown.
+  private val settings = new SettingsDialog(mount, () => hideDev())
+  private val headerControls = element("span", "header-controls")
+  players.header.appendChild(headerControls)
+  headerControls.appendChild(settings.toggle)
+  if developmentTools then headerControls.appendChild(devToggle)
   private def setDev(open: Boolean): Unit =
-    if open then dev.removeAttribute("hidden") else dev.setAttribute("hidden", "")
+    if open then
+      settings.close(returnFocus = false)
+      dev.removeAttribute("hidden")
+    else dev.setAttribute("hidden", "")
     devToggle.setAttribute("aria-expanded", open.toString)
     if open then close.focus() else devToggle.focus()
   devToggle.onclick = _ => setDev(dev.hasAttribute("hidden"))
@@ -258,6 +271,7 @@ private[frontend] final class GameTableShell(mount: dom.Element,
       table.setAttribute("data-actions-fresh", "")
     PanelContent.replace(devContent, development, devHeading)
     mapView.refresh(changedGame)
+    settings.refresh()
     previousGame = gameId
     previousDecision = decisionKey
 
@@ -290,6 +304,7 @@ private[frontend] final class GameTableShell(mount: dom.Element,
     dom.window.removeEventListener("pagehide", leaving)
     logPane.dispose()
     logOverlay.dispose()
+    settings.dispose()
     table.remove()
     dev.remove()
 

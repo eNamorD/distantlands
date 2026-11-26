@@ -80,3 +80,42 @@ class StylesheetArtSuite extends munit.FunSuite:
       "height: calc(100% / (var(--ratio-denizen)))",
       "transform: translate(-50%, -50%) rotate(-90deg)")
       .foreach(part => assert(back.contains(part), part))
+
+  /** The declarations of every rule whose selector list names
+    * `selector`. */
+  private def rulesNaming(selector: String): Vector[String] =
+    val rules = """([^{}]+)\{([^{}]*)\}""".r
+    rules.findAllMatchIn(uncommented).filter(_.group(1).split(",")
+      .exists(_.trim == selector)).map(_.group(2)).toVector
+
+  test("the Settings button and Close wear the Control face, with the " +
+      "touch size"):
+    Vector(".settings-toggle", ".settings-close").foreach { selector =>
+      val face = rulesNaming(selector).mkString(" ")
+      Vector("background: var(--raised)", "border: 1px solid var(--brass-line)",
+        "border-radius: 4px", "min-height: 30px", "min-height: 44px")
+        .foreach(part => assert(face.contains(part), s"$selector $part"))
+    }
+
+  test("the settings dialog sits where the development panel does and " +
+      "hides when hidden"):
+    val panel = rule(".settings-panel")
+    Vector("position: fixed", "z-index: 50", "right: 12px", "top: 48px")
+      .foreach(part => assert(panel.contains(part), part))
+    assert(rule(".settings-panel[hidden]").contains("display: none"))
+
+  test("the switch is a full-width control of touch height; on, it wears " +
+      "the selection colours; withheld, it dims"):
+    val control = rule(".setting-switch")
+    Vector("width: 100%", "min-height: 44px", "background: var(--raised)",
+      "border: 1px solid var(--brass-line)")
+      .foreach(part => assert(control.contains(part), part))
+    val on = rule(""".setting-switch[aria-checked="true"]""")
+    Vector("border-color: var(--selection)",
+      "background: var(--selection-fill)")
+      .foreach(part => assert(on.contains(part), part))
+    assert(rule(""".setting-switch[aria-disabled="true"]""")
+      .contains("opacity: 0.5"))
+
+  test("a hidden reason takes no room"):
+    assert(rule(".setting-reason[hidden]").contains("display: none"))

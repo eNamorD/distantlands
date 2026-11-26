@@ -1497,7 +1497,7 @@ class ArtLayerSuite extends munit.FunSuite:
   private def drawnBox(): dom.Element =
     val box = dom.document.createElement("span")
     val printed = dom.document.createElement("span")
-    printed.className = "printed"
+    printed.setAttribute("class", "printed")
     printed.textContent = "Alchemist"
     box.appendChild(printed)
     box
@@ -1645,6 +1645,10 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(opening.nonEmpty, s"no rule $selector")
     css.substring(opening.get.start, css.indexOf("}", opening.get.start))
 
+  /** The stylesheet without its comments, so a rule's selector list is
+    * the selectors alone. */
+  private val uncommented = css.replaceAll("(?s)/\\*.*?\\*/", "")
+
   /** The art layer's rules: from their opening comment to the document
     * level overlay's comment, which follows them. */
   private def artRules(using munit.Location): String =
@@ -1677,7 +1681,7 @@ class StylesheetArtSuite extends munit.FunSuite:
 
   test("no other rule sets a printed element's opacity"):
     val rules = """([^{}]+)\{([^{}]*)\}""".r
-    val setters = rules.findAllMatchIn(css).filter(found =>
+    val setters = rules.findAllMatchIn(uncommented).filter(found =>
       found.group(1).contains(".printed") &&
         found.group(2).contains("opacity")).map(_.group(1).trim).toVector
     assertEquals(setters, Vector(".printed"))
@@ -2141,7 +2145,9 @@ the CSS step.
 - The hint always reads "Card faces, the mat and pieces drawn from the
   host's art." When the manifest lists some but not all of the catalog it
   adds " <n> of <total> images; the rest stay drawn."
-- The switch is disabled, shows Off, and shows its reason: for an empty
+- The switch wears the Withheld face (`DESIGN.md`, "Buttons":
+  `aria-disabled="true"`, so it still takes focus, with the reason as its
+  hover note), shows Off, and shows its reason on the line below it: for an empty
   manifest "This server has no game art."; for a failed fetch "Couldn't
   load the art list; reload to try again."; before the manifest arrives
   "Loading the art list…".
@@ -2188,6 +2194,10 @@ class SettingsDialogSuite extends munit.FunSuite:
     one(browser.mount, ".setting-switch").asInstanceOf[dom.html.Button]
   private def reason(browser: TestBrowser): dom.Element =
     one(browser.mount, ".setting-reason")
+  /** Whether the switch wears the Withheld face: `aria-disabled`, so it
+    * still takes focus and its hover note gives the reason. */
+  private def withheld(browser: TestBrowser): Boolean =
+    switch(browser).getAttribute("aria-disabled") == "true"
 
   test("every player has a Settings button in the Players pane header, " +
       "beside Dev tools when those are shown"):
@@ -2254,7 +2264,8 @@ class SettingsDialogSuite extends munit.FunSuite:
       assertEquals(one(control, ".setting-switch-label").textContent,
         "Game art")
       assertEquals(control.getAttribute("aria-checked"), "true")
-      assert(!control.disabled)
+      assert(!control.hasAttribute("aria-disabled"))
+      assert(!control.hasAttribute(HoverTip.Attribute))
       val hint = one(browser.mount, ".setting-hint")
       assertEquals(hint.textContent,
         "Card faces, the mat and pieces drawn from the host's art.")
@@ -2266,9 +2277,12 @@ class SettingsDialogSuite extends munit.FunSuite:
   test("a server with no art shows the switch disabled, with its reason"):
     TestArt.listing()
     withShell() { browser =>
-      assert(switch(browser).disabled)
+      assert(withheld(browser))
+      assert(!switch(browser).disabled)
       assertEquals(switch(browser).getAttribute("aria-checked"), "false")
       assertEquals(reason(browser).textContent,
+        "This server has no game art.")
+      assertEquals(switch(browser).getAttribute(HoverTip.Attribute),
         "This server has no game art.")
       assert(!reason(browser).hasAttribute("hidden"))
       assert(switch(browser).getAttribute("aria-describedby").split(" ")
@@ -2278,14 +2292,14 @@ class SettingsDialogSuite extends munit.FunSuite:
   test("a failed art list shows the switch disabled, with its reason"):
     GameArt.install(GameArt.Manifest.Failed, new MemoryChronicleStorage())
     withShell() { browser =>
-      assert(switch(browser).disabled)
+      assert(withheld(browser))
       assertEquals(reason(browser).textContent,
         "Couldn't load the art list; reload to try again.")
     }
 
   test("until the art list arrives the switch is disabled and says so"):
     withShell() { browser =>
-      assert(switch(browser).disabled)
+      assert(withheld(browser))
       assertEquals(reason(browser).textContent, "Loading the art list…")
     }
 
@@ -2295,7 +2309,7 @@ class SettingsDialogSuite extends munit.FunSuite:
       assertEquals(one(browser.mount, ".setting-hint").textContent,
         "Card faces, the mat and pieces drawn from the host's art. " +
           s"3 of ${ArtCatalog.allPaths.size} images; the rest stay drawn.")
-      assert(!switch(browser).disabled)
+      assert(!withheld(browser))
     }
 
   test("flipping the switch saves the preference and redraws the table " +
@@ -2318,11 +2332,14 @@ class SettingsDialogSuite extends munit.FunSuite:
       assertEquals(one(control, ".setting-switch-state").textContent, "On")
     }
 
-  test("a disabled switch changes nothing when clicked"):
+  test("a withheld switch changes nothing when clicked"):
     val store = TestArt.listing()
     withShell() { browser =>
+      var redraws = 0
+      GameArt.onChange(() => redraws += 1)
       switch(browser).click()
       assertEquals(store.values.get("distantlands.art"), None)
+      assertEquals(redraws, 0)
     }
 
   test("each table update brings the dialog up to date"):
@@ -2330,11 +2347,11 @@ class SettingsDialogSuite extends munit.FunSuite:
     val shell = new GameTableShell(browser.mount, developmentTools = false,
       logStore = None)
     try
-      assert(switch(browser).disabled)
+      assert(withheld(browser))
       TestArt.listingWholeCatalog()
       def pane(): dom.Element = dom.document.createElement("div")
       shell.update("game", "decision", pane(), pane(), pane(), pane())
-      assert(!switch(browser).disabled)
+      assert(!withheld(browser))
       assertEquals(switch(browser).getAttribute("aria-checked"), "true")
     finally
       shell.dispose()
@@ -2440,7 +2457,14 @@ private[frontend] final class SettingsDialog(mount: dom.Element,
         (true, "", s" ${files.size} of $total images; the rest stay drawn.")
       case GameArt.Manifest.Listed(_) => (true, "", "")
     val on = available && GameArt.enabled
-    art.disabled = !available
+    // The Withheld face (DESIGN.md, "Buttons"): the switch still takes
+    // focus, and its hover note gives the reason the line below it shows.
+    if available then
+      art.removeAttribute("aria-disabled")
+      art.removeAttribute(HoverTip.Attribute)
+    else
+      art.setAttribute("aria-disabled", "true")
+      HoverTip.set(art, why)
     art.setAttribute("aria-checked", on.toString)
     state.textContent = if on then "On" else "Off"
     hint.textContent = SettingsDialog.Hint + count
@@ -2453,9 +2477,10 @@ private[frontend] final class SettingsDialog(mount: dom.Element,
   art.onclick = _ =>
     // Saves the preference and redraws the table, which refreshes this
     // dialog through the shell; the direct refresh covers a page with no
-    // table to redraw.
-    GameArt.setEnabled(!GameArt.enabled)
-    refresh()
+    // table to redraw. A withheld switch answers no click.
+    if !art.hasAttribute("aria-disabled") then
+      GameArt.setEnabled(!GameArt.enabled)
+      refresh()
   private val escape: dom.KeyboardEvent => Unit = event =>
     if event.key == "Escape" && isOpen then
       event.preventDefault()
@@ -2546,7 +2571,7 @@ Append to `StylesheetArtSuite`:
     * `selector`. */
   private def rulesNaming(selector: String): Vector[String] =
     val rules = """([^{}]+)\{([^{}]*)\}""".r
-    rules.findAllMatchIn(css).filter(_.group(1).split(",")
+    rules.findAllMatchIn(uncommented).filter(_.group(1).split(",")
       .exists(_.trim == selector)).map(_.group(2)).toVector
 
   test("the Settings button and Close wear the Control face, with the " +
@@ -2566,7 +2591,7 @@ Append to `StylesheetArtSuite`:
     assert(rule(".settings-panel[hidden]").contains("display: none"))
 
   test("the switch is a full-width control of touch height; on, it wears " +
-      "the selection colours; disabled, it dims"):
+      "the selection colours; withheld, it dims"):
     val control = rule(".setting-switch")
     Vector("width: 100%", "min-height: 44px", "background: var(--raised)",
       "border: 1px solid var(--brass-line)")
@@ -2575,7 +2600,8 @@ Append to `StylesheetArtSuite`:
     Vector("border-color: var(--selection)",
       "background: var(--selection-fill)")
       .foreach(part => assert(on.contains(part), part))
-    assert(rule(".setting-switch:disabled").contains("opacity: 0.5"))
+    assert(rule(""".setting-switch[aria-disabled="true"]""")
+      .contains("opacity: 0.5"))
 
   test("a hidden reason takes no room"):
     assert(rule(".setting-reason[hidden]").contains("display: none"))
@@ -2618,8 +2644,9 @@ In `frontend/styles.css`:
   font-size: .9rem; }
 .setting-switch[aria-checked="true"] { border-color: var(--selection);
   background: var(--selection-fill); color: var(--selection); }
-.setting-switch:hover:not(:disabled) { border-color: var(--cream-bright); }
-.setting-switch:disabled { opacity: 0.5; cursor: not-allowed; }
+.setting-switch:hover:not([aria-disabled="true"]) {
+  border-color: var(--cream-bright); }
+.setting-switch[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
 .setting-switch-state { font-weight: 700; }
 .setting-hint, .setting-reason { margin: 6px 0 0; font-size: .78rem;
   line-height: 1.35; color: var(--ink-dim); }
