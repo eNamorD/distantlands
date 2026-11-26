@@ -143,3 +143,54 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(css.indexOf(".end-die-idle.printed {") >
       css.indexOf(".printed { opacity"))
     assert(!css.contains(".end-die-idle { opacity"))
+  /** The frontend's renderer sources, read from disk as the stylesheet
+    * is: the frontend's own test runner has no file access. */
+  private val rendererSources: String =
+    val folder = Path.of("frontend", "src", "main", "scala", "distantlands",
+      "frontend")
+    val listing = Files.list(folder)
+    try
+      import scala.jdk.CollectionConverters.*
+      listing.iterator().asScala.filter(_.toString.endsWith(".scala"))
+        .map(Files.readString(_)).mkString("\n")
+    finally listing.close()
+
+  /** Every class a renderer gives an element together with `printed`:
+    * the other words of each string literal that holds the word, with a
+    * `$`{...}` interpolation cut to the stem before it. An element marked
+    * with `classList.add("printed")` writes no such literal, so its
+    * classes are listed by hand below; add a class there when a renderer
+    * marks an element that way. */
+  private val printedTogetherWith: Set[String] =
+    val literal = "\"([^\"\\n]*\\bprinted\\b[^\"\\n]*)\"".r
+    val written = literal.findAllMatchIn(rendererSources)
+      .flatMap(_.group(1).replaceAll("\\$\\{[^}]*\\}", " ").split("\\s+"))
+      .map(_.stripSuffix("-")).filter(word =>
+        word.matches("[a-z][a-z0-9-]*") && word != "printed").toSet
+    // The favor bank's suit glyph (`WorldBoardRenderer.favorBanks`).
+    written ++ Set("token-glyph")
+
+  /** `.printed`'s opacity is the art layer's. A rule that sets opacity on
+    * an element that is also printed would win or lose against it by
+    * source order, so it must carry the layer's answer itself, by
+    * multiplying with `--printed-opacity`. The slice 1 review found the
+    * idle end die undimmed for want of this. */
+  test("every opacity rule on a class drawn together with printed " +
+      "multiplies by the art layer's answer"):
+    assert(printedTogetherWith("end-die-idle"), printedTogetherWith)
+    assert(printedTogetherWith("card-header"), printedTogetherWith)
+    val rules = """([^{}]+)\{([^{}]*)\}""".r
+    val setsOpacity = """(?<![-\w])opacity\s*:""".r
+    val offenders = rules.findAllMatchIn(uncommented).filter { found =>
+      val declarations = found.group(2)
+      setsOpacity.findFirstIn(declarations).nonEmpty &&
+        !declarations.contains("var(--printed-opacity") &&
+        found.group(1).split(",").exists { selector =>
+          // The selector's subject: its last compound.
+          val subject = selector.trim.split("""[\s>+~]+""").last
+          """\.([a-z][a-z0-9-]*)""".r.findAllMatchIn(subject)
+            .exists(name => printedTogetherWith(name.group(1)))
+        }
+    }.map(_.group(1).trim).toVector
+    assertEquals(offenders, Vector.empty)
+
