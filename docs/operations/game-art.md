@@ -27,6 +27,9 @@ face for that one card.
   "Oath: New Foundations": the denizen, Vision, relic and legacy backs,
   saved under the names below.
 
+The server follows symbolic links, so `cards/` may be a link to a clone
+of the card database, and any single file may be a link.
+
 The server reads the folder once, when it starts, and logs how many files
 it found and which listed paths the folder lacks. Restart it after
 changing the folder.

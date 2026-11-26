@@ -32,6 +32,19 @@ class ArtLibrarySuite extends munit.FunSuite:
     assertEquals(ArtLibrary.scan(Some(folder), catalog).files,
       Map.empty[String, Path])
 
+  /** On purpose (implementation ruling R10): a host may link `cards/` to
+    * a clone of the card database, or link single files. */
+  test("the scan follows symbolic links, to a folder and to a file"):
+    val clone = ArtFolders.onePixelFolder("Alchemist (NF).png",
+      "relic-back.jpg")
+    val folder = ArtFolders.onePixelFolder()
+    Files.createSymbolicLink(folder.resolve("cards"), clone)
+    Files.createDirectories(folder.resolve("tts/backs"))
+    Files.createSymbolicLink(folder.resolve("tts/backs/relic-back.jpg"),
+      clone.resolve("relic-back.jpg"))
+    assertEquals(ArtLibrary.scan(Some(folder), catalog).files.keySet,
+      Set("cards/Alchemist (NF).png", "tts/backs/relic-back.jpg"))
+
   test("the summary counts the files and names the folder"):
     val folder = ArtFolders.onePixelFolder("cards/Alchemist (NF).png")
     assertEquals(ArtLibrary.scan(Some(folder), catalog).summary,
