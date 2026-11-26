@@ -4119,7 +4119,7 @@
         {
           "id": "relic.barbed-net",
           "persistent": false,
-          "rulesText": "[secret-burnt] [secret-burnt] [secret-burnt] **ACTION:** Take a relic from your site. _(You may keep it facedown.)_"
+          "rulesText": "[favor-burnt] [favor-burnt] [favor-burnt] **ACTION:** Take a relic from your site. _(You may keep it facedown.)_"
         }
       ]
     },

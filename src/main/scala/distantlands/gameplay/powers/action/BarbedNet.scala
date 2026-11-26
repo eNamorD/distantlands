@@ -5,12 +5,12 @@ import distantlands.model._
 
 object BarbedNetCard extends Relic(RelicId("R36"), "Barbed Net", value = 33, defense = 1):
   val power = PrintedPower(PowerId("relic.barbed-net"),
-    persistent = false, cost = Cost(secretBurnt = 3),
+    persistent = false, cost = Cost(favorBurnt = 3),
     text = "**ACTION:** Take a relic from your site. _(You may keep it " +
       "facedown.)_")
   val powers: Vector[PrintedPower] = Vector(power)
 
-/** Barbed Net (relic R36), ACTION: burn 3 secrets, then take a relic from
+/** Barbed Net (relic R36), ACTION: burn 3 favor, then take a relic from
   * the player's site. The player may keep it facedown; the existing minor
   * action that reveals an owned relic covers turning it up later.
   *
