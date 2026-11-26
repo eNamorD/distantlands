@@ -188,6 +188,29 @@ class ServerConfigSuite extends munit.FunSuite:
         clues(value, errors))
     }
 
+  test("no art path is configured unless the host names one"):
+    assertEquals(parse(Array.empty, Map.empty).artPath, None)
+
+  test("--art-path names the art folder, absolute and normalised"):
+    val config = parse(Array("--art-path", "var/art/../assets"), Map.empty)
+    assertEquals(config.artPath,
+      Some(Paths.get("var/assets").toAbsolutePath.normalize))
+
+  test("DLQ_ART_PATH names the art folder, and --art-path overrides it"):
+    assertEquals(parse(Array.empty, Map("DLQ_ART_PATH" -> "var/env-art"))
+      .artPath, Some(Paths.get("var/env-art").toAbsolutePath.normalize))
+    assertEquals(parse(Array("--art-path", "var/cli-art"),
+      Map("DLQ_ART_PATH" -> "var/env-art")).artPath,
+      Some(Paths.get("var/cli-art").toAbsolutePath.normalize))
+
+  test("a blank --art-path is refused"):
+    val errors = rejected(ServerConfig.parse(Array("--art-path", " "),
+      Map.empty, version))
+    assertEquals(errors, Vector("--art-path: must not be blank"))
+
+  test("the usage line names --art-path"):
+    assert(ServerConfig.usage.contains("[--art-path DIR]"))
+
   /** The errors `arguments` and `environment` parse to; fails with the
     * configuration when they parse cleanly. */
   private def parseErrors(arguments: Array[String],

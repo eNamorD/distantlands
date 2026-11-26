@@ -14,7 +14,10 @@ final case class ServerConfig(
     publicBaseUrl: Option[URI],
     databasePath: Path,
     mode: ServerMode,
-    version: String
+    version: String,
+    /** The host's folder of licensed art (game art design, "The art
+      * folder"); without it the server serves none. */
+    artPath: Option[Path] = None
 )
 
 object ServerConfig:
@@ -28,7 +31,8 @@ object ServerConfig:
     "--port",
     "--public-base-url",
     "--database-path",
-    "--mode"
+    "--mode",
+    "--art-path"
   )
   private val SupportedOptions = SupportedOptionOrder.toSet
   private val OptionOrder = SupportedOptionOrder.zipWithIndex.toMap
@@ -36,7 +40,7 @@ object ServerConfig:
   val usage: String =
     "Usage: distantlands [--host HOST] [--port PORT] " +
       "[--public-base-url URL] [--database-path PATH] " +
-      "[--mode development|trusted-alpha]. " +
+      "[--mode development|trusted-alpha] [--art-path DIR]. " +
       "Internet exposure requires HTTPS at a trusted reverse proxy."
 
   def parse(
@@ -68,13 +72,18 @@ object ServerConfig:
     val mode = parseMode(value(
       "--mode", "DLQ_MODE", DefaultMode, cli, environment
     ))
+    val artPath = optionalValue("--art-path", "DLQ_ART_PATH", cli,
+      environment) match
+      case None => Right(None)
+      case Some(raw) => parsePath("--art-path", raw).map(Some(_))
 
     val validationErrors = Vector(
       "--host" -> host.left.toOption,
       "--port" -> port.left.toOption,
       "--public-base-url" -> publicBaseUrl.left.toOption,
       "--database-path" -> databasePath.left.toOption,
-      "--mode" -> mode.left.toOption
+      "--mode" -> mode.left.toOption,
+      "--art-path" -> artPath.left.toOption
     ).collect { case (option, Some(error)) => option -> error }
 
     val trustBoundaryErrors = (host, publicBaseUrl, mode) match
@@ -96,7 +105,8 @@ object ServerConfig:
         publicBaseUrl.toOption.get,
         databasePath.toOption.get,
         mode.toOption.get,
-        version
+        version,
+        artPath.toOption.get
       ))
 
   private def parseArguments(
