@@ -28,43 +28,25 @@ wrapper), compiler flags including `-Werror`.
 [asset proportions](../../../catalog/asset-proportions.md). Slice 1's plan:
 [plumbing and cards](2026-11-26-game-art-slice1.md).
 
-## Open questions this plan waits on
+## Rulings folded in
 
-The plan is written to one answer for each. No production code is written
-until the orchestrator rules, and slice 1's review fixes land first.
+The orchestrator ruled on the plan's open questions (R13 to R19 in the
+implementation rulings). The plan's Q numbers map to them: Q1 is R13, Q2
+R14, Q3 R15, Q4 R16, Q5 R17, Q6 R18, Q7 R19.
 
-- **Q1. The strips.** The design lists "the legacy and foundation strips,
-  and the oath goal" among the card faces. On the table none of them is a
-  card box: a foundation is a one-line row, the Oath goal a text button, a
-  board's legacy a pill. Their card boxes exist only in the inspection
-  overlay (a legacy through `CardFace`, already drawn with art; a
-  foundation and the Oath goal as a `card-plate`). The plan puts the image
-  on the overlay's plate and leaves the rows, the button and the pills as
-  words (Task 5). The Public Ambitions row draws whole cards and has art
-  since slice 1.
-- **Q2. A facedown legacy's pill** (`legacy-chip-back`, the letter L). It
-  is a pill, not a card box, and sits on a player board, which stays
-  abstract. The plan leaves it drawn.
-- **Q3. A site's power buttons over the image.** They keep their place in
-  the face's lower part, invisible but focusable, with their hover notes
-  (ruling R9 of the real proportions design left the placement to L3). The
-  plan leaves them where they are and checks in the browser that they sit
-  over the card's printed powers (Task 2, Task 7).
-- **Q4. Decks and discard piles.** A pile on the mat shows the back of its
-  top card's kind when the viewer may know the kind; the count stays over
-  it. The world deck and the discards lie on their sides, so their back is
-  turned a quarter, the same way as a Vision (R8). A pile drawn off the
-  mat, at its own size, stays drawn. An empty pile and a pile whose top
-  kind is hidden stay drawn (Task 4).
-- **Q5. Chronicle Details.** Its Atlas rows are drawn by the same
-  `siteRow`, inside the table. The plan lets them show site art; the
-  Chronicle pages, which the design excludes, draw no site (Task 2).
-- **Q6. The three rectangles placed by eye.** If one covers printed art on
-  the mat, the plan moves it: new numbers in `MatLayout` and in
-  `asset-proportions.md`, measured on the mat image, for art on and off
-  alike. The move is reported with before and after numbers (Task 6).
-- **Q7. The site back and the Oath goal back.** No surface draws one, so
-  the catalog does not list them (R6).
+- **R13.** Foundations, the Oath goal and a board's legacies show their
+  image in the inspection overlay; the rows, the button and the pills stay
+  words (Task 5).
+- **R14.** A facedown legacy's pill stays drawn.
+- **R15.** A site's power buttons stay in place; the browser check reports
+  where each lands on the art (Task 2, Task 7).
+- **R16.** Piles on the mat show their top card's back, sideways ones
+  turned; with art off a pile looks exactly as today; the count stays
+  readable (Task 4).
+- **R17.** Chronicle Details' Atlas rows show site art (Task 2).
+- **R18.** A by-eye rectangle over printed art moves, and is reported
+  (Task 6).
+- **R19.** No site back or Oath goal back in the catalog.
 
 ## Global Constraints
 

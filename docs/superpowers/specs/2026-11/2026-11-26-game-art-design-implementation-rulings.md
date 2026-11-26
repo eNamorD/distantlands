@@ -140,3 +140,74 @@ Decision: accepted. The layout-invariance tests and the browser check
 cover behaviour.
 Reason: the test browser has no CSS engine.
 Slice/files: slice 1 review; `StylesheetArtSuite.scala`.
+
+## Slice 2
+
+**R13. Foundations, the Oath goal and a board's legacies.**
+Question: the design lists "the legacy and foundation strips, and the oath
+goal" among the card faces, but on the table a foundation is a one-line
+row, the Oath goal a text button and a board's legacy a pill; none is a
+card box.
+Decision: each gets its image in the inspection overlay, on the plate or
+the card face drawn there. The rows, the button and the pills stay words.
+The design's surface list is amended to say so.
+Reason: the design forbids a layout that changes with the option, and
+redrawing the strips as card boxes is the roadmap's separate Table UI
+rework.
+Slice/files: slice 2; `CardInspectionOverlay.scala`, `SetupCardStrip.scala`,
+`FoundationStrip.scala`, `WorldBoardRenderer.scala`, the design's "The
+surfaces".
+
+**R14. A facedown legacy's pill.**
+Question: whether the L pill on a player board shows the legacy back.
+Decision: it stays drawn.
+Reason: it is a pill on an abstract board, not a card box.
+Slice/files: slice 2; `LegacyStrip.scala` (unchanged).
+
+**R15. A site's power buttons over the image.**
+Question: where the buttons go once their printed labels are hidden.
+Decision: they stay in place. The browser check reports where each lands
+on the site's art. A ruling is needed only if a button covers the card's
+name band or cannot be found by hover.
+Reason: the buttons are the map's only opener for a site power, and their
+place over the art is best judged on the art.
+Slice/files: slice 2; `ServerUiSupport.scala` (unchanged).
+
+**R16. Piles on the mat.**
+Question: how a deck or a discard pile shows art.
+Decision: a pile on the mat shows the back of its top card's kind when
+the viewer may know the kind and the pile holds a card. The world deck and
+the discards lie on their sides, so their back is turned a quarter, as a
+Vision is (R8). The count stays over the back, readable to the contrast
+`DESIGN.md` asks. With art off a pile looks exactly as it does today: the
+class that marks a sideways pile may be in the DOM but changes nothing
+drawn. An empty pile, a pile whose top kind is hidden and a pile drawn off
+the mat stay drawn.
+Reason: the mat prints each pile's place, and the back is what lies there.
+Slice/files: slice 2; `ServerUiSupport.scala`, `WorldBoardRenderer.scala`,
+`frontend/styles.css`.
+
+**R17. Chronicle Details' Atlas rows.**
+Question: the Atlas rows are drawn by the world's site renderer, inside
+the table.
+Decision: they show site art.
+Reason: it is the same renderer; suppressing art there needs a special
+case with no benefit.
+Slice/files: slice 2; `WorldBoardRenderer.siteRow`.
+
+**R18. The rectangles placed by eye.**
+Question: what to do when the tracker's line, the Visions Drawn label or a
+favor bank box covers printed art on the mat.
+Decision: move it and report. The rectangle moves for art on and off
+alike, with the numbers before and after in `MatLayout`,
+`asset-proportions.md` and the report, and the `MatLayout` suite still
+passing. A bank's count that sits outside or badly off the mat's circle is
+adjusted the same way.
+Reason: the roadmap item asks for exactly this check.
+Slice/files: slice 2; `MatLayout.scala`, `docs/catalog/asset-proportions.md`.
+
+**R19. The site back and the Oath goal back.**
+Question: whether the catalog lists them.
+Decision: no. No surface draws either.
+Reason: R6.
+Slice/files: slice 2; `ArtCatalog.scala`.

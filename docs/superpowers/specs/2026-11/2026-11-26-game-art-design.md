@@ -163,8 +163,11 @@ Every surface swaps art through one helper, `ArtLayer.attach(box, key)`.
 
 ## The surfaces
 
-- **Card faces:** `CardFace`, `BannerFace`, the legacy and foundation
-  strips, and the oath goal. A face-up card gets its face; a card the
+- **Card faces:** `CardFace` and `BannerFace` on the table. A foundation,
+  the Oath goal and a board's legacy are words on the table (a row, a
+  button, a pill) and keep that form; each shows its image in the
+  inspection overlay
+  ([implementation ruling R13](2026-11-26-game-art-design-implementation-rulings.md)). A face-up card gets its face; a card the
   viewer cannot identify gets its kind's back. A Vision in a denizen box
   shows its landscape image turned a quarter, as `card-face-vision`
   already turns the drawn face. The inspection overlay shows the image
