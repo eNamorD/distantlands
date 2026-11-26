@@ -94,6 +94,8 @@
   --player-black: #8f9db0;
   --player-blue: #8ecbff;
   --selection: #8ecbff;
+  /* The round marker, the game's silver cylinder on the round wheel. */
+  --round-marker: #cfcac0;
 }
 /* Selected text is brass on the table's base, not the browser's blue. */
 ::selection { background: var(--brass); color: var(--base); }
@@ -426,7 +428,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .round-current { fill: var(--brass); stroke: var(--cream-bright); stroke-width: 3; }
 .round-tracker text { fill: var(--cream-bright); font-weight: 700; }
 /* Qualified by the tracker so it outranks the tracker's text rule below. */
-.round-tracker .limiter-marker { fill: #ff8c7f; }
+.round-tracker .limiter-marker { fill: #ff8c7f; fill-opacity: 0.45;
+  stroke: #ff8c7f; stroke-width: 2; }
+.round-tracker .limiter-diamond { fill: #ff8c7f; }
+/* The game's silver round marker, standing on the current round. */
+.round-marker { fill: var(--round-marker); stroke: var(--line-mid);
+  stroke-width: 2; }
 /* The end die the mat prints on the wheel in an Empire game, in the round
    die's own purple with brass pips. It stands down while no roll would be
    made. */
@@ -688,7 +695,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* The wheel's numbers are drawn in its own units, large enough to read
    while the zoomed-out map still has room for them. */
 .mat-board .round-tracker text { font-size: 22px; }
-.mat-board .round-tracker .limiter-marker { font-size: 30px; }
+.mat-board .round-tracker .limiter-diamond { font-size: 30px; }
 /* The tracker's line repeats what the board shows: the Visions Drawn marker
    and the First Player badge. Zoomed out, only the Usurper's lock is left
    in words. */
@@ -701,7 +708,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    numbers and end dice are in the tracker's name, and the bank's count says favor in
    its own words. */
 .map-tiny .mat-board :is(.site-footer,
-  .round-tracker text:not(.limiter-marker), .end-die,
+  .round-tracker text:not(.limiter-diamond), .end-die,
   .favor-bank > .token-favor) {
   display: none; }
 /* What carries a name or state steps out of sight without leaving the
@@ -2401,7 +2408,12 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    festival marker in the overlay: each hides what it draws itself when
    its picture has loaded. */
 .vision-marker.art-ready::after { opacity: 0; }
-.round-tracker .limiter-marker.art-ready { fill: transparent; }
+.round-tracker .limiter-marker.art-ready,
+.round-tracker .limiter-marker.art-ready + .limiter-diamond {
+  fill: transparent; stroke: transparent; }
+/* Over the mat the current round keeps its border and its marker; its
+   fill would hide the wedge the mat prints (R40). */
+.mat-board.art-ready .round-current { fill: none; }
 .festival-plate-printed.art-ready > :not(.art) { opacity: 0; }
 /* A site's power is a control, not print (R9, R20): over the site's art
    its button shows as a chip, the label on the name band's ground, where

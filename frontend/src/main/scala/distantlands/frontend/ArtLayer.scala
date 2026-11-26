@@ -45,20 +45,22 @@ private[frontend] object ArtLayer:
       glyph.appendChild(image)
     }
 
-  /** Lays `key`'s image in the SVG group `group`, in a square of `size`
-    * centred on (`x`, `y`) in the group's own units, beside the mark the
-    * group draws there. `mark` hides when the image has loaded. */
+  /** Lays `key`'s image in the SVG group `group`, in a box `width` by
+    * `height` centred on (`x`, `y`) in the group's own units and turned
+    * `turn` degrees clockwise about that centre, over the mark the group
+    * draws there. `mark` hides when the image has loaded. */
   def attachMark(group: dom.Element, mark: dom.Element, key: Option[ArtKey],
-      x: Double, y: Double, size: Double): Unit =
+      x: Double, y: Double, width: Int, height: Int, turn: Double): Unit =
     wanted(key).foreach { url =>
       val image = svgImage(url, mark)
-      image.setAttribute("x", (x - size / 2).toString)
-      image.setAttribute("y", (y - size / 2).toString)
+      image.setAttribute("x", (x - width / 2.0).toString)
+      image.setAttribute("y", (y - height / 2.0).toString)
+      image.setAttribute("transform", f"rotate($turn%.2f $x%.2f $y%.2f)")
       // As an inline style, in the group's units: the stylesheet gives
       // every art image the whole of its box, and it outranks an SVG
       // size attribute.
       image.setAttribute("style",
-        s"width: ${size.toInt}px; height: ${size.toInt}px;")
+        s"width: ${width}px; height: ${height}px;")
       group.appendChild(image)
     }
 

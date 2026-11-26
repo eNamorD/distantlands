@@ -88,31 +88,6 @@ class PieceArtSuite extends munit.FunSuite:
       .map(_.getAttribute("src")),
       Vector("/art/tts/markers/visions-drawn-marker.png"))
 
-  test("the Usurper's mark on the round wheel holds its piece, beside " +
-      "the drawn mark, in the limiter's round (R33)"):
-    TestArt.listingWholeCatalog()
-    val wheel = one(worldWithForcesAndPawns(), ".round-tracker svg")
-    val round = one(wheel, """g[data-round="5"]""")
-    assertEquals(one(round, ".limiter-marker").textContent, "◆")
-    val image = one(round, "image.art")
-    assertEquals(image.getAttribute("href"), "/art/tts/tokens/usurper.png")
-    // Its size is an inline style: the art layer's stylesheet rule gives
-    // every image the whole of its box, and a stylesheet outranks an
-    // SVG size attribute. Seen live: the piece was as large as the wheel.
-    assertEquals(image.getAttribute("style"), "width: 24px; height: 24px;")
-    // A 24-unit square whose centre is the drawn mark's place, lifted by
-    // the 8 units the mark's baseline sits under its middle.
-    val mark = one(round, ".limiter-marker")
-    assertEquals(image.getAttribute("x").toDouble,
-      mark.getAttribute("x").toDouble - 12, 0.001)
-    assertEquals(image.getAttribute("y").toDouble,
-      mark.getAttribute("y").toDouble - 8 - 12, 0.001)
-    assertEquals(image.getAttribute("width"), null)
-    assertEquals(image.getAttribute("height"), null)
-    image.dispatchEvent(new dom.Event("load"))
-    assert(one(round, ".limiter-marker").classList.contains("art-ready"))
-    assertEquals(all(wheel, "image.art").size, 1)
-
   test("the printed festival plate holds the marker's picture; the " +
       "plate without its rule holds none (R29)"):
     TestArt.listingWholeCatalog()

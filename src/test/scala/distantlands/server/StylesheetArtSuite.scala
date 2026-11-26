@@ -233,8 +233,10 @@ class StylesheetArtSuite extends munit.FunSuite:
   test("the Visions Drawn marker, the Usurper's mark and the festival " +
       "plate hide what they draw when their picture is ready"):
     assert(rule(".vision-marker.art-ready::after").contains("opacity: 0"))
-    assert(rule(".round-tracker .limiter-marker.art-ready")
-      .contains("fill: transparent"))
+    val limiter = rule(".round-tracker .limiter-marker.art-ready,\n" +
+      ".round-tracker .limiter-marker.art-ready + .limiter-diamond")
+    assert(limiter.contains("fill: transparent"))
+    assert(limiter.contains("stroke: transparent"))
     assert(rule(".festival-plate-printed.art-ready > :not(.art)")
       .contains("opacity: 0"))
 
@@ -308,7 +310,7 @@ class StylesheetArtSuite extends munit.FunSuite:
     val source = Files.readString(Path.of("frontend", "src", "main", "scala",
       "distantlands", "frontend", "ArtLayer.scala"))
     assert(source.contains(
-      """s"width: ${size.toInt}px; height: ${size.toInt}px;""""))
+      """s"width: ${width}px; height: ${height}px;""""))
 
   test("an empty pile's count keeps its ground on a ready mat"):
     val count = rule(
@@ -317,6 +319,18 @@ class StylesheetArtSuite extends munit.FunSuite:
       "box-shadow: 0 0 0 0.3em var(--base)")
       .foreach(part => assert(count.contains(part), part))
     assert(!count.contains("padding"))
+
+  /** The round marker (R40): one new colour, named once. Over a ready
+    * mat the current wedge keeps its border and drops its fill, which
+    * would hide the wedge the mat prints. */
+  test("the round marker is silver, and over the mat the current wedge " +
+      "is a border alone"):
+    assertEquals(css.split("--round-marker:", -1).length - 1, 1)
+    assert(rule(".round-marker").contains("fill: var(--round-marker)"))
+    val current = rule(".mat-board.art-ready .round-current")
+    assert(current.contains("fill: none"))
+    assert(!current.contains("stroke"))
+    assert(rule(".round-current").contains("stroke: var(--cream-bright)"))
 
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
