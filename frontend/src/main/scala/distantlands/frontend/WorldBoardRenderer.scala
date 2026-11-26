@@ -106,7 +106,7 @@ private[frontend] object WorldBoardRenderer:
           HoverTip.set(pill, title)
           pill.onclick = _ => CardInspection.openText(title,
             presented.fold(Vector.empty[String])(_.lines), pill,
-            Some("oathkeeper-title"))
+            Some("oathkeeper-title"), ArtCatalog.title(oath.side))
           slots.appendChild(pill)
         }
       // The spot is drawn empty only while the decision lights it: the strip
@@ -331,6 +331,9 @@ private[frontend] object WorldBoardRenderer:
     val dot = text("span", s"pawn-dot $colour", "●")
     dot.setAttribute("aria-hidden", "true")
     marker.appendChild(dot)
+    // The pawn's picture lies over its dot, in the dot's own box.
+    ArtLayer.attach(dot, value.players.find(_.playerId == playerId)
+      .flatMap(player => ArtCatalog.pawn(player.color.key)))
     // The long form: the space and the name, as the pawn reads at rest.
     val long = element("span", "pawn-long")
     long.appendChild(dom.document.createTextNode(" "))
@@ -400,8 +403,10 @@ private[frontend] object WorldBoardRenderer:
     track.appendChild(place(text("span", "visions-drawn-label printed",
       "Visions Drawn"), MatLayout.visionsLabel))
     val current = math.max(0, math.min(count, MatLayout.visionCells.size - 1))
-    track.appendChild(place(element("span", "vision-marker"),
-      MatLayout.visionCells(current)))
+    val marker = place(element("span", "vision-marker"),
+      MatLayout.visionCells(current))
+    ArtLayer.attach(marker, Some(ArtCatalog.visionsDrawnMarker))
+    track.appendChild(marker)
     track
 
   /** What the physical table keeps beside the mat. */
@@ -566,6 +571,9 @@ private[frontend] object WorldBoardRenderer:
         marker.textContent = "◆"
         lock.foreach(words => HoverTip.set(marker, words))
         group.appendChild(marker)
+        // The Usurper's piece, where the mark is drawn (R33).
+        ArtLayer.attachMark(group, marker, Some(ArtCatalog.usurperMarker),
+          segment.markerX, segment.markerY - 8, 24)
       svg.appendChild(group)
     }
     // Over every segment, so the current round's wedge never hides one.

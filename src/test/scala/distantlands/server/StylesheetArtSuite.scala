@@ -211,6 +211,23 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(rule(".restriction-mark.art-ready > " +
       ":not(.art, .restriction-mark-chain)").contains("opacity: 0"))
 
+  test("a pawn's dot gives up its ink to its picture and keeps its room"):
+    assert(rule(".pawn-dot:has(> .art)").contains("position: relative"))
+    assert(rule(".pawn-dot.art-ready").contains("color: transparent"))
+
+  test("the black pawn and the black warband get a light edge (R27)"):
+    val edge = rule(""".token-warband > .art[href$="warband-black.png"],""" +
+      "\n" + """.pawn-dot > .art[src$="pawn-black.png"]""")
+    assert(edge.contains("filter: drop-shadow(0 0 1px var(--cream))"))
+
+  test("the Visions Drawn marker, the Usurper's mark and the festival " +
+      "plate hide what they draw when their picture is ready"):
+    assert(rule(".vision-marker.art-ready::after").contains("opacity: 0"))
+    assert(rule(".round-tracker .limiter-marker.art-ready")
+      .contains("fill: transparent"))
+    assert(rule(".festival-plate-printed.art-ready > :not(.art)")
+      .contains("opacity: 0"))
+
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
   private val rendererSources: String =

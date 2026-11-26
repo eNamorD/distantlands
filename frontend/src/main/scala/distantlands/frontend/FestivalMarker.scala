@@ -86,7 +86,11 @@ private[frontend] object FestivalMarker:
       .setProperty("aspect-ratio", f"$w%.2f / $h%.2f")
     node.appendChild(shape(w, h))
     node.appendChild(text("span", "festival-plate-title", Title))
-    if withRule then node.appendChild(text("p", "festival-plate-rule", Rule))
+    if withRule then
+      node.appendChild(text("p", "festival-plate-rule", Rule))
+      // The whole marker, as the overlay shows it (R29).
+      ArtLayer.attach(node,
+        Some(distantlands.protocol.art.ArtCatalog.festivalMarker))
     node
 
   /** The marker lying over a site's cards, in the band `rect`: the plate

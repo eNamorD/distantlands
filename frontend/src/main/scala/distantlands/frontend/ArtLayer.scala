@@ -38,16 +38,36 @@ private[frontend] object ArtLayer:
     * fails. */
   def attachGlyph(glyph: dom.Element, key: Option[ArtKey]): Unit =
     wanted(key).foreach { url =>
-      val image = ServerUiSupport.svgElement("image")
-      image.setAttribute("class", "art")
+      val image = svgImage(url, glyph)
       image.setAttribute("width", "100%")
       image.setAttribute("height", "100%")
-      image.setAttribute("preserveAspectRatio", "xMidYMid meet")
-      image.setAttribute("aria-hidden", "true")
-      watch(image, url, glyph)
-      image.setAttribute("href", url)
       glyph.appendChild(image)
     }
+
+  /** Lays `key`'s image in the SVG group `group`, in a square of `size`
+    * centred on (`x`, `y`) in the group's own units, beside the mark the
+    * group draws there. `mark` hides when the image has loaded. */
+  def attachMark(group: dom.Element, mark: dom.Element, key: Option[ArtKey],
+      x: Double, y: Double, size: Double): Unit =
+    wanted(key).foreach { url =>
+      val image = svgImage(url, mark)
+      image.setAttribute("x", (x - size / 2).toString)
+      image.setAttribute("y", (y - size / 2).toString)
+      image.setAttribute("width", size.toString)
+      image.setAttribute("height", size.toString)
+      group.appendChild(image)
+    }
+
+  /** An SVG image of `url`, fitted to the room it is given, that marks
+    * `marked` ready when it loads. */
+  private def svgImage(url: String, marked: dom.Element): dom.Element =
+    val image = ServerUiSupport.svgElement("image")
+    image.setAttribute("class", "art")
+    image.setAttribute("preserveAspectRatio", "xMidYMid meet")
+    image.setAttribute("aria-hidden", "true")
+    watch(image, url, marked)
+    image.setAttribute("href", url)
+    image
 
   /** The URL to ask for: `GameArt` has one for `key`, and it has not
     * failed on this page. */

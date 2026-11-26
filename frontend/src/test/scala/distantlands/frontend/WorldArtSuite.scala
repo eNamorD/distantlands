@@ -183,8 +183,9 @@ class WorldArtSuite extends munit.FunSuite:
     val drawn = boardWithTheWorld()
     TestArt.listingWholeCatalog()
     val withArt = boardWithTheWorld()
-    // The mat, one site, one denizen, two banners and four piles.
-    assertEquals(all(withArt, "img.art").size, 9)
+    // The mat, one site, one denizen, two banners, four piles, one pawn
+    // and the Visions Drawn marker.
+    assertEquals(all(withArt, "img.art").size, 11)
     assertEquals(withoutArt(withArt), drawn.outerHTML)
 
   test("with art off the world holds no image"):

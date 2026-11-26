@@ -2388,6 +2388,20 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .token-glyph.art-ready > use { opacity: 0; }
 .restriction-mark.art-ready > :not(.art, .restriction-mark-chain) {
   opacity: 0; }
+/* A pawn's dot holds the pawn's picture, fitted to the dot's own box: the
+   character keeps its room and gives up its ink. */
+.pawn-dot:has(> .art) { position: relative; }
+.pawn-dot.art-ready { color: transparent; }
+/* The black pieces would vanish on the dark table: a light edge (R27). */
+.token-warband > .art[href$="warband-black.png"],
+.pawn-dot > .art[src$="pawn-black.png"] {
+  filter: drop-shadow(0 0 1px var(--cream)); }
+/* The Visions Drawn marker, the Usurper's mark on the wheel and the whole
+   festival marker in the overlay: each hides what it draws itself when
+   its picture has loaded. */
+.vision-marker.art-ready::after { opacity: 0; }
+.round-tracker .limiter-marker.art-ready { fill: transparent; }
+.festival-plate-printed.art-ready > :not(.art) { opacity: 0; }
 
 
 /* Document level, above .game-pane -- which is what lets that pane keep
