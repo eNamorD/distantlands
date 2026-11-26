@@ -46,7 +46,6 @@ private[frontend] object MatLayout:
   /** A card stands as tall as a site frame. */
   val CardH = 509.0
   val CardW: Double = CardH * 381 / 596
-  val SiteW: Double = CardH * 770 / 596
   val SlotsPerSite = 3
 
 

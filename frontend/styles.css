@@ -475,9 +475,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* A site is its card and the three slots to its right: one row, one option
    target. The row itself draws nothing but a decision's ring. */
 .mat-board .site { border: 1px solid transparent; border-radius: 9px; }
-/* The site card, at the real card's proportions, in the frame the mat
-   prints for it. */
-.site-face { aspect-ratio: var(--ratio-site); border: 1px solid var(--line);
+/* The site card: its box is the frame the mat prints for it and the
+   frame's line, placed by MatLayout, and the card's image covers it. */
+.site-face { border: 1px solid var(--line);
   border-radius: 9px; background: var(--site); }
 /* A site's words are laid over its face. What the card prints: the name in
    a band at its foot, the powers and the requirement over the band, the
@@ -1272,7 +1272,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    a drawn card and its licensed image fill the same box. */
 :root {
   --ratio-denizen: 381 / 596;
-  --ratio-site: 770 / 596;
   --ratio-relic: 1 / 1;
   --ratio-banner: 1 / 1;
   --ratio-legacy: 596 / 381;

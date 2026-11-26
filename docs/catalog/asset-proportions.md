@@ -16,7 +16,7 @@ Sizes are the pixel sizes of the New Foundations card images in the
 |---|---|---|---|
 | Denizen, edifice, their backs | 381×596 | 1 : 1.564 | `--ratio-denizen` |
 | Relic | 381×381 | 1 : 1 | `--ratio-relic` |
-| Site | 770×596 | 1.292 : 1 | `--ratio-site` |
+| Site | 770×596 | 1.292 : 1 | none: `MatLayout.siteCard` places the box, and the image covers it |
 | Legacy, Vision | 596×381 | 1.564 : 1 | `--ratio-legacy` |
 | Banner | 1181×1181 | 1 : 1 | `--ratio-banner` |
 | Foundation card | 469×803 | 1 : 1.712 | `--ratio-foundation` |
