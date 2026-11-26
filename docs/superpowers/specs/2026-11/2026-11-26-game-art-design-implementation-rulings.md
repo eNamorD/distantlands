@@ -7,7 +7,8 @@ question, the decision and the reason. The design's own decisions are not
 repeated here.
 
 Plans: [slice 1](../../plans/2026-11/2026-11-26-game-art-slice1.md),
-[slice 2](../../plans/2026-11/2026-11-26-game-art-slice2.md).
+[slice 2](../../plans/2026-11/2026-11-26-game-art-slice2.md),
+[slice 3](../../plans/2026-11/2026-11-26-game-art-slice3.md).
 
 ## Slice 1
 
@@ -211,3 +212,27 @@ Question: whether the catalog lists them.
 Decision: no. No surface draws either.
 Reason: R6.
 Slice/files: slice 2; `ArtCatalog.scala`.
+
+## Slice 2 browser check
+
+**R20. A site's power buttons over its art.**
+Question: with their printed labels hidden, the buttons were invisible
+controls with no cue.
+Decision: on a ready site each site-power button shows as a small chip:
+its label visible on the name band's ground, in the same position and box
+as now, with no layout change; the invariance test covers it. The label
+inside a site-power button therefore stops following `--printed-opacity`
+on a ready site, and the design's site card bullet is amended. The chip's
+contrast is measured against `DESIGN.md`, and so are the `#1a1610d9`
+grounds slice 2 added.
+Reason: an invisible control with no cue fails `DESIGN.md` and the owner's
+rule that players must see what they can act on; the button is a control,
+not print (R9 of the real proportions design).
+Slice/files: slice 3; `frontend/styles.css`, the design's "The surfaces".
+
+**R21. An empty pile on a ready mat.**
+Question: an empty pile drew its empty box over the slot the mat prints.
+Decision: an empty pile on a ready mat drops its drawn fill so the mat's
+printed slot shows. With the mat not ready it is unchanged.
+Reason: the mat prints the slot; a drawn box over it is duplicate print.
+Slice/files: slice 3; `frontend/styles.css`.
