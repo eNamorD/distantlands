@@ -5,17 +5,17 @@ import distantlands.model._
 
 object CrackingGroundCard extends Denizen(DenizenId("71"), "Cracking Ground", Suit.Arcane):
   val power = PrintedPower(PowerId("denizen.cracking-ground"),
-    persistent = false, cost = Cost.free,
+    persistent = false, cost = Cost(secretBurnt = 1),
     modifier = Some(ModifierMark.EitherSidePlan),
     text = "± [attack-die] per site targeted.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-/** Cracking Ground (card 71), a battle plan for either side: "± [attack-die]
-  * per site targeted."
+/** Cracking Ground (card 71), a battle plan for either side:
+  * "[secret-burnt] ± [attack-die] per site targeted."
   *
-  * It is free. An attacker adds one attack die per site the Conquest targets;
+  * It costs one burnt secret. An attacker adds one attack die per site the Conquest targets;
   * a defender removes as many. A Raid targets no site, so it is not offered in
-  * one. A bandit defender applies it at a site it rules.
+  * one. A bandit defender pays nothing, so it never applies it.
   */
 case object CrackingGround extends DenizenPlan(CrackingGroundCard,
     CrackingGroundCard.power):
@@ -26,5 +26,6 @@ case object CrackingGround extends DenizenPlan(CrackingGroundCard,
     val dice = context.setup.targetSites.size
     if dice == 0 then None
     else context.denizen(cardId).map(source => CampaignPlanOffer(source,
-      PlanDice.label("Cracking Ground", context.side, dice), Vector.empty,
+      PlanDice.label("Cracking Ground", context.side, dice),
+      Vector(CampaignPlanCost.SecretBurnt(1)),
       Vector(PlanDice.effect(context.side, dice))))

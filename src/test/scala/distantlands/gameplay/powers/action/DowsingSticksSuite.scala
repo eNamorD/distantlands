@@ -16,14 +16,15 @@ class DowsingSticksSuite extends munit.FunSuite:
   private val source = DecisionOptionRef.Relic(sticks)
   private val whistle = WhistleCard.id
 
-  /** p1's Act holding Dowsing Sticks with `secrets` faceup secrets, and
-    * Whistle on top of the relic deck. */
-  private def stagedTable(secrets: Int = 3): Table =
+  /** p1's Act holding Dowsing Sticks with `secrets` faceup secrets and
+    * `favor` favor, and Whistle on top of the relic deck. */
+  private def stagedTable(secrets: Int = 1, favor: Int = 2): Table =
     Table.start.turn(actor, Phase.Act).relic(actor, sticks)
-      .secrets(actor, secrets).relicDeckTop(whistle)
-  private def staged(secrets: Int = 3): ReadyGame = stagedTable(secrets).ready
+      .secrets(actor, secrets).favor(actor, favor).relicDeckTop(whistle)
+  private def staged(secrets: Int = 1, favor: Int = 2): ReadyGame =
+    stagedTable(secrets, favor).ready
 
-  test("it places 1 secret, burns 2 and takes the top relic facedown"):
+  test("it places 1 secret, burns 2 favor and takes the top relic facedown"):
     val ready0 = staged()
     val rules0 = rules()
     val done = accepted(use(rules0, ready0, DowsingSticks.id, source))
@@ -34,6 +35,7 @@ class DowsingSticksSuite extends munit.FunSuite:
     assert(!end.game.current.commonCards.relicDeck.contains(whistle))
     assertEquals(Look(end).tokensOn(sticks), Tokens(0, 1))
     assertEquals(Look(end).player(actor).board.faceUpSecrets, 0)
+    assertEquals(Look(end).favor(actor), 0)
     parked.assertResumed(done.state, Phase.Act, actor)
     assertEquals(replayed(rules0, ready0, done.events), end)
     assertWireRoundTrips(done.events)
@@ -46,11 +48,15 @@ class DowsingSticksSuite extends munit.FunSuite:
     assertEquals(Look(end).tokensOn(sticks), Tokens(0, 1))
     assertEquals(Look(end).player(actor).board.faceUpSecrets, 0)
 
-  test("it is unusable with fewer than 3 faceup secrets"):
-    assert(!usableIds(staged(secrets = 2)).contains(DowsingSticks.id))
+  test("it is unusable with no faceup secret, or with fewer than 2 favor"):
+    assert(!usableIds(staged(secrets = 0)).contains(DowsingSticks.id))
     assertEquals(
-      use(rules(), staged(secrets = 2), DowsingSticks.id, source).left.toOption,
-      Some(OathViolation.InsufficientSecrets(3, 2)))
+      use(rules(), staged(secrets = 0), DowsingSticks.id, source).left.toOption,
+      Some(OathViolation.InsufficientSecrets(1, 0)))
+    assert(!usableIds(staged(favor = 1)).contains(DowsingSticks.id))
+    assertEquals(
+      use(rules(), staged(favor = 1), DowsingSticks.id, source).left.toOption,
+      Some(OathViolation.InsufficientFavor(2, 1)))
 
   test("it writes the relic it drew"):
     val done = accepted(use(rules(), staged(), DowsingSticks.id, source))

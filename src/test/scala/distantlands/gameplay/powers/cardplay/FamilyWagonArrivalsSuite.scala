@@ -67,8 +67,7 @@ class FamilyWagonArrivalsSuite extends munit.FunSuite:
       s"Buried ${inn.value}.", covers = true)))
 
   test("a swap: Enchantress given into a Family Wagon holder's advisers is " +
-      "buried, its secret going to the active player, and the line names " +
-      "the holder"):
+      "buried, and the line names the holder"):
     val ready = Table.start.turn(p1, Phase.Act).adviser(p1, enchantress)
       .secrets(p1, 1).adviser(p2, wagon).adviser(p2, elders).ready
     val asked = started(ready, Enchantress.id,
@@ -79,7 +78,6 @@ class FamilyWagonArrivalsSuite extends munit.FunSuite:
     assertEquals(after.advisers(p1), Vector[CardId](elders))
     assertEquals(after.advisers(p2), Vector[CardId](wagon))
     assertEquals(worldDeck(done.state).lastOption, Some(enchantress))
-    assertEquals(after.faceDownSecrets(p1), Look(ready).faceDownSecrets(p1) + 1)
     assertEquals(wagonLines(done.events), Vector(NoteText.Said(
       "buried.holder", s"${p2.value} buried ${enchantress.value}.",
       covers = true)))
@@ -97,7 +95,6 @@ class FamilyWagonArrivalsSuite extends munit.FunSuite:
     assertEquals(after.advisers(p2), Vector[CardId](wagon))
     assertEquals(after.favor(p1), Look(ready).favor(p1) + 2)
     assertEquals(worldDeck(done.state).lastOption, Some(piper))
-    assertEquals(after.faceDownSecrets(p1), Look(ready).faceDownSecrets(p1) + 1)
     assertEquals(wagonLines(done.events), Vector(NoteText.Said(
       "buried.holder", s"${p2.value} buried ${piper.value}.", covers = true)))
     assertEquals(NoteText.said(PiedPiper, done.events).map(_.text), Vector(

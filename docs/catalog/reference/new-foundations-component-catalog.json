@@ -3759,7 +3759,7 @@
         {
           "id": "relic.dowsing-sticks",
           "persistent": false,
-          "rulesText": "[secret] [secret-burnt] [secret-burnt] **ACTION:** Draw a relic from the relic deck and take it. _(You may keep it facedown.)_"
+          "rulesText": "[secret] [favor-burnt] [favor-burnt] **ACTION:** Draw a relic from the relic deck and take it. _(You may keep it facedown.)_"
         }
       ]
     },
@@ -3932,7 +3932,7 @@
         {
           "id": "relic.crystal-vial",
           "persistent": false,
-          "rulesText": "[secret] [secret-burnt] **ACTION:** Bury an adviser of yours or a denizen at your site. _(Bury ignores the locked restriction.)_"
+          "rulesText": "[secret] [favor-burnt] **ACTION:** Bury an adviser of yours or a denizen at your site. _(Bury ignores the locked restriction.)_"
         }
       ]
     },
@@ -4063,7 +4063,7 @@
         {
           "id": "relic.black-sword",
           "persistent": false,
-          "rulesText": "[secret-burnt] [secret-burnt] +5 [attack-die]"
+          "rulesText": "[favor-burnt] [favor-burnt] +5 [attack-die]"
         }
       ]
     },
@@ -4077,7 +4077,7 @@
         {
           "id": "relic.fearsome-shield",
           "persistent": false,
-          "rulesText": "[secret-burnt] [secret-burnt] +2 [defense-die]"
+          "rulesText": "[favor-burnt] [favor-burnt] +2 [defense-die]"
         }
       ]
     },
@@ -4217,7 +4217,7 @@
         {
           "id": "relic.demon-tail",
           "persistent": false,
-          "rulesText": "[secret-burnt] [secret-burnt] [secret-burnt] **ACTION:** Gain 2 Supply."
+          "rulesText": "[favor-burnt] [favor-burnt] [favor-burnt] **ACTION:** Gain 2 Supply."
         }
       ]
     },
