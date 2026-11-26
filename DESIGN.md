@@ -1065,8 +1065,10 @@ hover note.
   image is slow, missing or failed.
 - **What stays over art.** Tokens, forces, pawns, counts, option rings
   and badges. On a site's art, forces, loose tokens and each pawn
-  stand on opaque Base (a fill and a same-colour 3px shadow, no padding):
-  every player colour measures 6.6 : 1 or better on it, where the black
+  stand on opaque Base, with no padding: forces and tokens take a fill
+  and a same-colour 3px shadow, a pawn the fill alone, and only while no
+  decision offers it, so its option ring stays its own. Every player
+  colour measures 6.6 : 1 or better on it, where the black
   player's colour measured 4.17 : 1 on a translucent ground over white
   art. A pile's count stands on Base too (13.2 : 1). The tracker's line
   takes a Base halo.
