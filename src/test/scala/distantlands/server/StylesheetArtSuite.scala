@@ -174,7 +174,8 @@ class StylesheetArtSuite extends munit.FunSuite:
   /** Found in the slice 2 browser check: a bank's own pill covered the
     * emblem and the circle the mat prints for it. */
   test("over the mat a favor bank drops its own pill"):
-    val bank = rule(".mat-board.art-ready .favor-bank")
+    val bank = rule(
+      """.mat-board.art-ready .favor-bank:not([class*="board-option"])""")
     Vector("border-color: transparent", "background: none")
       .foreach(part => assert(bank.contains(part), part))
 
@@ -184,12 +185,18 @@ class StylesheetArtSuite extends munit.FunSuite:
   test("what lies on a site's card or on the mat in play keeps a ground " +
       "over the art, without moving"):
     val onSite = rule(".site.art-ready :is(.site-forces, " +
-      ".site-forces-short, .site-tokens, .pawn)")
+      ".site-forces-short, .site-tokens)")
     Vector("background: #1a1610d9", "box-shadow: 0 0 0 3px #1a1610d9",
       "border-radius: 3px").foreach(part =>
       assert(onSite.contains(part), part))
     Vector("padding", "margin", "width", "height", "border:").foreach(part =>
       assert(!onSite.contains(part), part))
+    // A pawn can be an option, so the ground is its row's, and the pawn
+    // keeps its own background and shadow for its option states.
+    val pawns = rule(".site.art-ready .site-pawns:has(> .pawn)")
+    assert(pawns.contains("background: #1a1610d9"))
+    Vector("box-shadow", "padding", "margin", "width", "height", "border:")
+      .foreach(part => assert(!pawns.contains(part), part))
     assert(rule(".mat-board.art-ready .track-note")
       .contains("text-shadow: 0 0 3px var(--base), 0 0 3px var(--base)"))
 
@@ -247,4 +254,52 @@ class StylesheetArtSuite extends munit.FunSuite:
         }
     }.map(_.group(1).trim).toVector
     assertEquals(offenders, Vector.empty)
+
+  /** The classes `BoardOptions` can mark as an option (`decorate`,
+    * `control`, `card`): a site's row, a pawn, a favor bank, a pile's
+    * body, a card or banner face, a card slot and a player's summary. A
+    * marked element shows its state with `border-color`, `box-shadow` and
+    * `background` (`.board-option` and its states, one class each), so a
+    * heavier art rule that sets one of them on such an element would wipe
+    * the ring, the hover glow and the selected fill. Add a class here
+    * when a renderer starts marking it. */
+  private val optionTargets = Set("site", "pawn", "favor-bank", "deck-body",
+    "card-face", "banner-face", "card-slot-empty", "player-summary")
+
+  /** The slice 2 review found a pawn offered as a target with no ring
+    * over site art: the ground under live state had been set on the pawn
+    * itself. */
+  test("no art rule paints an element a decision can mark, unless it " +
+      "leaves marked ones alone"):
+    val rules = """([^{}]+)\{([^{}]*)\}""".r
+    val paints = """(?<![-\w])(background|box-shadow|border-color)\s*:""".r
+    val block = artRules.replaceAll("(?s)/\\*.*?\\*/", "")
+    val offenders = rules.findAllMatchIn(block).filter { found =>
+      paints.findFirstIn(found.group(2)).nonEmpty &&
+        found.group(1).split(",(?![^(]*\\))").exists { selector =>
+          val subject = selector.trim.split("""[\s>+~]+(?![^(]*\))""").last
+          // What a `:has()` names is a descendant, not the subject.
+          val own = subject.replaceAll(""":has\([^)]*\)""", "")
+          !subject.contains(""":not([class*="board-option"])""") &&
+            """\.([a-z][a-z0-9-]*)""".r.findAllMatchIn(own)
+              .exists(name => optionTargets(name.group(1)))
+        }
+    }.map(_.group(1).trim).toVector
+    assertEquals(offenders, Vector.empty)
+
+  /** Everything the art layer does to the page stands in one block, so a
+    * reader, and these guards, see all of it. A stray edit once added a
+    * site to three card rules outside it. */
+  test("no rule outside the art block names art-ready, and the box list " +
+      "stands only in the two rules that set the printed opacity"):
+    val from = css.indexOf("/* Licensed art")
+    val to = css.indexOf("/* Document level, above .game-pane", from)
+    val outside = css.substring(0, from) + css.substring(to)
+    assert(!outside.contains("art-ready"))
+    assert(!outside.contains("--printed-opacity"))
+    assertEquals(css.split(java.util.regex.Pattern.quote(s":is($boxes)"), -1)
+      .length - 1, 2)
+    // No shorter list of the same boxes hides in another rule.
+    assertEquals(css.split(java.util.regex.Pattern.quote(
+      ":is(.card-face, .card-hover-summary, .site"), -1).length - 1, 2)
 
