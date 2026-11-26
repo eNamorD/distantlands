@@ -464,7 +464,9 @@ class WorldArtSuite extends munit.FunSuite:
     one(row, ".site-face > img.art").dispatchEvent(new dom.Event("load"))
     assert(row.classList.contains("art-ready"))
     assert(!one(row, ".site-face").classList.contains("art-ready"))
-    assert(!one(row, ".card-face").classList.contains("art-ready"))
+    assert(all(row, ".card-face").nonEmpty)
+    all(row, ".card-face").foreach(card =>
+      assert(!card.classList.contains("art-ready")))
 
   test("a site no card is named for stays drawn"):
     TestArt.listingWholeCatalog()

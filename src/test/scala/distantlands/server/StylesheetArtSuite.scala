@@ -38,12 +38,14 @@ class StylesheetArtSuite extends munit.FunSuite:
       "over the box's fill and under everything else in it"):
     assert(artRules.contains(":has(> .art) { isolation: isolate; }"))
 
+  /** Every box kind that answers for printed content of its own. */
+  private val boxes = ".card-face, .card-hover-summary, .site"
+
   test("printed content is hidden with opacity, by its nearest box"):
     assert(rule(".printed").contains("opacity: var(--printed-opacity, 1)"))
+    assert(artRules.contains(s":is($boxes) { --printed-opacity: 1; }"))
     assert(artRules.contains(
-      ":is(.card-face, .card-hover-summary) { --printed-opacity: 1; }"))
-    assert(artRules.contains(
-      ":is(.card-face, .card-hover-summary).art-ready { --printed-opacity: 0; }"))
+      s":is($boxes).art-ready { --printed-opacity: 0; }"))
 
   test("the art layer hides nothing with display or visibility, and " +
       "moves nothing"):

@@ -1,6 +1,7 @@
 package distantlands.frontend
 
 import distantlands.protocol.{GameIntent => GameCommand}
+import distantlands.protocol.art.ArtCatalog
 import org.scalajs.dom
 import ServerUiSupport._
 
@@ -288,10 +289,13 @@ private[frontend] object WorldBoardRenderer:
     style.setProperty("--face-w", faceBox("width"))
     val siteKeys = Vector(BoardOptionViews.key("site", site.siteId))
     options.decorate(control, siteKeys)
-    // The card itself: drawn until licensed art takes its place.
+    // The card itself: drawn wherever its image is missing.
     val face = place(element("div", "site-face"), faceRect, rowRect)
     face.setAttribute("aria-hidden", "true")
     control.appendChild(face)
+    // The image fills the face; the site's printed words lie in the row,
+    // so the row is the box that turns ready.
+    ArtLayer.attach(face, ArtCatalog.cardFace(site.label), Some(control))
     control.appendChild(siteHeading(site))
     // What reaching this site costs, or why it cannot be reached, comes
     // from the decision that offers it.

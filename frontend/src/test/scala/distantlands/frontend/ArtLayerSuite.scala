@@ -84,3 +84,26 @@ class ArtLayerSuite extends munit.FunSuite:
     one(box, "img.art").dispatchEvent(new dom.Event("error"))
     assert(!box.classList.contains("art-ready"))
     assertEquals(all(box, "img"), Vector.empty)
+
+  test("a load marks the element named ready, not the image's box"):
+    TestArt.listing(alchemist.get.path)
+    val row = dom.document.createElement("article")
+    val face = dom.document.createElement("div")
+    row.appendChild(face)
+    ArtLayer.attach(face, alchemist, Some(row))
+    one(face, "img.art").dispatchEvent(new dom.Event("load"))
+    assert(row.classList.contains("art-ready"))
+    assert(!face.classList.contains("art-ready"))
+
+  test("a remembered load marks the named element at once, and an error " +
+      "takes the mark back from it"):
+    TestArt.listing(alchemist.get.path)
+    GameArt.markLoaded(alchemistUrl)
+    val row = dom.document.createElement("article")
+    val face = dom.document.createElement("div")
+    row.appendChild(face)
+    ArtLayer.attach(face, alchemist, Some(row))
+    assert(row.classList.contains("art-ready"))
+    one(face, "img.art").dispatchEvent(new dom.Event("error"))
+    assert(!row.classList.contains("art-ready"))
+    assertEquals(all(face, "img"), Vector.empty)
