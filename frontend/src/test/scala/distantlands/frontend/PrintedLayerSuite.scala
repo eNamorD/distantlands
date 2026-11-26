@@ -64,7 +64,8 @@ class PrintedLayerSuite extends munit.FunSuite:
   private val live = Vector(".card-tokens", ".card-token-count", ".card-warbands",
       ".card-tracking", ".site-tokens", ".site-token-count", ".pawn",
       ".site-forces", ".site-forces-short", ".pile-count", ".favor-bank-count",
-      ".vision-marker", ".round-current", ".limiter-marker", ".legacy-dormant",
+      ".vision-marker", ".round-current", ".round-marker", ".limiter-marker",
+      ".limiter-diamond", ".legacy-dormant",
       ".card-knowable-pip", ".board-option-badge", ".target-detail-badge",
       ".festival-marker")
 
