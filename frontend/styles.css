@@ -1300,7 +1300,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .card-tokens { position: absolute; right: 0.3em; bottom: var(--band-bottom);
   left: 0.3em; display: flex; align-items: center; justify-content: center;
   gap: 0.15em; height: var(--band-h); font-size: 1em; }
-:is(.card-face, .card-hover-summary, .site) > :is(.card-header, .legacy-goal) {
+:is(.card-face, .card-hover-summary) > :is(.card-header, .legacy-goal) {
   flex-shrink: 1; min-height: 0; overflow: hidden; }
 .card-token-count { margin-right: 0.35em; font-weight: 700; }
 /* The header's right end, in the flow, so a name that wraps is laid out
@@ -1330,7 +1330,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* A face holding tokens keeps the token band's room free: what it prints
    stops above the band, and a name too long for what is left is cut there,
    its whole text being the face's hover note and accessible name. */
-:is(.card-face, .card-hover-summary, .site):has(> .card-tokens) {
+:is(.card-face, .card-hover-summary):has(> .card-tokens) {
   padding-bottom: calc(var(--band-bottom) + var(--band-h) + 0.15em); }
 /* A legacy's goal in words, under its name, until goals have icons
    (Legacies implementation ruling R34). */
@@ -1904,7 +1904,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    and the face keeps the room for both. */
 .card-tokens { flex-wrap: wrap-reverse; align-content: flex-start;
   row-gap: 0; }
-:is(.card-face, .card-hover-summary, .site):has(> .card-tokens > :nth-child(5)) {
+:is(.card-face, .card-hover-summary):has(> .card-tokens > :nth-child(5)) {
   --band-h: 2.6em; }
 /* A card's tokens keep their glyphs whole, and on the mat a crowded band
    wraps upward from the card's foot, two kinds a line. Further out the band
