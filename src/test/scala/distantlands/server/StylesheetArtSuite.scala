@@ -55,7 +55,21 @@ class StylesheetArtSuite extends munit.FunSuite:
     val setters = rules.findAllMatchIn(uncommented).filter(found =>
       found.group(1).contains(".printed") &&
         found.group(2).contains("opacity")).map(_.group(1).trim).toVector
-    assertEquals(setters, Vector(".printed"))
+    assertEquals(setters, Vector(".printed",
+      ".map-compact .card-header.printed > *,\n" +
+        ".map-compact .card-header.printed > .card-emblems > *"))
+
+  /** Opacity reaches nothing through an element with no box. On the
+    * compact map a card's header and its emblems column are
+    * `display: contents`, so their parts take the box's answer
+    * themselves; found in the slice 1 browser check, where a ready card
+    * on the zoomed-out map kept its drawn name over the image. */
+  test("on the compact map a card header's parts hide with their box"):
+    assert(css.contains(".map-compact .card-header { display: contents; }"))
+    assert(css.contains(".map-compact .card-emblems { display: contents; }"))
+    assert(rule(".map-compact .card-header.printed > *,\n" +
+      ".map-compact .card-header.printed > .card-emblems > *")
+      .contains("opacity: var(--printed-opacity, 1)"))
 
   /** A Vision's image is landscape and its back portrait. Whichever does
     * not match the box it is in is turned a quarter and sized to the

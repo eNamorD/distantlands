@@ -2317,6 +2317,12 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .printed { opacity: var(--printed-opacity, 1); }
 :is(.card-face, .card-hover-summary) { --printed-opacity: 1; }
 :is(.card-face, .card-hover-summary).art-ready { --printed-opacity: 0; }
+/* Opacity reaches nothing through an element with no box. On the compact
+   map a card's header and its emblems column are `display: contents`, so
+   their parts take the box's answer themselves. */
+.map-compact .card-header.printed > *,
+.map-compact .card-header.printed > .card-emblems > * {
+  opacity: var(--printed-opacity, 1); }
 /* A Vision is a denizen card printed on its side: its image is landscape
    and its back portrait. In a row it keeps the denizen box, so its face
    is turned a quarter and sized to the box, the image's width being the
