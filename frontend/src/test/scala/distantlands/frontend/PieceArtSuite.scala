@@ -154,5 +154,5 @@ class PieceArtSuite extends munit.FunSuite:
     TestArt.listingWholeCatalog()
     val withArt = worldWithForcesAndPawns()
     val copy = withArt.cloneNode(true).asInstanceOf[dom.Element]
-    all(copy, ".art").foreach(_.remove())
+    all(copy, ".art-crop, .art").foreach(_.remove())
     assertEquals(copy.outerHTML, drawn.outerHTML)

@@ -175,7 +175,7 @@ class WorldArtSuite extends munit.FunSuite:
   private def withoutArt(node: dom.Element): String =
     val copy = node.cloneNode(true).asInstanceOf[dom.Element]
     // Images in boxes and, since slice 3, inside glyphs.
-    all(copy, ".art").foreach(_.remove())
+    all(copy, ".art-crop, .art").foreach(_.remove())
     copy.outerHTML
 
   test("the world drawn with art and without has the same boxes, classes " +

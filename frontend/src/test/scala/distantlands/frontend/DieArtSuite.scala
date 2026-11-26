@@ -64,3 +64,18 @@ class DieArtSuite extends munit.FunSuite:
     assert(!failed.classList.contains("art-ready"))
     assertEquals(all(failed, ".art-crop"), Vector.empty)
     assertEquals(all(failed, ":scope > .token-glyph").size, 1)
+
+  /** A die chip in the layout-invariance check (implementation ruling
+    * R36: no `load` is dispatched; the ready state is the stylesheet
+    * pins' and the browser check's). */
+  test("a roll drawn with art and without is the same markup once the " +
+      "crops are removed"):
+    val faces = Vector(DieFace.TwoSwordsSkull, DieFace.OneSword)
+    val drawn = DieFaceChip.roll(faces)
+    TestArt.listingWholeCatalog()
+    val withArt = DieFaceChip.roll(faces)
+    assertEquals(all(withArt, ".art-crop").size, 2)
+    val copy = withArt.cloneNode(true).asInstanceOf[dom.Element]
+    all(copy, ".art-crop, .art").foreach(_.remove())
+    assertEquals(copy.outerHTML, drawn.outerHTML)
+
