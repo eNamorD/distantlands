@@ -181,7 +181,10 @@ private[frontend] object CardFace:
       val group = element("span",
         s"card-warbands ${ServerUiSupport.forceCssClass(forces)}")
       HoverTip.set(group, ServerUiSupport.forceText(forces))
-      counted("warband", forces.count).foreach(group.appendChild)
+      group.appendChild(RulesTextRenderer.warband(
+        ServerUiSupport.forceKey(forces)))
+      group.appendChild(text("span", "card-token-count",
+        forces.count.toString))
       tokens.appendChild(group)
     }
     // The pawn a Tracker's holder chose last turn, in its player's colour.
@@ -217,5 +220,5 @@ private[frontend] object CardFace:
       Option.when(marks.childNodes.length > 0)(marks)).flatten
 
   private def counted(token: String, count: Int): Vector[dom.Element] =
-    Vector(RulesTextRenderer.glyph(token),
+    Vector(RulesTextRenderer.piece(token),
       text("span", "card-token-count", count.toString))

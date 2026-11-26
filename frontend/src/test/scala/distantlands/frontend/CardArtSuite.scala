@@ -154,7 +154,8 @@ class CardArtSuite extends munit.FunSuite:
   /** `node`'s markup with every art image taken out. */
   private def withoutArt(node: dom.Element): String =
     val copy = node.cloneNode(true).asInstanceOf[dom.Element]
-    all(copy, "img.art").foreach(_.remove())
+    // Images in boxes and, since slice 3, inside glyphs.
+    all(copy, ".art").foreach(_.remove())
     copy.outerHTML
 
   test("a board drawn with art and without has the same boxes, classes " +

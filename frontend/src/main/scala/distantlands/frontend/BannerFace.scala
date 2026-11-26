@@ -103,7 +103,7 @@ private[frontend] object BannerFace:
     header.appendChild(short)
     node.appendChild(header)
     val tokens = element("span", "card-tokens")
-    tokens.appendChild(RulesTextRenderer.glyph(token(banner)))
+    tokens.appendChild(RulesTextRenderer.piece(token(banner)))
     tokens.appendChild(text("span", "card-token-count",
       banner.resources.toString))
     node.appendChild(tokens)

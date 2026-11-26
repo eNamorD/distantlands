@@ -1,5 +1,6 @@
 package distantlands.frontend
 
+import distantlands.protocol.art.{ArtCatalog, ArtKey}
 import org.scalajs.dom
 
 /** Renders catalog `rulesText` markup instead of printing it.
@@ -17,7 +18,23 @@ private[frontend] object RulesTextRenderer:
 
   private def isWordChar(value: Char): Boolean = value.isLetterOrDigit || value == '_'
 
+  /** A token as a card prints it: the sprite's glyph, holding the
+    * printed symbol when the host's art has one. */
   def glyph(token: String): dom.Element =
+    drawn(token, ArtCatalog.symbol(token))
+
+  /** A token as it lies in play (implementation ruling R23): the same
+    * glyph, holding the token's own picture when it has one and its
+    * printed symbol otherwise. */
+  def piece(token: String): dom.Element =
+    drawn(token, ArtCatalog.token(token).orElse(ArtCatalog.symbol(token)))
+
+  /** A force's warband: the warband glyph, holding the piece of the
+    * force's colour (implementation ruling R26). */
+  def warband(force: String): dom.Element =
+    drawn("warband", ArtCatalog.warband(force))
+
+  private def drawn(token: String, art: Option[ArtKey]): dom.Element =
     val node = ServerUiSupport.svgElement("svg")
     node.setAttribute("class", s"token-glyph token-$token")
     node.setAttribute("role", "img")
@@ -25,6 +42,7 @@ private[frontend] object RulesTextRenderer:
     val use = ServerUiSupport.svgElement("use")
     use.setAttribute("href", s"#token-$token")
     node.appendChild(use)
+    ArtLayer.attachGlyph(node, art)
     node
 
   /** A short line that may hold tokens, such as a cost badge ("1 Supply · 1

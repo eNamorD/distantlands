@@ -2382,6 +2382,12 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 /* A foundation's and the Oath goal's plate in the overlay holds the
    card's image; the title on it is printed and hides. */
 .card-plate:has(> .art) { position: relative; }
+/* A glyph's image lies inside its svg, fitted to the glyph's square. The
+   sprite the glyph draws itself hides when the image has loaded. A
+   restriction banner keeps its chain, which the symbol does not print. */
+.token-glyph.art-ready > use { opacity: 0; }
+.restriction-mark.art-ready > :not(.art, .restriction-mark-chain) {
+  opacity: 0; }
 
 
 /* Document level, above .game-pane -- which is what lets that pane keep

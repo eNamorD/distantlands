@@ -13,7 +13,7 @@ private[frontend] object WorldBoardRenderer:
       accessible: String): dom.Element =
     val node = element("span", "resource")
     node.setAttribute("aria-label", accessible)
-    node.appendChild(RulesTextRenderer.glyph(token))
+    node.appendChild(RulesTextRenderer.piece(token))
     node.appendChild(dom.document.createTextNode(value))
     node
 
@@ -604,7 +604,7 @@ private[frontend] object WorldBoardRenderer:
       box.appendChild(text("span", "printed", s"${bank.suit.capitalize}: "))
       box.appendChild(text("span", "favor-bank-count", bank.count.toString))
       // The count is favor, drawn as the favor token is everywhere else.
-      box.appendChild(RulesTextRenderer.glyph("favor"))
+      box.appendChild(RulesTextRenderer.piece("favor"))
       options.decorate(box,
         Vector(BoardOptionViews.key("favor-bank", bank.suit)))
       MatLayout.favorBank(bank.suit).foreach(rect => place(box, rect))

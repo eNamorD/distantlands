@@ -52,7 +52,7 @@ private[frontend] object ServerUiSupport:
     heading
 
   private def siteToken(token: String, count: Int): Vector[dom.Element] =
-    Vector(RulesTextRenderer.glyph(token),
+    Vector(RulesTextRenderer.piece(token),
       text("span", "site-token-count", count.toString))
 
   /** A card's face and what opening it does: a card printing a power the
@@ -125,7 +125,7 @@ private[frontend] object ServerUiSupport:
       val short = element("span", s"site-forces-short ${forceCssClass(forces)}")
       short.setAttribute("aria-hidden", "true")
       HoverTip.set(short, forceText(forces))
-      short.appendChild(RulesTextRenderer.glyph("warband"))
+      short.appendChild(RulesTextRenderer.warband(forceKey(forces)))
       short.appendChild(text("span", "site-token-count", forces.count.toString))
       details.appendChild(short)
     }
@@ -176,10 +176,15 @@ private[frontend] object ServerUiSupport:
   private[frontend] def forceText(forces: SiteForces): String =
     s"${forces.label} x${forces.count}"
 
-  private[frontend] def forceCssClass(forces: SiteForces): String = forces match
-    case exile: SiteForces.Exile => s"force-${exile.color.key}"
-    case _: SiteForces.Imperial => "force-empire"
-    case _: SiteForces.Bandit => "force-bandit"
+  private[frontend] def forceCssClass(forces: SiteForces): String =
+    s"force-${forceKey(forces)}"
+
+  /** Whose a force is, in one word: a player's colour, "empire" or
+    * "bandit". The force's class and its piece both read it. */
+  private[frontend] def forceKey(forces: SiteForces): String = forces match
+    case exile: SiteForces.Exile => exile.color.key
+    case _: SiteForces.Imperial => "empire"
+    case _: SiteForces.Bandit => "bandit"
 
   /** A site relic the viewer cannot identify. Same box as a real relic, so
     * learning what it is -- which a negotiation can do mid-game -- swaps the

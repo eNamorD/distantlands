@@ -204,6 +204,13 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(rule(".mat-board .deck-card:has(> .art)")
       .contains("position: relative"))
 
+  /** A glyph keeps its svg and holds its image inside it (R22). */
+  test("a ready glyph hides its sprite, and a ready restriction banner " +
+      "its drawn parts but not its chain"):
+    assert(rule(".token-glyph.art-ready > use").contains("opacity: 0"))
+    assert(rule(".restriction-mark.art-ready > " +
+      ":not(.art, .restriction-mark-chain)").contains("opacity: 0"))
+
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
   private val rendererSources: String =
