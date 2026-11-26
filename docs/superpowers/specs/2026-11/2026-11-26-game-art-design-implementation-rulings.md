@@ -8,7 +8,8 @@ repeated here.
 
 Plans: [slice 1](../../plans/2026-11/2026-11-26-game-art-slice1.md),
 [slice 2](../../plans/2026-11/2026-11-26-game-art-slice2.md),
-[slice 3](../../plans/2026-11/2026-11-26-game-art-slice3.md).
+[slice 3](../../plans/2026-11/2026-11-26-game-art-slice3.md),
+[slice 4](../../plans/2026-11/2026-11-26-game-art-slice4.md).
 
 ## Slice 1
 
