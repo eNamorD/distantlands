@@ -157,7 +157,7 @@ The names, read from the card data's "New Foundations" entries:
   files are not named for the card's title ("Oathkeeper of Supremacy");
   the card data's `image` field names them.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `ArtCatalogSuite`, with the import
 `distantlands.protocol.projection.OathkeeperPresentation` and
@@ -211,13 +211,13 @@ listed once" so its count is the catalog's whole: replace
 `assertEquals(ArtCatalog.allPaths.size, faces.size + 4 + 24 + 4 + 12 + 4 + 1)`.
 That edit is this task's; the test's other lines stay.
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "root/testOnly distantlands.catalog.ArtCatalogSuite"`
 Expected: compilation fails with `value sites is not a member of object
 ArtCatalog`.
 
-- [ ] **Step 3: Add the keys**
+- [x] **Step 3: Add the keys**
 
 In `ArtCatalog.scala`, after `visions`:
 
@@ -295,7 +295,7 @@ places and the new ones follow them:
 The `banners`, `foundations`, `oathGoals` and `mat` definitions must stand
 before `allPaths` in the object.
 
-- [ ] **Step 4: List the paths in `game-art.md`**
+- [x] **Step 4: List the paths in `game-art.md`**
 
 Add to the folder sketch a `mat/` line under `tts/`, and a bullet: "`tts/mat/`
 holds the mat, `mat.jpg`, from the same mod." Change the `cards/` bullet's
@@ -303,7 +303,7 @@ first sentence to say the folder also holds the site, banner, foundation
 and Oath goal cards. Append the 45 bullets in `allPaths` order; the test's
 failure output lists them when the page is short.
 
-- [ ] **Step 5: Run the tests and the link check**
+- [x] **Step 5: Run the tests and the link check**
 
 Run: `./sbtw "root/testOnly distantlands.catalog.ArtCatalogSuite"`
 Expected: PASS, every test, the page-equality test included.
@@ -311,7 +311,7 @@ Expected: PASS, every test, the page-equality test included.
 Run: `python3 scripts/check-markdown-links.py`
 Expected: no error.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add shared/src/main/scala/distantlands/protocol/art/ArtCatalog.scala \
@@ -358,7 +358,7 @@ defense is printed and hides (the design, "The glance layer over art").
 The power buttons are not printed: their labels hide and the buttons stay
 focusable in place, with their hover notes (Q3).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `ArtLayerSuite`:
 
@@ -485,12 +485,12 @@ class WorldArtSuite extends munit.FunSuite:
     assertEquals(all(row, ".site-face *:not(img)"), Vector.empty)
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.ArtLayerSuite distantlands.frontend.WorldArtSuite"`
 Expected: compilation fails, `too many arguments for method attach`.
 
-- [ ] **Step 3: Give `ArtLayer.attach` the box to mark**
+- [x] **Step 3: Give `ArtLayer.attach` the box to mark**
 
 In `ArtLayer.scala`, change the signature and use `marked` where the box
 was marked:
@@ -507,7 +507,7 @@ was marked:
 
 and replace the three `box.classList` calls with `marked.classList`.
 
-- [ ] **Step 4: Attach the site's image**
+- [x] **Step 4: Attach the site's image**
 
 In `WorldBoardRenderer.siteRow`, after `control.appendChild(face)`:
 
@@ -520,7 +520,7 @@ In `WorldBoardRenderer.siteRow`, after `control.appendChild(face)`:
 with `import distantlands.protocol.art.ArtCatalog`. Update the comment
 above `face` to say the face is drawn where its image is missing.
 
-- [ ] **Step 5: Add the site's row to the box list**
+- [x] **Step 5: Add the site's row to the box list**
 
 Write the failing stylesheet test first. In `StylesheetArtSuite`, replace
 the two box-list assertions in "printed content is hidden with opacity, by
@@ -544,7 +544,7 @@ A site's face is a box with a fill and a border; the image covers the fill
 and the border stays. No other rule is needed: `.site-face` is placed
 (`mat-slot`, `position: absolute`), so the image fills it.
 
-- [ ] **Step 6: Run the suites**
+- [x] **Step 6: Run the suites**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.ArtLayerSuite distantlands.frontend.WorldArtSuite distantlands.frontend.PrintedLayerSuite distantlands.frontend.SiteFaceSuite distantlands.frontend.ChronicleDetailsContentSuite"`
 Expected: PASS, with no edit to the three existing suites.
@@ -552,7 +552,7 @@ Expected: PASS, with no edit to the three existing suites.
 Run: `./sbtw "root/testOnly distantlands.server.Stylesheet*"`
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/ArtLayer.scala \
@@ -583,7 +583,7 @@ git log -3
   box list covers it: its side and its name are printed and hide; its
   tokens stay.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `WorldArtSuite`:
 
@@ -608,12 +608,12 @@ Append to `WorldArtSuite`:
       Vector.empty)
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.WorldArtSuite"`
 Expected: the first new test FAILS with `Vector() != Vector("/art/...")`.
 
-- [ ] **Step 3: Attach the banner's image**
+- [x] **Step 3: Attach the banner's image**
 
 In `BannerFace.render`, after `node.appendChild(tokens)`:
 
@@ -623,12 +623,12 @@ In `BannerFace.render`, after `node.appendChild(tokens)`:
 
 with `import distantlands.protocol.art.ArtCatalog`.
 
-- [ ] **Step 4: Run the suites**
+- [x] **Step 4: Run the suites**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.WorldArtSuite distantlands.frontend.BannerFaceSuite distantlands.frontend.BannerConsentGridSuite"`
 Expected: PASS, the two existing suites unedited.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/BannerFace.scala \
@@ -679,7 +679,7 @@ quarter as a Vision's face is (R8). The kind comes from the projection:
 `worldDeckTopCardKind`, `discardTopCardKind`, and `"relic"` for the relic
 deck. No kind, or an empty pile, attaches nothing.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `WorldArtSuite`:
 
@@ -768,12 +768,12 @@ Cradle's foot (relic deck, world deck), then the other regions' discards;
 if the fixture's order differs, read it from the failure and set the
 expected vectors to the document's order, keeping one pile of each case.
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.WorldArtSuite"`
 Expected: the mat, pile, sideways and invariance tests FAIL.
 
-- [ ] **Step 3: Attach the mat and the piles' backs**
+- [x] **Step 3: Attach the mat and the piles' backs**
 
 In `ServerUiSupport`, beside `deckCard`:
 
@@ -805,7 +805,7 @@ In `cradleFoot`, build the relic deck's body in a value and call
 `pileBack(relics, value.relicDeckCount, Some("relic"), sideways = false)`
 before placing it.
 
-- [ ] **Step 4: Write the failing stylesheet tests**
+- [x] **Step 4: Write the failing stylesheet tests**
 
 In `StylesheetArtSuite`, extend `boxes` to
 `".card-face, .card-hover-summary, .site, .deck-card, .mat-board"` and
@@ -833,7 +833,7 @@ add:
 Run: `./sbtw "root/testOnly distantlands.server.StylesheetArtSuite"`
 Expected: FAIL.
 
-- [ ] **Step 5: Add the rules**
+- [x] **Step 5: Add the rules**
 
 In `frontend/styles.css`, change the box list in both rules to
 `:is(.card-face, .card-hover-summary, .site, .deck-card, .mat-board)` and
@@ -862,7 +862,7 @@ computed `position` in the browser check; if it is `static`, add
 `.mat-board .deck-card { position: relative; }` to the rules above and a
 line to the stylesheet test.
 
-- [ ] **Step 6: Run the suites**
+- [x] **Step 6: Run the suites**
 
 Run: `./sbtw "root/testOnly distantlands.server.Stylesheet*"`
 Expected: PASS.
@@ -873,7 +873,7 @@ pass unedited unless one compares a pile's whole class list; if so, the
 new `deck-sideways` class is the only change to make, listed as a
 deviation.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala \
@@ -925,7 +925,7 @@ joins the box list. The Oathkeeper title pill on a board opens the plate
 `oathkeeper-title`, whose art is a slice 3 token and is passed no key
 here. The Chronicle Phase aids pass no key.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `frontend/src/test/scala/distantlands/frontend/PlateArtSuite.scala`:
 
@@ -1010,12 +1010,12 @@ class PlateArtSuite extends munit.FunSuite:
 If `OathkeeperProjection` has more fields than the five named, fill them
 from its definition in `ActionProjectionDtos.scala`.
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.PlateArtSuite"`
 Expected: compilation fails, `too many arguments for method openText`.
 
-- [ ] **Step 3: Carry the key to the plate**
+- [x] **Step 3: Carry the key to the plate**
 
 1. `CardInspection.Request.Text` and `openText` take
    `art: Option[ArtKey] = None` last and pass it on.
@@ -1032,7 +1032,7 @@ Expected: compilation fails, `too many arguments for method openText`.
 6. `WorldBoardRenderer.sharedBank`'s goal button passes
    `ArtCatalog.oathGoal(oath.goal)`.
 
-- [ ] **Step 4: Add the plate to the box list**
+- [x] **Step 4: Add the plate to the box list**
 
 Extend `boxes` in `StylesheetArtSuite` to
 `".card-face, .card-hover-summary, .site, .deck-card, .mat-board, .card-plate"`
@@ -1052,14 +1052,14 @@ add after the pile rules:
 .card-plate:has(> .art) { position: relative; }
 ```
 
-- [ ] **Step 5: Run the suites**
+- [x] **Step 5: Run the suites**
 
 Run: `./sbtw frontend/test` and
 `./sbtw "root/testOnly distantlands.server.Stylesheet*"`
 Expected: PASS; `FoundationStripSuite`, `SetupCardStripSuite`,
 `ShellInspectionSuite` and `ChronicleTaskStripSuite` unedited.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/CardInspection.scala \
@@ -1091,12 +1091,12 @@ Visions Drawn label (`visionsLabel`, 1680, 1650, 210×150) and the six
 favor bank boxes (`favorBank`, centre − 217, 2050, 310×240) have no
 printed counterpart on the mat.
 
-- [ ] **Step 1: Start the scratch server and open a table**
+- [x] **Step 1: Start the scratch server and open a table**
 
 As in slice 1, Task 9, Step 2, with `--art-path
 /Users/roman/projects/distantlands/reference/assets` on port 8083.
 
-- [ ] **Step 2: Look at each rectangle over the mat**
+- [x] **Step 2: Look at each rectangle over the mat**
 
 With art on, at map scale 1 and at Fit, for each of the three kinds:
 
@@ -1115,7 +1115,7 @@ are live and stay. For a bank, the drawn suit glyph hides and the count
 and favor glyph stay: check they lie inside the mat's printed circle and
 emblem box and cover no lettering.
 
-- [ ] **Step 3: Move a rectangle that covers printed art**
+- [x] **Step 3: Move a rectangle that covers printed art**
 
 Only if Step 2 finds one. Measure the free place on the mat image in its
 own pixels, change the number in `MatLayout` and the row in
@@ -1132,7 +1132,7 @@ Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>"
 git log -3
 ```
 
-- [ ] **Step 4: Record the result**
+- [x] **Step 4: Record the result**
 
 For the report: each rectangle, what it lies over, and whether it moved,
 with the numbers before and after.
@@ -1141,7 +1141,7 @@ with the numbers before and after.
 
 ### Task 7: Gate and browser check
 
-- [ ] **Step 1: Run the full gate**
+- [x] **Step 1: Run the full gate**
 
 ```bash
 ./sbtw test
@@ -1152,7 +1152,7 @@ python3 scripts/check-markdown-links.py
 
 Run it after the last commit, so its numbers are HEAD's.
 
-- [ ] **Step 2: Check the world board in the browser**
+- [x] **Step 2: Check the world board in the browser**
 
 On the scratch server, at 1440×900, 1024×768 and 375×812:
 
@@ -1185,7 +1185,7 @@ On the scratch server, at 1440×900, 1024×768 and 375×812:
    one can be reached. Report each as observed or not reached.
 9. No error in the browser console.
 
-- [ ] **Step 3: Stop the scratch server and report**
+- [x] **Step 3: Stop the scratch server and report**
 
 `lsof -nP -iTCP:8083 -sTCP:LISTEN` prints nothing. Report commits, gate
 numbers, the browser check, the three rectangles, deviations, open
