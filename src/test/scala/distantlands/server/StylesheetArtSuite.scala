@@ -56,3 +56,27 @@ class StylesheetArtSuite extends munit.FunSuite:
       found.group(1).contains(".printed") &&
         found.group(2).contains("opacity")).map(_.group(1).trim).toVector
     assertEquals(setters, Vector(".printed"))
+
+  /** A Vision's image is landscape and its back portrait. Whichever does
+    * not match the box it is in is turned a quarter and sized to the
+    * box: its width is the box's height. */
+  test("a Vision's face is turned in its denizen box, and its back in " +
+      "the overlay's landscape box"):
+    val turned = rule(".card-face-vision:not(.card-face-down) > .art,\n" +
+      ".card-face-vision > .card-hover-summary > .art")
+    Vector("inset: auto", "top: 50%", "left: 50%",
+      "width: calc(100% / (var(--ratio-denizen)))",
+      "height: calc(100% * (var(--ratio-denizen)))",
+      "transform: translate(-50%, -50%) rotate(-90deg)")
+      .foreach(part => assert(turned.contains(part), part))
+    val upright = rule(
+      ".card-overlay-body > .card-face-vision:not(.card-face-down) > .art")
+    Vector("inset: 0", "width: 100%", "height: 100%", "transform: none")
+      .foreach(part => assert(upright.contains(part), part))
+    val back = rule(
+      ".card-overlay-body > .card-face-vision.card-face-down > .art")
+    Vector("inset: auto", "top: 50%", "left: 50%",
+      "width: calc(100% * (var(--ratio-denizen)))",
+      "height: calc(100% / (var(--ratio-denizen)))",
+      "transform: translate(-50%, -50%) rotate(-90deg)")
+      .foreach(part => assert(back.contains(part), part))

@@ -2288,6 +2288,22 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .printed { opacity: var(--printed-opacity, 1); }
 :is(.card-face, .card-hover-summary) { --printed-opacity: 1; }
 :is(.card-face, .card-hover-summary).art-ready { --printed-opacity: 0; }
+/* A Vision is a denizen card printed on its side: its image is landscape
+   and its back portrait. In a row it keeps the denizen box, so its face
+   is turned a quarter and sized to the box, the image's width being the
+   box's height. The overlay reads a Vision upright in a landscape box, so
+   there the face fills the box and the back is the one turned. */
+.card-face-vision:not(.card-face-down) > .art,
+.card-face-vision > .card-hover-summary > .art { inset: auto; top: 50%;
+  left: 50%; width: calc(100% / (var(--ratio-denizen)));
+  height: calc(100% * (var(--ratio-denizen)));
+  transform: translate(-50%, -50%) rotate(-90deg); }
+.card-overlay-body > .card-face-vision:not(.card-face-down) > .art {
+  inset: 0; width: 100%; height: 100%; transform: none; }
+.card-overlay-body > .card-face-vision.card-face-down > .art { inset: auto;
+  top: 50%; left: 50%; width: calc(100% * (var(--ratio-denizen)));
+  height: calc(100% / (var(--ratio-denizen)));
+  transform: translate(-50%, -50%) rotate(-90deg); }
 
 
 /* Document level, above .game-pane -- which is what lets that pane keep

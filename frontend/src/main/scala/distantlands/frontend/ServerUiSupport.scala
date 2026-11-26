@@ -190,6 +190,7 @@ private[frontend] object ServerUiSupport:
     node.setAttribute("role", "img")
     node.setAttribute("aria-label", s"Facedown $cardKind")
     node.appendChild(text("span", "card-back-letter printed", CardFace.backLetter(cardKind)))
+    ArtLayer.attach(node, art.ArtCatalog.cardBack(cardKind))
     node
 
   private[frontend] def emptySlot(cardKind: String, label: String = "")
