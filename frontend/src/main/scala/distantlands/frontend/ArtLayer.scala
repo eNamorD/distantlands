@@ -53,8 +53,11 @@ private[frontend] object ArtLayer:
       val image = svgImage(url, mark)
       image.setAttribute("x", (x - size / 2).toString)
       image.setAttribute("y", (y - size / 2).toString)
-      image.setAttribute("width", size.toString)
-      image.setAttribute("height", size.toString)
+      // As an inline style, in the group's units: the stylesheet gives
+      // every art image the whole of its box, and it outranks an SVG
+      // size attribute.
+      image.setAttribute("style",
+        s"width: ${size.toInt}px; height: ${size.toInt}px;")
       group.appendChild(image)
     }
 

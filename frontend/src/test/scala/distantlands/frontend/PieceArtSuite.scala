@@ -96,6 +96,10 @@ class PieceArtSuite extends munit.FunSuite:
     assertEquals(one(round, ".limiter-marker").textContent, "◆")
     val image = one(round, "image.art")
     assertEquals(image.getAttribute("href"), "/art/tts/tokens/usurper.png")
+    // Its size is an inline style: the art layer's stylesheet rule gives
+    // every image the whole of its box, and a stylesheet outranks an
+    // SVG size attribute. Seen live: the piece was as large as the wheel.
+    assertEquals(image.getAttribute("style"), "width: 24px; height: 24px;")
     image.dispatchEvent(new dom.Event("load"))
     assert(one(round, ".limiter-marker").classList.contains("art-ready"))
     assertEquals(all(wheel, "image.art").size, 1)
