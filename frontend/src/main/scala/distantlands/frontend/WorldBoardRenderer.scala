@@ -629,7 +629,8 @@ private[frontend] object WorldBoardRenderer:
       val goal = button(title, "oathkeeper-goal card-link")
       goal.`type` = "button"
       goal.onclick = _ => CardInspection.openText(title,
-        presented.fold(Vector.empty[String])(_.lines), goal, Some("oath-goal"))
+        presented.fold(Vector.empty[String])(_.lines), goal, Some("oath-goal"),
+        ArtCatalog.oathGoal(oath.goal))
       status.appendChild(goal)
       status.appendChild(text("span", "oathkeeper-holder",
         s"${oath.side.capitalize}: ${oath.holderPlayerId.getOrElse("unheld")}"))

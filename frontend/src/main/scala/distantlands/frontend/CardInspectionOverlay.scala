@@ -1,5 +1,6 @@
 package distantlands.frontend
 
+import distantlands.protocol.art.ArtKey
 import org.scalajs.dom
 import ServerUiSupport._
 
@@ -120,7 +121,8 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     * card face on the table that nothing can be played from.
     */
   def showText(title: String, lines: Vector[String],
-      origin: dom.html.Element, plate: Option[String] = None): Unit =
+      origin: dom.html.Element, plate: Option[String] = None,
+      art: Option[ArtKey] = None): Unit =
     clear()
     // Named for what it shows: it is not a card, so "Card details" would
     // misname it.
@@ -130,6 +132,7 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     plate.foreach { kind =>
       val box = element("span", s"card-plate card-plate-$kind")
       box.appendChild(text("span", "card-name printed", title))
+      ArtLayer.attach(box, art)
       body.appendChild(box)
     }
     val panel = element("div", "card-overlay-details")

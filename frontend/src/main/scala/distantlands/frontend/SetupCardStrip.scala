@@ -1,5 +1,6 @@
 package distantlands.frontend
 
+import distantlands.protocol.art.ArtKey
 import org.scalajs.dom
 import ServerUiSupport.{element, text}
 
@@ -14,10 +15,12 @@ private[frontend] object SetupCardStrip:
   /** One card as a strip draws it. `mark` is the foundation's numeral;
     * `tag` is "Altered" on an altered face; `title` heads the inspector and
     * is the hover note; `label` names the control; `lines` are what a
-    * click reads; `plate` names the printed card behind the words. */
+    * click reads; `plate` names the printed card behind the words, and
+    * `art` is that card's image. */
   final case class Card(mark: Option[String], name: String,
       tag: Option[String], title: String, label: String,
-      lines: Vector[String], plate: Option[String])
+      lines: Vector[String], plate: Option[String],
+      art: Option[ArtKey] = None)
 
   /** The strip headed `heading`. With stem "foundation" its classes are
     * `foundations`, `foundations-title`, `foundation-strip`,
@@ -44,7 +47,8 @@ private[frontend] object SetupCardStrip:
     // numeral.
     node.setAttribute("aria-label", card.label)
     node.onclick = _ =>
-      CardInspection.openText(card.title, card.lines, node, card.plate)
+      CardInspection.openText(card.title, card.lines, node, card.plate,
+        card.art)
     // The name is cut to one line on a small map; the note keeps it whole.
     HoverTip.set(node, card.title)
     card.mark.foreach(mark =>

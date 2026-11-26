@@ -40,7 +40,8 @@ class StylesheetArtSuite extends munit.FunSuite:
 
   /** Every box kind that answers for printed content of its own. */
   private val boxes =
-    ".card-face, .card-hover-summary, .site, .deck-card, .mat-board"
+    ".card-face, .card-hover-summary, .site, .deck-card, .mat-board, " +
+      ".card-plate"
 
   test("printed content is hidden with opacity, by its nearest box"):
     assert(rule(".printed").contains("opacity: var(--printed-opacity, 1)"))
@@ -162,6 +163,9 @@ class StylesheetArtSuite extends munit.FunSuite:
 
   test("the mat's image fills the board"):
     assert(rule(".mat-board > .art").contains("object-fit: fill"))
+
+  test("a plate is a positioned box, so its image fills it"):
+    assert(rule(".card-plate:has(> .art)").contains("position: relative"))
 
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */

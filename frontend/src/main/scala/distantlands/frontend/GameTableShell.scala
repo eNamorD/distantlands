@@ -213,8 +213,8 @@ private[frontend] final class GameTableShell(mount: dom.Element,
   private val inspector = new CardInspectionOverlay(mount)
   CardInspection.onOpen:
     case CardInspection.Request.Card(card, origin) => inspector.show(card, origin)
-    case CardInspection.Request.Text(title, lines, origin, plate) =>
-      inspector.showText(title, lines, origin, plate)
+    case CardInspection.Request.Text(title, lines, origin, plate, art) =>
+      inspector.showText(title, lines, origin, plate, art)
     case CardInspection.Request.Festival(title, lines, at, grid, origin) =>
       inspector.showFestival(title, lines, at, grid, origin)
     case CardInspection.Request.FestivalMarker(grid, origin) =>

@@ -2314,8 +2314,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    box never hides what a box inside it draws when that box's own image is
    missing. */
 .printed { opacity: var(--printed-opacity, 1); }
-:is(.card-face, .card-hover-summary, .site, .deck-card, .mat-board) { --printed-opacity: 1; }
-:is(.card-face, .card-hover-summary, .site, .deck-card, .mat-board).art-ready { --printed-opacity: 0; }
+:is(.card-face, .card-hover-summary, .site, .deck-card, .mat-board, .card-plate) { --printed-opacity: 1; }
+:is(.card-face, .card-hover-summary, .site, .deck-card, .mat-board, .card-plate).art-ready { --printed-opacity: 0; }
 /* The end die of a roll nobody makes is dimmed. It is printed too, and
    the rule above would otherwise set its opacity alone, so its dimming
    carries the layer's answer. */
@@ -2357,6 +2357,9 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   transform: translate(-50%, -50%) rotate(-90deg); }
 .deck-card.art-ready > .pile-count { padding: 0 0.35em;
   border-radius: 0.3em; background: var(--base); }
+/* A foundation's and the Oath goal's plate in the overlay holds the
+   card's image; the title on it is printed and hides. */
+.card-plate:has(> .art) { position: relative; }
 
 
 /* Document level, above .game-pane -- which is what lets that pane keep

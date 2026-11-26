@@ -1,5 +1,6 @@
 package distantlands.frontend
 
+import distantlands.protocol.art.ArtKey
 import org.scalajs.dom
 
 /** One slot connecting every rendered card to whatever is showing overlays.
@@ -18,11 +19,12 @@ private[frontend] object CardInspection:
   object Request:
     final case class Card(card: CardDetails, origin: dom.html.Element)
         extends Request
-    /** `plate` names the printed card behind the words, when there is one:
+    /** `art` is that card's image, when the catalog has one.
+      * `plate` names the printed card behind the words, when there is one:
       * `foundation`, `oath-goal` or `oathkeeper-title`. */
     final case class Text(title: String, lines: Vector[String],
-        origin: dom.html.Element, plate: Option[String] = None)
-        extends Request
+        origin: dom.html.Element, plate: Option[String] = None,
+        art: Option[ArtKey] = None) extends Request
     /** The Darkest Secret on its Festival face: its printed lines, then a
       * copy of the festival marker and the site it lies at, `None` while
       * it lies beside the map, and the viewer's consent preferences for
@@ -69,8 +71,9 @@ private[frontend] object CardInspection:
     handler.foreach(_(Request.Card(card, origin)))
 
   def openText(title: String, lines: Vector[String],
-      origin: dom.html.Element, plate: Option[String] = None): Unit =
-    handler.foreach(_(Request.Text(title, lines, origin, plate)))
+      origin: dom.html.Element, plate: Option[String] = None,
+      art: Option[ArtKey] = None): Unit =
+    handler.foreach(_(Request.Text(title, lines, origin, plate, art)))
 
   def openFestival(title: String, lines: Vector[String], at: Option[String],
       grid: Option[ConsentGrid], origin: dom.html.Element): Unit =

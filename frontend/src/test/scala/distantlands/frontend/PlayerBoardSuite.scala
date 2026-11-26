@@ -277,7 +277,7 @@ class PlayerBoardSuite extends munit.FunSuite:
   private def opensOnClick(act: dom.Element => Unit): Vector[String] =
     var opened = Vector.empty[String]
     CardInspection.onOpen:
-      case CardInspection.Request.Text(title, _, _, _) => opened = opened :+ title
+      case CardInspection.Request.Text(title, _, _, _, _) => opened = opened :+ title
       case CardInspection.Request.Festival(title, _, _, _, _) =>
         opened = opened :+ title
       case CardInspection.Request.FestivalMarker(_, _) =>
@@ -312,7 +312,7 @@ class PlayerBoardSuite extends munit.FunSuite:
   test("the title pill opens with the Oathkeeper title's plate"):
     var plates = Vector.empty[Option[String]]
     CardInspection.onOpen:
-      case CardInspection.Request.Text(_, _, _, plate) => plates :+= plate
+      case CardInspection.Request.Text(_, _, _, plate, _) => plates :+= plate
       case _ => ()
     val node = renderWith(board, Some(OathkeeperStatus("devotion",
       Some("red"), "oathkeeper", usurperLimited = false, None)))
