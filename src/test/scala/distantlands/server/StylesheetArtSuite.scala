@@ -188,7 +188,11 @@ class StylesheetArtSuite extends munit.FunSuite:
       "over the art, without moving"):
     val onSite = rule(".site.art-ready :is(.site-forces, " +
       ".site-forces-short, .site-tokens)")
-    Vector("background: #1a1610d9", "box-shadow: 0 0 0 3px #1a1610d9",
+    // Opaque Base, not the name band's translucent fill: forces and pawns
+    // wear player colours, and the black player's measured 4.17 : 1 on
+    // the translucent ground over white art; on Base every player colour
+    // is 6.7 : 1 or better (slice 3, measured).
+    Vector("background: var(--base)", "box-shadow: 0 0 0 3px var(--base)",
       "border-radius: 3px").foreach(part =>
       assert(onSite.contains(part), part))
     Vector("padding", "margin", "width", "height", "border:").foreach(part =>
@@ -196,7 +200,7 @@ class StylesheetArtSuite extends munit.FunSuite:
     // A pawn can be an option, so the ground is its row's, and the pawn
     // keeps its own background and shadow for its option states.
     val pawns = rule(".site.art-ready .site-pawns:has(> .pawn)")
-    assert(pawns.contains("background: #1a1610d9"))
+    assert(pawns.contains("background: var(--base)"))
     Vector("box-shadow", "padding", "margin", "width", "height", "border:")
       .foreach(part => assert(!pawns.contains(part), part))
     assert(rule(".mat-board.art-ready .track-note")
