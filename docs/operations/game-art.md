@@ -1,0 +1,445 @@
+# Game art
+
+Distant Lands draws every card, the map and every piece itself. A host who
+owns the licensed art can have the table show it instead: start the server
+with `--art-path <dir>` (or `DLQ_ART_PATH`), and each player can switch
+**Game art** on or off in the table's Settings.
+
+The art is licensed. Distant Lands ships none of it, and this page holds
+file names only. Wherever a file is missing, the table keeps the drawn
+face for that one card.
+
+## The folder
+
+```
+<art-path>/
+  cards/    card faces
+  tts/
+    backs/  card backs
+```
+
+- `cards/` is a copy of the Buried Giant card database's Oath images
+  (`bgs-cards`, `content/card-images/oath/en-US`), the whole directory.
+  A card New Foundations reprints is read from its file ending
+  ` (NF).png`; a denizen it left alone is read from the base file that
+  carries the bare name. Files the list below does not name are ignored.
+- `tts/backs/` holds the card backs of the Tabletop Simulator mod
+  "Oath: New Foundations": the denizen, Vision, relic and legacy backs,
+  saved under the names below.
+
+The server reads the folder once, when it starts, and logs how many files
+it found and which listed paths the folder lacks. Restart it after
+changing the folder.
+
+## Paths
+
+Every path the table can ask for, relative to the folder.
+
+- `cards/A Round of Ale (NF).png`
+- `cards/Alchemist (NF).png`
+- `cards/Ancient Pact (NF).png`
+- `cards/Ballot Box (NF).png`
+- `cards/Bandit Chief (NF).png`
+- `cards/Bewitch (NF).png`
+- `cards/Book Burning (NF).png`
+- `cards/Bracken (NF).png`
+- `cards/Deed Writer (NF).png`
+- `cards/Defame (NF).png`
+- `cards/Disgraced Captain (NF).png`
+- `cards/Family Wagon (NF).png`
+- `cards/Forest Council (NF).png`
+- `cards/Forgotten Vault (NF).png`
+- `cards/Giant Python (NF).png`
+- `cards/Gossip (NF).png`
+- `cards/Inquisitor (NF).png`
+- `cards/Keep (NF).png`
+- `cards/Long-Lost Heir (NF).png`
+- `cards/Magician's Code (NF).png`
+- `cards/Martial Culture (NF).png`
+- `cards/Memory of Home (NF).png`
+- `cards/Quick Exit (NF).png`
+- `cards/Relic Breaker (NF).png`
+- `cards/Relic Thief (NF).png`
+- `cards/Relic Worship (NF).png`
+- `cards/Riots (NF).png`
+- `cards/Royal Ambitions (NF).png`
+- `cards/Salt the Earth (NF).png`
+- `cards/Tinker's Fair (NF).png`
+- `cards/Vow of Division (NF).png`
+- `cards/Vow of Silence (NF).png`
+- `cards/Vow of Union (NF).png`
+- `cards/Amber Flame (NF).png`
+- `cards/Ancient Writ (NF).png`
+- `cards/Bag of Siegeworks (NF).png`
+- `cards/Bandit Crown (NF).png`
+- `cards/Bandit Standard (NF).png`
+- `cards/Barbed Net (NF).png`
+- `cards/Black Sword (NF).png`
+- `cards/Bone Dice (NF).png`
+- `cards/Book of Records (NF).png`
+- `cards/Brass Army (NF).png`
+- `cards/Brass Horse (NF).png`
+- `cards/Circlet of Command (NF).png`
+- `cards/Clay Rattle (NF).png`
+- `cards/Cracked Horn (NF).png`
+- `cards/Crystal Vial (NF).png`
+- `cards/Cup of Plenty (NF).png`
+- `cards/Cursed Cauldron (NF).png`
+- `cards/Demon Tail (NF).png`
+- `cards/Dowsing Sticks (NF).png`
+- `cards/Dragonskin Drum (NF).png`
+- `cards/Fearsome Shield (NF).png`
+- `cards/Grand Mask (NF).png`
+- `cards/Horned Mask (NF).png`
+- `cards/Imperial Seal (NF).png`
+- `cards/Ivory Eye (NF).png`
+- `cards/Lost Tapestry (NF).png`
+- `cards/Magic Carpet (NF).png`
+- `cards/Magic Waterskin (NF).png`
+- `cards/Obsidian Cage (NF).png`
+- `cards/Oracular Pig (NF).png`
+- `cards/Painted Trumpet (NF).png`
+- `cards/Ring of Devotion (NF).png`
+- `cards/Secret Testament (NF).png`
+- `cards/Shifting Map (NF).png`
+- `cards/Sigil of the Eye (NF).png`
+- `cards/Sigil of the Heart (NF).png`
+- `cards/Silver Charm (NF).png`
+- `cards/Singing Mask (NF).png`
+- `cards/Skeleton Key (NF).png`
+- `cards/Spiteful Mirror (NF).png`
+- `cards/Sticky Fire (NF).png`
+- `cards/The Grand Scepter (NF).png`
+- `cards/Truthful Harp (NF).png`
+- `cards/Weeping Banner (NF).png`
+- `cards/Whispering Stone (NF).png`
+- `cards/Whistle (NF).png`
+- `cards/Wine of Welcome (NF).png`
+- `cards/Yew Staff (NF).png`
+- `cards/Amber Doors (NF).png`
+- `cards/Bandit Forest (NF).png`
+- `cards/Bandit Market (NF).png`
+- `cards/Bandit Patrols (NF).png`
+- `cards/Bandit Tribunal (NF).png`
+- `cards/Blasted Pastures (NF).png`
+- `cards/Boiling Lake (NF).png`
+- `cards/Broken Clock (NF).png`
+- `cards/Broken Forge (NF).png`
+- `cards/Broken Horn (NF).png`
+- `cards/Cracked Rampart (NF).png`
+- `cards/Desecrated Ground (NF).png`
+- `cards/Drowned Library (NF).png`
+- `cards/Empty Grounds (NF).png`
+- `cards/Fallen Spire (NF).png`
+- `cards/Festival District (NF).png`
+- `cards/Forbidden Forest (NF).png`
+- `cards/Forest Horn (NF).png`
+- `cards/Giant's Path (NF).png`
+- `cards/Giant's Rampage (NF).png`
+- `cards/Grand Canal (NF).png`
+- `cards/Great Clock (NF).png`
+- `cards/Great Forge (NF).png`
+- `cards/Great Market (NF).png`
+- `cards/Great Spire (NF).png`
+- `cards/Hall of Bandits (NF).png`
+- `cards/Hall of Debate (NF).png`
+- `cards/Hall of Ministers (NF).png`
+- `cards/Hall of Mockery (NF).png`
+- `cards/Hallowed Spring (NF).png`
+- `cards/Hidden Passages (NF).png`
+- `cards/Hiding Place (NF).png`
+- `cards/Lost Doors (NF).png`
+- `cards/Lost Guardians (NF).png`
+- `cards/Lost Lagoon (NF).png`
+- `cards/Marble Fountains (NF).png`
+- `cards/Murky Fountain (NF).png`
+- `cards/Oaken Fortress (NF).png`
+- `cards/Proving Grounds (NF).png`
+- `cards/Relic Patrols (NF).png`
+- `cards/Rotting Fortress (NF).png`
+- `cards/Ruined Baths (NF).png`
+- `cards/Ruined School (NF).png`
+- `cards/Ruined Temple (NF).png`
+- `cards/Sacred Ground (NF).png`
+- `cards/School of Vines (NF).png`
+- `cards/Shattered Portal (NF).png`
+- `cards/Sinking Passages (NF).png`
+- `cards/Spiral Castle (NF).png`
+- `cards/Spiral Dungeons (NF).png`
+- `cards/Squalid District (NF).png`
+- `cards/Still Boiling Lake (NF).png`
+- `cards/Stone Baths (NF).png`
+- `cards/Stone Portal (NF).png`
+- `cards/Temple of Ancestors (NF).png`
+- `cards/The Tribunal (NF).png`
+- `cards/Tome Guardians (NF).png`
+- `cards/Towering Rampart (NF).png`
+- `cards/Underground Library (NF).png`
+- `cards/Wild Pastures (NF).png`
+- `cards/Ancestral Lands (NF).png`
+- `cards/Arbiter (NF).png`
+- `cards/Beloved (NF).png`
+- `cards/Chronicler (NF).png`
+- `cards/Circle of Swords (NF).png`
+- `cards/Conspirator (NF).png`
+- `cards/Gatekeeper (NF).png`
+- `cards/Golden Key (NF).png`
+- `cards/Great Architect (NF).png`
+- `cards/Heirloom (NF).png`
+- `cards/High Priest (NF).png`
+- `cards/Iron Hand (NF).png`
+- `cards/Keeper of Order (NF).png`
+- `cards/Light Fingers (NF).png`
+- `cards/Matchmaker (NF).png`
+- `cards/Oaths of Loyalty (NF).png`
+- `cards/Pathfinder (NF).png`
+- `cards/Peacemaker (NF).png`
+- `cards/Populist (NF).png`
+- `cards/Quest to Distant Lands (NF).png`
+- `cards/Reformer (NF).png`
+- `cards/Revolutionary (NF).png`
+- `cards/Rival (NF).png`
+- `cards/Royal Line (NF).png`
+- `cards/Ruthless (NF).png`
+- `cards/Scepter Bearer (NF).png`
+- `cards/Secret Society (NF).png`
+- `cards/Seer (NF).png`
+- `cards/Steadfast (NF).png`
+- `cards/The Bright Beacon (NF).png`
+- `cards/The Ear (NF).png`
+- `cards/The Mouth (NF).png`
+- `cards/The Needle (NF).png`
+- `cards/The Standard Bearer (NF).png`
+- `cards/Wealthy (NF).png`
+- `cards/World Crafter (NF).png`
+- `cards/Vision of Conquest (NF).png`
+- `cards/Vision of Faith (NF).png`
+- `cards/Vision of Rebellion (NF).png`
+- `cards/Vision of Sanctuary (NF).png`
+- `cards/Conspiracy (NF).png`
+- `cards/A Fast Steed.png`
+- `cards/A Small Favor.png`
+- `cards/Acting Troupe.png`
+- `cards/Ancient Binding.png`
+- `cards/Ancient Bloodline.png`
+- `cards/Animal Host.png`
+- `cards/Animal Playmates.png`
+- `cards/Arcane Armor.png`
+- `cards/Arcane Brokers.png`
+- `cards/Armed Mob.png`
+- `cards/Assassin.png`
+- `cards/Augury.png`
+- `cards/Autumn Wind.png`
+- `cards/Awaited Return.png`
+- `cards/Bandit Paymaster.png`
+- `cards/Bandit Prince.png`
+- `cards/Banner Breakers.png`
+- `cards/Baron.png`
+- `cards/Battle Axes.png`
+- `cards/Battle Honors.png`
+- `cards/Bear Traps.png`
+- `cards/Beast Tamer.png`
+- `cards/Bed of Roots.png`
+- `cards/Billowing Fog.png`
+- `cards/Birdsong.png`
+- `cards/Blackmail.png`
+- `cards/Blood Pact.png`
+- `cards/Bog.png`
+- `cards/Book Binders.png`
+- `cards/Call for Help.png`
+- `cards/Captains.png`
+- `cards/Careful Plans.png`
+- `cards/Catacombs.png`
+- `cards/Chaos Cult.png`
+- `cards/Charlatan.png`
+- `cards/Charming Friend.png`
+- `cards/City Wall.png`
+- `cards/Code of Honor.png`
+- `cards/Convoys.png`
+- `cards/Council Arbiter.png`
+- `cards/Council Seat.png`
+- `cards/Cracked Sage.png`
+- `cards/Cracking Ground.png`
+- `cards/Crop Rotation.png`
+- `cards/Curfew.png`
+- `cards/Dark Enforcer.png`
+- `cards/Dazzle.png`
+- `cards/Diplomat.png`
+- `cards/Disciples.png`
+- `cards/Dissent.png`
+- `cards/Downtrodden.png`
+- `cards/Dream Thief.png`
+- `cards/Elders.png`
+- `cards/Enchantress.png`
+- `cards/Encirclement.png`
+- `cards/Errand Boy.png`
+- `cards/Extra Provisions.png`
+- `cards/Fabled Feast.png`
+- `cards/Fae Battalion.png`
+- `cards/Fae Merchant.png`
+- `cards/Faithful Friend.png`
+- `cards/False Prophet.png`
+- `cards/Family Heirloom.png`
+- `cards/Favored Son.png`
+- `cards/Fearsome General.png`
+- `cards/Field Promotion.png`
+- `cards/Fire Talkers.png`
+- `cards/Firebrand.png`
+- `cards/Forced Labor.png`
+- `cards/Forest Paths.png`
+- `cards/Forest Warden.png`
+- `cards/Friendly Familiar.png`
+- `cards/Gambling Hall.png`
+- `cards/Garrison.png`
+- `cards/Garrison Armory.png`
+- `cards/Glamor.png`
+- `cards/Gleaming Armor.png`
+- `cards/Golem Legions.png`
+- `cards/Grasping Vines.png`
+- `cards/Great Crusade.png`
+- `cards/Great Feast.png`
+- `cards/Great Herd.png`
+- `cards/Hearts and Minds.png`
+- `cards/Herald.png`
+- `cards/Homesteaders.png`
+- `cards/Honor Guard.png`
+- `cards/Horse Archers.png`
+- `cards/Hospital.png`
+- `cards/Hospitality.png`
+- `cards/Hunger.png`
+- `cards/Hunting Party.png`
+- `cards/Initiation Rite.png`
+- `cards/Insect Swarm.png`
+- `cards/Insomnia.png`
+- `cards/Jinx.png`
+- `cards/Key to the City.png`
+- `cards/Kindred Warriors.png`
+- `cards/Knights Errant.png`
+- `cards/Lancers.png`
+- `cards/Land Warden.png`
+- `cards/League Treaty.png`
+- `cards/Levelers.png`
+- `cards/Longbows.png`
+- `cards/Lost Tongue.png`
+- `cards/Map Library.png`
+- `cards/Marriage.png`
+- `cards/Marsh Spirit.png`
+- `cards/Master at Arms.png`
+- `cards/Master of Disguise.png`
+- `cards/Memory of Nature.png`
+- `cards/Mercenaries.png`
+- `cards/Messenger.png`
+- `cards/Military Parade.png`
+- `cards/Mountain Giant.png`
+- `cards/Mounted Library.png`
+- `cards/Mounted Patrol.png`
+- `cards/Moving Market.png`
+- `cards/Mushrooms.png`
+- `cards/Nature Worship.png`
+- `cards/Naysayers.png`
+- `cards/New Growth.png`
+- `cards/News from Afar.png`
+- `cards/Observatory.png`
+- `cards/Old Songs.png`
+- `cards/Oracle.png`
+- `cards/Outriders.png`
+- `cards/Palanquin.png`
+- `cards/Peace Envoy.png`
+- `cards/Pied Piper.png`
+- `cards/Pilgrimage.png`
+- `cards/Plague Engines.png`
+- `cards/Pledge of Defense.png`
+- `cards/Pledge to Discord.png`
+- `cards/Pressgangs.png`
+- `cards/Quartermaster.png`
+- `cards/Rain Boots.png`
+- `cards/Rangers.png`
+- `cards/Relic Hunter.png`
+- `cards/Reliquary Raid.png`
+- `cards/Resettle.png`
+- `cards/Revelation.png`
+- `cards/Rival Khan.png`
+- `cards/Roving Terror.png`
+- `cards/Rowdy Pub.png`
+- `cards/Royal Stables.png`
+- `cards/Royal Tax.png`
+- `cards/Rusting Ray.png`
+- `cards/Saddle Makers.png`
+- `cards/Salad Days.png`
+- `cards/Scouts.png`
+- `cards/Scryer.png`
+- `cards/Sealing Ward.png`
+- `cards/Search Party.png`
+- `cards/Second Chance.png`
+- `cards/Second Wind.png`
+- `cards/Secret Police.png`
+- `cards/Secret Signal.png`
+- `cards/Shield Wall.png`
+- `cards/Shifting Fog.png`
+- `cards/Siege Engines.png`
+- `cards/Signal Trees.png`
+- `cards/Silver Tongue.png`
+- `cards/Skilled Merchants.png`
+- `cards/Sleight of Hand.png`
+- `cards/Small Friends.png`
+- `cards/Sneak Attack.png`
+- `cards/Special Envoy.png`
+- `cards/Specialist.png`
+- `cards/Spell Breaker.png`
+- `cards/Spinning Bee.png`
+- `cards/Spirit Snare.png`
+- `cards/Spoiled Supplies.png`
+- `cards/Storm Caller.png`
+- `cards/Storyteller.png`
+- `cards/Taming Charm.png`
+- `cards/Tavern Songs.png`
+- `cards/Tents.png`
+- `cards/Terror Spells.png`
+- `cards/The Gathering.png`
+- `cards/The Great Levy.png`
+- `cards/The Old Oak.png`
+- `cards/The Red Seer.png`
+- `cards/Threatening Roar.png`
+- `cards/Toll Roads.png`
+- `cards/Town Meeting.png`
+- `cards/Tracker.png`
+- `cards/Traveling Doctor.png`
+- `cards/Traveling Negotiator.png`
+- `cards/Tribute Spoils.png`
+- `cards/True Names.png`
+- `cards/True Oath.png`
+- `cards/Tutor.png`
+- `cards/Twin Brother.png`
+- `cards/Tyrant.png`
+- `cards/Unstable Summon.png`
+- `cards/Village Constable.png`
+- `cards/Village Idiot.png`
+- `cards/Vow of Beastkin.png`
+- `cards/Vow of Kinship.png`
+- `cards/Vow of Obedience.png`
+- `cards/Vow of Peace.png`
+- `cards/Vow of Poverty.png`
+- `cards/Vow of Wandering.png`
+- `cards/Vow of Wisdom.png`
+- `cards/Walled Garden.png`
+- `cards/War Tortoise.png`
+- `cards/Ward of Silence.png`
+- `cards/Warning Signals.png`
+- `cards/Watchdog.png`
+- `cards/Way Station.png`
+- `cards/Wayside Inn.png`
+- `cards/Welcoming Party.png`
+- `cards/Whispering Leaves.png`
+- `cards/Wild Allies.png`
+- `cards/Wild Cry.png`
+- `cards/Wild Mounts.png`
+- `cards/Witch's Bargain.png`
+- `cards/Wizard School.png`
+- `cards/Wizard's Conclave.png`
+- `cards/Wolves.png`
+- `cards/Wrestlers.png`
+- `cards/Zealots.png`
+- `tts/backs/denizen-back.jpg`
+- `tts/backs/vision-back.jpg`
+- `tts/backs/relic-back.jpg`
+- `tts/backs/legacy-back.jpg`

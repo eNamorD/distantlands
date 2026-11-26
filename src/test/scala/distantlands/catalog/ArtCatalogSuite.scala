@@ -1,5 +1,7 @@
 package distantlands.catalog
 
+import java.nio.file.{Files, Path}
+
 import distantlands.gameplay.cards.NewFoundations
 import distantlands.protocol.art.ArtCatalog
 import distantlands.protocol.projection.VisionCardPresentation
@@ -66,3 +68,11 @@ class ArtCatalogSuite extends munit.FunSuite:
       assert(path.matches("""(cards|tts)/[^\\]+\.(png|jpg|webp)"""), path)
       assert(!path.split('/').contains(".."), path)
     }
+
+  /** The page a host assembles the folder from must list what the server
+    * serves, no more and no less. */
+  test("game-art.md lists exactly the catalog's paths, in order"):
+    val page = Files.readString(Path.of("docs", "operations", "game-art.md"))
+    val listed = page.linesIterator.dropWhile(_ != "## Paths")
+      .collect { case s"- `$path`" => path }.toVector
+    assertEquals(listed, ArtCatalog.allPaths)
