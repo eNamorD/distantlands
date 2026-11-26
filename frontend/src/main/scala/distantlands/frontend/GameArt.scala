@@ -41,6 +41,13 @@ private[frontend] object GameArt:
   private var loaded = Set.empty[String]
   private var failed = Set.empty[String]
 
+  /** Counts every change of what `url` may answer: the manifest arriving
+    * and each flip of the preference. A surface that does not redraw what
+    * it has drawn, as the game log does not, compares it to know when it
+    * must. */
+  private var changes = 0
+  def version: Int = changes
+
   def manifest: Manifest = current
 
   /** Reads the preference from `browser`, or keeps it for the page alone
@@ -55,6 +62,7 @@ private[frontend] object GameArt:
         .flatMap(response => Try(ujson.read(response.body)("files").arr
           .map(_.str).toSet).toOption)
         .fold[Manifest](Manifest.Failed)(Manifest.Listed(_))
+      changes += 1
       listener()
     }
 
@@ -63,6 +71,7 @@ private[frontend] object GameArt:
     current = manifest
     storage = store
     chosen = None
+    changes += 1
     listener()
 
   /** `listener` runs when the manifest arrives and when the preference
@@ -75,6 +84,7 @@ private[frontend] object GameArt:
   def setEnabled(on: Boolean): Unit =
     chosen = Some(on)
     storage.write(PreferenceKey, if on then "on" else "off")
+    changes += 1
     listener()
 
   /** Where `key`'s image is served, when the preference is on and the
@@ -99,5 +109,6 @@ private[frontend] object GameArt:
     storage = new MemoryChronicleStorage()
     chosen = None
     listener = () => ()
+    changes += 1
     loaded = Set.empty
     failed = Set.empty
