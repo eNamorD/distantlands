@@ -65,10 +65,10 @@ class RoundWheelSuite extends munit.FunSuite:
     val segment = WorldBoardRenderer.roundSegment(4)
     val image = one(round(wheel, 4), "image.art")
     assertEquals(image.getAttribute("href"), "/art/tts/tokens/usurper.png")
-    assertEquals(image.getAttribute("style"), "width: 44px; height: 45px;")
-    assertEquals(image.getAttribute("x").toDouble, segment.centreX - 22,
+    assertEquals(image.getAttribute("style"), "width: 54px; height: 55px;")
+    assertEquals(image.getAttribute("x").toDouble, segment.centreX - 27,
       0.001)
-    assertEquals(image.getAttribute("y").toDouble, segment.centreY - 22.5,
+    assertEquals(image.getAttribute("y").toDouble, segment.centreY - 27.5,
       0.001)
     // The file stands point up; turned by the wedge's angle less a
     // quarter, its point faces the hub.

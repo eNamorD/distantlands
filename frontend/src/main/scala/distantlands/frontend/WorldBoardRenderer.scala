@@ -587,7 +587,7 @@ private[frontend] object WorldBoardRenderer:
         // The file stands point up: turned by the wedge's angle less a
         // quarter, the point faces the hub.
         ArtLayer.attachMark(group, marker, Some(ArtCatalog.usurperMarker),
-          segment.centreX, segment.centreY, 44, 45, segment.middle - 90)
+          segment.centreX, segment.centreY, 54, 55, segment.middle - 90)
       if round == track.round then
         val current = svgElement("path")
         current.setAttribute("d", segment.path)
