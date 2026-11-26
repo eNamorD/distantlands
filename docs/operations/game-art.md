@@ -16,16 +16,20 @@ face for that one card.
   cards/    card faces
   tts/
     backs/  card backs
+    mat/    the mat
 ```
 
 - `cards/` is a copy of the Buried Giant card database's Oath images
   (`bgs-cards`, `content/card-images/oath/en-US`), the whole directory.
   A card New Foundations reprints is read from its file ending
   ` (NF).png`; a denizen it left alone is read from the base file that
-  carries the bare name. Files the list below does not name are ignored.
+  carries the bare name. The site, banner, foundation and Oath goal cards
+  are read from the same directory. Files the list below does not name
+  are ignored.
 - `tts/backs/` holds the card backs of the Tabletop Simulator mod
   "Oath: New Foundations": the denizen, Vision, relic and legacy backs,
   saved under the names below.
+- `tts/mat/` holds the mat from the same mod, saved as `mat.jpg`.
 
 The server follows symbolic links, so `cards/` may be a link to a clone
 of the card database, and any single file may be a link.
@@ -446,3 +450,48 @@ Every path the table can ask for, relative to the folder.
 - `tts/backs/vision-back.jpg`
 - `tts/backs/relic-back.jpg`
 - `tts/backs/legacy-back.jpg`
+- `cards/Ancient City (NF).png`
+- `cards/Broken Peaks (NF).png`
+- `cards/Buried Giant (NF).png`
+- `cards/Deep Woods (NF).png`
+- `cards/Desolate Shore (NF).png`
+- `cards/Dunes (NF).png`
+- `cards/Fair Isle (NF).png`
+- `cards/Golden Valley (NF).png`
+- `cards/Great Slum (NF).png`
+- `cards/Green Shore (NF).png`
+- `cards/Headwaters (NF).png`
+- `cards/Hidden Place (NF).png`
+- `cards/Mines (NF).png`
+- `cards/Narrow Pass (NF).png`
+- `cards/Painted Towers (NF).png`
+- `cards/Riverbank (NF).png`
+- `cards/Rocky Coast (NF).png`
+- `cards/Salt Flats (NF).png`
+- `cards/Shrouded Woods (NF).png`
+- `cards/Solitary Pillar (NF).png`
+- `cards/Standing Stones (NF).png`
+- `cards/Steppe (NF).png`
+- `cards/Sunken Isles (NF).png`
+- `cards/Tidal Marshes (NF).png`
+- `cards/Banner of the People's Favor - Mob (NF).png`
+- `cards/Banner of the People's Favor - Grand Council (NF).png`
+- `cards/Banner of the Darkest Secret - Wandering Flame (NF).png`
+- `cards/Banner of the Darkest Secret - Festival (NF).png`
+- `cards/Foundation I - Imperial Maps (NF).png`
+- `cards/Foundation I - Wide Horizons (NF).png`
+- `cards/Foundation II - Powerful Tribes (NF).png`
+- `cards/Foundation II - Movers and Shakers (NF).png`
+- `cards/Foundation III - Quiet Ambitions (NF).png`
+- `cards/Foundation III - Public Ambitions (NF).png`
+- `cards/Foundation IV - Ties of Fellowship (NF).png`
+- `cards/Foundation IV - Teeming World (NF).png`
+- `cards/Foundation V - Mob's Favor (NF).png`
+- `cards/Foundation V - Grand Council (NF).png`
+- `cards/Foundation VI - Wandering Flame (NF).png`
+- `cards/Foundation VI - Festival (NF).png`
+- `cards/Supremacy Oath (NF).png`
+- `cards/Protection Oath (NF).png`
+- `cards/Devotion Oath (NF).png`
+- `cards/People Oath (NF).png`
+- `tts/mat/mat.jpg`

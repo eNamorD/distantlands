@@ -140,6 +140,52 @@ object ArtCatalog:
     "Vision of Conquest; Vision of Faith; Vision of Rebellion; " +
       "Vision of Sanctuary; Conspiracy")
 
+  /** Every site. */
+  val sites: Vector[String] = names("""
+    Ancient City; Broken Peaks; Buried Giant; Deep Woods; Desolate Shore;
+    Dunes; Fair Isle; Golden Valley; Great Slum; Green Shore; Headwaters;
+    Hidden Place; Mines; Narrow Pass; Painted Towers; Riverbank; Rocky
+    Coast; Salt Flats; Shrouded Woods; Solitary Pillar; Standing Stones;
+    Steppe; Sunken Isles; Tidal Marshes
+    """)
+
+  /** A banner's file for each face, by the projection's face key. */
+  private val banners: Vector[(String, ArtKey)] = Vector(
+    "mob" -> "Banner of the People's Favor - Mob",
+    "grand-council" -> "Banner of the People's Favor - Grand Council",
+    "wandering-flame" -> "Banner of the Darkest Secret - Wandering Flame",
+    "festival" -> "Banner of the Darkest Secret - Festival")
+    .map((face, name) => face -> ArtKey(s"cards/$name (NF).png"))
+
+  private val FoundationNumerals = Vector("I", "II", "III", "IV", "V", "VI")
+
+  /** Each foundation card's two faces, by its number, 1 to 6, and the
+    * face's printed name. */
+  private val foundations: Vector[((Int, String), ArtKey)] = Vector(
+    1 -> "Imperial Maps", 1 -> "Wide Horizons",
+    2 -> "Powerful Tribes", 2 -> "Movers and Shakers",
+    3 -> "Quiet Ambitions", 3 -> "Public Ambitions",
+    4 -> "Ties of Fellowship", 4 -> "Teeming World",
+    5 -> "Mob's Favor", 5 -> "Grand Council",
+    6 -> "Wandering Flame", 6 -> "Festival")
+    .map((number, name) => (number, name) -> ArtKey(
+      s"cards/Foundation ${FoundationNumerals(number - 1)} - $name (NF).png"))
+
+  /** Each Oath goal card, by the projection's goal key. The files are
+    * not named for the card's title; the card data names them. */
+  private val oathGoals: Vector[(String, ArtKey)] = Vector(
+    "supremacy" -> "Supremacy Oath", "protection" -> "Protection Oath",
+    "devotion" -> "Devotion Oath", "the-people" -> "People Oath")
+    .map((goal, name) => goal -> ArtKey(s"cards/$name (NF).png"))
+
+  /** The mat the World pane is laid out on. */
+  val mat: ArtKey = ArtKey("tts/mat/mat.jpg")
+
+  def banner(face: String): Option[ArtKey] = banners.toMap.get(face)
+  def foundation(number: Int, name: String): Option[ArtKey] =
+    foundations.toMap.get((number, name))
+  def oathGoal(goal: String): Option[ArtKey] = oathGoals.toMap.get(goal)
+
   /** Every card with a "(NF)" file. */
   private val reprinted: Vector[String] =
     reprintedDenizens ++ relics ++ edificeFaces ++ legacies ++ visions
@@ -148,7 +194,8 @@ object ArtCatalog:
     * else the base game's (implementation ruling R1). */
   private val facePaths: Vector[(String, String)] =
     reprinted.map(name => name -> s"cards/$name (NF).png") ++
-      baseDenizens.map(name => name -> s"cards/$name.png")
+      baseDenizens.map(name => name -> s"cards/$name.png") ++
+      sites.map(name => name -> s"cards/$name (NF).png")
 
   private val faces: Map[String, ArtKey] =
     facePaths.map((name, path) => name -> ArtKey(path)).toMap
@@ -170,5 +217,10 @@ object ArtCatalog:
   /** Every path the client can ask for, each once: the server's allowlist
     * and the list in `docs/operations/game-art.md`. */
   val allPaths: Vector[String] =
-    facePaths.map(_._2) ++ Vector("denizen", "vision", "relic", "legacy")
-      .map(kind => backs(kind).path)
+    (reprinted.map(name => s"cards/$name (NF).png") ++
+      baseDenizens.map(name => s"cards/$name.png") ++
+      Vector("denizen", "vision", "relic", "legacy")
+        .map(kind => backs(kind).path)) ++
+      sites.map(name => s"cards/$name (NF).png") ++
+      banners.map(_._2.path) ++ foundations.map(_._2.path) ++
+      oathGoals.map(_._2.path) :+ mat.path
