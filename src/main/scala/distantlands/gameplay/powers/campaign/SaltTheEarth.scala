@@ -10,8 +10,8 @@ object SaltTheEarthCard extends Denizen(DenizenId("89"), "Salt the Earth", Suit.
   val power = PrintedPower(PowerId("denizen.salt-the-earth"),
     persistent = false, cost = Cost.free,
     modifier = Some(ModifierMark.AttackPlan),
-    text = "If you're victorious in a conquest, bury all cards at one " +
-      "site you targeted.")
+    text = "If you're victorious in a conquest, bury all denizens " +
+      "at one site you targeted.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Salt the Earth (card 89), an attacker's battle plan: "If you're

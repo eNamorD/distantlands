@@ -10,8 +10,9 @@ object GreatArchitectCard extends Legacy(LegacyId("L07"), "Great Architect",
   val power = PrintedPower(PowerId("legacy.great-architect"),
     persistent = false, cost = Cost.free,
     text = "**IF YOU ARE AN IMPERIAL:** **CHRONICLE (THRONE):** You " +
-      "perform Build Edifice and may build any edifice _(not just " +
-      "a matching one)_. Do this even if the Iron Hand is in play.")
+      "perform Build Edifice and may replace a denizen with an " +
+      "available edifice of any suit. _It doesn't have to " +
+      "match!_ Do this even if the Iron Hand is in play.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Great Architect (legacy L07): "If you are an Imperial: you perform Build

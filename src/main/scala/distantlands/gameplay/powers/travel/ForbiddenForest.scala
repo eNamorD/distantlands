@@ -16,8 +16,8 @@ object ForbiddenForestCard extends Edifice(EdificeId("E29"), Suit.Beast):
   object ruined extends EdificeFace("Bandit Forest"):
     val power = PrintedPower(PowerId("edifice.e29.ruined"),
       persistent = true, cost = Cost.free,
-      text = "Imperials **cannot** place [favor]/[secret] on cards ruled " +
-        "by bandits or use their non-persistent powers.")
+      text = "Imperials **cannot** place [favor]/[secret] on denizens " +
+        "ruled by bandits or use their non-persistent powers.")
     val powers: Vector[PrintedPower] = Vector(power)
 
 /** Forbidden Forest (E29, intact), a persistent rule: "Enemies of this

@@ -6,8 +6,9 @@ import distantlands.model._
 object BanditCrownCard extends Relic(RelicId("R11"), "Bandit Crown", value = 56, defense = 3):
   val power = PrintedPower(PowerId("relic.bandit-crown"),
     persistent = true, cost = Cost.free,
-    text = "You may use cards at sites ruled by bandits as if you ruled " +
-      "them. _You may use these battle plans against bandits._")
+    text = "You may use denizens at sites ruled by bandits as if " +
+      "you ruled them. _You may use these battle plans against " +
+      "bandits._")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Bandit Crown (R11): its holder uses the cards at bandit-ruled sites as
