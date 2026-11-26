@@ -70,3 +70,32 @@ class ArtRoutesSuite extends munit.FunSuite:
         "/art/cards").foreach(path =>
         assertEquals(server.get(path).statusCode(), 404, path))
     }
+
+  test("only the art segment is the art routes': /artifacts falls " +
+      "through to the routes after them, and bare /art is not found"):
+    import akka.http.scaladsl.server.Directives.*
+    val server = HttpTestServer.start("art-prefix-test")(_ =>
+      ArtRoutes.route(ArtLibrary.empty) ~ path("artifacts")(complete("other")))
+    try
+      val other = server.get("/artifacts")
+      assertEquals(other.statusCode(), 200)
+      assertEquals(other.body(), "other")
+      assertEquals(server.get("/art").statusCode(), 404)
+      assertEquals(server.get("/art/").statusCode(), 404)
+      assertEquals(server.get("/art/manifest.json").statusCode(), 200)
+    finally server.close()
+
+  /** A host may link `cards/` to a clone of the card database
+    * (implementation ruling R10). */
+  test("a file reached through a symbolic link is listed and served"):
+    import java.nio.file.Files
+    val clone = ArtFolders.onePixelFolder("Alchemist (NF).png")
+    val folder = ArtFolders.onePixelFolder("tts/backs/relic-back.jpg")
+    Files.createSymbolicLink(folder.resolve("cards"), clone)
+    serving(ArtLibrary.scan(Some(folder), catalog)) { server =>
+      assertEquals(files(server), Vector("cards/Alchemist (NF).png",
+        "tts/backs/relic-back.jpg"))
+      assertEquals(server.getBytes("/art/cards/Alchemist%20(NF).png")
+        .body().toVector, ArtFolders.onePixel.toVector)
+    }
+

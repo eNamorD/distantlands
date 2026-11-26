@@ -19,16 +19,19 @@ object ArtRoutes:
   def route(art: ArtLibrary): Route =
     val manifest = ujson.write(ujson.Obj("files" ->
       ujson.Arr.from(art.files.keys.toVector.sorted.map(ujson.Str(_)))))
-    pathPrefix("art"):
+    // The whole segment, so a path such as `/artifacts` is left to the
+    // routes after these. The matcher takes the slash after `art`, so the
+    // routes below match what follows it without one.
+    pathPrefix("art" ~ (Slash | PathEnd)):
       get:
-        path("manifest.json") {
+        rawPathPrefix("manifest.json" ~ PathEnd) {
           respondWithHeader(ManifestCacheControl):
             complete(HttpEntity(ContentTypes.`application/json`, manifest))
         } ~
           // The request's segments, decoded and joined, are looked up in
           // the scan. Anything the scan did not keep is not found, without
           // a look at the disk: a `..` segment names no catalog path.
-          path(Segments) { segments =>
+          rawPathPrefix(Segments ~ PathEnd) { segments =>
             art.files.get(segments.mkString("/")) match
               case Some(file) =>
                 respondWithHeader(ArtCacheControl):
