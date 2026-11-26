@@ -21,6 +21,13 @@ class DesktopSettingsSuite extends munit.FunSuite:
     )
   }
 
+  directory.test("the art folder is a known setting (game art ruling R5)") { dir =>
+    val file = write(dir, "DLQ_ART_PATH = C:/DistantLandsData/art \n")
+    assertEquals(DesktopSettings.load(file),
+      Right(Map("DLQ_ART_PATH" -> "C:/DistantLandsData/art")))
+    assert(DesktopSettings.Keys.contains("DLQ_ART_PATH"))
+  }
+
   directory.test("an unknown key is a configuration error naming the file") { dir =>
     val file = write(dir, "DLQ_PORT=9000\nDLQ_PROT=9001\n")
     assertEquals(DesktopSettings.load(file), Left(s"$file: unknown setting DLQ_PROT"))

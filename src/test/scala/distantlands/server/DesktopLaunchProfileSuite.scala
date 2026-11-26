@@ -38,6 +38,17 @@ class DesktopLaunchProfileSuite extends munit.FunSuite:
     assertEquals(launch.environment.get("DLQ_PORT"), Some("9000"))
     assertEquals(launch.environment.get("DLQ_PUBLIC_BASE_URL"), Some("http://192.168.1.20:9000"))
 
+  test("the settings file's art folder reaches the server, and a flag " +
+      "or the environment overrides it"):
+    assertEquals(resolve(settings = Map("DLQ_ART_PATH" -> "/data/art"))
+      .environment.get("DLQ_ART_PATH"), Some("/data/art"))
+    assertEquals(resolve(environment = Map("DLQ_ART_PATH" -> "/env/art"),
+      settings = Map("DLQ_ART_PATH" -> "/data/art"))
+      .environment.get("DLQ_ART_PATH"), Some("/env/art"))
+    assertEquals(resolve(arguments = Array("--art-path", "/flag/art"),
+      settings = Map("DLQ_ART_PATH" -> "/data/art"))
+      .environment.get("DLQ_ART_PATH"), None)
+
   test("environment variables override the settings file"):
     val launch = resolve(environment = Map("DLQ_PORT" -> "9100"), settings = Map("DLQ_PORT" -> "9000"))
     assertEquals(launch.environment.get("DLQ_PORT"), Some("9100"))
