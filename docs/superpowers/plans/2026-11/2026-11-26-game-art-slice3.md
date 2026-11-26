@@ -857,13 +857,14 @@ Add a row to the options table:
 `| \`--art-path DIR\` | \`DLQ_ART_PATH\` | unset; no game art |`, and a
 short paragraph under the table: what the folder is, that the server
 reads it once at startup and logs what it found, that a path that is not
-a folder serves no art and logs a line (R4), and a link to
-[game art](game-art.md).
+a folder serves no art and logs a line (R4), and a link to `game-art.md`
+with the text "game art".
 
 - [ ] **Step 2: The quick start**
 
 Add one optional step, after the server is running and reachable: "To
-show the game's own art, see [game art](game-art.md)." Place it where the
+show the game's own art, see game art.", the last two words linking to
+`game-art.md`. Place it where the
 page lists optional setup; do not interrupt the numbered first-run steps.
 
 - [ ] **Step 3: `DESIGN.md`**
