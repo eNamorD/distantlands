@@ -71,20 +71,29 @@ Society.
 "Denizens" replaces "cards" on six of them. Edifices are denizens (owner
 ruling), so nothing else at a site is a card and the set is the same.
 
+## Follow-up rulings (2026-11-26)
+
+- **R03 Brass Horse** takes the bgs-cards text. The card does not say
+  "different", so the pawn's own site counts as a match and the pawn may
+  stay; with no match, any site may be chosen, the pawn's own too.
+- **The 60 denizens the print sheets revised but the bgs-cards New
+  Foundations file omits** are in bgs-cards' denizen deck file, tagged New
+  Foundations, and bgs-cards governs them too. Their 60 images were read
+  and compared:
+  - **219 Bandit Paymaster** is "If your site is ruled by bandits, gain 2
+    warbands." No bandit is removed. It was "remove a bandit except the
+    last to gain 3 warbands".
+  - Bandit Prince, Spinning Bee, Forest Warden, Old Songs, Baron and
+    Wizard's Conclave take the bgs-cards wording; their behaviour already
+    matched it.
+  - Costs, suits and battle plan sides all match.
+- **Where the bgs-cards text disagrees with its own card image, the image
+  wins.** The code already followed the images (Elders, Extra Provisions,
+  Walled Garden, Ancient Binding, Pressgangs, Levelers).
+- **L10 Royal Line** already asks at the end of the game, before Start
+  Chronicle (Legacy in-play powers R36). Only its text was out of date.
+
 ## Open
 
-- **R03 Brass Horse.** The print sheet says "a different site"; bgs-cards
-  says "a site". Whether the pawn may stay where it stands is undecided, so
-  the card keeps its old text and behaviour.
-- **Denizens revised on the print sheets but absent from the bgs-cards New
-  Foundations set** (60 cards). bgs-cards lists them only in its base-game
-  files, and its text differs from the print sheets on 12: in substance on
-  Bandit Paymaster, Bandit Prince and Spinning Bee, in wording on the rest.
-  They keep the print-sheet text until the owner rules which source governs
-  them.
-- **bgs-cards text that disagrees with its own card image**, on unrevised
-  denizens: Elders (text "Gain favor", image "Gain secret"), Extra
-  Provisions (text "+2", image "+"), Walled Garden (text "±", image "+"),
-  Ancient Binding, Pressgangs, Levelers. The code follows the images.
 - The reference component catalog is corrected for the relic costs only. It
   is not kept in sync with the card classes.

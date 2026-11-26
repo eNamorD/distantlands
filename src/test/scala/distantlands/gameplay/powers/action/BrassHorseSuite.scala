@@ -71,22 +71,25 @@ class BrassHorseSuite extends munit.FunSuite:
       DunesSite.id)
     assertEquals(replayed(start, parked.events ++ done.events), Right(done.state))
 
-  test("the current site never counts as a match"):
+  test("the current site counts as a match, so the pawn may stay"):
     val start = atSite(cradleTopped(beastTop), beastElsewhere,
       AncientCitySite.id)
-    val done = accepted(use(start, BrassHorse.id, horse))
+    val parked = accepted(use(start, BrassHorse.id, horse))
+    assert(awaits(parked, BrassHorse.decisionId))
+    val done = accepted(choose(parked.state, BrassHorse.decisionId,
+      site(AncientCitySite)))
     assert(backToActing(done))
-    assertEquals(Look(ready(done.state)).pawn(actor),
-      DeepWoodsSite.id)
+    assertEquals(Look(ready(done.state)).pawn(actor), AncientCitySite.id)
+    assertEquals(ops(done.events).collect { case move: Move => move },
+      Vector.empty)
 
-  test("with no matching site any other site may be chosen"):
+  test("with no matching site any site may be chosen, the current one " +
+      "too"):
     val start = cradleTopped(nomadTop)
     val parked = accepted(use(start, BrassHorse.id, horse))
     assert(awaits(parked, BrassHorse.decisionId))
-    assertEquals(
-      choose(parked.state, BrassHorse.decisionId, site(AncientCitySite))
-        .left.toOption,
-      Some(Refusals.notOffered(BrassHorse.decisionId)))
+    assert(choose(parked.state, BrassHorse.decisionId,
+      site(AncientCitySite)).isRight)
     val done = accepted(choose(parked.state, BrassHorse.decisionId,
       site(DesolateShoreSite)))
     assertEquals(Look(ready(done.state)).pawn(actor),

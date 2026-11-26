@@ -13,9 +13,10 @@ object SpinningBeeCard extends Denizen(DenizenId("232"), "Spinning Bee", Suit.He
   val power = PrintedPower(PowerId("denizen.spinning-bee"),
     persistent = false, cost = Cost.free,
     modifier = Some(ModifierMark.Action(MajorActionType.Search)),
-    text = "Declare a suit. Draw from your discard pile until you draw " +
-      "a matching card. If you draw none, discard them all. You " +
-      "**cannot** use other Search modifiers.")
+    text = "You may declare a suit, then draw from your discard " +
+      "pile until you draw that suit. If you don't draw it, " +
+      "discard all drawn cards. You **cannot** use other " +
+      "modifiers.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Spinning Bee (card 232), a free selected Search modifier (catalog batch

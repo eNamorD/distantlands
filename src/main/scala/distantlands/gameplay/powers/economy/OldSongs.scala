@@ -10,8 +10,8 @@ object OldSongsCard extends Denizen(DenizenId("229"), "Old Songs", Suit.Hearth):
   val power = PrintedPower(PowerId("denizen.old-songs"),
     persistent = false, cost = Cost.free,
     modifier = Some(ModifierMark.Action(MajorActionType.Trade)),
-    text = "You may trade with cards that have exactly one [secret] on " +
-      "them.")
+    text = "You may trade with denizens that have exactly one " +
+      "[secret] on them.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Old Songs (card 229), a selected Trade modifier with no cost: the Trade
