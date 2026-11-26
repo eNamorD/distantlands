@@ -442,8 +442,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   font-weight: 700; text-align: center; }
 /* The map is the mat: one board with the mat's proportions. Everything on
    it is placed from MatLayout as a percentage of the board, so the mat's
-   image can lie under it without moving anything. Until then the board
-   paints the mat's three lights, blended as the mat blends them. */
+   image lies under it without moving anything. Where the image is not
+   shown the board paints the mat's three lights, blended as the mat
+   blends them. */
 .mat-board { position: relative; width: 100%; aspect-ratio: var(--ratio-mat);
   overflow: hidden; border-radius: 9px;
   background: linear-gradient(90deg, #213a24 0 27%, #1d3441 39% 61%,
@@ -2451,7 +2452,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .card-overlay-body > .card-face-vision { width: var(--card-h);
   height: calc(var(--card-h) / (var(--ratio-legacy))); }
 /* A card the table shows as words has its box here, at its real ratio,
-   where its image will go. */
+   where its image goes. */
 .card-plate { display: flex; align-items: center; justify-content: center;
   box-sizing: border-box; flex: 0 0 auto; height: calc(var(--card-h) * 1.9);
   padding: 0.6em; border: 1px solid var(--line); border-radius: 0.35em;

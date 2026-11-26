@@ -2,8 +2,9 @@
 
 The real size and proportions of each game asset the table draws, and where
 each number came from. The stylesheet's ratio table and `MatLayout` are
-built from this record; roadmap item L3 reads it for the box each licensed
-image must fill. It holds numbers only. The assets themselves are licensed
+built from this record, and
+[game art](../operations/game-art.md) fills each box with its licensed
+image. It holds numbers only. The assets themselves are licensed
 and live under the ignored `reference/assets/`.
 
 ## Cards

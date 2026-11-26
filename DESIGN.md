@@ -661,7 +661,8 @@ Solid, bordered, no gloss. Every action button is at least 44px tall; compact
 controls are 30px.
 - **Shape:** 4px on map controls and the dev toggle; 7px on load-game,
   the chronicle save dialog's buttons and restart.
-- **Control** (map zoom, Fit, dev tools, overlay close, the log's New chip):
+- **Control** (map zoom, Fit, Settings and its Close, dev tools, overlay
+  close, the log's New chip):
   Raised fill, `#e8d9bb`
   text, Brass Line border, `4px 9px` padding, 0.78rem. Hover: Pressed fill,
   Bright Cream border, the Action face's own answer. The two player pills
@@ -1038,10 +1039,54 @@ top of the overlay body's gap, and reads at the details column's size,
   `−` / `+` buttons of 2.2em around a tabular-nums count.
 
 ### Navigation
-There is no navigation bar. The Players pane header carries the Dev tools
-toggle; the World pane header carries the zoom controls (−, percentage
+There is no navigation bar. The Players pane header carries Settings for
+every player and, in development, the Dev tools toggle beside it; the
+World pane header carries the zoom controls (−, percentage
 label, +, Fit). The developer panel is a fixed aside, top-right, 540px wide,
-in the off-palette purple with the overlay lift.
+in the off-palette purple with the overlay lift. Settings opens in the
+same place, 360px wide, on Base with a Brass Line border; the two never
+show together.
+
+### Game Art
+A player may switch **Game art** on in Settings; the table then shows the
+host's licensed images in place of what it draws. The switch is a
+full-width Control 44px tall, its name at the left and On or Off at the
+right; on, it wears the selection colours. When the server has no art it
+wears the Withheld face, with the reason on the line below and in its
+hover note.
+
+- **The layer.** An image is laid over the box that draws the same thing
+  and never sizes it; every box already has its real proportions, so the
+  layout is the same with art or without. When the image has loaded the
+  box is `art-ready` and its `printed` content is hidden with opacity,
+  which keeps the text in the accessibility tree. Printed content follows
+  its nearest box, so each box falls back to its drawing alone when its
+  image is slow, missing or failed.
+- **What stays over art.** Tokens, forces, pawns, counts, option rings
+  and badges. On a site's art, forces, loose tokens and the pawns' row
+  stand on opaque Base (a fill and a same-colour 3px shadow, no padding):
+  every player colour measures 6.6 : 1 or better on it, where the black
+  player's colour measured 4.17 : 1 on a translucent ground over white
+  art. A pile's count stands on Base too (13.2 : 1). The tracker's line
+  takes a Base halo.
+- **Site powers.** A site's power buttons are controls, not print: over
+  the site's art each shows as a chip, its label on the name band's fill
+  (`#1a1610d9`; cream on it measures 9.8 : 1 over white art and 15.8 : 1
+  over black), where and as large as the button is on the drawn face.
+- **The mat.** Over the mat a favor bank drops its own pill, unless a
+  decision offers it, and an empty pile drops its fill: the mat prints
+  both.
+- **Glyphs.** A token glyph keeps its `svg` and holds the symbol's image
+  inside it, fitted to the glyph's square. A card's text shows the printed
+  symbol; favor and secrets lying in play show the token itself, and
+  warbands and pawns the piece of their colour. The black pawn and
+  warband carry a 1px Cream edge so they read on the dark table.
+- **Dice.** A rolled face shows a square crop of its die's sheet, centred
+  in its chip; the chip keeps its size.
+- **Turned cards.** A Vision in a denizen box, a pile lying on its side
+  and a title on its plate are each turned a quarter, counter-clockwise,
+  so a quarter turn clockwise by the reader gives the upright card.
+- No transition and no animation: an image appears when it has loaded.
 
 ### Player Boards
 One board per player in the strip: 300px minimum, `6px 12px` padding,

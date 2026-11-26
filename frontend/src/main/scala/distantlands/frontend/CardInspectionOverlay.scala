@@ -127,8 +127,8 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     // Named for what it shows: it is not a card, so "Card details" would
     // misname it.
     node.setAttribute("aria-label", title)
-    // The printed card behind the words, at its real ratio, where its image
-    // will go.
+    // The printed card behind the words, at its real ratio, holding its
+    // image where the host's art has one.
     plate.foreach { kind =>
       val box = element("span", s"card-plate card-plate-$kind")
       box.appendChild(text("span", "card-name printed", title))

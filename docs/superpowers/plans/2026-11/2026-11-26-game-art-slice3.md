@@ -179,7 +179,7 @@ names the edit:
     pawns, warbands, the bandit warband, the Visions Drawn marker, the
     festival marker, the titles, the die sheets.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `ArtCatalogSuite`:
 
@@ -197,13 +197,13 @@ Append to `ArtCatalogSuite`:
 - "the die sheets are square and each listed once".
 - Update the slice 1 count test: add `+ 44` to the expected size.
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "root/testOnly distantlands.catalog.ArtCatalogSuite"`
 Expected: compilation fails, `value symbol is not a member of object
 ArtCatalog`.
 
-- [ ] **Step 3: Add the keys**
+- [x] **Step 3: Add the keys**
 
 Write each table as a private `Vector` of pairs mapped to `ArtKey`, as
 `banners` and `oathGoals` are, with a lookup `def` per kind. Build the
@@ -212,7 +212,7 @@ piece paths from `Vector("purple", "red", "blue", "yellow", "white",
 `PlayerColor`, so the test holds the list equal to `PlayerColor.all`.
 Append the new paths to `allPaths` in the order given above.
 
-- [ ] **Step 4: List the paths in `game-art.md`**
+- [x] **Step 4: List the paths in `game-art.md`**
 
 Add `symbols/` to the folder sketch and the `tts/` folders `tokens/`,
 `pieces/`, `markers/`, `titles/`, `attack-die/`, `defense-die/`, each
@@ -220,7 +220,7 @@ with one bullet naming its source (the card database's
 `content/card-symbols/oath`; the mod, as `tts/SOURCES.md` in the owner's
 folder lists it). Append the 44 bullets in `allPaths` order.
 
-- [ ] **Step 5: Run the tests and the link check**
+- [x] **Step 5: Run the tests and the link check**
 
 Run: `./sbtw "root/testOnly distantlands.catalog.ArtCatalogSuite"`
 Expected: PASS.
@@ -228,7 +228,7 @@ Expected: PASS.
 Run: `python3 scripts/check-markdown-links.py`
 Expected: no error.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add shared/src/main/scala/distantlands/protocol/art/ArtCatalog.scala \
@@ -268,7 +268,7 @@ A glyph's box is square and set by its stylesheet rule; the image is
 fitted inside it and never sizes it. The sprite's `<use>` is the glyph's
 printed mark: it hides when the glyph is ready.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `GlyphArtSuite` with `afterEach` resetting `GameArt`:
 
@@ -293,13 +293,13 @@ Create `GlyphArtSuite` with `afterEach` resetting `GameArt`:
   with art holds glyph images only inside `.printed`, so nothing new
   shows over the card's art.
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `./sbtw "frontend/testOnly distantlands.frontend.GlyphArtSuite"`
 Expected: compilation fails, `value attachGlyph is not a member of object
 ArtLayer`.
 
-- [ ] **Step 3: Write `attachGlyph` and call it**
+- [x] **Step 3: Write `attachGlyph` and call it**
 
 In `ArtLayer`, factor the URL and memory handling `attach` already has
 into a private helper both use, then:
@@ -331,7 +331,7 @@ In `RulesTextRenderer.glyph`, before `node` is returned:
 In `PowerMarks.restriction`, attach
 `ArtCatalog.restriction(kind)` to the mark's `svg` frame.
 
-- [ ] **Step 4: Add the rules, test first**
+- [x] **Step 4: Add the rules, test first**
 
 In `StylesheetArtSuite` add "a ready glyph hides its sprite and shows its
 image": `rule(".token-glyph.art-ready > use")` and
@@ -354,14 +354,14 @@ the glyph, not the glyph itself, so the guard does not apply to them. If
 it objects all the same, narrow the guard with a comment saying that a
 child selector is not the printed element; do not weaken it otherwise.
 
-- [ ] **Step 5: Run the suites**
+- [x] **Step 5: Run the suites**
 
 Run: `./sbtw frontend/test` and
 `./sbtw "root/testOnly distantlands.server.Stylesheet*"`
 Expected: PASS. `RulesTextRendererSuite`, `PowerMarksSuite`,
 `SuitGlyphSuite` and `CardFaceSuite` unedited.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/ArtLayer.scala \
@@ -397,7 +397,7 @@ git log -3
   (`ServerUiSupport.requirementCorner`), cost badges, a card's suit, the
   bank's suit, defense dice.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 - "a token lying in play holds the token's picture":
   `RulesTextRenderer.piece("favor")` holds
@@ -410,13 +410,13 @@ git log -3
   site with loose tokens and a Forge price, a bank and a banner.
 - "with art off a piece is the glyph it is today".
 
-- [ ] **Step 2: Run, see them fail, implement**
+- [x] **Step 2: Run, see them fail, implement**
 
 `piece` builds `glyph`'s element without the symbol and attaches
 `ArtCatalog.token(token).orElse(ArtCatalog.symbol(token))`. To keep one
 builder, give `glyph` a private twin taking the key.
 
-- [ ] **Step 3: Run the suites and commit**
+- [x] **Step 3: Run the suites and commit**
 
 Run: `./sbtw frontend/test`
 Expected: PASS, existing suites unedited.
@@ -463,7 +463,7 @@ computes (`force-red`, `force-empire`, `force-bandit`); read the key from
 the same match so the two cannot disagree. The warband under each band of
 the Supply track stays `glyph("warband")`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 - "a player's warbands on a card and in a site's short forces hold that
   colour's piece".
@@ -475,14 +475,14 @@ the Supply track stays `glyph("warband")`.
   it is today": the invariance comparison on a board with forces and
   pawns in three colours.
 
-- [ ] **Step 2: Implement**
+- [x] **Step 2: Implement**
 
 `warband(forces)` builds `glyph("warband")`'s element and attaches
 `ArtCatalog.warband(key)` with `attachGlyph`. In `pawnMarker`,
 `ArtLayer.attach(dot, ArtCatalog.pawn(colourKey))`, where `colourKey` is
 the player's `PlayerColor.key`.
 
-- [ ] **Step 3: Add the rules, test first**
+- [x] **Step 3: Add the rules, test first**
 
 ```css
 /* A pawn's dot holds the pawn's picture, fitted to the dot's own box:
@@ -503,7 +503,7 @@ browsers; confirm in the browser check and, if it does not, put the
 filter on the glyph's `svg` through a class the renderer adds for a black
 force.
 
-- [ ] **Step 4: Run the suites and commit**
+- [x] **Step 4: Run the suites and commit**
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/RulesTextRenderer.scala \
@@ -552,7 +552,7 @@ Secret's rules (`withRule = false`) stay drawn (Q8).
 "oathkeeper-title"))`; pass `ArtCatalog.title(oath.side)` as its art
 (Q7).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 - "the Visions Drawn marker holds its picture on the current cell".
 - "the printed festival plate holds the marker's picture; the map's band
@@ -562,7 +562,7 @@ Secret's rules (`withRule = false`) stay drawn (Q8).
 - Stylesheet: the two hide rules; `.festival-plate-printed:has(> .art)`
   and `.vision-marker` are positioned boxes.
 
-- [ ] **Step 2: Implement, run, commit**
+- [x] **Step 2: Implement, run, commit**
 
 ```bash
 git add frontend/src/main/scala/distantlands/frontend/WorldBoardRenderer.scala \
@@ -604,7 +604,7 @@ git log -3
   `top = -y / h`, each times 100%. The box is marked `art-ready` on load.
 - Consumes: `ArtCatalog.dieFace(key)`.
 
-- [ ] **Step 1: Measure the crop rectangles**
+- [x] **Step 1: Measure the crop rectangles**
 
 Start the scratch server (the die sheets are in the catalog since
 Task 1). In the browser, for each sheet, draw it into a canvas for
@@ -616,7 +616,7 @@ side whose square is cleanest. Record each face's `x`, `y`, `w`, `h` in
 the sheet's pixels, with `w` equal to `h`. Outline the seven rectangles
 on the canvases and take a screenshot of each sheet for the report.
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 In `ArtCatalogSuite`:
 
@@ -636,14 +636,14 @@ In `DieArtSuite`:
 - "an unknown face and a face with art off hold no crop".
 - "a load marks the chip ready; an error removes the crop".
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Fill the table in `ArtCatalog`, add the "Die faces" table to
 `asset-proportions.md` (columns: face, die, x, y, w, h), write
 `attachCrop`, and call it at the end of `DieFaceChip.face`:
 `ArtLayer.attachCrop(node, ArtCatalog.dieFace(key))`.
 
-- [ ] **Step 4: Add the rules, test first**
+- [x] **Step 4: Add the rules, test first**
 
 ```css
 /* A die face is a crop of its die's sheet: a square as tall as the chip,
@@ -662,7 +662,7 @@ Fill the table in `ArtCatalog`, add the "Die faces" table to
 `color: transparent` hides the doubler's "×2", which is a text node. The
 chip's fill and border stay: they frame the crop.
 
-- [ ] **Step 5: Run the suites and commit**
+- [x] **Step 5: Run the suites and commit**
 
 ```bash
 git add shared/src/main/scala/distantlands/protocol/art/ArtCatalog.scala \
@@ -699,7 +699,7 @@ is a `span.printed` inside the button; on a ready site it stops following
 the mat's printed slot shows; its count stays. With the mat not ready an
 empty pile is unchanged.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Stylesheet:
 
@@ -721,7 +721,7 @@ art and without" is already inside the invariance test; add an assertion
 that the board's markup with art holds each `.site-power` with its
 `span.printed` label.
 
-- [ ] **Step 2: Add the rules**
+- [x] **Step 2: Add the rules**
 
 ```css
 /* A site's power is a control, not print (R9, R20): over the site's art
@@ -735,7 +735,7 @@ that the board's markup with art holds each `.site-power` with its
   background: none; }
 ```
 
-- [ ] **Step 3: Amend the spec**
+- [x] **Step 3: Amend the spec**
 
 In the design's "The site card" bullet, replace the sentence about the
 buttons with: "The site-power buttons are controls, not print: over the
@@ -744,7 +744,7 @@ place it has on the drawn face (implementation rulings R15, R20)." Record
 nothing new in the rulings file; R20 and R21 are recorded when this plan
 is committed.
 
-- [ ] **Step 4: Measure the contrast**
+- [x] **Step 4: Measure the contrast**
 
 For each text colour that stands on the ground `#1a1610d9` (the power
 label's, the forces' three colours, the token count's, a pawn's name),
@@ -775,7 +775,7 @@ is reported. The same for the pile count's ground (`var(--base)`, opaque)
 and the tracker line's halo, which has no ground: report its worst case
 against the mat by sampling, in the browser check.
 
-- [ ] **Step 5: Run the suites and commit**
+- [x] **Step 5: Run the suites and commit**
 
 ```bash
 git add frontend/styles.css \
@@ -802,7 +802,7 @@ git log -3
 - Test: `src/test/scala/distantlands/server/` (a docs test, if the
   existing docs suites have a pattern for it; else none)
 
-- [ ] **Step 1: `configuration.md`**
+- [x] **Step 1: `configuration.md`**
 
 Add a row to the options table:
 `| \`--art-path DIR\` | \`DLQ_ART_PATH\` | unset; no game art |`, and a
@@ -811,14 +811,14 @@ reads it once at startup and logs what it found, that a path that is not
 a folder serves no art and logs a line (R4), and a link to `game-art.md`
 with the text "game art".
 
-- [ ] **Step 2: The quick start**
+- [x] **Step 2: The quick start**
 
 Add one optional step, after the server is running and reachable: "To
 show the game's own art, see game art.", the last two words linking to
 `game-art.md`. Place it where the
 page lists optional setup; do not interrupt the numbered first-run steps.
 
-- [ ] **Step 3: `DESIGN.md`**
+- [x] **Step 3: `DESIGN.md`**
 
 - "Navigation": the Players pane header carries Settings for every
   player, and Dev tools beside it in development.
@@ -833,7 +833,7 @@ page lists optional setup; do not interrupt the numbered first-run steps.
   (R8).
 - Fix every sentence that says an image "will" go somewhere.
 
-- [ ] **Step 4: The roadmap**
+- [x] **Step 4: The roadmap**
 
 Delete the L3 item whole, with its open question about the glance layer
 and its note about the three rectangles: both are answered (the design's
@@ -847,7 +847,7 @@ Fix each hit in a living document. In `asset-proportions.md`, "roadmap
 item L3 reads it" becomes a link to the game art design. Rulings and
 plans under `docs/superpowers/` are records and stay as written.
 
-- [ ] **Step 5: The package list**
+- [x] **Step 5: The package list**
 
 Add `"share/distantlands/game-art.md"` to `requiredFiles` in `build.sbt`,
 beside `configuration.md`.
@@ -855,7 +855,7 @@ beside `configuration.md`.
 Run: `./sbtw verifyPackageMappings`
 Expected: success.
 
-- [ ] **Step 6: Check and commit**
+- [x] **Step 6: Check and commit**
 
 Run: `python3 scripts/check-markdown-links.py`
 Expected: no error.
@@ -874,7 +874,7 @@ git log -3
 
 ### Task 9: Gate and browser check
 
-- [ ] **Step 1: Run the full gate after the last commit**
+- [x] **Step 1: Run the full gate after the last commit**
 
 ```bash
 ./sbtw test
@@ -883,7 +883,7 @@ python3 scripts/check-architecture.py
 python3 scripts/check-markdown-links.py
 ```
 
-- [ ] **Step 2: Check in the browser**
+- [x] **Step 2: Check in the browser**
 
 On the scratch server, at 1440×900, 1024×768 and 375×812:
 
@@ -916,7 +916,7 @@ On the scratch server, at 1440×900, 1024×768 and 375×812:
     and so does a favor bank offered on the ready mat (slice 2 review).
 12. No error in the browser console.
 
-- [ ] **Step 3: Stop the scratch server and report**
+- [x] **Step 3: Stop the scratch server and report**
 
 Report commits, gate numbers, the browser check with screenshots, the
 die crops, the measured contrast, deviations, open questions and anything
