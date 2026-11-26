@@ -236,3 +236,103 @@ Decision: an empty pile on a ready mat drops its drawn fill so the mat's
 printed slot shows. With the mat not ready it is unchanged.
 Reason: the mat prints the slot; a drawn box over it is duplicate print.
 Slice/files: slice 3; `frontend/styles.css`.
+
+## Slice 3
+
+**R22. How a glyph holds its image.**
+Question: the design says each glyph becomes a span holding the printed
+character and a 1em image; a glyph today is one `svg.token-glyph`.
+Decision: keep `svg.token-glyph` and add an SVG `<image>` inside it,
+hiding the sprite's `<use>` on load, with the same load, error and
+remembered behaviour as `ArtLayer`, per glyph. The design's wording is
+amended.
+Reason: no DOM change with art off, and some two hundred selectors stay
+valid.
+Slice/files: slice 3; `ArtLayer.scala`, `RulesTextRenderer.scala`.
+
+**R23. Favor and secrets: the symbol and the token.**
+Question: the folder has the printed symbols and pictures of the tokens.
+Decision: the printed symbol where a card prints it (rules text, a
+power's cost, a Forge price, a cost badge); the token's picture where
+tokens lie in play (on a card, a site, a bank, a banner).
+Reason: that is what each is on the physical table.
+Slice/files: slice 3; `RulesTextRenderer.scala` and its callers.
+
+**R24. Which die is which symbol.**
+Question: three die symbols, three die tokens.
+Decision: `[defense-die]` is `symbol-diceb.png` and `[attack-die]` is
+`symbol-dicer.png`, as the card data shows (Wrestlers, Bear Traps).
+`[round-die]` is `symbol-dicep.png`: the card data uses it where the end
+of the game is rolled for (Squalid District, "Whenever the die is rolled
+to end the game"; the ruined site setup rules and Stone Portal, where our
+text has `[round-die]`).
+Reason: evidence from the card data, not elimination.
+Slice/files: slice 3; `ArtCatalog.scala`.
+
+**R25. The die chip.**
+Question: a chip is not square and grows with its glyphs.
+Decision: the face's square crop is centred in the chip and the chip
+keeps its size; its glyphs hide when the crop is ready. A doubled face
+must still read as doubled: if the sheet's face does not print the "×2",
+the chip's "×2" stays visible.
+Reason: the chip is the roll's place in the text; the crop is the face.
+Slice/files: slice 3; `DieFaceChip.scala`, `frontend/styles.css`.
+
+**R26. Pieces by colour.**
+Question: which piece each force and pawn shows.
+Decision: a player's colour for pawns and warbands; Imperial warbands
+purple; bandits `tts/tokens/bandit.png`. The warband the Supply track
+prints under each band stays drawn.
+Reason: the pieces' own colours; the Supply track is print on an abstract
+board.
+Slice/files: slice 3; `ArtCatalog.scala`, the renderers.
+
+**R27. The light outline.**
+Question: the design names the black warband.
+Decision: the black pawn gets the light outline too.
+Reason: the same visibility problem on the dark table.
+Slice/files: slice 3; `frontend/styles.css`.
+
+**R28. The title's plate.**
+Question: the overlay's plate is 1016 : 700 and the title files are
+602×827.
+Decision: keep the plate's ratio. The title's image is fitted with
+`object-fit: contain`, turned a quarter only if the file is plainly the
+landscape card stored on its side. No plate ratio changes in this work.
+Reason: the plate's shape is the real proportions design's.
+Slice/files: slice 3; `WorldBoardRenderer.scala`, `frontend/styles.css`.
+
+**R29. The festival marker.**
+Question: the map's band is about 11 : 1 and the art 2.9 : 1.
+Decision: the image goes on the overlay's printed plate only; the map's
+band stays drawn.
+Reason: the art would be a sliver in the band.
+Slice/files: slice 3; `FestivalMarker.scala`.
+
+**R30. The first player marker.**
+Decision: it stays words; no file is listed.
+Reason: it is a pill on an abstract board (R14).
+Slice/files: none.
+
+**R31. The Visions Drawn marker and the round marker.**
+Decision: the Visions Drawn marker takes its picture on its cell. The
+current round's wedge stays drawn; the owner said the round marker needs
+no art.
+Slice/files: slice 3; `WorldBoardRenderer.scala`.
+
+**R32. Restriction marks.**
+Decision: the adviser-only and site-only banners take the two
+restriction symbols; an edifice's towers stay drawn.
+Reason: the folder has no tower symbol.
+Slice/files: slice 3; `PowerMarks.scala`.
+
+**R33. Files with no surface, and the Usurper's marker.**
+Question: which files the catalog leaves out.
+Decision: `symbol-chancellor.png`, `symbol-x2.png`, the suit tiles,
+`festival-back.jpg`, `first-player.jpg` and the round die's texture are
+not listed. The Usurper's limiter is a piece in play: the round wheel
+draws it as a mark on the limiter's round, so it takes
+`tts/tokens/usurper.png` there. The "Usurper locked" line under the wheel
+is words and stays.
+Reason: R6; a piece in play is drawn as its piece.
+Slice/files: slice 3; `ArtCatalog.scala`, `WorldBoardRenderer.scala`.

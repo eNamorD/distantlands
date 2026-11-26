@@ -28,71 +28,22 @@ Rulings: the
 R1 to R21. Earlier plans: [slice 1](2026-11-26-game-art-slice1.md),
 [slice 2](2026-11-26-game-art-slice2.md).
 
-## Open questions this plan waits on
+## Rulings folded in
 
-The plan is written to one answer for each. No production code is written
-until the orchestrator rules, and slice 2's review fixes land first.
+The orchestrator ruled on the plan's open questions (R22 to R33 in the
+implementation rulings); Q1 to Q12 below are R22 to R33 in order. Where a
+ruling differs from the plan as first written:
 
-- **Q1. How a glyph holds its image.** The design says each glyph "becomes
-  a span holding the printed character and a 1em image". Today a glyph is
-  one `svg.token-glyph`, which some two hundred test selectors and forty
-  stylesheet rules name. The plan keeps that element and adds an SVG
-  `<image>` inside it, hiding the sprite's `<use>` when the image has
-  loaded. Nothing changes with art off, the glyph keeps its `role="img"`
-  and label, and the fallback is per glyph (Task 2).
-- **Q2. Favor and secrets: two pictures.** The folder has the printed
-  symbols (`symbols/symbol-favor.png`, `symbol-secret.png`) and pictures
-  of the tokens (`tts/tokens/favor.png`, `secret.png`). The plan uses the
-  symbol where a card prints it (rules text, a power's cost, a site's
-  Forge price, a decision's cost badge) and the token's picture where
-  tokens lie in play (on a card, on a site, in a bank, on a banner, on a
-  player board). The split needs a second entry point beside
-  `RulesTextRenderer.glyph` (Task 3). The simpler answer is the symbol
-  everywhere.
-- **Q3. Which die is which symbol.** The card data settles two:
-  `symbol:diceb` is where our text has `[defense-die]` (Wrestlers) and
-  `symbol:dicer` where it has `[attack-die]` (Bear Traps). `[round-die]`
-  takes `symbol-dicep.png` by elimination. Confidence on the last: low.
-- **Q4. The die chip.** A chip is 1.5em tall and at least 1.9em wide, and
-  grows with its glyphs. The plan fits the face's square crop inside the
-  chip, centred, hides the chip's glyphs and its "×2" when the image is
-  ready, and leaves the chip's size alone (Task 6). The crop rectangles
-  are measured from the two sheets during execution and recorded in
-  `asset-proportions.md`; a test holds the page and the code equal.
-- **Q5. Warbands and pawns by colour.** A player's pawn and warbands use
-  `tts/pieces/pawn-<colour>.png` and `warband-<colour>.png`; Imperial
-  warbands use purple; bandits use `tts/tokens/bandit.png`. The warband
-  the Supply track prints under each band is print on an abstract board
-  and stays drawn (Task 4).
-- **Q6. The light outline.** The design gives the black warband a light
-  outline. The plan gives the black pawn the same (Task 4).
-- **Q7. The titles.** The Oathkeeper and Usurper title is a pill on a
-  player board; it stays words (as R13, R14). Its overlay plate
-  (`card-plate-oathkeeper-title`, 1016 : 700, from the print-and-play
-  sheet) would hold `tts/titles/oathkeeper.jpg` or `usurper.jpg`, which
-  are 602×827, portrait. The plan attaches the image to the plate and
-  decides in the browser check whether it is turned a quarter or the
-  plate takes the image's ratio; it stops for a ruling if the plate's
-  ratio must change (Task 5).
-- **Q8. The festival marker.** On the map the marker is a band across
-  three card slots, about 11 : 1; the art (`festival-underway.jpg`) is
-  2.9 : 1 and would be a sliver there. The plan puts the image on the
-  overlay's printed plate, which has the art's shape, and leaves the map's
-  band drawn (Task 5).
-- **Q9. The first player marker.** It is a pill on a player board, "First
-  Player". The plan leaves it words and lists no file for it (R14's
-  reasoning).
-- **Q10. The Visions Drawn marker and the round marker.** The Visions
-  Drawn marker has a picture and takes its cell on the mat. The round
-  marker has only a 3D texture, so the current round's wedge stays drawn
-  (Task 5).
-- **Q11. Restriction marks.** A drawn card's adviser-only and site-only
-  banners take `symbol-restrictionperson.png` and
-  `symbol-restrictiontree.png`. An edifice's tower marks have no symbol
-  and stay drawn (Task 2).
-- **Q12. Files with no surface.** `symbol-chancellor.png`, `symbol-x2.png`,
-  the suit tiles, `tts/tokens/usurper.png`, `festival-back.jpg`,
-  `first-player.jpg` and the round die's texture are not listed (R6, R19).
+- **R24.** `[round-die]` is `symbol-dicep.png` on the card data's
+  evidence (Squalid District, Stone Portal), not by elimination.
+- **R25.** A doubled face must still read as doubled: the chip's "×2"
+  hides only if the sheet's face prints it (Task 6).
+- **R28.** The title's plate keeps its ratio; the image is fitted with
+  `contain`, turned only if the file is plainly a landscape card on its
+  side (Task 5).
+- **R33.** The Usurper's limiter mark on the round wheel is a piece in
+  play and takes `tts/tokens/usurper.png` (Task 1, Task 5). That is one
+  more path: 45, not 44.
 
 ## Global Constraints
 

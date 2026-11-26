@@ -178,8 +178,10 @@ Every surface swaps art through one helper, `ArtLayer.attach(box, key)`.
   washes, frames, region names and slot labels are printed and hide when
   it is ready. The live layer does not change.
 - **Symbols in text:** in `RulesTextRenderer` and the glyph chips, each
-  glyph becomes a span holding the printed character and a 1em image. The
-  fallback is per glyph, and the span keeps its spoken label.
+  glyph keeps its `svg` and holds the symbol's image inside it, fitted to
+  the glyph's square; the drawn sprite hides when the image has loaded
+  ([implementation ruling R22](2026-11-26-game-art-design-implementation-rulings.md)).
+  The fallback is per glyph, and the glyph keeps its spoken label.
 - **Pieces and tokens:** `TokenSprite` draws pawns and warbands by player
   colour, and favor, secret, bandits, the titles, the Festival, the first
   player marker and the Visions Drawn marker, each fitted into its square
