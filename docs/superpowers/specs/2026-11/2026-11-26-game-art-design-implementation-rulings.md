@@ -344,6 +344,7 @@ Slice/files: slice 3; `ArtCatalog.scala`, `WorldBoardRenderer.scala`.
 ## Slice 3 browser check
 
 **R34. The ground under forces, loose tokens and pawns.**
+Rewritten by R51 for pawns and warbands; it stands for loose tokens.
 Question: on the name band's translucent fill the black player's colour
 measured 4.17 : 1 over white art.
 Decision: forces, loose tokens and pawns on a site's art stand on opaque
@@ -352,6 +353,7 @@ Reason: measured contrast; black fails on the translucent ground.
 Slice/files: slice 3; `frontend/styles.css`.
 
 **R35. The pawns' ground.**
+Rewritten by R51: a pawn's picture has no ground, its name has a chip.
 Question: the ground was the pawns' whole row, a dark strip across the
 site's art for one pawn.
 Decision: the ground hugs the pawns. It lies on each pawn that is not an
@@ -473,3 +475,64 @@ Question: `MatBoardSuite` and `SiteRowSuite` compare a face's box with
 Decision: allowed. `MatLayoutSuite` pins the rectangle in literals, so
 the other suites may read it.
 Slice/files: slice 4 review; the three suites.
+
+## Slice 5: pieces and powers on a site
+
+**R48. The pawn row.**
+Decision: six fixed pawn boxes, filled from the left. One pawn has the
+size it has among six; a pawn's place and size do not change as others
+come and go.
+Slice/files: slice 5; `MatLayout`, `SitePieces`, `frontend/styles.css`.
+
+**R49. Warband groups.**
+Decision: built for one group, since the projection carries one force a
+site. The row stays a row, so a second group would need no layout
+change.
+Slice/files: slice 5; `SitePieces`.
+
+**R50. Names under pawns.**
+Decision: a pawn's name stands under it at its share of the site at
+every zoom, and is hidden from sight on the tiny map. It stays the
+pawn's accessible name and hover note everywhere. The pawn's colour
+carries identity when zoomed out.
+Slice/files: slice 5; `frontend/styles.css`.
+
+**R51. Grounds under pieces.**
+Decision: no ground under a piece's picture; the black pieces keep R27's
+light edge. Over art only, a pawn's name and a warband's count stand on
+a Base chip. An offered pawn's ring goes around its piece and name.
+Loose tokens keep R34. This rewrites R34 and R35 for pawns and warbands.
+Slice/files: slice 5; `frontend/styles.css`.
+
+**R52. The pieces' size against the site.**
+Question: a fixed ratio makes pieces smaller than today's on a
+zoomed-out map.
+Decision: the ratio holds on every map size, a phone's included, with no
+floor.
+Reason: the owner asked for it in words: "zooming in and out should
+maintain the pawns' and warbands' size relative to the site".
+Confidence: low on the phone's result; the owner judges it from the
+slice's phone screenshot.
+Slice/files: slice 5; `frontend/styles.css`, `DESIGN.md`.
+
+**R53. The drawn power shield.**
+Decision: a plain rounded outline with the powers' labels inside, cut
+with an ellipsis in a half; the full label stays in the accessible name
+and the hover note.
+Slice/files: slice 5; `SitePieces`, `frontend/styles.css`.
+
+**R54. Small power targets.**
+Decision: targets under 24px are accepted when zoomed out. The hit area
+is the print's region and no larger, so it never takes a click from the
+pieces beside it. A zoom and Chronicle Details are the other ways.
+Slice/files: slice 5; `frontend/styles.css`.
+
+**R55. Two powers on one shield.**
+Decision: the islands print Coast above and Island below; the other
+pairs stand left and right in the order Enduring, Mountain, River,
+Coast. Confirmed on the images of all five two-power cards (Ancient
+City, Headwaters, Tidal Marshes, Fair Isle, Sunken Isles): none
+disagrees, so the table has no exception.
+Slice/files: slice 5; `MatLayout.sitePowerRegions`.
+
+With slice 5's click targets on the shield, R45's gap is closed.

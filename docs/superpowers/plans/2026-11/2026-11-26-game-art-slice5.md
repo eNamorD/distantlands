@@ -29,6 +29,27 @@ forces, and replaces the pawn and force forms of the glance layer
 (implementation rulings R5 and R6 of the real proportions design, as
 `DESIGN.md` records them).
 
+## Rulings folded in
+
+The coordinator ruled on the plan's eight questions as R48 to R55, in
+order (Q1 is R48 and so on). Each confirmed the plan's answer, with
+these additions: a pawn's place and size never change as others come and
+go (R48); a pawn's name is hidden from sight on the tiny map only (R50);
+the fixed ratio has no floor, on a phone too (R52); a power's hit area
+is the print's region and no larger (R54); and each two-power card's
+sides are confirmed from its image, the table following the card where
+it disagrees with the kind order (R55). Task 9 was done ahead of the
+slice as the slice 4 review's finding F4 (commit `012124de2`).
+
+Measured for R55 on all 24 site images: the shield is the same on every
+card, x 21 to 160 and y 425 (its peak, at x 90) to the card's foot at
+596, with no spread; the red line is at x 89 to 91 on Ancient City,
+Headwaters and Tidal Marshes and on no other card. All five two-power
+cards follow the rule: Ancient City is Enduring left and River right,
+Headwaters Mountain left and River right, Tidal Marshes River left and
+Coast right; Fair Isle and Sunken Isles print the Coast's ship above
+(to about y 527) and the Island's "+2" below. No exception.
+
 ## What was measured for this plan
 
 Read from the code and from eight site card images (770×596 px; the
@@ -359,7 +380,7 @@ is marked **(Q<n>)** and listed again at the end.
   shield opens the power, not the decision.
 - [ ] Screenshots of the three forms, art on and off, for the report.
 
-## Task 9: The Atlas row holds the whole site card
+## Task 9: The Atlas row holds the whole site card (done as F4)
 
 **Files:** `ChronicleDetailsContent.scala`, `styles.css`,
 `ChronicleDetailsContentSuite.scala`.
