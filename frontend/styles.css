@@ -89,7 +89,9 @@
   --player-yellow: #ffe08a;
   --player-pink: #ffa6d8;
   --player-brown: #d0a075;
-  --player-black-pill: #e8dcc2;
+  /* The black boards' slate (#738292), lifted like blue and red so it reads
+     on every dark surface. */
+  --player-black: #8f9db0;
   --player-blue: #8ecbff;
   --selection: #8ecbff;
 }
@@ -225,7 +227,7 @@ button { font: inherit; }
   .host-players { grid-template-columns: auto fit-content(6.5rem) minmax(0, 1fr) auto; }
 }
 .host-player-id { font: inherit; padding: 0.5rem; min-width: 0; }
-/* Element-qualified so it beats the .player-* text styles, e.g. the black pill. */
+/* Element-qualified so it beats the .player-* text styles. */
 span.color-swatch { display: inline-block; width: 1.25rem; height: 1.25rem; padding: 0;
   border-radius: 50%; background: currentColor; border: 2px solid var(--cream); flex: none; }
 .add-player { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
@@ -656,10 +658,6 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   gap: 0.12em; overflow: hidden; white-space: nowrap; margin: 0;
   justify-content: flex-start; font-size: calc(var(--glance-text) * 0.85);
   line-height: 1.15; }
-/* A black pawn's pill keeps its colour readable on the dark face; it holds
-   no padding there, so six pawns keep the room they need. */
-.map-compact .mat-board :is(.pawn-dot, .pawn-initial).player-black {
-  padding: 0 0.1em; }
 .map-compact .mat-board .pawn-long { position: absolute; width: 1px;
   height: 1px; overflow: hidden; clip-path: inset(50%); }
 .map-compact .mat-board .pawn-initial { display: inline; font-weight: 700; }
@@ -976,8 +974,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 :is(.site-forces-short, .card-warbands).force-empire .token-warband {
   border-radius: 50%; box-shadow: 0 0 0 0.09em currentColor; }
 .force-white { color: #ffffff; }
-.force-black { color: #111111; background: var(--player-black-pill); border-radius: 999px;
-  padding: 0 0.4em; }
+.force-black { color: var(--player-black); }
 .force-pink { color: var(--player-pink); }
 .force-brown { color: var(--player-brown); }
 .force-bandit { color: #d7ed72; }
@@ -1057,8 +1054,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .player-yellow { color: var(--player-yellow); }
 /* White is pure white and underlined so it stays distinct from the cream neutral text. */
 .player-white { color: #ffffff; text-decoration: underline; text-decoration-thickness: 2px; }
-/* Black text needs a light pill to stay readable on the dark page. */
-.player-black { color: #111111; background: var(--player-black-pill); border-radius: 999px; padding: 0 0.4em; }
+.player-black { color: var(--player-black); }
 .player-pink { color: var(--player-pink); }
 .player-brown { color: var(--player-brown); }
 .player-neutral { color: var(--cream); }
@@ -1514,15 +1510,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .supply-marker { position: absolute; inset: 0; box-sizing: border-box;
   border-radius: 50%; }
 .supply-space-marked { color: var(--base); }
-.supply-space-marked:has(> .supply-marker-black) { color: var(--cream-bright); }
 .supply-marker-purple { background: var(--player-purple); }
 .supply-marker-red { background: var(--player-red); }
 .supply-marker-blue { background: var(--player-blue); }
 .supply-marker-yellow { background: var(--player-yellow); }
 .supply-marker-white { background: #ffffff; }
-/* Black on the dark space needs the light rim the black pill uses. */
-.supply-marker-black { background: #111111;
-  border: 2px solid var(--player-black-pill); }
+.supply-marker-black { background: var(--player-black); }
 .supply-marker-pink { background: var(--player-pink); }
 .supply-marker-brown { background: var(--player-brown); }
 /* A deck drawn as a card (the world deck, a region's discard): the top

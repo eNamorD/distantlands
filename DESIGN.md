@@ -70,8 +70,7 @@ colors:
   player-red: "#ffaaa5"
   player-yellow: "#ffe08a"
   player-white: "#ffffff"
-  player-black: "#111111"
-  player-black-pill: "#e8dcc2"
+  player-black: "#8f9db0"
   player-pink: "#ffa6d8"
   player-brown: "#d0a075"
   force-bandit: "#d7ed72"
@@ -276,8 +275,9 @@ reused for UI meaning.
   Bright Cream on a face rolled on a known die.
 - **Players**: purple, blue, red, yellow, white, black, pink, brown
   (`player-*`), plus bandit forces (`force-bandit`). White is pure white and
-  underlined so it stays distinct from cream text. Black is ink on a
-  **Black Pill** (`player-black-pill`) so it stays readable on the dark table.
+  underlined so it stays distinct from cream text. Black is the slate of the
+  black player boards (sampled `#738292`), lifted to `#8f9db0` as blue and red
+  are lifted from theirs, so it reads on every dark surface without a pill.
 - **Imperial roles**: wherever a role is labelled (a player board's identity
   line, game creation's color-and-role phrase), "Chancellor" and "Citizen"
   read in Player Purple (`role-imperial`), the colour of the Empire's
@@ -625,9 +625,9 @@ surfaces round more: status and panel boxes at 12px, sites, regions, zones and
 player boards at 9px, options and cards at 8px, controls at 6px or 7px, the
 tightest controls at 4px. Cards use `0.35em` and dice `0.25em` so their
 corners scale with their font-size handle. Countable things are pills: site
-card counts, target-detail badges, the player title, the vision slot, the
-black player and black forces, and the plan-side badge at `1em`. The
-color swatch and the knowable pip are full circles.
+card counts, target-detail badges, the player title, the vision slot, and
+the plan-side badge at `1em`. The color swatch and the knowable pip are
+full circles.
 
 Borders are 1px solid in the Line ramp. Dashed means "not real yet": a blank
 die face, an empty card slot, the debug toolbar, the active player board's
