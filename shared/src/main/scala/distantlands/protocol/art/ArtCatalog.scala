@@ -208,6 +208,67 @@ object ArtCatalog:
     "relic" -> ArtKey("tts/backs/relic-back.jpg"),
     "legacy" -> ArtKey("tts/backs/legacy-back.jpg"))
 
+  /** The printed symbol of each sprite token (implementation rulings R23,
+    * R24): what a card prints in its text. The warband has none. */
+  private val symbols: Vector[(String, ArtKey)] = Vector(
+    "favor" -> "favor", "favor-burnt" -> "favorb", "secret" -> "secret",
+    "secret-burnt" -> "secretb", "suit-arcane" -> "suit-arcane",
+    "suit-beast" -> "suit-beast", "suit-discord" -> "suit-discord",
+    "suit-hearth" -> "suit-hearth", "suit-nomad" -> "suit-nomad",
+    "suit-order" -> "suit-order", "attack-die" -> "dicer",
+    "defense-die" -> "diceb", "round-die" -> "dicep", "skull" -> "skull",
+    "shield" -> "shield", "sword" -> "sword", "hollow-sword" -> "swordh")
+    .map((token, file) => token -> ArtKey(s"symbols/symbol-$file.png"))
+
+  /** The banner a card's restriction hangs over its face, by the mark's
+    * kind; an edifice's towers have no symbol (R32). */
+  private val restrictions: Vector[(String, ArtKey)] = Vector(
+    "adviser" -> ArtKey("symbols/symbol-restrictionperson.png"),
+    "site" -> ArtKey("symbols/symbol-restrictiontree.png"))
+
+  /** A token as it lies in play (R23). */
+  private val tokens: Vector[(String, ArtKey)] = Vector(
+    "favor" -> ArtKey("tts/tokens/favor.png"),
+    "secret" -> ArtKey("tts/tokens/secret.png"))
+
+  /** The player colours, by `PlayerColor`'s keys, which this module may
+    * not name; `ArtCatalogSuite` holds the two lists equal. */
+  private val colours = Vector("purple", "red", "blue", "yellow", "white",
+    "black", "pink", "brown")
+  private val pawns: Vector[(String, ArtKey)] =
+    colours.map(colour => colour -> ArtKey(s"tts/pieces/pawn-$colour.png"))
+  private val warbands: Vector[(String, ArtKey)] =
+    colours.map(colour => colour -> ArtKey(s"tts/pieces/warband-$colour.png"))
+  private val banditWarband = ArtKey("tts/tokens/bandit.png")
+
+  /** The marker on the Visions Drawn track. */
+  val visionsDrawnMarker: ArtKey =
+    ArtKey("tts/markers/visions-drawn-marker.png")
+  /** The festival marker, as the overlay shows it whole (R29). */
+  val festivalMarker: ArtKey = ArtKey("tts/tokens/festival-underway.jpg")
+  /** The Usurper's mark on the round wheel (R33). */
+  val usurperMarker: ArtKey = ArtKey("tts/tokens/usurper.png")
+
+  private val titles: Vector[(String, ArtKey)] = Vector("oathkeeper", "usurper")
+    .map(side => side -> ArtKey(s"tts/titles/$side.jpg"))
+
+  /** Each die's sheet of faces, by the die's key. */
+  private val dieSheets: Vector[(String, ArtKey)] = Vector(
+    "attack" -> ArtKey("tts/attack-die/attack_die.png"),
+    "defense" -> ArtKey("tts/defense-die/defense_die.png"))
+
+  def symbol(token: String): Option[ArtKey] = symbols.toMap.get(token)
+  def restriction(kind: String): Option[ArtKey] = restrictions.toMap.get(kind)
+  def token(token: String): Option[ArtKey] = tokens.toMap.get(token)
+  def pawn(colour: String): Option[ArtKey] = pawns.toMap.get(colour)
+  /** A force's warband: a player's colour, "empire" or "bandit" (R26). */
+  def warband(force: String): Option[ArtKey] = force match
+    case "empire" => warbands.toMap.get("purple")
+    case "bandit" => Some(banditWarband)
+    case colour => warbands.toMap.get(colour)
+  def title(side: String): Option[ArtKey] = titles.toMap.get(side)
+  def dieSheet(die: String): Option[ArtKey] = dieSheets.toMap.get(die)
+
   /** The face of the card printed `name`, when the folder may hold one. */
   def cardFace(name: String): Option[ArtKey] = faces.get(name)
 
@@ -223,4 +284,9 @@ object ArtCatalog:
         .map(kind => backs(kind).path)) ++
       sites.map(name => s"cards/$name (NF).png") ++
       banners.map(_._2.path) ++ foundations.map(_._2.path) ++
-      oathGoals.map(_._2.path) :+ mat.path
+      oathGoals.map(_._2.path) ++ Vector(mat.path) ++
+      symbols.map(_._2.path) ++ restrictions.map(_._2.path) ++
+      tokens.map(_._2.path) ++ pawns.map(_._2.path) ++
+      warbands.map(_._2.path) ++ Vector(banditWarband.path,
+        visionsDrawnMarker.path, festivalMarker.path, usurperMarker.path) ++
+      titles.map(_._2.path) ++ dieSheets.map(_._2.path)

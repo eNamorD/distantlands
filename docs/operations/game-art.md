@@ -14,9 +14,16 @@ face for that one card.
 ```
 <art-path>/
   cards/    card faces
+  symbols/  the symbols cards print in their text
   tts/
-    backs/  card backs
-    mat/    the mat
+    backs/        card backs
+    mat/          the mat
+    tokens/       favor, secrets, bandits, the festival and Usurper markers
+    pieces/       pawns and warbands
+    markers/      the Visions Drawn marker
+    titles/       the Oathkeeper and Usurper titles
+    attack-die/   the attack die's sheet of faces
+    defense-die/  the defense die's sheet of faces
 ```
 
 - `cards/` is a copy of the Buried Giant card database's Oath images
@@ -30,6 +37,11 @@ face for that one card.
   "Oath: New Foundations": the denizen, Vision, relic and legacy backs,
   saved under the names below.
 - `tts/mat/` holds the mat from the same mod, saved as `mat.jpg`.
+- `symbols/` holds the card database's Oath symbols
+  (`content/card-symbols/oath`), the files named `symbol-*.png`.
+- The other `tts/` folders hold the mod's tokens, pieces, markers, titles
+  and die textures, saved under the names below. The pawns and the
+  secret token are pictures of the mod's 3D pieces.
 
 The server follows symbolic links, so `cards/` may be a link to a clone
 of the card database, and any single file may be a link.
@@ -495,3 +507,48 @@ Every path the table can ask for, relative to the folder.
 - `cards/Devotion Oath (NF).png`
 - `cards/People Oath (NF).png`
 - `tts/mat/mat.jpg`
+- `symbols/symbol-favor.png`
+- `symbols/symbol-favorb.png`
+- `symbols/symbol-secret.png`
+- `symbols/symbol-secretb.png`
+- `symbols/symbol-suit-arcane.png`
+- `symbols/symbol-suit-beast.png`
+- `symbols/symbol-suit-discord.png`
+- `symbols/symbol-suit-hearth.png`
+- `symbols/symbol-suit-nomad.png`
+- `symbols/symbol-suit-order.png`
+- `symbols/symbol-dicer.png`
+- `symbols/symbol-diceb.png`
+- `symbols/symbol-dicep.png`
+- `symbols/symbol-skull.png`
+- `symbols/symbol-shield.png`
+- `symbols/symbol-sword.png`
+- `symbols/symbol-swordh.png`
+- `symbols/symbol-restrictionperson.png`
+- `symbols/symbol-restrictiontree.png`
+- `tts/tokens/favor.png`
+- `tts/tokens/secret.png`
+- `tts/pieces/pawn-purple.png`
+- `tts/pieces/pawn-red.png`
+- `tts/pieces/pawn-blue.png`
+- `tts/pieces/pawn-yellow.png`
+- `tts/pieces/pawn-white.png`
+- `tts/pieces/pawn-black.png`
+- `tts/pieces/pawn-pink.png`
+- `tts/pieces/pawn-brown.png`
+- `tts/pieces/warband-purple.png`
+- `tts/pieces/warband-red.png`
+- `tts/pieces/warband-blue.png`
+- `tts/pieces/warband-yellow.png`
+- `tts/pieces/warband-white.png`
+- `tts/pieces/warband-black.png`
+- `tts/pieces/warband-pink.png`
+- `tts/pieces/warband-brown.png`
+- `tts/tokens/bandit.png`
+- `tts/markers/visions-drawn-marker.png`
+- `tts/tokens/festival-underway.jpg`
+- `tts/tokens/usurper.png`
+- `tts/titles/oathkeeper.jpg`
+- `tts/titles/usurper.jpg`
+- `tts/attack-die/attack_die.png`
+- `tts/defense-die/defense_die.png`
