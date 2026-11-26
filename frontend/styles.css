@@ -2612,8 +2612,9 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    column, so a phone keeps the Total column in view. */
 .scoresheet-legacy-chips .legacy-chip { white-space: normal; }
 /* The Atlas's Recent site: one mat row as the map draws it at 100%, in a
-   .mat-board box so the site rules apply, at the row's width and ratio on
-   the Base fill. The Atlas is a box, not a region (R12). A narrower panel
+   .mat-board box so the site rules apply, at the width and ratio of the
+   row and its whole site card (the row grown by the frame's line) on the
+   Base fill. The Atlas is a box, not a region (R12). A narrower panel
    scrolls the row sideways inside its frame (R13). */
 .chronicle-details-atlas-frame { overflow-x: auto;
   scrollbar-width: thin; }

@@ -107,6 +107,14 @@ private[frontend] object MatLayout:
     MatRect(frame.x, frame.y,
       cardSlot(column, row, SlotsPerSite - 1).right - frame.x, CardH)
 
+  /** A site's row and the whole of its site card, which reaches past the
+    * row by the frame's line: the row grown by that line on every side.
+    * A box that shows one row alone takes this rectangle. */
+  def siteRowWithCard(column: Int, row: Int): MatRect =
+    val span = siteRow(column, row)
+    MatRect(span.x - FrameLine, span.y - FrameLine, span.w + 2 * FrameLine,
+      span.h + 2 * FrameLine)
+
   /** A region's discard pile: a card on its side, at the region's upper
     * right. */
   def discard(column: Int): MatRect =

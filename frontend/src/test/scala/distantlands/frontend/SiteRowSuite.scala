@@ -15,13 +15,17 @@ class SiteRowSuite extends munit.FunSuite:
     quietSite("woods", "Deep Woods").withDenizenCapacity(2)
       .withRelicCapacity(1).withRelics(1, relic)
   private val row = MatLayout.siteRow(1, 1)
+  /** The box a row drawn alone stands in: the row and the whole of its
+    * site card, which reaches past the row by the frame's line. */
+  private val whole = MatLayout.siteRowWithCard(1, 1)
 
-  /** Deep Woods in the Provinces' second row, drawn to fill a box of the
-    * row's own ratio, with `pawns` and nothing to choose. */
+  /** Deep Woods in the Provinces' second row, drawn alone in the box
+    * that holds its row and its whole site card, with `pawns` and nothing
+    * to choose. */
   private def woodsRowFillingItsBox(
       pawns: Vector[dom.Element] = Vector.empty,
       site: GameSite = woodsWithTwoDenizenSlotsAndAKnownRelic): dom.Element =
-    WorldBoardRenderer.siteRow(site, 1, 1, row, BoardOptions.none,
+    WorldBoardRenderer.siteRow(site, 1, 1, whole, BoardOptions.none,
       SitePowerLinks.none, pawns)
 
   /** The four placement properties of `node`, as its inline style has
@@ -31,14 +35,34 @@ class SiteRowSuite extends munit.FunSuite:
     Vector("left", "top", "width", "height")
       .map(name => name -> style.getPropertyValue(name))
 
-  test("the row is the site's article, filling the rectangle it is placed " +
-      "within, its face first at the site card's place in the row"):
+  test("the row is the site's article, at the row's place in the " +
+      "rectangle it is placed within, its face first at the site card's " +
+      "place in the row"):
     val site = woodsRowFillingItsBox()
     assertEquals(site.tagName.toLowerCase, "article")
     assertEquals(site.getAttribute("aria-label"), "Deep Woods")
-    assertEquals(box(site), row.percentOf(row))
+    assertEquals(box(site), row.percentOf(whole))
     assertEquals(box(site.firstElementChild),
       MatLayout.siteCard(1, 1).percentOf(row))
+
+  /** The review's finding: a box of the row's own size cut the site
+    * card, which reaches past the row. The face's box, taken through the
+    * row's, must lie inside the box the row is drawn in. */
+  test("a row drawn alone shows its whole site card: the face lies " +
+      "inside the box the row stands in"):
+    val site = woodsRowFillingItsBox()
+    def percent(node: dom.Element, name: String): Double =
+      node.asInstanceOf[dom.html.Element].style.getPropertyValue(name)
+        .stripSuffix("%").toDouble
+    val face = site.firstElementChild
+    val left = percent(site, "left") +
+      percent(face, "left") * percent(site, "width") / 100
+    val top = percent(site, "top") +
+      percent(face, "top") * percent(site, "height") / 100
+    val bottom = top + percent(face, "height") * percent(site, "height") / 100
+    assert(left >= -0.001, left)
+    assert(top >= -0.001, top)
+    assert(bottom <= 100.001, bottom)
 
   test("its cards and its relic stand where MatLayout places them in the " +
       "row"):

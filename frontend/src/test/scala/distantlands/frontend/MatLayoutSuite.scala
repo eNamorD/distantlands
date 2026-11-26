@@ -75,6 +75,14 @@ class MatLayoutSuite extends munit.FunSuite:
 
   test("a site's row spans its frame and its three slots"):
     sites.foreach { (column, row) =>
+      // The row and its site card together: what a box must hold to show
+      // the whole row (the Atlas in Chronicle Details).
+      val whole = siteRowWithCard(column, row)
+      assert(siteRow(column, row).within(whole), whole.toString)
+      assert(siteCard(column, row).within(whole), whole.toString)
+      assertEquals((whole.x, whole.y, whole.w, whole.h),
+        (siteRow(column, row).x - 8, siteRow(column, row).y - 8,
+          siteRow(column, row).w + 16, 525.0))
       val span = siteRow(column, row)
       assertEquals(span.x, siteFrame(column, row).x)
       assertEquals(span.right, cardSlot(column, row, 2).right)
