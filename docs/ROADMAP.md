@@ -274,6 +274,12 @@ one.
 
 ### Powers-related deferred items
 
+- [ ] **Pick relics on the Reliquary, not from buttons.** Taking a relic
+  from the Reliquary offers the relics as buttons, although the board
+  already draws the Reliquary (`WorldBoardRenderer`, "shared-reliquary")
+  and can mark its cards as options, as Golden Key's question does. Offer
+  the pick on those cards. Then look for other decisions that show buttons
+  for cards a display on the table already draws.
 - [ ] **Reasons on the remaining options.** Add hover reasons to the option
   builders that still lack them, as playtests find options people wonder
   about. Left by the
