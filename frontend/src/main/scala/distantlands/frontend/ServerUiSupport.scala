@@ -256,6 +256,19 @@ private[frontend] object ServerUiSupport:
     figure.appendChild(text("span", "deck-caption printed", caption))
     figure
 
+  /** Lays the back of a pile's top card over the pile drawn in `pile`
+    * (game art design, "Card faces"): the kind's back when the viewer may
+    * know the kind and the pile holds a card. A pile that lies on its
+    * side is marked `deck-sideways`, with art or without, so the
+    * stylesheet turns its back a quarter. */
+  private[frontend] def pileBack(pile: dom.Element, count: Int,
+      topCardKind: Option[String], sideways: Boolean): Unit =
+    Option(pile.querySelector(".deck-card")).foreach { card =>
+      if sideways then card.classList.add("deck-sideways")
+      if count > 0 then
+        ArtLayer.attach(card, topCardKind.flatMap(art.ArtCatalog.cardBack))
+    }
+
   private def deckCard(count: Int, topCardKind: Option[String]): dom.Element =
     val card = element("span", s"deck-card ${pileCardClasses(count)}")
     val symbol = pileSymbol(count, topCardKind)

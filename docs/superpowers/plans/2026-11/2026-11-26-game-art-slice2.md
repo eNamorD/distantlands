@@ -724,10 +724,12 @@ Append to `WorldArtSuite`:
     assertEquals(images(pile("World deck")),
       Vector("/art/tts/backs/denizen-back.jpg"))
     assertEquals(all(board, ".deck-figure .deck-card").map(images),
+      // The Cradle's discard, the relic deck, the world deck, then the
+      // Provinces' discard and the Hinterland's, which is empty.
       Vector(Vector("/art/tts/backs/denizen-back.jpg"),
-        Vector("/art/tts/backs/vision-back.jpg"), Vector.empty,
         Vector("/art/tts/backs/relic-back.jpg"),
-        Vector("/art/tts/backs/denizen-back.jpg")))
+        Vector("/art/tts/backs/denizen-back.jpg"),
+        Vector("/art/tts/backs/vision-back.jpg"), Vector.empty))
     assertEquals(one(pile("World deck"), ".pile-count").textContent, "×40")
 
   test("the world deck and the discards lie on their sides, with art or " +
@@ -735,7 +737,7 @@ Append to `WorldArtSuite`:
     def sideways(board: dom.Element): Vector[Boolean] =
       all(board, ".deck-figure .deck-card")
         .map(_.classList.contains("deck-sideways"))
-    val expected = Vector(true, true, true, false, true)
+    val expected = Vector(true, false, true, true, true)
     assertEquals(sideways(boardWithTheWorld()), expected)
     TestArt.listingWholeCatalog()
     assertEquals(sideways(boardWithTheWorld()), expected)

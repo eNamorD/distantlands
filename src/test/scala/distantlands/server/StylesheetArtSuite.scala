@@ -39,7 +39,8 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(artRules.contains(":has(> .art) { isolation: isolate; }"))
 
   /** Every box kind that answers for printed content of its own. */
-  private val boxes = ".card-face, .card-hover-summary, .site"
+  private val boxes =
+    ".card-face, .card-hover-summary, .site, .deck-card, .mat-board"
 
   test("printed content is hidden with opacity, by its nearest box"):
     assert(rule(".printed").contains("opacity: var(--printed-opacity, 1)"))
@@ -145,6 +146,23 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(css.indexOf(".end-die-idle.printed {") >
       css.indexOf(".printed { opacity"))
     assert(!css.contains(".end-die-idle { opacity"))
+  test("a pile on its side turns its back a quarter, as a Vision is " +
+      "turned, and sizes it to the pile"):
+    val turned = rule(".mat-board .deck-sideways > .art")
+    Vector("inset: auto", "top: 50%", "left: 50%",
+      "width: calc(100% * (var(--ratio-denizen)))",
+      "height: calc(100% / (var(--ratio-denizen)))",
+      "transform: translate(-50%, -50%) rotate(-90deg)")
+      .foreach(part => assert(turned.contains(part), part))
+
+  test("a pile's count stays readable over its back"):
+    val count = rule(".deck-card.art-ready > .pile-count")
+    Vector("background: var(--base)", "border-radius", "padding")
+      .foreach(part => assert(count.contains(part), part))
+
+  test("the mat's image fills the board"):
+    assert(rule(".mat-board > .art").contains("object-fit: fill"))
+
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
   private val rendererSources: String =

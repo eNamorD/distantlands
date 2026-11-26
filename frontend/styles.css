@@ -2314,8 +2314,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    box never hides what a box inside it draws when that box's own image is
    missing. */
 .printed { opacity: var(--printed-opacity, 1); }
-:is(.card-face, .card-hover-summary, .site) { --printed-opacity: 1; }
-:is(.card-face, .card-hover-summary, .site).art-ready { --printed-opacity: 0; }
+:is(.card-face, .card-hover-summary, .site, .deck-card, .mat-board) { --printed-opacity: 1; }
+:is(.card-face, .card-hover-summary, .site, .deck-card, .mat-board).art-ready { --printed-opacity: 0; }
 /* The end die of a roll nobody makes is dimmed. It is printed too, and
    the rule above would otherwise set its opacity alone, so its dimming
    carries the layer's answer. */
@@ -2342,6 +2342,21 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   top: 50%; left: 50%; width: calc(100% * (var(--ratio-denizen)));
   height: calc(100% / (var(--ratio-denizen)));
   transform: translate(-50%, -50%) rotate(-90deg); }
+/* The mat under the board. The board has the mat's proportions, so the
+   image fills it exactly; `fill` keeps a rounding pixel from leaving a
+   strip of the drawn lights at an edge. */
+.mat-board > .art { object-fit: fill; }
+/* A pile on the mat shows the back of its top card. The world deck and
+   the discards lie on their sides, so their back is turned a quarter, the
+   way a Vision is, the image's width being the pile's height. The count
+   is what lies there in play: it keeps a ground of its own over the
+   back. */
+.mat-board .deck-sideways > .art { inset: auto; top: 50%; left: 50%;
+  width: calc(100% * (var(--ratio-denizen)));
+  height: calc(100% / (var(--ratio-denizen)));
+  transform: translate(-50%, -50%) rotate(-90deg); }
+.deck-card.art-ready > .pile-count { padding: 0 0.35em;
+  border-radius: 0.3em; background: var(--base); }
 
 
 /* Document level, above .game-pane -- which is what lets that pane keep

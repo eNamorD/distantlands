@@ -216,6 +216,8 @@ private[frontend] object WorldBoardRenderer:
     // The world deck is a Search's source and Clay Rattle's pile.
     val deckKeys = Vector(BoardOptionViews.key("deck", "world"))
     val deck = deckBody(value.worldDeckCount, value.worldDeckTopCardKind)
+    pileBack(deck, value.worldDeckCount, value.worldDeckTopCardKind,
+      sideways = true)
     options.decorate(deck, deckKeys)
     badged(deck, deckKeys, options)
     val regions = element("div", "regions")
@@ -236,6 +238,8 @@ private[frontend] object WorldBoardRenderer:
         region.regionId))
       val discard = openableDeck(region.discardCount,
         region.discardTopCardKind, discardTitle, region.discardCards)
+      pileBack(discard, region.discardCount, region.discardTopCardKind,
+        sideways = true)
       badged(discard, discardKeys, options)
       header.appendChild(place(deckFigure("Discard", options.control(discard,
         discardKeys, Option.when(region.discardCount > 0)(discardTitle ->
@@ -262,6 +266,8 @@ private[frontend] object WorldBoardRenderer:
     val board = element("div", "mat-board")
     board.appendChild(regions)
     board.appendChild(favorBanks(value, options))
+    // The mat under everything on the board.
+    ArtLayer.attach(board, Some(ArtCatalog.mat))
     panel.appendChild(board)
     panel.appendChild(tableEdge(value, options, links))
     panel
@@ -374,8 +380,10 @@ private[frontend] object WorldBoardRenderer:
       row.appendChild(visionsDrawn(track.visionsDrawn))
     }
     // The relic deck first, as the mat prints it left of the world deck.
-    row.appendChild(place(deckFigure("Relic deck",
-      deckBody(value.relicDeckCount, Some("relic"))), MatLayout.relicDeck))
+    val relics = deckBody(value.relicDeckCount, Some("relic"))
+    pileBack(relics, value.relicDeckCount, Some("relic"), sideways = false)
+    row.appendChild(place(deckFigure("Relic deck", relics),
+      MatLayout.relicDeck))
     row.appendChild(place(deckFigure("World deck", deck),
       MatLayout.worldDeck))
     row

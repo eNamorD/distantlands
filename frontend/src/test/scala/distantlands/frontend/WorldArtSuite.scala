@@ -109,3 +109,81 @@ class WorldArtSuite extends munit.FunSuite:
     assertEquals(all(BannerFace.render(
       BannerState("peoples-favor", "unknown", None, 0), None), "img"),
       Vector.empty)
+
+  test("the board holds the mat's image, directly in the board"):
+    TestArt.listingWholeCatalog()
+    assertEquals(images(one(boardWithTheWorld(), ".mat-board")),
+      Vector("/art/tts/mat/mat.jpg"))
+
+  test("what the mat prints is printed content of the board itself, in " +
+      "no box of its own"):
+    val board = one(boardWithTheWorld(), ".mat-board")
+    val boxes = ".card-face, .card-hover-summary, .site, .deck-card"
+    Vector(".region-label", ".deck-caption", ".vision-cell",
+      ".visions-drawn-label", ".round-segment", ".round-number",
+      ".site-slot-empty").foreach { selector =>
+      val found = all(board, selector)
+      assert(found.nonEmpty, selector)
+      found.foreach { node =>
+        assert(node.classList.contains("printed"), selector)
+        assertEquals(Option(node.closest(boxes)), None, selector)
+      }
+    }
+
+  test("what lies on the mat in play is not printed"):
+    val board = one(boardWithTheWorld(), ".mat-board")
+    Vector(".vision-marker", ".pile-count", ".favor-bank-count",
+      ".site-pawns .pawn").foreach(selector =>
+      all(board, selector).foreach(node =>
+        assertEquals(Option(node.closest(".printed")), None, selector)))
+
+  test("a pile on the mat holds the back of its top card's kind, and " +
+      "keeps its count"):
+    TestArt.listingWholeCatalog()
+    val board = one(boardWithTheWorld(), ".mat-board")
+    def pile(caption: String): dom.Element =
+      all(board, ".deck-figure").find(figure =>
+        one(figure, ".deck-caption").textContent == caption).map(figure =>
+        one(figure, ".deck-card")).get
+    assertEquals(images(pile("Relic deck")),
+      Vector("/art/tts/backs/relic-back.jpg"))
+    assertEquals(images(pile("World deck")),
+      Vector("/art/tts/backs/denizen-back.jpg"))
+    assertEquals(all(board, ".deck-figure .deck-card").map(images),
+      // The Cradle's discard, the relic deck, the world deck, then the
+      // Provinces' discard and the Hinterland's, which is empty.
+      Vector(Vector("/art/tts/backs/denizen-back.jpg"),
+        Vector("/art/tts/backs/relic-back.jpg"),
+        Vector("/art/tts/backs/denizen-back.jpg"),
+        Vector("/art/tts/backs/vision-back.jpg"), Vector.empty))
+    assertEquals(one(pile("World deck"), ".pile-count").textContent, "×40")
+
+  test("the world deck and the discards lie on their sides, with art or " +
+      "without; the relic deck does not"):
+    def sideways(board: dom.Element): Vector[Boolean] =
+      all(board, ".deck-figure .deck-card")
+        .map(_.classList.contains("deck-sideways"))
+    val expected = Vector(true, false, true, true, true)
+    assertEquals(sideways(boardWithTheWorld()), expected)
+    TestArt.listingWholeCatalog()
+    assertEquals(sideways(boardWithTheWorld()), expected)
+
+  /** `node`'s markup with every art image taken out. */
+  private def withoutArt(node: dom.Element): String =
+    val copy = node.cloneNode(true).asInstanceOf[dom.Element]
+    all(copy, "img.art").foreach(_.remove())
+    copy.outerHTML
+
+  test("the world drawn with art and without has the same boxes, classes " +
+      "and inline geometry once the images are removed"):
+    val drawn = boardWithTheWorld()
+    TestArt.listingWholeCatalog()
+    val withArt = boardWithTheWorld()
+    // The mat, one site, one denizen, two banners and four piles.
+    assertEquals(all(withArt, "img.art").size, 9)
+    assertEquals(withoutArt(withArt), drawn.outerHTML)
+
+  test("with art off the world holds no image"):
+    TestArt.listingWholeCatalog()
+    GameArt.setEnabled(false)
+    assertEquals(all(boardWithTheWorld(), "img"), Vector.empty)
