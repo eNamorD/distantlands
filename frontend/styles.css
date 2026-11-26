@@ -2423,6 +2423,12 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   max-width: none; object-fit: fill; }
 .die-face.art-ready > svg { opacity: 0; }
 .die-face.art-ready { color: transparent; }
+/* The title's file is the landscape card stored on its side: it is turned
+   upright and fitted to the plate, which keeps its ratio (R28). */
+.card-plate-oathkeeper-title > .art { inset: auto; top: 50%; left: 50%;
+  width: calc(100% / (var(--ratio-oathkeeper-title)));
+  height: calc(100% * (var(--ratio-oathkeeper-title)));
+  transform: translate(-50%, -50%) rotate(-90deg); }
 
 
 /* Document level, above .game-pane -- which is what lets that pane keep

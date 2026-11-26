@@ -271,6 +271,17 @@ class StylesheetArtSuite extends munit.FunSuite:
     Vector("width", "height", "padding", "margin").foreach(part =>
       assert(!rule(".die-face.art-ready").contains(part), part))
 
+  /** The title files are the landscape card stored on its side (seen in
+    * the slice 3 browser check), so the image is turned a quarter and
+    * fitted to the plate, which keeps its ratio (R28). */
+  test("the title's image is turned upright and fitted to its plate"):
+    val title = rule(".card-plate-oathkeeper-title > .art")
+    Vector("inset: auto", "top: 50%", "left: 50%",
+      "width: calc(100% / (var(--ratio-oathkeeper-title)))",
+      "height: calc(100% * (var(--ratio-oathkeeper-title)))",
+      "transform: translate(-50%, -50%) rotate(-90deg)")
+      .foreach(part => assert(title.contains(part), part))
+
   /** The frontend's renderer sources, read from disk as the stylesheet
     * is: the frontend's own test runner has no file access. */
   private val rendererSources: String =
