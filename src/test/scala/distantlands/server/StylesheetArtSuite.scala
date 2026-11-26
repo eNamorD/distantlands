@@ -207,8 +207,15 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(!css.contains(".site.art-ready .site-pawns"))
     Vector("box-shadow", "padding", "margin", "width", "height", "border:")
       .foreach(part => assert(!pawns.contains(part), part))
-    assert(rule(".mat-board.art-ready .track-note")
-      .contains("text-shadow: 0 0 3px var(--base), 0 0 3px var(--base)"))
+    // The tracker's lines are chips on Base over the mat (R41): the
+    // owner could not read them through a halo.
+    val line = rule(".mat-board.art-ready .track-note > p")
+    Vector("background: var(--base)", "box-shadow: 0 0 0 0.25em var(--base)",
+      "border-radius: 0.2em").foreach(part =>
+      assert(line.contains(part), part))
+    Vector("padding", "margin", "width", "height").foreach(part =>
+      assert(!line.contains(part), part))
+    assert(!css.contains("text-shadow: 0 0 3px var(--base)"))
 
   test("a pile on the mat that holds an image is a positioned box"):
     assert(rule(".mat-board .deck-card:has(> .art)")

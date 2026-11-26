@@ -2376,17 +2376,17 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    art: opaque Base, on which every player colour measures 6.6 : 1 or
    better. It is a fill and a shadow of one colour, so nothing moves. A pawn takes the fill alone, since its row clips a
    shadow, and only while no decision offers it: an offered pawn's ring,
-   glow and selected fill are its own background and shadow (R35). The
-   tracker's line lies on the mat's picture and takes a halo instead: its
-   lines span the whole strip. */
+   glow and selected fill are its own background and shadow (R35). Each
+   of the tracker's lines, which lie on the mat's picture, is a chip on
+   Base that hugs its words (R41). */
 .site.art-ready :is(.site-forces, .site-forces-short, .site-tokens) {
   border-radius: 3px; background: var(--base);
   box-shadow: 0 0 0 3px var(--base); }
 .site.art-ready .pawn:not([class*="board-option"]) { border-radius: 3px;
   background: var(--base); }
 .site.art-ready .site-tokens:empty { background: none; box-shadow: none; }
-.mat-board.art-ready .track-note {
-  text-shadow: 0 0 3px var(--base), 0 0 3px var(--base); }
+.mat-board.art-ready .track-note > p { border-radius: 0.2em;
+  background: var(--base); box-shadow: 0 0 0 0.25em var(--base); }
 /* A foundation's and the Oath goal's plate in the overlay holds the
    card's image; the title on it is printed and hides. */
 .card-plate:has(> .art) { position: relative; }
