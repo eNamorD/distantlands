@@ -3,7 +3,7 @@ package distantlands.frontend
 import distantlands.protocol.art.{ArtKey, DieCrop}
 import org.scalajs.dom
 
-/** The one way a surface swaps licensed art in for what it draws (game
+/** The one way a surface swaps the host's art in for what it draws (game
   * art design, "`ArtLayer`").
   *
   * The image is laid over the box and never sizes it. Until it loads the

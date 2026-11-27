@@ -124,7 +124,7 @@ class RoundWheelSuite extends munit.FunSuite:
     TestArt.listingWholeCatalog()
     val wheel = wheelAt(round = 1, limiter = 4)
     val image = one(round(wheel, 4), "image.art")
-    assertEquals(image.getAttribute("href"), "/art/tts/tokens/usurper.png")
+    assertEquals(image.getAttribute("href"), "/art/tokens/usurper.png")
     assertEquals(image.getAttribute("style"), "width: 54px; height: 55px;")
     // Round 4's middle is 67.5 degrees below the right, and its wedge's
     // centre 68.5 from the hub, at (126.214, 163.286); the token's box is

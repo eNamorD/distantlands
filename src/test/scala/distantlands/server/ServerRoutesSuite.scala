@@ -135,7 +135,7 @@ class ServerRoutesSuite extends munit.FunSuite:
     finally runtime.close()
 
   test("both modes serve the art manifest and the art the folder holds"):
-    val folder = ArtFolders.onePixelFolder("tts/backs/relic-back.jpg")
+    val folder = ArtFolders.onePixelFolder("backs/relic-back.jpg")
     val art = ArtLibrary.scan(Some(folder))
     Vector(ServerMode.Development, ServerMode.TrustedAlpha).foreach { mode =>
       val runtime = openRuntime("art-routes-")
@@ -145,9 +145,9 @@ class ServerRoutesSuite extends munit.FunSuite:
             ServerReadiness.starting("test-version"), art))
         try
           assertEquals(ujson.read(server.get("/art/manifest.json").body()),
-            ujson.Obj("files" -> ujson.Arr("tts/backs/relic-back.jpg")),
+            ujson.Obj("files" -> ujson.Arr("backs/relic-back.jpg")),
             mode.toString)
-          assertEquals(server.get("/art/tts/backs/relic-back.jpg")
+          assertEquals(server.get("/art/backs/relic-back.jpg")
             .statusCode(), 200, mode.toString)
         finally server.close()
       finally runtime.close()

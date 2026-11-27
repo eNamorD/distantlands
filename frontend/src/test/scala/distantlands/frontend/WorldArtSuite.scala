@@ -113,7 +113,7 @@ class WorldArtSuite extends munit.FunSuite:
   test("the board holds the mat's image, directly in the board"):
     TestArt.listingWholeCatalog()
     assertEquals(images(one(boardWithTheWorld(), ".mat-board")),
-      Vector("/art/tts/mat/mat.jpg"))
+      Vector("/art/mat/mat.jpg"))
 
   test("what the mat prints is printed content of the board itself, in " +
       "no box of its own"):
@@ -150,16 +150,16 @@ class WorldArtSuite extends munit.FunSuite:
         one(figure, ".deck-caption").textContent == caption).map(figure =>
         one(figure, ".deck-card")).get
     assertEquals(images(pile("Relic deck")),
-      Vector("/art/tts/backs/relic-back.jpg"))
+      Vector("/art/backs/relic-back.jpg"))
     assertEquals(images(pile("World deck")),
-      Vector("/art/tts/backs/denizen-back.jpg"))
+      Vector("/art/backs/denizen-back.jpg"))
     assertEquals(all(board, ".deck-figure .deck-card").map(images),
       // The Cradle's discard, the relic deck, the world deck, then the
       // Provinces' discard and the Hinterland's, which is empty.
-      Vector(Vector("/art/tts/backs/denizen-back.jpg"),
-        Vector("/art/tts/backs/relic-back.jpg"),
-        Vector("/art/tts/backs/denizen-back.jpg"),
-        Vector("/art/tts/backs/vision-back.jpg"), Vector.empty))
+      Vector(Vector("/art/backs/denizen-back.jpg"),
+        Vector("/art/backs/relic-back.jpg"),
+        Vector("/art/backs/denizen-back.jpg"),
+        Vector("/art/backs/vision-back.jpg"), Vector.empty))
     assertEquals(one(pile("World deck"), ".pile-count").textContent, "×40")
 
   test("the world deck and the discards lie on their sides, with art or " +
@@ -221,7 +221,7 @@ class WorldArtSuite extends munit.FunSuite:
     assertEquals(one(pile("Discard"), ".pile-count").textContent, "×2")
     // The world deck beside them, whose top kind is known, has its back.
     assertEquals(images(pile("World deck")),
-      Vector("/art/tts/backs/denizen-back.jpg"))
+      Vector("/art/backs/denizen-back.jpg"))
 
   /** Chronicle Details draws the Atlas's Recent site with the world's own
     * site renderer, inside the table (implementation ruling R17). */

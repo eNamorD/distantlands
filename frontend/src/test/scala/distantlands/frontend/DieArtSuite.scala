@@ -18,7 +18,7 @@ class DieArtSuite extends munit.FunSuite:
     val chip = DieFaceChip.face("one-sword", Some(Die.Attack))
     val image = one(chip, ":scope > .art-crop > img.art")
     assertEquals(image.getAttribute("src"),
-      "/art/tts/attack-die/attack_die.png")
+      "/art/dice/attack.png")
     // The sheet is 2048 wide and the face 638, at (1392, 702).
     assertEquals(style(image).width, "321.0031%")
     assertEquals(style(image).height, "321.0031%")
@@ -31,7 +31,7 @@ class DieArtSuite extends munit.FunSuite:
     DieFace.values.foreach { face =>
       val chip = DieFaceChip.face(face.key, Some(face.die))
       assertEquals(all(chip, ".art-crop > img.art").map(_.getAttribute("src")),
-        Vector(s"/art/tts/${face.die.key}-die/${face.die.key}_die.png"),
+        Vector(s"/art/dice/${face.die.key}.png"),
         face.key)
     }
 

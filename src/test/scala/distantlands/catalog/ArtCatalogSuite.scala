@@ -51,8 +51,8 @@ class ArtCatalogSuite extends munit.FunSuite:
   test("each kind of card a viewer may not identify has its back"):
     assertEquals(Vector("denizen", "vision", "relic", "legacy")
       .map(kind => ArtCatalog.cardBack(kind).map(_.path)), Vector(
-      Some("tts/backs/denizen-back.jpg"), Some("tts/backs/vision-back.jpg"),
-      Some("tts/backs/relic-back.jpg"), Some("tts/backs/legacy-back.jpg")))
+      Some("backs/denizen-back.jpg"), Some("backs/vision-back.jpg"),
+      Some("backs/relic-back.jpg"), Some("backs/legacy-back.jpg")))
     assertEquals(ArtCatalog.cardBack("edifice"), None)
 
   test("no two faces share a path, and every path is listed once"):
@@ -64,11 +64,11 @@ class ArtCatalogSuite extends munit.FunSuite:
     assertEquals(ArtCatalog.allPaths.size,
       faces.size + 4 + 24 + 4 + 12 + 4 + 1 + 45)
 
-  test("every path is a png, jpg or webp under cards/, symbols/ or tts/, " +
-      "with no " +
-      "step out of the folder"):
+  test("every path is a png, jpg or webp in one of the folder's " +
+      "subfolders, with no step out of the folder"):
+    val folders = "cards|symbols|backs|mat|tokens|pieces|markers|titles|dice"
     ArtCatalog.allPaths.foreach { path =>
-      assert(path.matches("""(cards|symbols|tts)/[^\\]+\.(png|jpg|webp)"""), path)
+      assert(path.matches(s"""($folders)/[^/\\\\]+\\.(png|jpg|webp)"""), path)
       assert(!path.split('/').contains(".."), path)
     }
 
@@ -117,8 +117,8 @@ class ArtCatalogSuite extends munit.FunSuite:
     assertEquals(ArtCatalog.oathGoal("unknown"), None)
 
   test("the mat is one file"):
-    assertEquals(ArtCatalog.mat.path, "tts/mat/mat.jpg")
-    assert(ArtCatalog.allPaths.contains("tts/mat/mat.jpg"))
+    assertEquals(ArtCatalog.mat.path, "mat/mat.jpg")
+    assert(ArtCatalog.allPaths.contains("mat/mat.jpg"))
 
   private val symbols = Vector("favor" -> "symbol-favor.png",
     "favor-burnt" -> "symbol-favorb.png", "secret" -> "symbol-secret.png",
@@ -152,43 +152,43 @@ class ArtCatalogSuite extends munit.FunSuite:
   test("favor and secrets have a token's picture, and nothing else does " +
       "(R23)"):
     assertEquals(ArtCatalog.token("favor").map(_.path),
-      Some("tts/tokens/favor.png"))
+      Some("tokens/favor.png"))
     assertEquals(ArtCatalog.token("secret").map(_.path),
-      Some("tts/tokens/secret.png"))
+      Some("tokens/secret.png"))
     Vector("favor-burnt", "secret-burnt", "warband", "suit-order")
       .foreach(token => assertEquals(ArtCatalog.token(token), None, token))
 
   test("each player colour has a pawn and a warband (R26)"):
     distantlands.model.PlayerColor.all.foreach { colour =>
       assertEquals(ArtCatalog.pawn(colour.key).map(_.path),
-        Some(s"tts/pieces/pawn-${colour.key}.png"))
+        Some(s"pieces/pawn-${colour.key}.png"))
       assertEquals(ArtCatalog.warband(colour.key).map(_.path),
-        Some(s"tts/pieces/warband-${colour.key}.png"))
+        Some(s"pieces/warband-${colour.key}.png"))
     }
     assertEquals(ArtCatalog.pawn("green"), None)
 
   test("Imperial warbands are purple and bandits have their own piece"):
     assertEquals(ArtCatalog.warband("empire").map(_.path),
-      Some("tts/pieces/warband-purple.png"))
+      Some("pieces/warband-purple.png"))
     assertEquals(ArtCatalog.warband("bandit").map(_.path),
-      Some("tts/tokens/bandit.png"))
+      Some("tokens/bandit.png"))
 
   test("the markers, the titles and the die sheets have their files"):
     assertEquals(ArtCatalog.visionsDrawnMarker.path,
-      "tts/markers/visions-drawn-marker.png")
+      "markers/visions-drawn-marker.png")
     assertEquals(ArtCatalog.festivalMarker.path,
-      "tts/tokens/festival-underway.jpg")
-    assertEquals(ArtCatalog.usurperMarker.path, "tts/tokens/usurper.png")
+      "tokens/festival-underway.jpg")
+    assertEquals(ArtCatalog.usurperMarker.path, "tokens/usurper.png")
     assertEquals(Vector("oathkeeper", "usurper").map(side =>
       ArtCatalog.title(side).map(_.path)), Vector(
-      Some("tts/titles/oathkeeper.jpg"), Some("tts/titles/usurper.jpg")))
+      Some("titles/oathkeeper.jpg"), Some("titles/usurper.jpg")))
     assertEquals(ArtCatalog.title("chancellor"), None)
     assertEquals(ArtCatalog.dieSheet("attack").map(_.path),
-      Some("tts/attack-die/attack_die.png"))
+      Some("dice/attack.png"))
     assertEquals(ArtCatalog.dieSheet("defense").map(_.path),
-      Some("tts/defense-die/defense_die.png"))
+      Some("dice/defense.png"))
     Vector(ArtCatalog.visionsDrawnMarker.path, ArtCatalog.usurperMarker.path,
-      "tts/attack-die/attack_die.png", "tts/tokens/bandit.png",
+      "dice/attack.png", "tokens/bandit.png",
       "symbols/symbol-dicep.png").foreach(path =>
       assertEquals(ArtCatalog.allPaths.count(_ == path), 1, path))
 

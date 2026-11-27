@@ -23,7 +23,7 @@ trait StylesheetText extends munit.FunSuite:
   /** The art layer's rules: from their opening comment to the document
     * level overlay's comment, which follows them. */
   protected def artRules(using munit.Location): String =
-    val from = css.indexOf("/* Licensed art")
+    val from = css.indexOf("/* The host's art, laid")
     val to = css.indexOf("/* Document level, above .game-pane", from)
     assert(from >= 0 && to > from, "the art rules were not found")
     css.substring(from, to)

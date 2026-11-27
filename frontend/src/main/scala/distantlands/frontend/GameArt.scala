@@ -6,7 +6,7 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.util.Try
 
-/** Whether a piece of the table has licensed art to show (game art design,
+/** Whether a piece of the table has the host's art to show (game art design,
   * "The client"): the server's manifest joined with the player's
   * preference. Renderers ask one question, `url`, and draw what they draw
   * today when the answer is `None`.
