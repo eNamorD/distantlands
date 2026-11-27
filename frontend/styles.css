@@ -1283,7 +1283,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   margin: 0; }
 /* The real proportions of each card kind, as the pixel size of its image
    (docs/catalog/asset-proportions.md). Every card box reads this table, so
-   a drawn card and its licensed image fill the same box. */
+   a drawn card and its art image fill the same box. */
 :root {
   --ratio-denizen: 381 / 596;
   --ratio-relic: 1 / 1;
@@ -1895,7 +1895,6 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   height: 100%; fill: none; stroke: currentColor; stroke-width: 1.6;
   stroke-linecap: round; stroke-linejoin: round; }
 .vision-eye-drawn > ellipse { fill: currentColor; stroke: none; }
-.vision-eye.art-ready > .vision-eye-drawn { opacity: 0; }
 .vision-tile-words { display: flex; flex-direction: column;
   line-height: 1.15; }
 .vision-tile-kind { color: var(--ink-dim); font-size: 0.72em;
@@ -2384,7 +2383,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 }
 
 
-/* Licensed art, laid over the box that draws the same thing (game art
+/* The host's art, laid over the box that draws the same thing (game art
    design). The image fills the box and never sizes it: every box has its
    real proportions already, so the layout is the same with art or
    without. A box that holds an image isolates its stacking, and the image
@@ -2496,6 +2495,9 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .token-glyph.art-ready > use { opacity: 0; }
 .restriction-mark.art-ready > :not(.art, .restriction-mark-chain) {
   opacity: 0; }
+/* A Vision tile's eye shows the Visions Drawn marker; the drawn eye hides
+   once it has loaded. */
+.vision-eye.art-ready > .vision-eye-drawn { opacity: 0; }
 /* A pawn's piece holds the pawn's picture, fitted to the piece's own box:
    the drawn disc keeps its room and hides. */
 .pawn-piece.art-ready::before { opacity: 0; }
