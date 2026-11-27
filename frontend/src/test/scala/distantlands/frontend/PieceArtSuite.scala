@@ -38,7 +38,7 @@ class PieceArtSuite extends munit.FunSuite:
 
   private def shortForces(world: dom.Element, label: String): Vector[String] =
     all(one(world, s"""article.site[aria-label="$label"]"""),
-      ".site-forces-short image.art").map(_.getAttribute("href"))
+      ".site-warbands > .site-force image.art").map(_.getAttribute("href"))
 
   test("each force's warbands hold that force's piece (R26)"):
     TestArt.listingWholeCatalog()
@@ -66,19 +66,19 @@ class PieceArtSuite extends munit.FunSuite:
     assertEquals(all(RulesTextRenderer.glyph("warband"), "image"),
       Vector.empty)
 
-  test("a pawn on the map holds its player's pawn, and keeps its dot, " +
-      "its name and its initial"):
+  test("a pawn on the map holds its player's pawn in its piece, over " +
+      "its player's name"):
     TestArt.listingWholeCatalog()
     val world = worldWithForcesAndPawns()
     val pawns = all(world, ".site-pawns .pawn")
-    assertEquals(pawns.map(pawn => all(pawn, ".pawn-dot > img.art")
+    assertEquals(pawns.map(pawn => all(pawn, ".pawn-piece > img.art")
       .map(_.getAttribute("src"))), Vector(
       Vector("/art/tts/pieces/pawn-red.png"),
       Vector("/art/tts/pieces/pawn-black.png")))
     pawns.foreach { pawn =>
-      assert(one(pawn, ".pawn-dot").textContent.contains("●"))
-      assertEquals(all(pawn, ".pawn-long").size, 1)
-      assertEquals(all(pawn, ".pawn-initial").size, 1)
+      assertEquals(all(pawn, ":scope > *").map(_.getAttribute("class")
+        .split(" ").head), Vector("pawn-piece", "pawn-name"))
+      assertEquals(all(pawn, ".pawn-name img"), Vector.empty)
     }
 
   test("the Visions Drawn marker holds its picture on the current cell " +

@@ -250,7 +250,7 @@ private[frontend] object WorldBoardRenderer:
       val sites = element("div", "sites")
       region.sites.zipWithIndex.foreach { (site, row) =>
         val pawns = value.pawnLocations.filter(_.siteId == site.siteId)
-          .map(pawn => pawnMarker(value, pawn.playerId, options))
+          .map(pawn => SitePieces.pawn(value, pawn.playerId, options))
         sites.appendChild(siteRow(site, column, row, MatLayout.Mat, options,
           links, pawns))
       }
@@ -311,9 +311,20 @@ private[frontend] object WorldBoardRenderer:
     // What reaching this site costs, or why it cannot be reached, comes
     // from the decision that offers it.
     badged(control, siteKeys, options)
-    val pawnBox = element("div", "site-pawns")
-    pawns.foreach(pawnBox.appendChild)
-    control.appendChild(pawnBox)
+    // The pieces in play, each row at its place on the card, and the
+    // shield the card prints its powers in.
+    control.appendChild(place(SitePieces.pawnRow(pawns),
+      MatLayout.sitePawnRow(column, row), rowRect))
+    control.appendChild(place(SitePieces.warbandRow(site),
+      MatLayout.siteWarbandRow(column, row), rowRect))
+    val shield = MatLayout.sitePowerShield(column, row)
+    control.appendChild(place(SitePieces.powerShield(site, links, column,
+      row), shield, rowRect))
+    // The drawn name starts right of the shield, as the card prints it:
+    // how far the shield reaches into the face, as a share of the row.
+    style.setProperty("--shield-reach", MatRect(0, 0,
+      shield.right - faceRect.x, 1).percentOf(MatRect(0, 0, rowRect.w, 1))
+      .toMap.apply("width"))
     val details = siteDetails(site, options, links)
     placeCards(details, column, row, rowRect)
     control.appendChild(details)
@@ -324,37 +335,9 @@ private[frontend] object WorldBoardRenderer:
         band, rowRect))
     control
 
-  /** A pawn on the map. Both forms are in the DOM and the map's scale picks
-    * one (ruling R6): the dot and the name at rest, the dot and the
-    * initial zoomed out, the dot alone further out. The dot and the
-    * initial are for the eye; the name stays the pawn's name. */
-  private def pawnMarker(value: GameProjection, playerId: String,
-      options: BoardOptions): dom.Element =
-    val marker = element("span", "pawn")
-    val player = playerReference(value, playerId)
-    val colour = playerColorClass(value, playerId)
-    val dot = text("span", s"pawn-dot $colour", "●")
-    dot.setAttribute("aria-hidden", "true")
-    marker.appendChild(dot)
-    // The pawn's picture lies over its dot, in the dot's own box.
-    ArtLayer.attach(dot, value.players.find(_.playerId == playerId)
-      .flatMap(player => ArtCatalog.pawn(player.color.key)))
-    // The long form: the space and the name, as the pawn reads at rest.
-    val long = element("span", "pawn-long")
-    long.appendChild(dom.document.createTextNode(" "))
-    long.appendChild(player)
-    marker.appendChild(long)
-    val initial = text("span", s"pawn-initial $colour",
-      player.textContent.take(1))
-    initial.setAttribute("aria-hidden", "true")
-    marker.appendChild(initial)
-    HoverTip.set(marker, player.textContent)
-    options.decorate(marker, Vector(BoardOptionViews.key("player", playerId)))
-    marker
-
   /** Places `node` at `rect`, each length a percentage of `parent`, which
     * is the rectangle of the element it is positioned in. */
-  private def place[E <: dom.Element](node: E, rect: MatRect,
+  private[frontend] def place[E <: dom.Element](node: E, rect: MatRect,
       parent: MatRect = MatLayout.Mat): E =
     node.classList.add("mat-slot")
     val style = node.asInstanceOf[dom.html.Element].style

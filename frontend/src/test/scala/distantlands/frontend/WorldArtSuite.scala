@@ -84,8 +84,8 @@ class WorldArtSuite extends munit.FunSuite:
       "buttons stay controls"):
     TestArt.listingWholeCatalog()
     val row = site(boardWithTheWorld(), "Deep Woods")
-    Vector(".site-tokens", ".site-pawns", ".site-forces",
-      ".site-forces-short", ".site-power").foreach(selector =>
+    Vector(".site-tokens", ".site-pawns", ".site-warbands", ".site-force",
+      ".site-force-count", ".site-shield", ".site-power").foreach(selector =>
       assert(all(row, s"$selector:not(.printed)").nonEmpty, selector))
     all(row, ".site-power").foreach(control =>
       assert(Option(control.closest(".printed")).isEmpty))

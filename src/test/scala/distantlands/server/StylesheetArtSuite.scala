@@ -179,32 +179,35 @@ class StylesheetArtSuite extends munit.FunSuite:
     Vector("border-color: transparent", "background: none")
       .foreach(part => assert(bank.contains(part), part))
 
-  /** Found in the slice 2 browser check: forces and tokens were hard to
-    * read on a site's art. The ground is a fill and a shadow of one
-    * colour, the name band's, so nothing moves. */
+  /** Words on a site's art keep a ground (R34, rewritten by R51): opaque
+    * Base, a fill and a shadow of one colour, so nothing moves. A piece's
+    * picture has none. */
   test("what lies on a site's card or on the mat in play keeps a ground " +
       "over the art, without moving"):
-    val onSite = rule(".site.art-ready :is(.site-forces, " +
-      ".site-forces-short, .site-tokens)")
-    // Opaque Base, not the name band's translucent fill: forces and pawns
-    // wear player colours, and the black player's measured 4.17 : 1 on
-    // the translucent ground over white art; on Base every player colour
-    // is 6.6 : 1 or better (slice 3, measured).
+    val tokens = rule(".site.art-ready .site-tokens")
+    // Opaque Base, not the name band's translucent fill: the black
+    // player's colour measured 4.17 : 1 on the translucent ground over
+    // white art; on Base every player colour is 6.6 : 1 or better.
     Vector("background: var(--base)", "box-shadow: 0 0 0 3px var(--base)",
       "border-radius: 3px").foreach(part =>
-      assert(onSite.contains(part), part))
-    Vector("padding", "margin", "width", "height", "border:").foreach(part =>
-      assert(!onSite.contains(part), part))
-    // A pawn can be an option, so the ground is its row's, and the pawn
-    // keeps its own background and shadow for its option states.
-    // The ground hugs each pawn (R35); a pawn a decision offers is left
-    // alone, so its option states keep its background and shadow.
-    val pawns = rule(
-      """.site.art-ready .pawn:not([class*="board-option"])""")
-    assert(pawns.contains("background: var(--base)"))
-    assert(!css.contains(".site.art-ready .site-pawns"))
-    Vector("box-shadow", "padding", "margin", "width", "height", "border:")
-      .foreach(part => assert(!pawns.contains(part), part))
+      assert(tokens.contains(part), part))
+    // A warband's count and a pawn's name are the words of the pieces'
+    // rows. The name's chip stands only while no decision offers the
+    // pawn, whose ring and selected fill are the pawn's own.
+    val words = rule(".site.art-ready .site-force-count,\n" +
+      """.site.art-ready .pawn:not([class*="board-option"]) > .pawn-name""")
+    Vector("background: var(--base)", "box-shadow: 0 0 0 0.12em var(--base)",
+      "border-radius: 0.2em").foreach(part =>
+      assert(words.contains(part), part))
+    Vector(tokens, words).foreach(ground =>
+      Vector("padding", "margin", "width", "height", "border:").foreach(
+        part => assert(!ground.contains(part), part)))
+    // No ground under a piece's picture, nor under a pawn or its row.
+    Vector(".site.art-ready .site-pawns", ".site.art-ready .pawn {",
+      """.site.art-ready .pawn:not([class*="board-option"]) {""",
+      ".site.art-ready .pawn-piece", ".site.art-ready .site-force {",
+      ".site.art-ready .site-warbands").foreach(gone =>
+      assert(!css.contains(gone), gone))
     // The tracker's lines are chips on Base over the mat (R41): the
     // owner could not read them through a halo.
     val line = rule(".mat-board.art-ready .track-note > p")
@@ -226,14 +229,50 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(rule(".restriction-mark.art-ready > " +
       ":not(.art, .restriction-mark-chain)").contains("opacity: 0"))
 
-  test("a pawn's dot gives up its ink to its picture and keeps its room"):
-    assert(rule(".pawn-dot:has(> .art)").contains("position: relative"))
-    assert(rule(".pawn-dot.art-ready").contains("color: transparent"))
+  test("a pawn's drawn disc hides under its picture and keeps its room"):
+    assert(rule(".pawn-piece.art-ready::before").contains("opacity: 0"))
+    val piece = rule(".mat-board .pawn-piece")
+    Vector("position: relative", "width: 100%", "height: 73cqh")
+      .foreach(part => assert(piece.contains(part), part))
+    assert(rule(".mat-board .pawn-piece::before")
+      .contains("background: currentColor"))
 
   test("the black pawn and the black warband get a light edge (R27)"):
     val edge = rule(""".token-warband > .art[href$="warband-black.png"],""" +
-      "\n" + """.pawn-dot > .art[src$="pawn-black.png"]""")
+      "\n" + """.pawn-piece > .art[src$="pawn-black.png"]""")
     assert(edge.contains("filter: drop-shadow(0 0 1px var(--cream))"))
+
+  /** The pieces on a site are a share of the site at every zoom (R48 to
+    * R52): each row is a container of its own size, and every length in
+    * it is a share of the row. No rule sets a piece against the map's
+    * scale or the glance size. */
+  test("a site's pieces are sized as shares of their rows, at every zoom"):
+    val pawns = rule(".mat-board .site-pawns")
+    assert(pawns.contains("container-type: size"))
+    assert(!pawns.contains("wrap"))
+    val pawn = rule(".mat-board .pawn")
+    Vector("flex: 0 0 calc(100% / 6)", "flex-direction: column",
+      "font-size: 20cqh").foreach(part => assert(pawn.contains(part), part))
+    val name = rule(".mat-board .pawn-name")
+    Vector("overflow: hidden", "text-overflow: ellipsis",
+      "white-space: nowrap").foreach(part => assert(name.contains(part), part))
+    assert(rule(".mat-board .site-warbands").contains("container-type: size"))
+    assert(rule(".mat-board .site-force").contains("font-size: 55cqh"))
+    val warband = rule(".mat-board .site-force > .token-warband")
+    Vector("width: 100cqh", "height: 100cqh")
+      .foreach(part => assert(warband.contains(part), part))
+    // R50: the name is hidden from sight on the tiny map alone.
+    assert(rule(".map-tiny .mat-board .pawn-name")
+      .contains("clip-path: inset(50%)"))
+    assert(!css.contains(".map-compact .mat-board .pawn"))
+    // The old forms and their steps against the glance size are gone.
+    Vector(".pawn-dot", ".pawn-long", ".pawn-initial", ".site-forces",
+      ".site-powers", ".map-tiny .mat-board .site-pawns",
+      ".map-compact .mat-board .site-pawns").foreach(gone =>
+      assert(!css.contains(gone), gone))
+    val sized = """(?s)\.(?:pawn|pawn-piece|pawn-name|site-force|""" +
+      """site-warbands|site-pawns)[^{}]*\{[^{}]*(glance|map-scale)"""
+    assert(sized.r.findFirstIn(uncommented).isEmpty)
 
   test("the Visions Drawn marker, the Usurper's mark and the festival " +
       "plate hide what they draw when their picture is ready"):
@@ -245,11 +284,32 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(rule(".festival-plate-printed.art-ready > :not(.art)")
       .contains("opacity: 0"))
 
-  /** The owner asked for no power words over a site's art (R45, which
-    * replaces R20): the label hides with the rest of the print and the
-    * button keeps its place. */
-  test("on a ready site a power button's label hides with the print"):
-    assert(!css.contains(".site.art-ready .site-power"))
+  /** A site's powers are buttons on the shield the card prints (R53,
+    * R54): drawn, each is an outlined box with its label, cut where it
+    * does not fit; over the site's art the outline goes with the print
+    * and nothing else is painted, so the print shows through. The hit
+    * area is the button's box alone. */
+  test("a power button is its part of the shield: outlined when drawn, " +
+      "clear over the art"):
+    val drawn = rule(".mat-board .site-power")
+    Vector("border: 1px solid var(--line)", "overflow: hidden",
+      "padding: 0 3cqw", "font-size: 15cqh")
+      .foreach(part => assert(drawn.contains(part), part))
+    assert(rule(".mat-board .site-shield").contains("container-type: size"))
+    val label = rule(".mat-board .site-power > .printed")
+    Vector("overflow: hidden", "text-overflow: ellipsis",
+      "white-space: nowrap").foreach(part => assert(label.contains(part), part))
+    assertEquals(rule(".site.art-ready .site-power").replaceAll("\\s+", " "),
+      ".site.art-ready .site-power { border-color: transparent; ")
+    val ring = rule(".mat-board .site-power:is(:hover, :focus-visible)")
+    assert(ring.contains("outline: var(--option-ring) solid " +
+      "var(--cream-focus)"))
+    // No pseudo-element or padding box grows the target past the print.
+    assert(!css.contains(".site-power::"))
+    assert(!rule(".site-power").contains("min-width"))
+    // The drawn name starts right of the shield.
+    assert(rule(".mat-board .site-name").contains(
+      "padding-left: calc(var(--shield-reach, 0%) + 6px)"))
 
   /** Over the mat an empty slot's dashed line was lost (R44). */
   test("an empty card slot shows on the mat, and an offered one keeps " +

@@ -105,51 +105,9 @@ private[frontend] object ServerUiSupport:
     (presentation.relics.size until site.relicCapacity)
       .foreach(_ => cards.appendChild(emptySlot("relic")))
     details.appendChild(cards)
-    site.forces.foreach { forces =>
-      // The words cut inside the face and the count never does; together
-      // they read as forceText.
-      val row = element("p", s"site-forces ${forceCssClass(forces)}")
-      row.appendChild(text("span", "site-forces-label", s"${forces.label} "))
-      row.appendChild(text("span", "site-forces-count", s"x${forces.count}"))
-      forces match
-        case exile: SiteForces.Exile =>
-          row.setAttribute("data-ruler-kind", "player")
-          row.setAttribute("data-ruler-player-id", exile.rulerPlayerId)
-        case _: SiteForces.Imperial =>
-          row.setAttribute("data-ruler-kind", "empire")
-        case _: SiteForces.Bandit =>
-          row.setAttribute("data-ruler-kind", "bandit")
-      details.appendChild(row)
-      // The short form for the far zoomed-out map (ruling R5): the warband
-      // in the force's colour and its count, as a card shows warbands.
-      val short = element("span", s"site-forces-short ${forceCssClass(forces)}")
-      short.setAttribute("aria-hidden", "true")
-      HoverTip.set(short, forceText(forces))
-      short.appendChild(RulesTextRenderer.warband(forceKey(forces)))
-      short.appendChild(text("span", "site-token-count", forces.count.toString))
-      details.appendChild(short)
-    }
+    // The requirement's corner; the site's pieces and its powers are
+    // placed on the card by `SitePieces`.
     val footer = element("div", "site-footer")
-    // Two lines of labels at most (`.site-powers`). Each label keeps its
-    // rules text on its hover title, and opens the power in the inspector.
-    // A button, so the site box it sits in leaves the click to it
-    // (`BoardOptions.own`).
-    val powers = element("p", "site-powers")
-    site.powers.zipWithIndex.foreach { case (power, index) =>
-      if index > 0 then powers.appendChild(dom.document.createTextNode(" · "))
-      // The control is not printed; the label it shows is (ruling R9).
-      val item = button("", "site-power")
-      item.setAttribute("aria-label", power.label)
-      item.appendChild(text("span", "printed", power.label))
-      HoverTip.set(item, power.description.fold(power.label)(
-        description => s"${power.label}: $description"))
-      item.onclick = (event: dom.MouseEvent) =>
-        event.stopPropagation()
-        CardInspection.openPower(power.label, power.description.toVector,
-          links.grid(power), item)
-      powers.appendChild(item)
-    }
-    footer.appendChild(powers)
     presentation.requirement.foreach(value =>
       footer.appendChild(requirementCorner(value)))
     details.appendChild(footer)
