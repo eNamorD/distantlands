@@ -566,11 +566,11 @@ private[frontend] object WorldBoardRenderer:
         marker.setAttribute("d", segment.path)
         marker.setAttribute("class", "limiter-marker")
         // The lock's words are the whole wedge's (R58): its note shows
-        // wherever the pointer is over the round, token or drawn.
-        lock.foreach { words =>
-          HoverTip.set(group, words)
-          group.setAttribute("aria-label", s"Round $round: $words")
-        }
+        // wherever the pointer is over the round, token or drawn. The
+        // group has no name of its own, which nothing would announce
+        // inside the wheel's picture (R67): the tracker's name and its
+        // line of words carry the lock.
+        lock.foreach(words => HoverTip.set(group, words))
         group.appendChild(marker)
         val diamond = svgElement("text")
         diamond.setAttribute("x", segment.rimX.toString)

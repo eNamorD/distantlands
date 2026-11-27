@@ -85,16 +85,20 @@ class RoundWheelSuite extends munit.FunSuite:
       order)
 
   /** The owner's second review (R58): the lock's words show over the
-    * whole of the limiter's wedge, so the wedge's group carries them, as
-    * its hover note and its name, and nothing inside it has a note of its
-    * own to show in their place. */
+    * whole of the limiter's wedge, so the wedge's group carries them as
+    * its hover note, and nothing inside it has a note of its own to show
+    * in their place. */
   private def assertLockIsOnTheWholeWedge(wheel: dom.Element)(
       using munit.Location): Unit =
     val wedge = round(wheel, 4)
     assertEquals(wedge.getAttribute(HoverTip.Attribute),
       "Usurper locked until round 4")
-    assertEquals(wedge.getAttribute("aria-label"),
-      "Round 4: Usurper locked until round 4")
+    // The wedge is a group inside the wheel's picture, where a name is
+    // never announced (R67): the tracker's own name and its line of
+    // words carry the lock for assistive technology.
+    assert(!wedge.hasAttribute("aria-label"))
+    assert(wheel.closest(".round-tracker").getAttribute("aria-label")
+      .contains("Usurper locked until round 4"))
     assertEquals(all(wedge, s"[${HoverTip.Attribute}]"), Vector.empty)
     assertEquals(all(wheel, s"g[${HoverTip.Attribute}]").size, 1)
 
