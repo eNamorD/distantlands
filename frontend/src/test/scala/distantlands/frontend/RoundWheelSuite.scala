@@ -61,7 +61,7 @@ class RoundWheelSuite extends munit.FunSuite:
       assertEqualsDouble(fromHub(label, "x", "y"), 68.5, 0.001))
     val order = all(round(wheel, 3), ":scope > *").map(_.getAttribute("class"))
     assert(order.indexOf("round-marker") <
-      order.indexOf("round-number round-number-current printed"), order)
+      order.indexOf("round-number round-number-current"), order)
     val diamond = one(round(wheel, 4), "text.limiter-diamond")
     assertEqualsDouble(diamond.getAttribute("x").toDouble, 131.380, 0.001)
     assertEqualsDouble(diamond.getAttribute("y").toDouble, 175.758, 0.001)
@@ -72,8 +72,11 @@ class RoundWheelSuite extends munit.FunSuite:
     val wheel = wheelAt(round = 3, limiter = 5)
     assertEquals(all(wheel, "text.round-number-current").map(
       _.textContent), Vector("3"))
-    assert(one(wheel, "text.round-number-current").classList
+    // The marker covers the number the mat prints, so the number on it
+    // is the round's own, in play, and shows over the mat too (R57).
+    assert(!one(wheel, "text.round-number-current").classList
       .contains("printed"))
+    assertEquals(all(wheel, "text.round-number.printed").size, 7)
 
   test("the current wedge keeps its border, under the round marker"):
     val group = round(wheelAt(round = 3, limiter = 5), 3)

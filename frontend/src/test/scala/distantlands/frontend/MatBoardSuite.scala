@@ -224,7 +224,10 @@ class MatBoardSuite extends munit.FunSuite:
     assert(segments.forall(_.classList.contains("printed")))
     val numbers = all(wheel, "text.round-number")
     assertEquals(numbers.map(_.textContent), (1 to 8).map(_.toString).toVector)
-    assert(numbers.forall(_.classList.contains("printed")))
+    // Every number but the current round's, which stands on the round
+    // marker and is play (game art ruling R57).
+    assertEquals(numbers.filterNot(_.classList.contains("printed"))
+      .map(_.textContent), Vector("3"))
     val current = one(wheel, ".round-current")
     assert(!current.classList.contains("printed"))
     assertEquals(current.parentNode.asInstanceOf[dom.Element]

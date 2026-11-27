@@ -120,7 +120,8 @@ class WorldArtSuite extends munit.FunSuite:
     val board = one(boardWithTheWorld(), ".mat-board")
     val boxes = ".card-face, .card-hover-summary, .site, .deck-card"
     Vector(".region-label", ".deck-caption", ".vision-cell",
-      ".visions-drawn-label", ".round-segment", ".round-number",
+      ".visions-drawn-label", ".round-segment",
+      ".round-number:not(.round-number-current)",
       ".site-slot-empty").foreach { selector =>
       val found = all(board, selector)
       assert(found.nonEmpty, selector)

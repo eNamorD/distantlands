@@ -550,9 +550,10 @@ private[frontend] object WorldBoardRenderer:
       label.setAttribute("y", segment.centreY.toString)
       label.setAttribute("text-anchor", "middle"); label.setAttribute("dominant-baseline", "middle")
       // The current round's number stands on the round marker, in Base.
+      // The marker covers the number the mat prints, so this one is play
+      // and shows over the mat too (R57); the others are printed.
       label.setAttribute("class",
-        if round == track.round then
-          "round-number round-number-current printed"
+        if round == track.round then "round-number round-number-current"
         else "round-number printed")
       label.textContent = round.toString
       group.appendChild(path)
