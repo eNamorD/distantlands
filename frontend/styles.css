@@ -1604,6 +1604,18 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .banner-face .card-name { font-family: Georgia, serif;
   font-size: max(1.05em, 0.7rem); overflow-wrap: normal; hyphens: manual; }
 .banner-face .card-tokens { justify-content: center; }
+/* What a banner holds stands in a chip at the middle of its face, a third
+   down from its top, where it is seen from afar (game art ruling R62):
+   the chips' ground, the same box with art on and off, sized as a share
+   of the face so it reads on the zoomed-out table as a bank's count
+   does. */
+.banner-face { container-type: inline-size; }
+.card-face.banner-face > .card-tokens { top: 33%; right: auto; bottom: auto;
+  left: 50%; width: max-content; height: auto; padding: 0.1em 0.35em;
+  transform: translate(-50%, -50%); border-radius: 0.35em;
+  background: var(--chip-ground); color: var(--cream-bright);
+  text-shadow: var(--chip-text-edge); font-size: 24cqw; line-height: 1; }
+.card-face.banner-face > .card-tokens .card-token-count { margin-right: 0; }
 /* On a player board the face is a relic's size, too small for the side, the
    prefix and the name together: it keeps the name and what it holds, and
    the side stays on the shared bank's face and in the overlay. */
@@ -2496,6 +2508,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 /* A banner is a square: in its overlay, a card's height each way. */
 .card-overlay-body > .banner-face { width: var(--card-h);
   height: var(--card-h); cursor: default; }
+.card-overlay-body > .card-face.banner-face > .card-tokens {
+  font-size: 12cqw; }
 /* The overlay reads a Vision upright, in the landscape box it is printed
    in. */
 .card-overlay-body > .card-face-vision { width: var(--card-h);

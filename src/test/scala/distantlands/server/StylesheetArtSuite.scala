@@ -515,6 +515,25 @@ class StylesheetArtSuite extends munit.FunSuite:
     // No ground over art is opaque Base any more.
     assert(!artRules.contains("background: var(--base)"))
 
+  /** The owner's second review (R62): what a banner holds was hard to
+    * see from afar. It stands in a chip at the middle of the face, a
+    * third down from its top, sized as a share of the face so it reads at
+    * desktop Fit as a bank's count does (24% of a 57px banner is about
+    * 14px). The same box in both modes: the rule names no art state. */
+  test("a banner's resources stand in a chip a third down its face, " +
+      "sized from the face"):
+    assert(css.contains(".banner-face { container-type: inline-size; }"))
+    val chip = rule(".card-face.banner-face > .card-tokens")
+    Vector("top: 33%", "left: 50%", "right: auto", "bottom: auto",
+      "transform: translate(-50%, -50%)", "width: max-content",
+      "height: auto", "background: var(--chip-ground)",
+      "text-shadow: var(--chip-text-edge)", "font-size: 24cqw")
+      .foreach(part => assert(chip.contains(part), part))
+    assert(!chip.contains("art-ready"))
+    // The overlay's face is large; its chip is a smaller share of it.
+    assert(rule(".card-overlay-body > .card-face.banner-face > .card-tokens")
+      .contains("font-size: 12cqw"))
+
   /** A colour variable's value, as `#rrggbb`. */
   private def colour(name: String)(using munit.Location): (Int, Int, Int) =
     val hex = s"--$name: #([0-9a-f]{6});".r.findFirstMatchIn(css)
