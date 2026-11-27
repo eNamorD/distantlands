@@ -49,10 +49,13 @@ final class HttpTestServer private (system: ActorSystem[Nothing],
       system.terminate()
       Await.result(system.whenTerminated, 10.seconds)
 
-  /** The response body of a GET as bytes, for a binary asset such as a font. */
-  def getBytes(path: String): HttpResponse[Array[Byte]] =
-    client.send(HttpRequest.newBuilder(URI.create(base + path)).GET().build(),
-      HttpResponse.BodyHandlers.ofByteArray())
+  /** The response body of a GET as bytes, for a binary asset such as a font
+    * or a compressed response, sent with `headers` as extra request headers. */
+  def getBytes(path: String,
+      headers: Seq[(String, String)] = Nil): HttpResponse[Array[Byte]] =
+    val builder = HttpRequest.newBuilder(URI.create(base + path)).GET()
+    headers.foreach((name, value) => builder.header(name, value))
+    client.send(builder.build(), HttpResponse.BodyHandlers.ofByteArray())
 
 object HttpTestServer:
   /** The origin the suites configure SameOriginCsrfProtection with, and
@@ -89,6 +92,6 @@ object HttpTestServer:
         throw error
 
   /** The response's Cache-Control header, if it has one. */
-  def cacheControl(response: HttpResponse[String]): Option[String] =
+  def cacheControl(response: HttpResponse[?]): Option[String] =
     val value = response.headers().firstValue("Cache-Control")
     if value.isPresent then Some(value.get()) else None
