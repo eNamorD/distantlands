@@ -626,7 +626,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   display: flex; align-items: center; justify-content: center;
   width: 62cqw; height: 62cqw; border-radius: 50%;
   transform: translate(-50%, -50%); background: var(--chip-ground);
-  text-shadow: var(--chip-text-edge);
+  color: var(--cream-bright); text-shadow: var(--chip-text-edge);
   font-size: 44cqw; font-weight: 700; line-height: 1; }
 /* On the far zoomed-out map a bank's circle is a few pixels across: the
    count takes all of it, so it stays near a readable size. */
@@ -2394,7 +2394,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   transform: translate(-50%, -50%) rotate(-90deg); }
 .deck-card.art-ready > .pile-count { border-radius: 0.3em;
   background: var(--chip-ground); box-shadow: 0 0 0 0.3em var(--chip-ground);
-  text-shadow: var(--chip-text-edge); }
+  color: var(--cream-bright); text-shadow: var(--chip-text-edge); }
 .mat-board .deck-card:has(> .art) { position: relative; }
 /* The mat prints each bank's emblem and circle, so over the mat a bank
    drops its own pill; its count and its favor stand in the mat's circle.
@@ -2414,19 +2414,27 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .site.art-ready .site-tokens {
   border-radius: 3px; background: var(--chip-ground);
   box-shadow: 0 0 0 3px var(--chip-ground);
-  text-shadow: var(--chip-text-edge); }
+  color: var(--cream-bright); text-shadow: var(--chip-text-edge); }
 .site.art-ready .pawn-ground { background: var(--chip-ground); }
 .site.art-ready .site-force { background: var(--chip-ground);
   box-shadow: 0 0 0 4cqh var(--chip-ground); }
 .site.art-ready :is(.pawn-name, .site-force-count) {
-  text-shadow: var(--chip-text-edge); }
+  color: var(--cream-bright); text-shadow: var(--chip-text-edge); }
+/* Over art the words on a chip are Bright Cream, whatever player they
+   name (R65): a player's colour does not read on the see-through ground
+   over bright art (black measured 2.6 : 1), and the piece's picture
+   carries the colour. Bright Cream measures 5.2 : 1 on the ground over
+   white art. */
+.site.art-ready .pawn-name .player-ref,
+.mat-board.art-ready .track-note .player-ref {
+  color: var(--cream-bright); }
 .site.art-ready .site-tokens:empty { background: none; box-shadow: none; }
 /* The card prints its power shield: the drawn outline of each power's
    part goes, and the button stays where the print is. */
 .site.art-ready .site-power { border-color: transparent; }
 .mat-board.art-ready .track-note > p { border-radius: 0.2em;
   background: var(--chip-ground); box-shadow: 0 0 0 0.25em var(--chip-ground);
-  text-shadow: var(--chip-text-edge); }
+  color: var(--cream-bright); text-shadow: var(--chip-text-edge); }
 /* A foundation's and the Oath goal's plate in the overlay holds the
    card's image; the title on it is printed and hides. */
 .card-plate:has(> .art) { position: relative; }
@@ -2468,7 +2476,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .mat-board.art-ready .deck-card.pile-empty > .pile-count {
   border-radius: 0.3em; background: var(--chip-ground);
   box-shadow: 0 0 0 0.3em var(--chip-ground);
-  text-shadow: var(--chip-text-edge); }
+  color: var(--cream-bright); text-shadow: var(--chip-text-edge); }
 /* A die face is a crop of its die's sheet: a square as tall as the chip,
    centred in it, showing only the face. The chip's own glyphs hide when
    the sheet has loaded, and so does the doubler's "×2", which its side

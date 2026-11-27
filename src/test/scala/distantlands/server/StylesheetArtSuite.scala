@@ -516,6 +516,40 @@ class StylesheetArtSuite extends munit.FunSuite:
     // No ground over art is opaque Base any more.
     assert(!artRules.contains("background: var(--base)"))
 
+  /** The slice 6 review: on the 65% ground over bright art the black
+    * player's colour measured 2.6 : 1 and brown's 3.1 : 1. Over art,
+    * words on a see-through chip are Bright Cream, whatever player they
+    * name (R65): the piece's picture carries the colour. The ground is
+    * computed over white art, the worst a chip can lie on, at the alpha
+    * the stylesheet sets. */
+  test("every word on a see-through chip is Bright Cream, which reads " +
+      "on the ground over white art"):
+    val alpha = """--chip-ground-alpha: ([0-9.]+);""".r.findFirstMatchIn(css)
+      .getOrElse(fail("no chip ground alpha")).group(1).toDouble
+    val base = colour("base")
+    def overWhite(channel: Int): Int =
+      math.round(alpha * channel + (1 - alpha) * 255).toInt
+    val ground = (overWhite(base._1), overWhite(base._2), overWhite(base._3))
+    assert(contrast(colour("cream-bright"), ground) >= 4.5,
+      contrast(colour("cream-bright"), ground))
+    // A player's colour would not do: black's and brown's fail there.
+    assert(contrast(colour("player-black"), ground) < 4.5)
+    assert(contrast(colour("player-brown"), ground) < 4.5)
+    Vector(".mat-board .favor-bank-count",
+      ".deck-card.art-ready > .pile-count",
+      ".mat-board.art-ready .deck-card.pile-empty > .pile-count",
+      ".site.art-ready .site-tokens", ".mat-board.art-ready .track-note > p",
+      ".card-face.banner-face > .card-tokens",
+      ".site.art-ready :is(.pawn-name, .site-force-count)",
+      ".site.art-ready .pawn-name .player-ref,\n" +
+        ".mat-board.art-ready .track-note .player-ref").foreach(selector =>
+      assert(rule(selector).contains("color: var(--cream-bright)"), selector))
+    // No other rule gives a chip's words a colour over art.
+    val colours = """(?<![-\w])color\s*:\s*([^;}]+)""".r
+    assertEquals(colours.findAllMatchIn(artRules.replaceAll(
+      "(?s)/\\*.*?\\*/", "")).map(_.group(1).trim).toSet
+      .filter(_.contains("player")), Set.empty[String])
+
   /** The owner's second review (R62): what a banner holds was hard to
     * see from afar. It stands in a chip at the middle of the face, a
     * third down from its top, sized as a share of the face so it reads at
