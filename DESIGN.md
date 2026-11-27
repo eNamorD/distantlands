@@ -861,7 +861,8 @@ piece is the same share of its site at every zoom (game art rulings R48
 to R52). The pawn row has six places, one a seat; a pawn takes one from
 the left and is the same size alone as among six. A pawn is its piece, a
 disc of its player's colour, over its player's name, cut with an ellipsis.
-A site's warbands are the ruler's piece, as tall as the row, and "x2" in
+A site's warbands are the ruler's pieces side by side, each as tall as the
+row, up to five; six or more are one piece and "x6" (R63), in
 the force's colour (the Empire's glyph ringed, so it does not rest on
 colour alone: R7); the force's words are its name and hover note. Each
 power is a button on the part of the shield the card prints it in: the
@@ -1080,14 +1081,15 @@ hover note.
   its nearest box, so each box falls back to its drawing alone when its
   image is slow, missing or failed.
 - **What stays over art.** Tokens, warbands, pawns, counts, option rings
-  and badges. A piece's picture needs no ground. On a site's art the
-  words do: loose tokens, a warband's count and a pawn's name stand on
-  opaque Base, a fill and a same-colour shadow with no padding. A
-  pawn's name takes its chip only while no decision offers the pawn, so
-  the offered pawn's ring, around its piece and its name, stays its own
-  (R51). Every player colour measures 6.6 : 1 or better on Base, where
-  the black player's colour measured 4.17 : 1 on a translucent ground
-  over white art. A pile's count stands on Base too (13.2 : 1).
+  and badges. Each stands on a chip: Base, see-through, 65% opaque, from
+  one setting (`--chip-ground-alpha`, `--chip-ground`), a fill and a
+  same-colour shadow with no padding, and its words carry a Base edge
+  (`--chip-text-edge`) so they read on what shows through (R59, R60).
+  The chips are a bank's count, a pile's count, the tracker's lines,
+  loose tokens on a site, a banner's resources, and the pieces: a pawn
+  has one ground behind its piece and its name together, a layer inside
+  the pawn so an offered pawn has it too, inside its ring; a warband
+  entry has one behind its pieces and its count (R61).
 - **Site powers.** A site's power buttons are controls, not print. Each
   stands on the part of the shield the site's card prints its power in;
   over the art its label and its drawn outline hide with the print and
@@ -1098,24 +1100,30 @@ hover note.
   fitted with `cover`. The drawn face has the same box.
 - **The mat.** Over the mat a favor bank drops its own pill, unless a
   decision offers it, and an empty pile drops its fill: the mat prints
-  both. The tracker's lines are chips on Base (cream on Base, 15.6 : 1).
+  both. The tracker's lines are chips.
   An empty card slot's dashed line is Bright Cream with a Base line
-  under it; its width follows the map's scale so it stays about a pixel
-  on screen, with art on and off.
+  under it; each is two pixels on screen at any zoom, its width
+  following the map's scale, with art on and off (R64).
 - **Favor banks.** A bank's parts stand where the mat prints them, at
   every zoom, with art on and off: the suit's glyph on the emblem, the
-  favor filling the circle, and the count over the favor on a Base disc
-  (62% of the circle, the figure 44% of it). On the far zoomed-out map
-  the count takes the whole circle, so it holds about 9px on a phone.
+  favor filling the circle, and the count over the favor on a chip's
+  disc (62% of the circle, the figure 44% of it). On the far zoomed-out
+  map the count takes the whole circle, so it holds about 9px on a phone.
+- **Banners.** What a banner holds stands in a chip at the middle of its
+  face, a third down from its top, 24% of the face's width in size, so
+  it reads on the zoomed-out table as a bank's count does; the same box
+  with art on and off (R62). The drawn name stands at the face's foot.
 - **The round wheel.** The current round carries the round marker, a
-  disc in Round Marker silver with a Line Mid rim, in the outer half of
-  its wedge, with art on and off. A wedge's number stands in its inner
-  half, clear of the marker, and the current round's number is Base on
-  the wedge's brass (8 : 1). Over the mat the current wedge keeps
+  disc in Round Marker silver with a Line Mid rim at the centre of its
+  wedge, 16 of the wheel's 200 units in radius, with art on and off, and
+  the round's number in Base at the disc's centre, over the mat too
+  (R57). Every other number stands at its wedge's centre, printed. Over
+  the mat the current wedge keeps
   its Bright Cream border and drops its brass fill. The Usurper's token
   fills the limiter's wedge, its point to the hub, in a box 54 by 55 of
   the wheel's 200 units; drawn, it is the wedge's own shape in the
-  limiter's red with a diamond in its outer half.
+  limiter's red with a small diamond in its rim. The lock's words are
+  the hover note and the name of the whole wedge (R58).
 - **An offered site or bank.** A site's ring runs along its card's edge,
   frame line included; a favor bank's ring is drawn over its favor.
 - **The Oath goal.** In the shared bank the Oath goal is its card, the

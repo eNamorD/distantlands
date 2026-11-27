@@ -186,6 +186,8 @@ Every surface swaps art through one helper, `ArtLayer.attach(box, key)`.
   card prints its power in, so the printed symbol is its click target,
   and its label hides with the print
   ([R53 to R55](2026-11-26-game-art-design-implementation-rulings.md)).
+  A chip over art is see-through Base from one setting (R59), and each
+  piece stands on one (R61); up to five warbands are drawn singly (R63).
   The pawns and warbands on the card are their pieces' pictures, a row of
   pawns with their players' names under them and a row of warbands with a
   count, each a fixed share of the site at every zoom (R48 to R52). The
