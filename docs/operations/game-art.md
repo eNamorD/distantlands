@@ -1,47 +1,44 @@
 # Game art
 
 Distant Lands draws every card, the map and every piece itself. A host who
-owns the licensed art can have the table show it instead: start the server
+has their own art assets can have the table show it instead: start the server
 with `--art-path <dir>` (or `DLQ_ART_PATH`), and each player can switch
 **Game art** on or off in the table's Settings.
 
-The art is licensed. Distant Lands ships none of it, and this page holds
-file names only. Wherever a file is missing, the table keeps the drawn
-face for that one card.
+This page holds a list of file names only. Wherever a file is missing, the table
+keeps using the generic face for that game object.
 
 ## The folder
 
 ```
 <art-path>/
-  cards/    card faces
+  cards/    card faces: denizens, relics, edifices, sites, banners,
+            foundations, legacies, Visions and the Oath goal cards
   symbols/  the symbols cards print in their text
-  tts/
-    backs/        card backs
-    mat/          the mat
-    tokens/       favor, secrets, bandits, the festival and Usurper markers
-    pieces/       pawns and warbands
-    markers/      the Visions Drawn marker, whose eye also marks a Vision
-    titles/       the Oathkeeper and Usurper titles
-    attack-die/   the attack die's sheet of faces
-    defense-die/  the defense die's sheet of faces
+  backs/    card backs
+  mat/      the mat the map lies on
+  tokens/   favor, secrets, bandits, the festival and Usurper markers
+  pieces/   pawns and warbands
+  markers/  the Visions Drawn marker, whose eye also marks a Vision
+  titles/   the Oathkeeper and Usurper titles
+  dice/     the attack and defense dice's sheets of faces
 ```
 
-- `cards/` is a copy of the Buried Giant card database's Oath images
-  (`bgs-cards`, `content/card-images/oath/en-US`), the whole directory.
-  A card New Foundations reprints is read from its file ending
-  ` (NF).png`; a denizen it left alone is read from the base file that
-  carries the bare name. The site, banner, foundation and Oath goal cards
-  are read from the same directory. Files the list below does not name
-  are ignored.
-- `tts/backs/` holds the card backs of the Tabletop Simulator mod
-  "Oath: New Foundations": the denizen, Vision, relic and legacy backs,
-  saved under the names below.
-- `tts/mat/` holds the mat from the same mod, saved as `mat.jpg`.
-- `symbols/` holds the card database's Oath symbols
-  (`content/card-symbols/oath`), the files named `symbol-*.png`.
-- The other `tts/` folders hold the mod's tokens, pieces, markers, titles
-  and die textures, saved under the names below. The pawns and the
-  secret token are pictures of the mod's 3D pieces.
+- `cards/` names each card file for the card's printed name. A card New
+  Foundations reprints ends ` (NF).png`; a denizen it left alone carries
+  the bare name. An edifice has one file for each face. Files the list
+  below does not name are ignored.
+- `symbols/` holds one image per printed symbol, named `symbol-*.png`.
+- `dice/` holds one sheet per die, with its six sides laid out three by
+  two in its lower two thirds; the table crops each face from it.
+- Every other file is one image, saved under the name below.
+
+The table's boxes keep the proportions recorded in
+[asset proportions](../catalog/asset-proportions.md). An image of other
+proportions is fitted inside its box, except the mat and the site cards,
+which fill theirs. The map is laid out by the mat's pixels and each die
+face by its sheet's, so a mat or a die sheet must keep the layout that
+page records.
 
 A host who starts the server with a Start file sets the folder in the
 settings file the first start creates (`distantlands.properties`; the
@@ -66,8 +63,8 @@ docker run --detach --name distantlands \
 A browser keeps an art file for a day. After replacing a file in the
 folder and restarting, a player may need a hard reload to see the new one.
 
-The server follows symbolic links, so `cards/` may be a link to a clone
-of the card database, and any single file may be a link.
+The server follows symbolic links, so any subfolder or single file may be
+a link to a copy kept elsewhere.
 
 The server reads the folder once, when it starts, and logs how many files
 it found and which listed paths the folder lacks. Restart it after
@@ -481,10 +478,10 @@ Every path the table can ask for, relative to the folder.
 - `cards/Wolves.png`
 - `cards/Wrestlers.png`
 - `cards/Zealots.png`
-- `tts/backs/denizen-back.jpg`
-- `tts/backs/vision-back.jpg`
-- `tts/backs/relic-back.jpg`
-- `tts/backs/legacy-back.jpg`
+- `backs/denizen-back.jpg`
+- `backs/vision-back.jpg`
+- `backs/relic-back.jpg`
+- `backs/legacy-back.jpg`
 - `cards/Ancient City (NF).png`
 - `cards/Broken Peaks (NF).png`
 - `cards/Buried Giant (NF).png`
@@ -529,7 +526,7 @@ Every path the table can ask for, relative to the folder.
 - `cards/Protection Oath (NF).png`
 - `cards/Devotion Oath (NF).png`
 - `cards/People Oath (NF).png`
-- `tts/mat/mat.jpg`
+- `mat/mat.jpg`
 - `symbols/symbol-favor.png`
 - `symbols/symbol-favorb.png`
 - `symbols/symbol-secret.png`
@@ -549,29 +546,29 @@ Every path the table can ask for, relative to the folder.
 - `symbols/symbol-swordh.png`
 - `symbols/symbol-restrictionperson.png`
 - `symbols/symbol-restrictiontree.png`
-- `tts/tokens/favor.png`
-- `tts/tokens/secret.png`
-- `tts/pieces/pawn-purple.png`
-- `tts/pieces/pawn-red.png`
-- `tts/pieces/pawn-blue.png`
-- `tts/pieces/pawn-yellow.png`
-- `tts/pieces/pawn-white.png`
-- `tts/pieces/pawn-black.png`
-- `tts/pieces/pawn-pink.png`
-- `tts/pieces/pawn-brown.png`
-- `tts/pieces/warband-purple.png`
-- `tts/pieces/warband-red.png`
-- `tts/pieces/warband-blue.png`
-- `tts/pieces/warband-yellow.png`
-- `tts/pieces/warband-white.png`
-- `tts/pieces/warband-black.png`
-- `tts/pieces/warband-pink.png`
-- `tts/pieces/warband-brown.png`
-- `tts/tokens/bandit.png`
-- `tts/markers/visions-drawn-marker.png`
-- `tts/tokens/festival-underway.jpg`
-- `tts/tokens/usurper.png`
-- `tts/titles/oathkeeper.jpg`
-- `tts/titles/usurper.jpg`
-- `tts/attack-die/attack_die.png`
-- `tts/defense-die/defense_die.png`
+- `tokens/favor.png`
+- `tokens/secret.png`
+- `pieces/pawn-purple.png`
+- `pieces/pawn-red.png`
+- `pieces/pawn-blue.png`
+- `pieces/pawn-yellow.png`
+- `pieces/pawn-white.png`
+- `pieces/pawn-black.png`
+- `pieces/pawn-pink.png`
+- `pieces/pawn-brown.png`
+- `pieces/warband-purple.png`
+- `pieces/warband-red.png`
+- `pieces/warband-blue.png`
+- `pieces/warband-yellow.png`
+- `pieces/warband-white.png`
+- `pieces/warband-black.png`
+- `pieces/warband-pink.png`
+- `pieces/warband-brown.png`
+- `tokens/bandit.png`
+- `markers/visions-drawn-marker.png`
+- `tokens/festival-underway.jpg`
+- `tokens/usurper.png`
+- `titles/oathkeeper.jpg`
+- `titles/usurper.jpg`
+- `dice/attack.png`
+- `dice/defense.png`

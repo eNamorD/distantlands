@@ -646,7 +646,7 @@ card the table shows as words (a foundation, the Oath goal, the Oathkeeper
 title) opens in the overlay with a plate at its real ratio; the Oath goal in
 the shared bank is a link that opens it (implementation ruling R2).
 
-Everything a card prints carries the class `printed`, so licensed art can
+Everything a card prints carries the class `printed`, so the host's art can
 replace exactly that; what lies on it in play is anchored to the box. The
 token band stands at a square or landscape box's foot, and just above a
 denizen's power marks, above the marks on any box that prints them; the
@@ -1085,7 +1085,7 @@ show together.
 
 ### Game Art
 **Game art** is a switch in Settings, on by default; a player may turn it
-off or on. While it is on the table shows the host's licensed images in
+off or on. While it is on the table shows the host's art images in
 place of what it draws. The switch is a
 full-width Control 44px tall, its name at the left and On or Off at the
 right; on, it wears the selection colours. When the server has no art it

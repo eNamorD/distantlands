@@ -45,11 +45,11 @@ class PieceArtSuite extends munit.FunSuite:
     TestArt.listingWholeCatalog()
     val world = worldWithForcesAndPawns()
     assertEquals(shortForces(world, "Keep"),
-      Vector("/art/tts/pieces/warband-red.png"))
+      Vector("/art/pieces/warband-red.png"))
     assertEquals(shortForces(world, "Camp"),
-      Vector("/art/tts/pieces/warband-purple.png"))
+      Vector("/art/pieces/warband-purple.png"))
     assertEquals(shortForces(world, "Ford"),
-      Vector("/art/tts/tokens/bandit.png"))
+      Vector("/art/tokens/bandit.png"))
 
   test("warbands on a card hold their force's piece"):
     TestArt.listingWholeCatalog()
@@ -58,7 +58,7 @@ class PieceArtSuite extends munit.FunSuite:
         SiteForces.Exile(2, "red", PlayerColor.Red, "Red Warbands"))))
     assertEquals(all(card, ".card-warbands image.art")
       .map(_.getAttribute("href")),
-      Vector("/art/tts/pieces/warband-red.png"))
+      Vector("/art/pieces/warband-red.png"))
     assertEquals(one(card, ".card-warbands .card-token-count").textContent,
       "2")
 
@@ -74,8 +74,8 @@ class PieceArtSuite extends munit.FunSuite:
     val pawns = all(world, ".site-pawns .pawn")
     assertEquals(pawns.map(pawn => all(pawn, ".pawn-piece > img.art")
       .map(_.getAttribute("src"))), Vector(
-      Vector("/art/tts/pieces/pawn-red.png"),
-      Vector("/art/tts/pieces/pawn-black.png")))
+      Vector("/art/pieces/pawn-red.png"),
+      Vector("/art/pieces/pawn-black.png")))
     pawns.foreach { pawn =>
       assertEquals(all(pawn, ":scope > *").map(_.getAttribute("class")
         .split(" ").head), Vector("pawn-ground", "pawn-piece", "pawn-name"))
@@ -87,14 +87,14 @@ class PieceArtSuite extends munit.FunSuite:
     TestArt.listingWholeCatalog()
     assertEquals(all(worldWithForcesAndPawns(), ".vision-marker > img.art")
       .map(_.getAttribute("src")),
-      Vector("/art/tts/markers/visions-drawn-marker.png"))
+      Vector("/art/markers/visions-drawn-marker.png"))
 
   test("the printed festival plate holds the marker's picture; the " +
       "plate without its rule holds none (R29)"):
     TestArt.listingWholeCatalog()
     assertEquals(all(FestivalMarker.plate(withRule = true),
       ":scope > img.art").map(_.getAttribute("src")),
-      Vector("/art/tts/tokens/festival-underway.jpg"))
+      Vector("/art/tokens/festival-underway.jpg"))
     assertEquals(all(FestivalMarker.plate(withRule = false), "img"),
       Vector.empty)
     assertEquals(all(FestivalMarker.band(MatLayout.festivalMarker(0, 0)),
@@ -120,8 +120,8 @@ class PieceArtSuite extends munit.FunSuite:
       one(boards, ".player-title").asInstanceOf[dom.html.Button].click()
     }
     finally CardInspection.clear()
-    assertEquals(asked, Vector(Some("tts/titles/oathkeeper.jpg"),
-      Some("tts/titles/usurper.jpg")))
+    assertEquals(asked, Vector(Some("titles/oathkeeper.jpg"),
+      Some("titles/usurper.jpg")))
 
   test("with art off no piece or marker holds an image, and the world's " +
       "markup is what it is with art once the images are removed"):

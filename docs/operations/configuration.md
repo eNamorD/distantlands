@@ -37,8 +37,8 @@ play through a loopback address when it cannot reach its own public address.
 
 ## Game art
 
-`--art-path` names a folder of the game's licensed art, which the host
-supplies; Distant Lands ships none. The server reads the folder once at
+`--art-path` names a folder of art assets the host supplies; Distant
+Lands ships none. The server reads the folder once at
 startup and logs how many files it found and which it lacks. Each player
 can then switch **Game art** on or off in the table's Settings. A path
 that is not a folder serves no art and logs one line saying so; the game

@@ -40,18 +40,18 @@ class CardArtSuite extends munit.FunSuite:
     TestArt.listingWholeCatalog()
     Vector("denizen", "vision", "relic", "legacy").foreach(kind =>
       assertEquals(images(CardFace.render(hidden(kind))),
-        Vector(s"/art/tts/backs/$kind-back.jpg"), kind))
+        Vector(s"/art/backs/$kind-back.jpg"), kind))
 
   test("a facedown site relic holds the relic back"):
     TestArt.listingWholeCatalog()
     assertEquals(images(ServerUiSupport.facedownCard("relic")),
-      Vector("/art/tts/backs/relic-back.jpg"))
+      Vector("/art/backs/relic-back.jpg"))
 
   test("a knowable card holds its back, and its hover summary its face"):
     TestArt.listingWholeCatalog()
     val node = CardFace.render(knownRelic)
     assert(node.classList.contains("card-face-knowable"))
-    assertEquals(images(node), Vector("/art/tts/backs/relic-back.jpg"))
+    assertEquals(images(node), Vector("/art/backs/relic-back.jpg"))
     assertEquals(images(one(node, ".card-hover-summary")),
       Vector("/art/cards/Sticky%20Fire%20(NF).png"))
 
@@ -134,7 +134,7 @@ class CardArtSuite extends munit.FunSuite:
         ".card-overlay-details .printed").size, 0)
       CardInspection.open(hidden("relic"), origin)
       assertEquals(images(one(browser.mount, ".card-overlay-body > .card-face")),
-        Vector("/art/tts/backs/relic-back.jpg"))
+        Vector("/art/backs/relic-back.jpg"))
     finally
       shell.dispose()
       browser.close()

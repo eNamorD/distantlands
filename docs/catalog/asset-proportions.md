@@ -3,14 +3,13 @@
 The real size and proportions of each game asset the table draws, and where
 each number came from. The stylesheet's ratio table and `MatLayout` are
 built from this record, and
-[game art](../operations/game-art.md) fills each box with its licensed
-image. It holds numbers only. The assets themselves are licensed
-and live under the ignored `reference/assets/`.
+[game art](../operations/game-art.md) fills each box with the host's
+image. It holds numbers only; the images themselves are not part of the
+repository.
 
 ## Cards
 
-Sizes are the pixel sizes of the New Foundations card images in the
-`bgs-cards` clone (`content/card-images/oath/en-US`).
+Sizes are the pixel sizes of the New Foundations card images.
 
 | Asset | Size | Ratio (w : h) | CSS |
 |---|---|---|---|
@@ -30,7 +29,7 @@ denizen box; upright, it is the legacy box.
 
 | Asset | Shape | Source |
 |---|---|---|
-| Attack, defense and round die face | square | Tabletop Simulator die textures |
+| Attack, defense and round die face | square | the dice's face sheets |
 | Favor token | round | owner's screenshot of the model |
 | Secret token | book, about 0.87 : 1 | owner's screenshot of the model |
 

@@ -7,7 +7,7 @@ import distantlands.testkit.HttpTestServer.cacheControl
   * art"), over temporary folders of 1×1 PNGs. */
 class ArtRoutesSuite extends munit.FunSuite:
   private val catalog = Vector("cards/Alchemist (NF).png",
-    "cards/Giant's Path (NF).png", "tts/backs/relic-back.jpg")
+    "cards/Giant's Path (NF).png", "backs/relic-back.jpg")
 
   private def serving(art: ArtLibrary)(check: HttpTestServer => Unit): Unit =
     val server = HttpTestServer.start("art-routes-test")(_ =>
@@ -40,7 +40,7 @@ class ArtRoutesSuite extends munit.FunSuite:
 
   test("a listed path is served with a day's cache, an ETag and its type"):
     val folder = ArtFolders.onePixelFolder("cards/Alchemist (NF).png",
-      "cards/Giant's Path (NF).png", "tts/backs/relic-back.jpg")
+      "cards/Giant's Path (NF).png", "backs/relic-back.jpg")
     serving(ArtLibrary.scan(Some(folder), catalog)) { server =>
       val card = server.getBytes("/art/cards/Alchemist%20(NF).png")
       assertEquals(card.statusCode(), 200)
@@ -52,7 +52,7 @@ class ArtRoutesSuite extends munit.FunSuite:
         "image/png")
       assertEquals(server.get("/art/cards/Giant's%20Path%20(NF).png")
         .statusCode(), 200)
-      assertEquals(server.getBytes("/art/tts/backs/relic-back.jpg")
+      assertEquals(server.getBytes("/art/backs/relic-back.jpg")
         .headers().firstValue("Content-Type").get(), "image/jpeg")
     }
 
@@ -85,16 +85,16 @@ class ArtRoutesSuite extends munit.FunSuite:
       assertEquals(server.get("/art/manifest.json").statusCode(), 200)
     finally server.close()
 
-  /** A host may link `cards/` to a clone of the card database
-    * (implementation ruling R10). */
+  /** A host may link `cards/` to a copy kept elsewhere (implementation
+    * ruling R10). */
   test("a file reached through a symbolic link is listed and served"):
     import java.nio.file.Files
     val clone = ArtFolders.onePixelFolder("Alchemist (NF).png")
-    val folder = ArtFolders.onePixelFolder("tts/backs/relic-back.jpg")
+    val folder = ArtFolders.onePixelFolder("backs/relic-back.jpg")
     Files.createSymbolicLink(folder.resolve("cards"), clone)
     serving(ArtLibrary.scan(Some(folder), catalog)) { server =>
-      assertEquals(files(server), Vector("cards/Alchemist (NF).png",
-        "tts/backs/relic-back.jpg"))
+      assertEquals(files(server), Vector("backs/relic-back.jpg",
+        "cards/Alchemist (NF).png"))
       assertEquals(server.getBytes("/art/cards/Alchemist%20(NF).png")
         .body().toVector, ArtFolders.onePixel.toVector)
     }

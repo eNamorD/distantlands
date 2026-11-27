@@ -26,7 +26,7 @@ class GameArtSuite extends munit.FunSuite:
     TestArt.listing(alchemist.path, relicBack.path)
     assertEquals(GameArt.url(alchemist),
       Some("/art/cards/Alchemist%20(NF).png"))
-    assertEquals(GameArt.url(relicBack), Some("/art/tts/backs/relic-back.jpg"))
+    assertEquals(GameArt.url(relicBack), Some("/art/backs/relic-back.jpg"))
 
   test("a key the manifest lacks has no URL"):
     TestArt.listing(relicBack.path)

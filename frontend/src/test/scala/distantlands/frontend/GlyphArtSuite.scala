@@ -97,9 +97,9 @@ class GlyphArtSuite extends munit.FunSuite:
       "no picture of its own its symbol (R23)"):
     TestArt.listingWholeCatalog()
     assertEquals(images(RulesTextRenderer.piece("favor")),
-      Vector("/art/tts/tokens/favor.png"))
+      Vector("/art/tokens/favor.png"))
     assertEquals(images(RulesTextRenderer.piece("secret")),
-      Vector("/art/tts/tokens/secret.png"))
+      Vector("/art/tokens/secret.png"))
     assertEquals(images(RulesTextRenderer.piece("favor-burnt")),
       Vector("/art/symbols/symbol-favorb.png"))
     assertEquals(RulesTextRenderer.piece("favor").getAttribute("class"),
@@ -112,15 +112,15 @@ class GlyphArtSuite extends munit.FunSuite:
       suit = Some("order"), orientation = Some("face-up"), favor = 2,
       secrets = 1))
     assertEquals(all(card, ".card-tokens image.art")
-      .map(_.getAttribute("href")), Vector("/art/tts/tokens/favor.png",
-      "/art/tts/tokens/secret.png"))
+      .map(_.getAttribute("href")), Vector("/art/tokens/favor.png",
+      "/art/tokens/secret.png"))
     assertEquals(all(card, ".card-header image.art")
       .map(_.getAttribute("href")),
       Vector("/art/symbols/symbol-suit-order.png"))
     val banner = BannerFace.render(BannerState("peoples-favor", "mob", None,
       3), None)
     assertEquals(all(banner, ".card-tokens image.art")
-      .map(_.getAttribute("href")), Vector("/art/tts/tokens/favor.png"))
+      .map(_.getAttribute("href")), Vector("/art/tokens/favor.png"))
     val site = ServerUiSupport.siteDetails(TestSites.quietSite("forge",
       "Forge").copy(forgeCost = Some(ForgeCost(1, 1))))
     assertEquals(all(site, ".site-requirement image.art")

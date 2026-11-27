@@ -8,7 +8,7 @@ import java.util.Base64
   * reads a licensed file. */
 class ArtLibrarySuite extends munit.FunSuite:
   private val catalog = Vector("cards/Alchemist (NF).png",
-    "cards/Sticky Fire (NF).png", "tts/backs/relic-back.jpg")
+    "cards/Sticky Fire (NF).png", "backs/relic-back.jpg")
 
   test("without a folder the library is empty and logs nothing"):
     val art = ArtLibrary.scan(None, catalog)
@@ -18,11 +18,11 @@ class ArtLibrarySuite extends munit.FunSuite:
 
   test("the library keeps exactly the catalog paths the folder holds"):
     val folder = ArtFolders.onePixelFolder("cards/Alchemist (NF).png",
-      "tts/backs/relic-back.jpg", "cards/Not A Card (NF).png",
+      "backs/relic-back.jpg", "cards/Not A Card (NF).png",
       "cards/notes.txt")
     val art = ArtLibrary.scan(Some(folder), catalog)
     assertEquals(art.files.keySet,
-      Set("cards/Alchemist (NF).png", "tts/backs/relic-back.jpg"))
+      Set("cards/Alchemist (NF).png", "backs/relic-back.jpg"))
     assertEquals(art.files("cards/Alchemist (NF).png"),
       folder.resolve("cards/Alchemist (NF).png"))
 
@@ -39,11 +39,11 @@ class ArtLibrarySuite extends munit.FunSuite:
       "relic-back.jpg")
     val folder = ArtFolders.onePixelFolder()
     Files.createSymbolicLink(folder.resolve("cards"), clone)
-    Files.createDirectories(folder.resolve("tts/backs"))
-    Files.createSymbolicLink(folder.resolve("tts/backs/relic-back.jpg"),
+    Files.createDirectories(folder.resolve("backs"))
+    Files.createSymbolicLink(folder.resolve("backs/relic-back.jpg"),
       clone.resolve("relic-back.jpg"))
     assertEquals(ArtLibrary.scan(Some(folder), catalog).files.keySet,
-      Set("cards/Alchemist (NF).png", "tts/backs/relic-back.jpg"))
+      Set("cards/Alchemist (NF).png", "backs/relic-back.jpg"))
 
   test("the summary counts the files and names the folder"):
     val folder = ArtFolders.onePixelFolder("cards/Alchemist (NF).png")
@@ -54,7 +54,7 @@ class ArtLibrarySuite extends munit.FunSuite:
     val folder = ArtFolders.onePixelFolder("cards/Alchemist (NF).png")
     assertEquals(ArtLibrary.scan(Some(folder), catalog).warning, Some(
       s"art: $folder lacks 2 catalog files: cards/Sticky Fire (NF).png, " +
-        "tts/backs/relic-back.jpg"))
+        "backs/relic-back.jpg"))
 
   test("a complete folder gives no warning"):
     val folder = ArtFolders.onePixelFolder(catalog*)

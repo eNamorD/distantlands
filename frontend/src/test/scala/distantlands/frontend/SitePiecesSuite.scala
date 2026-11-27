@@ -147,10 +147,10 @@ class SitePiecesSuite extends munit.FunSuite:
     TestArt.listingWholeCatalog()
     val withArt = siteWithPieces(Vector("red", "black"), forces)
     assertEquals(all(withArt, ".pawn-piece > img.art")
-      .map(_.getAttribute("src")), Vector("/art/tts/pieces/pawn-red.png",
-      "/art/tts/pieces/pawn-black.png"))
+      .map(_.getAttribute("src")), Vector("/art/pieces/pawn-red.png",
+      "/art/pieces/pawn-black.png"))
     assertEquals(all(withArt, ".site-force image.art")
-      .map(_.getAttribute("href")), Vector("/art/tts/tokens/bandit.png"))
+      .map(_.getAttribute("href")), Vector("/art/tokens/bandit.png"))
     val piece = all(withArt, ".pawn-piece").head
     one(piece, "img.art").dispatchEvent(new dom.Event("load"))
     assert(piece.classList.contains("art-ready"))

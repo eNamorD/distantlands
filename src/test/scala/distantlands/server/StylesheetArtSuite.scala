@@ -543,7 +543,7 @@ class StylesheetArtSuite extends StylesheetText:
     * site to three card rules outside it. */
   test("no rule outside the art block names art-ready, and the box list " +
       "stands only in the two rules that set the printed opacity"):
-    val from = css.indexOf("/* Licensed art")
+    val from = css.indexOf("/* The host's art, laid")
     val to = css.indexOf("/* Document level, above .game-pane", from)
     val outside = css.substring(0, from) + css.substring(to)
     assert(!outside.contains("art-ready"))

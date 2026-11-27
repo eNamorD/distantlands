@@ -15,7 +15,7 @@ final case class ServerConfig(
     databasePath: Path,
     mode: ServerMode,
     version: String,
-    /** The host's folder of licensed art (game art design, "The art
+    /** The host's folder of art assets (game art design, "The art
       * folder"); without it the server serves none. */
     artPath: Option[Path] = None
 )

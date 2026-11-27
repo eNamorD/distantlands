@@ -185,7 +185,7 @@ object ArtCatalog:
     .map((goal, name) => goal -> ArtKey(s"cards/$name (NF).png"))
 
   /** The mat the World pane is laid out on. */
-  val mat: ArtKey = ArtKey("tts/mat/mat.jpg")
+  val mat: ArtKey = ArtKey("mat/mat.jpg")
 
   // Each table as a map, built once on first use: the lookups below run
   // for every glyph and box of every redraw.
@@ -223,10 +223,10 @@ object ArtCatalog:
   /** The back of each kind of card a viewer may be unable to identify, by
     * the projection's card kind. */
   private val backs: Map[String, ArtKey] = Map(
-    "denizen" -> ArtKey("tts/backs/denizen-back.jpg"),
-    "vision" -> ArtKey("tts/backs/vision-back.jpg"),
-    "relic" -> ArtKey("tts/backs/relic-back.jpg"),
-    "legacy" -> ArtKey("tts/backs/legacy-back.jpg"))
+    "denizen" -> ArtKey("backs/denizen-back.jpg"),
+    "vision" -> ArtKey("backs/vision-back.jpg"),
+    "relic" -> ArtKey("backs/relic-back.jpg"),
+    "legacy" -> ArtKey("backs/legacy-back.jpg"))
 
   /** The printed symbol of each sprite token (implementation rulings R23,
     * R24): what a card prints in its text. The warband has none. */
@@ -248,34 +248,34 @@ object ArtCatalog:
 
   /** A token as it lies in play (R23). */
   private val tokens: Vector[(String, ArtKey)] = Vector(
-    "favor" -> ArtKey("tts/tokens/favor.png"),
-    "secret" -> ArtKey("tts/tokens/secret.png"))
+    "favor" -> ArtKey("tokens/favor.png"),
+    "secret" -> ArtKey("tokens/secret.png"))
 
   /** The player colours, by `PlayerColor`'s keys, which this module may
     * not name; `ArtCatalogSuite` holds the two lists equal. */
   private val colours = Vector("purple", "red", "blue", "yellow", "white",
     "black", "pink", "brown")
   private val pawns: Vector[(String, ArtKey)] =
-    colours.map(colour => colour -> ArtKey(s"tts/pieces/pawn-$colour.png"))
+    colours.map(colour => colour -> ArtKey(s"pieces/pawn-$colour.png"))
   private val warbands: Vector[(String, ArtKey)] =
-    colours.map(colour => colour -> ArtKey(s"tts/pieces/warband-$colour.png"))
-  private val banditWarband = ArtKey("tts/tokens/bandit.png")
+    colours.map(colour => colour -> ArtKey(s"pieces/warband-$colour.png"))
+  private val banditWarband = ArtKey("tokens/bandit.png")
 
   /** The marker on the Visions Drawn track. */
   val visionsDrawnMarker: ArtKey =
-    ArtKey("tts/markers/visions-drawn-marker.png")
+    ArtKey("markers/visions-drawn-marker.png")
   /** The festival marker, as the overlay shows it whole (R29). */
-  val festivalMarker: ArtKey = ArtKey("tts/tokens/festival-underway.jpg")
+  val festivalMarker: ArtKey = ArtKey("tokens/festival-underway.jpg")
   /** The Usurper's mark on the round wheel (R33). */
-  val usurperMarker: ArtKey = ArtKey("tts/tokens/usurper.png")
+  val usurperMarker: ArtKey = ArtKey("tokens/usurper.png")
 
   private val titles: Vector[(String, ArtKey)] = Vector("oathkeeper", "usurper")
-    .map(side => side -> ArtKey(s"tts/titles/$side.jpg"))
+    .map(side => side -> ArtKey(s"titles/$side.jpg"))
 
   /** Each die's sheet of faces, by the die's key. */
   private val dieSheets: Vector[(String, ArtKey)] = Vector(
-    "attack" -> ArtKey("tts/attack-die/attack_die.png"),
-    "defense" -> ArtKey("tts/defense-die/defense_die.png"))
+    "attack" -> ArtKey("dice/attack.png"),
+    "defense" -> ArtKey("dice/defense.png"))
 
   /** Each die face's square on its die's sheet, by the face's wire key.
     * Both sheets are 2048×2048 and lay six sides out three by two in
