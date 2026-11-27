@@ -143,6 +143,29 @@ class MatLayoutSuite extends munit.FunSuite:
     assertRegions(Vector("coast", "island"), Vector(upper, lower))
     assertRegions(Vector("island", "coast"), Vector(lower, upper))
 
+  /** No card prints these, but a site must never lose a power's button:
+    * a kind the order does not name stands after the named ones, two
+    * unnamed kinds keep the order given, and three or more share the
+    * shield in equal strips, left to right. */
+  test("kinds the shield's order does not name, and three powers or " +
+      "more, still get a part each"):
+    val shield = sitePowerShield(0, 0)
+    def lefts(kinds: String*): Vector[Double] =
+      sitePowerRegions(kinds.toVector, 0, 0).map(_.x - shield.x)
+    // A named kind takes the left of an unnamed one, whichever came first.
+    assertEqualsDouble(lefts("pass", "river")(0), 61.38, 0.01)
+    assertEqualsDouble(lefts("pass", "river")(1), 0.0, 0.01)
+    assertEqualsDouble(lefts("river", "pass")(0), 0.0, 0.01)
+    // Two unnamed kinds keep the order given.
+    assertEqualsDouble(lefts("plains", "homeland-beast")(0), 0.0, 0.01)
+    assertEqualsDouble(lefts("plains", "homeland-beast")(1), 61.38, 0.01)
+    val three = sitePowerRegions(Vector("river", "coast", "enduring"), 0, 0)
+    assertEquals(three.size, 3)
+    three.zipWithIndex.foreach { (strip, at) =>
+      assertRect(strip, shield.x + at * shield.w / 3, shield.y, shield.w / 3,
+        shield.h)
+    }
+
   test("a site's row spans its frame and its three slots"):
     sites.foreach { (column, row) =>
       // The row and its site card together: what a box must hold to show

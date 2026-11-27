@@ -136,3 +136,24 @@ class SitePiecesSuite extends munit.FunSuite:
     assert(!one(pawns(0), ".pawn-piece").classList.contains("board-option"))
     pawns(0).asInstanceOf[dom.html.Element].click()
     assertEquals(offered.picks.map(_.id), Vector("red"))
+
+  /** A pawn stands inside its site's box, and a decision may offer both:
+    * a press on the pawn picks the player and does not reach the site. */
+  test("an offered pawn on an offered site picks its player alone, by " +
+      "pointer and by Enter and Space"):
+    def pressed(press: dom.html.Element => Unit): Vector[String] =
+      val offered = recording(available(option("player", "red")),
+        available(option("site", "keep")))
+      val site = siteWithPieces(Vector("red"), options = offered.options)
+      assert(site.classList.contains("board-option"))
+      press(one(site, ".site-pawns > .pawn").asInstanceOf[dom.html.Element])
+      offered.picks.map(pick => s"${pick.kind}:${pick.id}")
+    def keyDown(name: String)(pawn: dom.html.Element): Unit =
+      pawn.dispatchEvent(new dom.KeyboardEvent("keydown",
+        new dom.KeyboardEventInit:
+          key = name
+          bubbles = true
+          cancelable = true))
+    assertEquals(pressed(_.click()), Vector("player:red"))
+    assertEquals(pressed(keyDown("Enter")), Vector("player:red"))
+    assertEquals(pressed(keyDown(" ")), Vector("player:red"))
