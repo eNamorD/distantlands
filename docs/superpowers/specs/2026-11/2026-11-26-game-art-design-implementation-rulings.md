@@ -548,3 +548,65 @@ Reason: the label lives in the click region R54 fixes to the print's
 size, and a floor on its size would overflow a half shield.
 Confidence: low; flagged to the owner.
 Slice/files: slice 5 review; `frontend/styles.css`.
+
+## Slice 6: the owner's second review
+
+**R57. The round marker's place.**
+Decision: the silver disc stands at the centre of the current wedge,
+radially and by angle. The round's number moves where it stays readable
+and clear of what else the wedge holds, at 4.5 : 1 or better, and the
+limiter's diamond stays clear of the number. As built: every number
+stands at the wedge's centre, the current round's in Base on the disc,
+and the diamond in the wedge's rim.
+Slice/files: slice 6; `WorldBoardRenderer.roundTracker`,
+`frontend/styles.css`.
+
+**R58. The Usurper's lock note.**
+Decision: the whole wedge of the limiter's round carries the hover note
+and the accessible name, with the token and with the drawn fallback.
+Slice/files: slice 6; `WorldBoardRenderer.roundTracker`.
+
+**R59. The chips' ground.**
+Question: the owner asked for the bank counts' dark disc to be more
+see-through: "let's try 65% transparency".
+Decision: read literally, the ground's alpha is 0.35. It is one custom
+property, `--chip-ground-alpha`, which every chip ground over art uses.
+A figure may take a dark text edge to stay readable. Since the words
+could also mean 65% opaque, the owner gets a comparison at 0.35 and
+0.65.
+Slice/files: slice 6; `frontend/styles.css`.
+
+**R60. The same ground on the other chips.**
+Decision: the shared ground goes wherever the text still reads over the
+busiest art it can sit on, judged in the browser at 100% and at desktop
+Fit. A chip that does not read keeps opaque Base and is listed. Chips
+with art off stay as they are unless the same token already drives them.
+Slice/files: slice 6; `frontend/styles.css`.
+
+**R61. A ground behind the whole piece.**
+Decision: one ground behind a pawn's picture and its name, and one
+behind a warband entry, at the shared alpha. An offered pawn keeps its
+ring around the same box and has the ground too. The black pieces keep
+R27's light edge. This rewrites R51.
+Slice/files: slice 6; `SitePieces`, `frontend/styles.css`.
+
+**R62. A banner's resources.**
+Decision: the favor or secrets a banner holds stand in the dark chip at
+the middle of the banner's art, about one third down from its top, the
+same box in both modes, sized to read at desktop Fit as the bank counts
+do.
+Slice/files: slice 6; `frontend/styles.css`.
+
+**R63. Warbands drawn singly.**
+Decision: a force of five warbands or fewer on a site is that many
+pictures side by side; more than five is one picture and "x6". One to
+five pictures fit the warband row without wrapping. The accessible name
+and the hover note always state the number. The drawn fallback does the
+same.
+Slice/files: slice 6; `SitePieces`, `frontend/styles.css`.
+
+**R64. Empty card slots' lines.**
+Decision: twice as thick, the cream line and the dark line under it,
+art on and off alike, still scaled with the map.
+Slice/files: slice 6; `frontend/styles.css`.
+
