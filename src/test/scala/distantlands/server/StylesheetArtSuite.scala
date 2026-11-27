@@ -325,6 +325,15 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(!footer.contains("left:"), footer)
     assert(!"""(?<![-\w])width\s*:""".r.findFirstIn(footer).nonEmpty, footer)
 
+  /** The review's finding: on the tiny map a cost badge moved to the
+    * face's left foot, over the shield. It starts right of the shield's
+    * reach and keeps inside the row. */
+  test("on the tiny map a cost badge starts right of the power shield"):
+    val badge = rule(".map-tiny .mat-board .site > .target-detail-badge")
+    Vector("left: calc(var(--face-left) + var(--shield-reach, 0%))",
+      "max-width: calc(100% - var(--shield-reach, 0%))", "right: auto")
+      .foreach(part => assert(badge.contains(part), part))
+
   /** Over the mat an empty slot's dashed line was lost (R44). */
   test("an empty card slot shows on the mat, and an offered one keeps " +
       "its ring"):

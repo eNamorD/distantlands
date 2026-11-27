@@ -777,10 +777,12 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
     padding: 0 0.3em; }
 }
 /* On the tiny map a cost badge is wider than the face it sits on: it grows
-   rightward from the face's left edge over its own row, cutting its text
-   last, and never leaves the row. */
+   rightward from the power shield's right edge over its own row, so it
+   never covers a power's button, cutting its text last, and never leaves
+   the row. */
 .map-tiny .mat-board .site > .target-detail-badge { right: auto;
-  left: var(--face-left); max-width: 100%; overflow: hidden;
+  left: calc(var(--face-left) + var(--shield-reach, 0%));
+  max-width: calc(100% - var(--shield-reach, 0%)); overflow: hidden;
   text-overflow: ellipsis; white-space: nowrap; box-sizing: border-box; }
 /* What stays keeps one size: a deck's letter and count, and a cell's
    number, each at the glance size, inside the place the mat gives it. */
