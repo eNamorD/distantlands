@@ -93,8 +93,9 @@ private[frontend] object WorldBoardRenderer:
       resources.appendChild(supply)
       identity.appendChild(resources)
 
-      // A title is a state of the player, not a card, so it gets a row of
-      // its own beside the identity line.
+      // A title and a Vision are states of the player, not cards in a hand:
+      // in the physical game a Vision is played sideways, which is what this
+      // row stands in for.
       val slots = element("div", "player-slots")
       value.oathkeeper.filter(_.holderPlayerId.contains(player.playerId))
         .foreach { oath =>
@@ -108,29 +109,50 @@ private[frontend] object WorldBoardRenderer:
             Some("oathkeeper-title"), ArtCatalog.title(oath.side))
           slots.appendChild(pill)
         }
+      // A Vision is a tile two lines tall: the Visions Drawn marker's eye
+      // and the card's name. The left column has that height to spare under
+      // the strip's floor, so the tile costs the strip nothing. The empty
+      // slot is drawn only while the decision lights it. A reveal that
+      // replaces marks every Vision it discards; one that keeps them
+      // (Desecrated Ground) lights an empty slot after them.
+      val visionKey = Vector(BoardOptionViews.key("revealed-vision",
+        player.playerId))
+      val lit = options.view(visionKey)
+      val replacing = lit.exists(_.option.replaces.nonEmpty)
+      board.revealedVisions.foreach { card =>
+        val tile = visionTile("player-slot-vision", None, card.name)
+        tile.onclick = _ => CardInspection.open(card, tile)
+        // The warbands on the Vision (False Prophet's claims), one mark in
+        // each claimant's colour; the card face counts them. The marks are
+        // hidden from assistive technology, so the tile's name says them.
+        tile.setAttribute("aria-label",
+          (card.name +: card.warbands.map(forceText)).mkString(", "))
+        card.warbands.foreach { forces =>
+          val mark = text("span", "player-slot-vision-warband " +
+            forceCssClass(forces), "●")
+          mark.setAttribute("aria-hidden", "true")
+          HoverTip.set(mark, forceText(forces))
+          tile.appendChild(mark)
+        }
+        slots.appendChild(
+          if replacing then options.control(tile, visionKey,
+            Some(card.name -> (CardInspection.open(card, _))))
+          else tile)
+      }
+      lit.filterNot(_ => replacing).foreach { _ =>
+        val place = if player.playerId == playerId then "Place your Vision"
+          else "Place Vision"
+        val slot = visionTile("player-slot-vision player-slot-vision-empty",
+          Some("Vision Slot"), place)
+        slot.setAttribute("aria-label", "Empty Vision slot")
+        slots.appendChild(options.control(slot, visionKey, None))
+      }
       if slots.childNodes.length > 0 then playerSummary.appendChild(slots)
 
       // One row, no headings: two labelled rows cost more height than the pane
       // has, and a relic's square box already says which card is which.
       val cards = element("div", "board-cards")
       cards.setAttribute("aria-label", "Cards in play")
-      // A revealed Vision leads the row: it is the card a player wins by,
-      // and the physical game plays it beside the board, turned. The spot
-      // is drawn empty only while the decision lights it, so a board spends
-      // no width on it otherwise. A reveal that replaces marks every Vision
-      // it discards; one that keeps them (Desecrated Ground) lights an
-      // empty spot after them.
-      val visionKey = BoardOptionViews.key("revealed-vision", player.playerId)
-      val lit = options.view(Vector(visionKey))
-      val replacing = lit.exists(_.option.replaces.nonEmpty)
-      board.revealedVisions.foreach { card =>
-        val (face, ruled) = ruledCard(card, links)
-        val keys = Vector(visionKey).filter(_ => replacing) ++
-          Option.unless(card.hidden)(BoardOptions.cardKey(card))
-        cards.appendChild(options.card(face, card, keys, ruled))
-      }
-      lit.filterNot(_ => replacing).foreach(_ =>
-        cards.appendChild(visionSpot(options, visionKey)))
       board.advisers.zipWithIndex.foreach { (card, at) =>
         val (face, ruled) = ruledCard(card, links)
         cards.appendChild(options.card(face, card,
@@ -155,20 +177,21 @@ private[frontend] object WorldBoardRenderer:
     }
     panel
 
-  /** The empty revealed Vision spot, a card-sized frame marked with the eye
-    * the Visions Drawn marker prints, and named under it. The eye is its
-    * own box, so the image does not take the turn a Vision's art takes. */
-  private def visionSpot(options: BoardOptions, key: String): dom.Element =
-    val spot = ServerUiSupport.emptySlot("vision", "Empty revealed Vision spot")
-    spot.classList.add("vision-spot-empty")
-    val eye = element("span", "vision-spot-eye")
+  /** A Vision tile: the Visions Drawn marker's eye, then `kind` in small
+    * capitals over `name`, or `name` alone. */
+  private def visionTile(classes: String, kind: Option[String],
+      name: String): dom.html.Button =
+    val tile = button("", classes)
+    val eye = element("span", "vision-eye")
     eye.setAttribute("aria-hidden", "true")
     eye.appendChild(drawnEye())
     ArtLayer.attach(eye, Some(ArtCatalog.visionsDrawnMarker))
-    spot.appendChild(eye)
-    spot.appendChild(text("span", "vision-spot-word", "Vision"))
-    options.decorate(spot, Vector(key))
-    spot
+    tile.appendChild(eye)
+    val words = element("span", "vision-tile-words")
+    kind.foreach(word => words.appendChild(text("span", "vision-tile-kind", word)))
+    words.appendChild(text("span", "vision-tile-name", name))
+    tile.appendChild(words)
+    tile
 
   /** An eye of our own drawing, an almond with its pupil and a crown of
     * rays, shown until the marker's image loads and wherever it is absent.
@@ -177,7 +200,7 @@ private[frontend] object WorldBoardRenderer:
     val svg = "http://www.w3.org/2000/svg"
     val root = dom.document.createElementNS(svg, "svg")
     root.setAttribute("viewBox", "0 0 24 24")
-    root.setAttribute("class", "vision-spot-eye-drawn")
+    root.setAttribute("class", "vision-eye-drawn")
     Vector("M2 14 Q12 4 22 14 Q12 22 2 14 Z",
         "M12 3 V6", "M5 6 L7 8.5", "M19 6 L17 8.5").foreach { d =>
       val path = dom.document.createElementNS(svg, "path")

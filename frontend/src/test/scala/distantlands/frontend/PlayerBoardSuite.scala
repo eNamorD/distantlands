@@ -106,9 +106,10 @@ class PlayerBoardSuite extends munit.FunSuite:
 
   /** Two labelled rows cost more height than the pane has, and the box shape
     * already says which card is a relic, exactly as it does at a site. A
-    * revealed Vision leads the same row, in its turned box.
+    * revealed Vision is a player state, not a card in the hand, so it sits
+    * in the slots row instead (see the slots-row tests below).
     */
-  test("a revealed Vision, advisers and relics share one unlabelled row"):
+  test("advisers and relics share one unlabelled row; a revealed vision does not"):
     val node = WorldBoardRenderer.playerBoards(
       TestProjections.actingProjection(players = Vector(redExile))
         .copy(playerBoards = Vector(board.withAdvisers(oak)
@@ -119,8 +120,7 @@ class PlayerBoardSuite extends munit.FunSuite:
       "red")
     assertEquals(all(node, ".board-cards").size, 1)
     assertEquals(all(node, ".board-cards .card-face").map(_.getAttribute("class")),
-      Vector("card-face card-face-denizen card-face-vision",
-        "card-face card-face-denizen",
+      Vector("card-face card-face-denizen",
         "card-face card-face-denizen card-slot-empty",
         "card-face card-face-denizen card-slot-empty",
         "card-face card-face-relic"))
@@ -225,50 +225,56 @@ class PlayerBoardSuite extends munit.FunSuite:
         .copy(playerBoards = Vector(playerBoard), oathkeeper = oathkeeper),
       "red")
 
-  test("the title sits in its own row, and a revealed Vision leads the cards"):
+  test("the title and the Vision sit in their own row, not among the cards"):
     val vision = CardDetails("vision:vision-of-faith", "vision",
       "Vision of Faith", orientation = Some("face-up"),
       rulesText = Some("Wake: You win if you hold the **Darkest Secret**."))
-    val oak = CardDetails("denizen:oak", "denizen", "Old Oak",
-      orientation = Some("face-up"))
-    val node = renderWith(board.copy(revealedVisions = Vector(vision),
-      advisers = Vector(oak)),
+    val node = renderWith(board.copy(revealedVisions = Vector(vision)),
       Some(OathkeeperStatus("devotion", Some("red"), "oathkeeper",
         usurperLimited = false, None)))
     assertEquals(all(node, ".player-identity .player-title"), Vector.empty)
     val slots = firstMatch(node, ".player-slots")
       .getOrElse(fail("no slots row"))
     assertEquals(all(slots, ".player-title").size, 1)
-    assertEquals(all(slots, ".card-face"), Vector.empty)
-    assertEquals(all(node, ".board-cards .card-face")
-      .map(_.getAttribute("data-card-id")).take(2),
-      Vector("vision:vision-of-faith", "denizen:oak"))
+    assertEquals(firstMatch(slots, ".player-slot-vision")
+      .map(_.textContent), Some("Vision of Faith"))
+    assertEquals(all(slots, ".player-slot-vision .vision-eye").size, 1)
+    assert(!all(node, ".board-cards .card-face")
+      .map(_.getAttribute("data-card-id"))
+      .contains("vision:vision-of-faith"))
 
-  test("each revealed Vision is its own card in the card row"):
+  test("each revealed Vision has its own pill in the slots row"):
     val faith = CardDetails("vision:vision-of-faith", "vision",
       "Vision of Faith", orientation = Some("face-up"))
     val conquest = faith.copy(cardId = "vision:vision-of-conquest",
       name = "Vision of Conquest")
     val node = renderWith(board.copy(revealedVisions = Vector(faith, conquest)),
       None)
-    assertEquals(all(node, ".board-cards .card-face-vision")
-      .map(_.getAttribute("data-card-id")),
-      Vector("vision:vision-of-faith", "vision:vision-of-conquest"))
+    assertEquals(all(node, ".player-slots .player-slot-vision")
+      .map(_.textContent), Vector("Vision of Faith", "Vision of Conquest"))
 
-  test("a revealed Vision's card shows the warbands on it"):
+  test("a revealed Vision's pill shows the warbands on it"):
     val faith = CardDetails("vision:vision-of-faith", "vision",
       "Vision of Faith", orientation = Some("face-up"),
       warbands = Vector(SiteForces.Exile(1, "p2", PlayerColor.Blue,
         "Blue Warbands")))
     val node = renderWith(board.copy(revealedVisions = Vector(faith)), None)
-    assertEquals(all(node, ".board-cards .card-face-vision .card-warbands")
-      .map(_.classList.contains("force-blue")), Vector(true))
+    val marks = all(node, ".player-slot-vision .player-slot-vision-warband")
+    assertEquals(marks.size, 1)
+    assert(marks.head.classList.contains("force-blue"))
+    assertEquals(marks.head.getAttribute("data-tip"), "Blue Warbands x1")
+    assertEquals(firstMatch(node, ".player-slot-vision")
+      .map(_.getAttribute("aria-label")),
+      Some("Vision of Faith, Blue Warbands x1"))
 
-  test("a player with only a Vision has no slots row"):
+  test("a revealed Vision's tile names the card and nothing else"):
     val faith = CardDetails("vision:vision-of-faith", "vision",
       "Vision of Faith", orientation = Some("face-up"))
-    assertEquals(all(renderWith(board.copy(revealedVisions = Vector(faith)),
-      None), ".player-slots"), Vector.empty)
+    val node = renderWith(board.copy(revealedVisions = Vector(faith)), None)
+    assertEquals(all(node, ".player-slot-vision .vision-tile-kind"),
+      Vector.empty)
+    assertEquals(all(node, ".player-slot-vision .vision-tile-name")
+      .map(_.textContent), Vector("Vision of Faith"))
 
   test("a player with neither a title nor a Vision has no slots row"):
     assertEquals(all(render(board, supplyMaximum = 7), ".player-slots"),
@@ -325,10 +331,10 @@ class PlayerBoardSuite extends munit.FunSuite:
     CardInspection.clear()
     assertEquals(plates, Vector(Some("oathkeeper-title")))
 
-  test("a revealed Vision's card opens it"):
+  test("the Vision pill opens its card"):
     assertEquals(opensOnClick(node =>
-      as[dom.html.Button](firstMatch(node, ".board-cards .card-face-vision")
-        .getOrElse(fail("no vision card"))).click()),
+      as[dom.html.Button](firstMatch(node, ".player-slot-vision")
+        .getOrElse(fail("no vision pill"))).click()),
       Vector("Vision of Faith"))
 
   test("Supply is a button that opens that board's Supply"):
