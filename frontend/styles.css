@@ -427,7 +427,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .round-segment { fill: var(--site); stroke: var(--line-mid); stroke-width: 2; }
 .round-current { fill: var(--brass); stroke: var(--cream-bright); stroke-width: 3; }
 .round-tracker text { fill: var(--cream-bright); font-weight: 700; }
-/* The current round's number stands on the wedge's brass. */
+/* The current round's number stands on the round marker's silver. */
 .round-tracker .round-number-current { fill: var(--base); }
 /* Qualified by the tracker so it outranks the tracker's text rule below. */
 .round-tracker .limiter-marker { fill: #ff8c7f; fill-opacity: 0.45;
@@ -724,7 +724,7 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 /* The wheel's numbers are drawn in its own units, large enough to read
    while the zoomed-out map still has room for them. */
 .mat-board .round-tracker text { font-size: 22px; }
-.mat-board .round-tracker .limiter-diamond { font-size: 30px; }
+.mat-board .round-tracker .limiter-diamond { font-size: 12px; }
 /* The tracker's line repeats what the board shows: the Visions Drawn marker
    and the First Player badge. Zoomed out, only the Usurper's lock is left
    in words. */

@@ -25,45 +25,47 @@ class RoundWheelSuite extends munit.FunSuite:
   private def round(wheel: dom.Element, number: Int): dom.Element =
     one(wheel, s"""g[data-round="$number"]""")
 
-  test("the current round's wedge holds the round marker, a disc in its " +
-      "outer half, and no other wedge does"):
+  /** The owner's second review (R57): the disc stands at the centre of
+    * the current wedge, radially and by angle. */
+  test("the current round's wedge holds the round marker, a disc at its " +
+      "centre, and no other wedge does"):
     val wheel = wheelAt(round = 3, limiter = 5)
     val disc = one(round(wheel, 3), "circle.round-marker")
-    // Round 3's middle is 22.5 degrees below the right; the disc stands
-    // 76 of the wheel's 100 from its hub.
-    assertEqualsDouble(disc.getAttribute("cx").toDouble, 170.215, 0.001)
-    assertEqualsDouble(disc.getAttribute("cy").toDouble, 129.084, 0.001)
+    // Round 3's middle is 22.5 degrees below the right; the wedge runs
+    // from 49 to 88 of the wheel's 100 from its hub, so its centre is
+    // 68.5 out.
+    assertEqualsDouble(disc.getAttribute("cx").toDouble, 163.286, 0.001)
+    assertEqualsDouble(disc.getAttribute("cy").toDouble, 126.214, 0.001)
     assertEquals(disc.getAttribute("r"), "10")
     assertEquals(Option(disc.closest(".printed")), None)
     assertEquals(all(wheel, ".round-marker").size, 1)
 
-  /** The review's finding: cream figures on the silver disc measured
-    * 1.47 : 1, and on the limiter's diamond 2.0 : 1. Each wedge's number
-    * stands in its inner half, 59 from the hub, and the disc and the
-    * diamond in its outer half, 76 from it, so neither lies under a
-    * number: the number keeps the wedge's own fill as its ground. */
-  test("a round's number stands clear of the round marker and of the " +
-      "limiter's diamond"):
+  /** R57: every number stands at its wedge's centre; the current round's
+    * lies on the disc, drawn after it, in Base (the stylesheet suite pins
+    * its contrast on the silver). The limiter's diamond stands in the
+    * wedge's rim, 82 from the hub, clear of the number: a number is 8
+    * either side of its middle, and the diamond, at 12 units, 5. */
+  test("a round's number stands at its wedge's centre, over the round " +
+      "marker, and clear of the limiter's diamond"):
     val wheel = wheelAt(round = 3, limiter = 4)
     def fromHub(node: dom.Element, x: String, y: String): Double =
       math.hypot(node.getAttribute(x).toDouble - 100,
         node.getAttribute(y).toDouble - 100)
     val number = one(round(wheel, 3), "text.round-number")
-    assertEqualsDouble(number.getAttribute("x").toDouble, 154.509, 0.001)
-    assertEqualsDouble(number.getAttribute("y").toDouble, 122.578, 0.001)
+    assertEqualsDouble(number.getAttribute("x").toDouble, 163.286, 0.001)
+    assertEqualsDouble(number.getAttribute("y").toDouble, 126.214, 0.001)
     all(wheel, "text.round-number").foreach(label =>
-      assertEqualsDouble(fromHub(label, "x", "y"), 59.0, 0.001))
-    // The number is 22 units tall at most: 8 either side of its middle.
-    val numberOuter = 59.0 + 8
-    val disc = one(wheel, "circle.round-marker")
-    assert(fromHub(disc, "cx", "cy") - disc.getAttribute("r").toDouble >=
-      numberOuter - 1)
+      assertEqualsDouble(fromHub(label, "x", "y"), 68.5, 0.001))
+    val order = all(round(wheel, 3), ":scope > *").map(_.getAttribute("class"))
+    assert(order.indexOf("round-marker") <
+      order.indexOf("round-number round-number-current printed"), order)
     val diamond = one(round(wheel, 4), "text.limiter-diamond")
-    assertEqualsDouble(diamond.getAttribute("x").toDouble, 129.084, 0.001)
-    assertEqualsDouble(diamond.getAttribute("y").toDouble, 170.215, 0.001)
+    assertEqualsDouble(diamond.getAttribute("x").toDouble, 131.380, 0.001)
+    assertEqualsDouble(diamond.getAttribute("y").toDouble, 175.758, 0.001)
+    assert(fromHub(diamond, "x", "y") - 5 >= 68.5 + 8)
 
   test("the current round's number is marked, for its colour on the " +
-      "wedge's brass, and no other is"):
+      "round marker, and no other is"):
     val wheel = wheelAt(round = 3, limiter = 5)
     assertEquals(all(wheel, "text.round-number-current").map(
       _.textContent), Vector("3"))

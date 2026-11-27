@@ -484,14 +484,13 @@ private[frontend] object WorldBoardRenderer:
     die
 
   /** One wedge of the round wheel, in the wheel's 200 by 200 units: its
-    * outline; where its number stands, in its inner half; the centre of
-    * its outer half, where the round marker and the limiter's drawn
-    * diamond stand clear of the number (`discX`, `discY`); its own
-    * centre, where the Usurper's token is centred; and its middle angle
-    * in degrees, clockwise from the right. */
-  private[frontend] final case class RoundSegment(path: String, labelX: Double,
-      labelY: Double, discX: Double, discY: Double, centreX: Double,
-      centreY: Double, middle: Double)
+    * outline; its centre, where its number, the round marker and the
+    * Usurper's token stand (game art ruling R57); a point in its rim,
+    * where the limiter's drawn diamond stands clear of the number; and
+    * its middle angle in degrees, clockwise from the right. */
+  private[frontend] final case class RoundSegment(path: String,
+      centreX: Double, centreY: Double, rimX: Double, rimY: Double,
+      middle: Double)
 
   private[frontend] def roundSegment(round: Int): RoundSegment =
     val center = 100.0; val outer = 88.0; val inner = 49.0
@@ -504,15 +503,14 @@ private[frontend] object WorldBoardRenderer:
     val (innerEndX, innerEndY) = point(inner, end)
     val (innerStartX, innerStartY) = point(inner, start)
     val middle = (start + end) / 2.0
-    val (labelX, labelY) = point(59.0, middle)
-    val (discX, discY) = point(76.0, middle)
+    val (rimX, rimY) = point(82.0, middle)
     val (centreX, centreY) = point((outer + inner) / 2, middle)
     def n(value: Double) = f"$value%.2f"
     RoundSegment(s"M ${n(outerStartX)} ${n(outerStartY)} " +
       s"A ${n(outer)} ${n(outer)} 0 0 1 ${n(outerEndX)} ${n(outerEndY)} " +
       s"L ${n(innerEndX)} ${n(innerEndY)} " +
       s"A ${n(inner)} ${n(inner)} 0 0 0 ${n(innerStartX)} ${n(innerStartY)} Z",
-      labelX, labelY, discX, discY, centreX, centreY,
+      centreX, centreY, rimX, rimY,
       Math.toDegrees(middle))
 
   private def roundTracker(value: GameProjection,
@@ -548,10 +546,10 @@ private[frontend] object WorldBoardRenderer:
       // current round is a wedge of its own laid over its segment.
       path.setAttribute("class", "round-segment printed")
       val label = svgElement("text")
-      label.setAttribute("x", segment.labelX.toString)
-      label.setAttribute("y", segment.labelY.toString)
+      label.setAttribute("x", segment.centreX.toString)
+      label.setAttribute("y", segment.centreY.toString)
       label.setAttribute("text-anchor", "middle"); label.setAttribute("dominant-baseline", "middle")
-      // The current round's number stands on the wedge's brass, in Base.
+      // The current round's number stands on the round marker, in Base.
       label.setAttribute("class",
         if round == track.round then
           "round-number round-number-current printed"
@@ -560,7 +558,7 @@ private[frontend] object WorldBoardRenderer:
       group.appendChild(path)
       // The Usurper's token lies on the limiter's round and fills its
       // wedge (R33, R39): drawn, the wedge's own shape with a diamond in
-      // its outer half, clear of the number; with art, the token's picture, turned so its point faces the
+      // its rim, clear of the number; with art, the token's picture, turned so its point faces the
       // hub. It lies under the current round's border and marker.
       if track.usurperLimited && round == track.limiterRound then
         val marker = svgElement("path")
@@ -569,8 +567,8 @@ private[frontend] object WorldBoardRenderer:
         lock.foreach(words => HoverTip.set(marker, words))
         group.appendChild(marker)
         val diamond = svgElement("text")
-        diamond.setAttribute("x", segment.discX.toString)
-        diamond.setAttribute("y", segment.discY.toString)
+        diamond.setAttribute("x", segment.rimX.toString)
+        diamond.setAttribute("y", segment.rimY.toString)
         diamond.setAttribute("text-anchor", "middle")
         diamond.setAttribute("dominant-baseline", "middle")
         diamond.setAttribute("class", "limiter-diamond")
@@ -585,10 +583,11 @@ private[frontend] object WorldBoardRenderer:
         current.setAttribute("d", segment.path)
         current.setAttribute("class", "round-current")
         group.appendChild(current)
-        // The game's silver round marker, on the current round (R40).
+        // The game's silver round marker, at the centre of the current
+        // round's wedge (R40, R57).
         val disc = svgElement("circle")
-        disc.setAttribute("cx", segment.discX.toString)
-        disc.setAttribute("cy", segment.discY.toString)
+        disc.setAttribute("cx", segment.centreX.toString)
+        disc.setAttribute("cy", segment.centreY.toString)
         disc.setAttribute("r", "10")
         disc.setAttribute("class", "round-marker")
         group.appendChild(disc)

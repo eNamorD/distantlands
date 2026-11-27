@@ -494,10 +494,11 @@ class StylesheetArtSuite extends munit.FunSuite:
     (light + 0.05) / (dark + 0.05)
 
   /** The review's finding on the drawn wheel: a number must read at
-    * 4.5 : 1 on whatever lies under it. The marker and the diamond stand
-    * clear of it (`RoundWheelSuite`), so its ground is its wedge's fill:
-    * the segment's, the limiter's tint over it, or the current round's
-    * brass, on which the number is Base. */
+    * 4.5 : 1 on whatever lies under it. The diamond stands clear of it
+    * (`RoundWheelSuite`), so its ground is its wedge's fill, the
+    * segment's or the limiter's tint over it; the current round's number
+    * lies on the round marker at the wedge's centre (R57), in Base on
+    * the marker's silver. */
   test("a round's number reads on each wedge fill the drawn wheel has"):
     val cream = colour("cream-bright")
     val site = colour("site")
@@ -514,7 +515,11 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(rule(".round-current").contains("fill: var(--brass)"))
     assert(rule(".round-tracker .round-number-current")
       .contains("fill: var(--base)"))
-    assert(contrast(colour("base"), colour("brass")) >= 4.5)
+    assert(contrast(colour("base"), colour("round-marker")) >= 4.5)
+    assert(rule(".round-marker").contains("fill: var(--round-marker)"))
+    // The diamond is small enough for the wedge's rim.
+    assert(rule(".mat-board .round-tracker .limiter-diamond")
+      .contains("font-size: 12px"))
 
   /** A site's box is the mat's frame and its line (R38), a little off
     * the card's own ratio, so the image covers it and loses a sliver. */
