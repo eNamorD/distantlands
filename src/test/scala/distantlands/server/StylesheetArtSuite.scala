@@ -358,13 +358,14 @@ class StylesheetArtSuite extends munit.FunSuite:
     val slot = rule(
       """.mat-board.art-ready .card-slot-empty:not([class*="board-option"])""")
     Vector("border-color: var(--cream-bright)",
-      "box-shadow: inset 0 0 0 calc(1px / var(--map-scale, 1)) var(--base)")
+      "box-shadow: inset 0 0 0 calc(2px / var(--map-scale, 1)) var(--base)")
       .foreach(part => assert(slot.contains(part), part))
     // One pixel on the board is a sixth of one on a phone's screen at
     // Fit, so the line's width follows the map's scale, with art on and
     // off alike (R44). The slot's box is border-box: it does not grow.
+    // The owner asked for both lines twice as thick (R64).
     assert(rule(".mat-board .card-slot-empty")
-      .contains("border-width: calc(1px / var(--map-scale, 1))"))
+      .contains("border-width: calc(2px / var(--map-scale, 1))"))
     Vector("padding", "margin", "width", "height").foreach(part =>
       assert(!slot.contains(part), part))
 
