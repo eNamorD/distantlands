@@ -496,10 +496,9 @@ as current.
   [card shape and inspection design](superpowers/specs/2026-09/2026-09-22-card-shape-and-inspection-design.md).
   The playtest of 2026-10-01 asks whether the whole table, not only the map,
   should move to an HTML5 canvas.
-- [ ] **Clicking a banner shows its details.** Darkest Secret and The
-  People's Favor are clickable like other cards, opening their details.
 - [ ] **The mat's travel-cost band.** The mat prints each region's travel
-  costs in a band under its name; the drawn mat shows the name only
+  costs in a band under its name. With game art on, the mat's image shows
+  the band; the drawn mat shows the name only
   ([real proportions design](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md)).
 - [ ] **In-game chat.**
 - [ ] **Public Chronicle pages.** The winner of a game may write their summary

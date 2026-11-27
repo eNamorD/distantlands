@@ -20,7 +20,7 @@ face for that one card.
     mat/          the mat
     tokens/       favor, secrets, bandits, the festival and Usurper markers
     pieces/       pawns and warbands
-    markers/      the Visions Drawn marker
+    markers/      the Visions Drawn marker, whose eye also marks a Vision
     titles/       the Oathkeeper and Usurper titles
     attack-die/   the attack die's sheet of faces
     defense-die/  the defense die's sheet of faces
