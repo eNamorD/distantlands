@@ -158,8 +158,8 @@ class StylesheetArtSuite extends munit.FunSuite:
 
   test("a pile's count stays readable over its back"):
     val count = rule(".deck-card.art-ready > .pile-count")
-    Vector("background: var(--base)", "border-radius",
-      "box-shadow: 0 0 0 0.3em var(--base)")
+    Vector("background: var(--chip-ground)", "border-radius",
+      "box-shadow: 0 0 0 0.3em var(--chip-ground)")
       .foreach(part => assert(count.contains(part), part))
     // A ground that takes no room: the count's box is the same with art
     // and without (slice 2 browser check).
@@ -188,7 +188,7 @@ class StylesheetArtSuite extends munit.FunSuite:
     // Opaque Base, not the name band's translucent fill: the black
     // player's colour measured 4.17 : 1 on the translucent ground over
     // white art; on Base every player colour is 6.6 : 1 or better.
-    Vector("background: var(--base)", "box-shadow: 0 0 0 3px var(--base)",
+    Vector("background: var(--chip-ground)", "box-shadow: 0 0 0 3px var(--chip-ground)",
       "border-radius: 3px").foreach(part =>
       assert(tokens.contains(part), part))
     // A warband's count and a pawn's name are the words of the pieces'
@@ -196,7 +196,8 @@ class StylesheetArtSuite extends munit.FunSuite:
     // pawn, whose ring and selected fill are the pawn's own.
     val words = rule(".site.art-ready .site-force-count,\n" +
       """.site.art-ready .pawn:not([class*="board-option"]) > .pawn-name""")
-    Vector("background: var(--base)", "box-shadow: 0 0 0 0.12em var(--base)",
+    Vector("background: var(--chip-ground)",
+      "box-shadow: 0 0 0 0.12em var(--chip-ground)",
       "border-radius: 0.2em").foreach(part =>
       assert(words.contains(part), part))
     Vector(tokens, words).foreach(ground =>
@@ -211,7 +212,7 @@ class StylesheetArtSuite extends munit.FunSuite:
     // The tracker's lines are chips on Base over the mat (R41): the
     // owner could not read them through a halo.
     val line = rule(".mat-board.art-ready .track-note > p")
-    Vector("background: var(--base)", "box-shadow: 0 0 0 0.25em var(--base)",
+    Vector("background: var(--chip-ground)", "box-shadow: 0 0 0 0.25em var(--chip-ground)",
       "border-radius: 0.2em").foreach(part =>
       assert(line.contains(part), part))
     Vector("padding", "margin", "width", "height").foreach(part =>
@@ -413,8 +414,8 @@ class StylesheetArtSuite extends munit.FunSuite:
   test("an empty pile's count keeps its ground on a ready mat"):
     val count = rule(
       ".mat-board.art-ready .deck-card.pile-empty > .pile-count")
-    Vector("background: var(--base)", "border-radius: 0.3em",
-      "box-shadow: 0 0 0 0.3em var(--base)")
+    Vector("background: var(--chip-ground)", "border-radius: 0.3em",
+      "box-shadow: 0 0 0 0.3em var(--chip-ground)")
       .foreach(part => assert(count.contains(part), part))
     assert(!count.contains("padding"))
 
@@ -471,6 +472,31 @@ class StylesheetArtSuite extends munit.FunSuite:
     // No ring is left on the bank's own box, under the favor.
     assert(!css.contains(".mat-board .favor-bank.board-option:is(:hover, " +
       ":focus-visible,\n  .board-option-hover) {"))
+
+  /** The owner's second review (R59, R60): the chips over art are
+    * see-through, 65% opaque, from one setting. `--chip-ground` is Base
+    * at `--chip-ground-alpha`; every chip ground uses it for its fill
+    * and its halo, and a chip's words carry a Base edge so they read on
+    * whatever shows through. */
+  test("the chips over art share one see-through ground, set once"):
+    assertEquals(css.split("--chip-ground-alpha:", -1).length - 1, 1)
+    assert(css.contains("--chip-ground-alpha: 0.65;"))
+    assert(css.contains("--chip-ground: color-mix(in srgb, var(--base) " +
+      "calc(var(--chip-ground-alpha) * 100%), transparent);"))
+    assert(css.contains("--chip-text-edge: 0 0 0.08em var(--base), " +
+      "0 0 0.2em var(--base);"))
+    val chips = Vector(".mat-board .favor-bank-count",
+      ".deck-card.art-ready > .pile-count",
+      ".mat-board.art-ready .deck-card.pile-empty > .pile-count",
+      ".site.art-ready .site-tokens", ".mat-board.art-ready .track-note > p")
+    chips.foreach { selector =>
+      val chip = rule(selector)
+      assert(chip.contains("background: var(--chip-ground)"), selector)
+      assert(chip.contains("text-shadow: var(--chip-text-edge)"), selector)
+      assert(!chip.contains("var(--base)"), selector)
+    }
+    // No ground over art is opaque Base any more.
+    assert(!artRules.contains("background: var(--base)"))
 
   /** A colour variable's value, as `#rrggbb`. */
   private def colour(name: String)(using munit.Location): (Int, Int, Int) =
@@ -542,7 +568,7 @@ class StylesheetArtSuite extends munit.FunSuite:
     val count = rule(".mat-board .favor-bank-count")
     Vector("position: absolute", "top: 50%", "left: 50%",
       "transform: translate(-50%, -50%)", "width: 62cqw", "height: 62cqw",
-      "border-radius: 50%", "background: var(--base)", "font-size: 44cqw")
+      "border-radius: 50%", "background: var(--chip-ground)", "font-size: 44cqw")
       .foreach(part => assert(count.contains(part), part))
     assert(!count.contains("padding"))
     // On the far zoomed-out map the circle is some 11px across on a

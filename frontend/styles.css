@@ -96,6 +96,12 @@
   --selection: #8ecbff;
   /* The round marker, the game's silver cylinder on the round wheel. */
   --round-marker: #cfcac0;
+  /* The ground of a chip that lies over art: Base, see-through. One
+     setting for every such chip (game art ruling R59). The words on a chip
+     carry an edge of Base, so they read on whatever shows through. */
+  --chip-ground-alpha: 0.65;
+  --chip-ground: color-mix(in srgb, var(--base) calc(var(--chip-ground-alpha) * 100%), transparent);
+  --chip-text-edge: 0 0 0.08em var(--base), 0 0 0.2em var(--base);
 }
 /* Selected text is brass on the table's base, not the browser's blue. */
 ::selection { background: var(--brass); color: var(--base); }
@@ -607,7 +613,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .mat-board .favor-bank-count { position: absolute; top: 50%; left: 50%;
   display: flex; align-items: center; justify-content: center;
   width: 62cqw; height: 62cqw; border-radius: 50%;
-  transform: translate(-50%, -50%); background: var(--base);
+  transform: translate(-50%, -50%); background: var(--chip-ground);
+  text-shadow: var(--chip-text-edge);
   font-size: 44cqw; font-weight: 700; line-height: 1; }
 /* On the far zoomed-out map a bank's circle is a few pixels across: the
    count takes all of it, so it stays near a readable size. */
@@ -2360,7 +2367,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   height: calc(100% / (var(--ratio-denizen)));
   transform: translate(-50%, -50%) rotate(-90deg); }
 .deck-card.art-ready > .pile-count { border-radius: 0.3em;
-  background: var(--base); box-shadow: 0 0 0 0.3em var(--base); }
+  background: var(--chip-ground); box-shadow: 0 0 0 0.3em var(--chip-ground);
+  text-shadow: var(--chip-text-edge); }
 .mat-board .deck-card:has(> .art) { position: relative; }
 /* The mat prints each bank's emblem and circle, so over the mat a bank
    drops its own pill; its count and its favor stand in the mat's circle.
@@ -2378,18 +2386,21 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    Each of the tracker's lines, which lie on the mat's picture, is a chip
    on Base that hugs its words (R41). */
 .site.art-ready .site-tokens {
-  border-radius: 3px; background: var(--base);
-  box-shadow: 0 0 0 3px var(--base); }
+  border-radius: 3px; background: var(--chip-ground);
+  box-shadow: 0 0 0 3px var(--chip-ground);
+  text-shadow: var(--chip-text-edge); }
 .site.art-ready .site-force-count,
 .site.art-ready .pawn:not([class*="board-option"]) > .pawn-name {
-  border-radius: 0.2em; background: var(--base);
-  box-shadow: 0 0 0 0.12em var(--base); }
+  border-radius: 0.2em; background: var(--chip-ground);
+  box-shadow: 0 0 0 0.12em var(--chip-ground);
+  text-shadow: var(--chip-text-edge); }
 .site.art-ready .site-tokens:empty { background: none; box-shadow: none; }
 /* The card prints its power shield: the drawn outline of each power's
    part goes, and the button stays where the print is. */
 .site.art-ready .site-power { border-color: transparent; }
 .mat-board.art-ready .track-note > p { border-radius: 0.2em;
-  background: var(--base); box-shadow: 0 0 0 0.25em var(--base); }
+  background: var(--chip-ground); box-shadow: 0 0 0 0.25em var(--chip-ground);
+  text-shadow: var(--chip-text-edge); }
 /* A foundation's and the Oath goal's plate in the overlay holds the
    card's image; the title on it is printed and hides. */
 .card-plate:has(> .art) { position: relative; }
@@ -2429,8 +2440,9 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 /* Its count then lies on the mat's print, so it takes the ground a count
    has over a pile's back. */
 .mat-board.art-ready .deck-card.pile-empty > .pile-count {
-  border-radius: 0.3em; background: var(--base);
-  box-shadow: 0 0 0 0.3em var(--base); }
+  border-radius: 0.3em; background: var(--chip-ground);
+  box-shadow: 0 0 0 0.3em var(--chip-ground);
+  text-shadow: var(--chip-text-edge); }
 /* A die face is a crop of its die's sheet: a square as tall as the chip,
    centred in it, showing only the face. The chip's own glyphs hide when
    the sheet has loaded, and so does the doubler's "×2", which its side
