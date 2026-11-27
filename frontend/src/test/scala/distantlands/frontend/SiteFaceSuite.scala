@@ -2,7 +2,6 @@ package distantlands.frontend
 
 import distantlands.frontend.Dom.{all, firstMatch}
 import distantlands.frontend.TestSites.*
-import distantlands.testkit.Unwrap.as
 import org.scalajs.dom
 
 /** The site box, which carries its own numbers in its corners the way a
@@ -146,35 +145,19 @@ class SiteFaceSuite extends munit.FunSuite:
     assertEquals(firstMatch(heading, ".site-defense")
       .map(_.getAttribute("aria-label")), Some("Defense 0"))
 
-  test("site powers sit in the lower left, the requirement in the lower right"):
+  /** The site's powers stand on the shield its card prints
+    * (`SitePowerShieldSuite`); the footer holds the requirement alone. */
+  test("the requirement sits in the footer, which holds no power"):
     val node = ServerUiSupport.siteDetails(woods.copy(
       powers = Vector(SitePower("coast", "Coast",
         Some("Travel along the Coast route."))),
       recoverDifficulty = Some(5)))
     val footer = firstMatch(node, ".site-footer")
       .getOrElse(fail("no site footer"))
-    assertEquals(as[dom.Element](footer.firstChild).getAttribute("class"),
-      "site-powers")
-    assertEquals(all(footer, ".site-power").map(_.textContent), Vector("Coast"))
-    assertEquals(as[dom.Element](footer.lastChild).getAttribute("class"),
-      "site-requirement printed")
-
-  /** The box has room for one line of powers, so a second power joins the
-    * first on it rather than wrapping onto a line the box then clips. Each
-    * power keeps its rules text on hover.
-    */
-  test("a site's powers share one line, each with its text on hover"):
-    val node = ServerUiSupport.siteDetails(woods.copy(powers = Vector(
-      SitePower("river", "River", Some("Part of the River route.")),
-      SitePower("coast", "Coast", Some("Travel along the Coast route.")),
-      SitePower("enduring", "Enduring", None))))
-    val line = firstMatch(node, ".site-powers")
-      .getOrElse(fail("no site powers"))
-    assertEquals(line.textContent, "River · Coast · Enduring")
-    assertEquals(all(line, ".site-power").map(_.getAttribute("data-tip")), Vector(
-      "River: Part of the River route.",
-      "Coast: Travel along the Coast route.",
-      "Enduring"))
+    assertEquals(all(footer, ":scope > *").map(_.getAttribute("class")),
+      Vector("site-requirement printed"))
+    assertEquals(all(node, ".site-power, .site-powers, .site-forces, " +
+      ".site-forces-short"), Vector.empty)
 
   test("forge and recover are one corner, never both"):
     val recovering = saltFlats.copy(recoverDifficulty = Some(4))
@@ -212,57 +195,3 @@ class SiteFaceSuite extends munit.FunSuite:
     assert(short.classList.contains("printed"))
     assertEquals(firstMatch(heading, ".site-defense")
       .map(_.getAttribute("aria-label")), Some("Defense 2"))
-
-  test("forces have a short form: the warband in the force's colour and " +
-      "its count"):
-    val forces = SiteForces.Bandit(3, "Bandit Warbands")
-    val details = ServerUiSupport.siteDetails(woods.copy(forces = Some(forces)))
-    val short = firstMatch(details, ".site-forces-short")
-      .getOrElse(fail("no short forces"))
-    assert(short.classList.contains("force-bandit"), short.getAttribute("class"))
-    assertEquals(short.getAttribute("aria-hidden"), "true")
-    assertEquals(all(short, ".token-glyph").map(_.getAttribute("class")),
-      Vector("token-glyph token-warband"))
-    assertEquals(short.textContent, "3")
-    assertEquals(short.getAttribute(HoverTip.Attribute), "Bandit Warbands x3")
-    assert(!short.classList.contains("printed"))
-    assertEquals(firstMatch(details, "p.site-forces").map(_.textContent),
-      Some("Bandit Warbands x3"))
-
-  /** An Exile's and the Empire's short forms carry their force's colour
-    * class, which the glyph takes too, and the long text as the hover note;
-    * the Empire's carries its outline ring in the stylesheet (ruling R7). */
-  test("the short forces of an Exile and of the Empire carry their class " +
-      "and their words"):
-    Vector(
-      SiteForces.Exile(12, "purple-exile", distantlands.model.PlayerColor.Purple,
-        "Purple Warbands") -> ("force-purple", "Purple Warbands x12"),
-      SiteForces.Imperial(10, "Imperial Warbands") ->
-        ("force-empire", "Imperial Warbands x10")).foreach {
-      case (forces, (cssClass, words)) =>
-        val short = firstMatch(ServerUiSupport.siteDetails(
-          woods.copy(forces = Some(forces))), ".site-forces-short")
-          .getOrElse(fail("no short forces"))
-        assert(short.classList.contains(cssClass), short.getAttribute("class"))
-        assertEquals(short.getAttribute(HoverTip.Attribute), words)
-        assertEquals(short.textContent, forces.count.toString)
-    }
-
-  /** A long forces line cuts its words inside the face, never its count. */
-  test("the forces line holds its words and its count apart"):
-    val row = firstMatch(ServerUiSupport.siteDetails(woods.copy(forces =
-      Some(SiteForces.Bandit(12, "Bandit Warbands")))), "p.site-forces")
-      .getOrElse(fail("no forces line"))
-    assertEquals(all(row, ":scope > span").map(_.getAttribute("class")),
-      Vector("site-forces-label", "site-forces-count"))
-    assertEquals(row.textContent, "Bandit Warbands x12")
-
-  /** The label inside is printed and may be hidden; the button keeps its
-    * name in its own attribute (ruling R9). */
-  test("a site-power button is named by its own label"):
-    val details = ServerUiSupport.siteDetails(woods.copy(powers = Vector(
-      distantlands.protocol.projection.SitePowerProjection("action",
-        "Mountain", Some("Rule")))))
-    val power = firstMatch(details, ".site-power").getOrElse(fail("no power"))
-    assertEquals(power.getAttribute("aria-label"), "Mountain")
-    assertEquals(power.textContent, "Mountain")

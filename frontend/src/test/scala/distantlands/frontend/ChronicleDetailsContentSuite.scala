@@ -39,7 +39,8 @@ class ChronicleDetailsContentSuite extends munit.FunSuite:
         "Chronicle Phase"))
 
   test("the Recent site is a mat row in a mat-board box of the row's width " +
-      "and ratio (R12)"):
+      "and ratio, grown by the frame's line so the site card is whole " +
+      "(R12, R38)"):
     val body = ChronicleDetailsContent.render(
       gameWithRecent(Some(deepWoodsStoringAKnownDenizen)))
     val board = one(body,
@@ -48,10 +49,17 @@ class ChronicleDetailsContentSuite extends munit.FunSuite:
     assert(board.matches(".mat-board"), board.getAttribute("class"))
     val style = board.asInstanceOf[dom.html.Element].style
     // A row on the mat is 1789.15 of its 5787 pixels wide and a card's
-    // 509 tall; the board is 2400px wide at 100%.
-    assertEquals(style.getPropertyValue("--atlas-w"), "742.00px")
-    assertEquals(style.getPropertyValue("--atlas-ratio"), "1789.15 / 509.00")
+    // 509 tall, and the site card reaches 8 past it; the board is 2400px
+    // wide at 100%.
+    assertEquals(style.getPropertyValue("--atlas-w"), "748.64px")
+    assertEquals(style.getPropertyValue("--atlas-ratio"), "1805.15 / 525.00")
     val site = one(board, ":scope > article.site")
+    // The row stands 8 mat px inside the board on each side, so the face,
+    // which reaches 8 past the row, ends at the board's edge.
+    val row = site.asInstanceOf[dom.html.Element].style
+    assertEquals(Vector("left", "top", "width", "height")
+      .map(row.getPropertyValue),
+      Vector("0.4432%", "1.5238%", "99.1136%", "96.9524%"))
     assertEquals(site.getAttribute("aria-label"), "Deep Woods")
     assertEquals(all(site, ".site-pawns > *").size, 0)
 

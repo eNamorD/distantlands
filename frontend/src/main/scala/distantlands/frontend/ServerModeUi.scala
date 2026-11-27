@@ -32,6 +32,8 @@ object ServerModeUi:
       (_: dom.Event) => session.visibilityChanged(dom.document.hidden)
     )
     session.visibilityChanged(dom.document.hidden)
+    // The manifest arriving, or the Game art switch, redraws the table.
+    GameArt.onChange(() => screen.render())
     session.open(queryParameter("gameId"))
 
 /** The browser's address bar and start page, for the table session. */

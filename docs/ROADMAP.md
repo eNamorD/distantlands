@@ -478,18 +478,6 @@ as current.
   - [ ] Add membership-management UX, rate limiting, audit logging, and the
     final production deployment gate. The alpha phase may add a narrower safe
     invitation flow first; until then, keep development routes loopback-only.
-- [ ] **L3 — Licensed game assets with permanent visual fallbacks**, including
-  suit and restriction icons on card faces. The layout is ready for it: every
-  drawn asset has its real proportions and the map is laid out on the mat's
-  coordinates ([real proportions design](superpowers/specs/2026-11/2026-11-13-real-proportions-design.md),
-  [asset proportions](catalog/asset-proportions.md)).
-  Open question: whether the zoomed-out map keeps its glance layer (the
-  short forms of names, defense and forces) over the art, or lets the art
-  alone carry what is printed
-  ([implementation ruling R9](superpowers/specs/2026-11/2026-11-13-real-proportions-design-implementation-rulings.md)).
-  Three rectangles on the mat have no printed counterpart and were placed
-  by eye (the track note, the Visions label and the favor banks' boxes);
-  check that none covers printed art once the licensed mat is drawn.
 - [ ] **L4 — Saved-game browser and replay navigation.** Saved campaigns
   are browsable; saved games and replays are not.
 - [ ] **L5 — Asynchronous accounts, invitations, and notifications**

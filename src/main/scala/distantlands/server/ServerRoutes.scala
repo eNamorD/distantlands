@@ -10,7 +10,8 @@ object ServerRoutes:
       runtime: ServerRuntime,
       blockingExecutionContext: ExecutionContext,
       config: ServerConfig,
-      readiness: ServerReadiness
+      readiness: ServerReadiness,
+      art: ArtLibrary = ArtLibrary.empty
   ): Route =
     val publicOrigin = config.publicBaseUrl.getOrElse(
       new java.net.URI("http", null, config.host, config.port, null, null, null))
@@ -35,4 +36,4 @@ object ServerRoutes:
           blockingExecutionContext) ~ trustedSeats
       case ServerMode.TrustedAlpha =>
         trustedSeats ~ ProductionFrontendRoutes.route
-    HealthRoutes.route(readiness) ~ application
+    HealthRoutes.route(readiness) ~ ArtRoutes.route(art) ~ application

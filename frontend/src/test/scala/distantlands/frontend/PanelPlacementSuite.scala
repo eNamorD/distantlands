@@ -34,7 +34,9 @@ class PanelPlacementSuite extends munit.FunSuite:
       oath.copy(goal = "supremacy", holderPlayerId = None)))
     val status = Dom.firstMatch(world(value), ".shared-bank .oathkeeper-status")
       .getOrElse(fail("no oath line in the shared bank"))
-    assertEquals(Dom.all(status, ":scope > *").map(_.textContent),
+    assertEquals(Dom.all(status,
+      ":scope > .oathkeeper-goal > .card-name, :scope > .oathkeeper-holder")
+      .map(_.textContent),
       Vector("Oathkeeper of Supremacy", "Oathkeeper: unheld"))
 
   /** The Oath is a printed card the table shows as words, so its goal opens
@@ -43,7 +45,7 @@ class PanelPlacementSuite extends munit.FunSuite:
   test("the oath's goal opens its card with the Oath goal's plate"):
     var opened = Vector.empty[(String, Vector[String], Option[String])]
     CardInspection.onOpen:
-      case CardInspection.Request.Text(title, lines, _, plate) =>
+      case CardInspection.Request.Text(title, lines, _, plate, _, _) =>
         opened :+= (title, lines, plate)
       case _ => ()
     val status = Dom.one(world(projection()), ".shared-bank .oathkeeper-status")
@@ -58,7 +60,7 @@ class PanelPlacementSuite extends munit.FunSuite:
   test("a goal the table does not know opens as its key, with no lines"):
     var opened = Vector.empty[(String, Vector[String])]
     CardInspection.onOpen:
-      case CardInspection.Request.Text(title, lines, _, _) =>
+      case CardInspection.Request.Text(title, lines, _, _, _, _) =>
         opened :+= title -> lines
       case _ => ()
     Dom.one(world(projection(oathkeeper = Some(oath.copy(goal = "unknown")))),
@@ -72,7 +74,7 @@ class PanelPlacementSuite extends munit.FunSuite:
   test("a goal other than supremacy is named as itself"):
     assertEquals(Dom.firstMatch(world(projection(oathkeeper =
       Some(oath.copy(goal = "the-people", holderPlayerId = Some("Blue"))))),
-      ".shared-bank .oathkeeper-goal").map(_.textContent),
+      ".shared-bank .oathkeeper-goal > .card-name").map(_.textContent),
       Some("Oathkeeper of the People"))
 
   private val foundations = Vector(
@@ -171,8 +173,9 @@ class PanelPlacementSuite extends munit.FunSuite:
     assert(!panel.textContent.contains("Usurper"), panel.textContent)
 
   /** The far zoomed-out map hides the tracker's words, so the lock is also
-    * in the tracker's name and on the limiter mark's hover note. */
-  test("the round tracker's name and the limiter mark state the lock"):
+    * in the tracker's name and on the hover note of the limiter's whole
+    * wedge (game art ruling R58). */
+  test("the round tracker's name and the limiter's wedge state the lock"):
     val tracker = Dom.one(world(projection(trackState =
       Some(tracks.copy(usurperLimited = true, limiterRound = 4)))),
       ".round-tracker")
@@ -180,6 +183,8 @@ class PanelPlacementSuite extends munit.FunSuite:
       .contains("Usurper locked until round 4"),
       tracker.getAttribute("aria-label"))
     assertEquals(Dom.one(tracker, ".limiter-marker")
+      .closest(s"[${HoverTip.Attribute}]").getAttribute("data-round"), "4")
+    assertEquals(Dom.one(tracker, """g[data-round="4"]""")
       .getAttribute(HoverTip.Attribute), "Usurper locked until round 4")
     val open = Dom.one(world(projection(trackState =
       Some(tracks.copy(usurperLimited = false)))), ".round-tracker")

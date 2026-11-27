@@ -12,7 +12,7 @@ import ServerUiSupport.{element, text}
 private[frontend] object ChronicleDetailsContent:
   /** The row the Atlas's site is drawn in. Every mat row lays out its face
     * and slots alike, so the Cradle's first serves. */
-  private val AtlasRow = MatLayout.siteRow(0, 0)
+  private val AtlasRow = MatLayout.siteRowWithCard(0, 0)
 
   def render(value: GameProjection): dom.Element =
     val body = element("div", "chronicle-details-body")

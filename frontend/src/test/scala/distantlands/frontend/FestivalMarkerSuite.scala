@@ -25,7 +25,7 @@ class FestivalMarkerSuite extends munit.FunSuite:
     festivalsOpened = Vector.empty
     CardInspection.onOpen:
       case CardInspection.Request.FestivalMarker(_, _) => markersOpened += 1
-      case CardInspection.Request.Festival(_, _, at, _, _) =>
+      case CardInspection.Request.Festival(_, _, at, _, _, _) =>
         festivalsOpened :+= at
       case _ => ()
 

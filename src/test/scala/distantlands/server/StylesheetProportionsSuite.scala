@@ -10,7 +10,7 @@ class StylesheetProportionsSuite extends munit.FunSuite:
   private val css = Files.readString(Path.of("frontend", "styles.css"))
 
   private val table = Vector(
-    "--ratio-denizen: 381 / 596", "--ratio-site: 770 / 596",
+    "--ratio-denizen: 381 / 596",
     "--ratio-relic: 1 / 1", "--ratio-banner: 1 / 1",
     "--ratio-legacy: 596 / 381", "--ratio-foundation: 469 / 803",
     "--ratio-oath-goal: 673 / 898", "--ratio-oathkeeper-title: 1016 / 700",
@@ -32,12 +32,15 @@ class StylesheetProportionsSuite extends munit.FunSuite:
   /** Every box reads the table; a ratio written anywhere else would let a
     * box drift from it. */
   test("each ratio is written once, in the table"):
-    Vector("381 / 596", "596 / 381", "770 / 596", "469 / 803", "673 / 898",
+    Vector("381 / 596", "596 / 381", "469 / 803", "673 / 898",
       "1016 / 700", "5787 / 2303").foreach(ratio =>
       assertEquals(css.split(java.util.regex.Pattern.quote(ratio), -1).length - 1,
         1, ratio))
     assert(css.contains("--ratio-mat: 5787 / 2303"))
-    Vector("--ratio-site", "--ratio-relic", "--ratio-banner", "--ratio-legacy",
+    // A site's card has no ratio of its own in the table: its box is the
+    // frame the mat prints, placed by MatLayout, and its image covers it.
+    assert(!css.contains("--ratio-site"))
+    Vector("--ratio-relic", "--ratio-banner", "--ratio-legacy",
       "--ratio-mat").foreach(name =>
       assert(css.contains(s"var($name)"), s"nothing reads $name"))
 
@@ -56,8 +59,7 @@ class StylesheetProportionsSuite extends munit.FunSuite:
         .getOrElse(fail(s"the stylesheet has no $name"))
     assertEquals(number("""val CardW: Double = CardH \* ([0-9]+ / [0-9]+)"""),
       ratio("--ratio-denizen"))
-    assertEquals(number("""val SiteW: Double = CardH \* ([0-9]+ / [0-9]+)"""),
-      ratio("--ratio-site"))
+    assert(!layout.contains("SiteW"))
     assertEquals(s"${number("""val Width = ([0-9]+)\.0""")} / " +
       number("""val Height = ([0-9]+)\.0"""), ratio("--ratio-mat"))
     val design = number("""val DesignWidthPx = ([0-9]+)\.0""").toInt

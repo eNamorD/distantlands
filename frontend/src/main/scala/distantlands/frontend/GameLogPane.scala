@@ -33,6 +33,10 @@ private[frontend] final class GameLogPane(content: dom.html.Element,
   private val sticky = if headings then "log-round" else "log-turn"
   private var key = Option.empty[String]
   private var shown = Vector.empty[LogEntry]
+  // The game art the lines on show were drawn with (`GameArt.version`).
+  // The list only grows, so a change of art must draw it again: a roll's
+  // chips would otherwise keep what they were first drawn with.
+  private var art = GameArt.version
   // The taken-back groups on show that the reader opened, kept across redraws.
   private var expanded = Set.empty[Long]
   // Whether the reader follows the end. A hidden list has no size, so it
@@ -54,7 +58,9 @@ private[frontend] final class GameLogPane(content: dom.html.Element,
       colors: Map[String, String], since: Option[Long] = None): Unit =
     val sameSession = key.contains(sessionKey)
     if !sameSession then expanded = Set.empty
-    val appending = sameSession && shown.nonEmpty &&
+    val sameArt = art == GameArt.version
+    art = GameArt.version
+    val appending = sameSession && sameArt && shown.nonEmpty &&
       entries.startsWith(shown) &&
       entries.drop(shown.size).forall(_.takenBack.isEmpty)
     if appending then

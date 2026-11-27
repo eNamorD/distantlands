@@ -199,6 +199,9 @@ private[frontend] object PowerMarks:
         val chain = this.emblem("chain", 3, -5.4, 18)
         chain.setAttribute("class", "restriction-mark-chain")
         mark.appendChild(chain)
+      // The banner's printed symbol, where the host's art has one (R32).
+      ArtLayer.attachGlyph(mark,
+        distantlands.protocol.art.ArtCatalog.restriction(kind))
       mark
     }
 

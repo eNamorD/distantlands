@@ -82,11 +82,16 @@ object DistantLandsServer:
           }(using blockingExecutionContext)
         }
 
+        val art = ArtLibrary.scan(config.artPath)
+        art.summary.foreach(line => system.log.info(line))
+        art.warning.foreach(line => system.log.warn(line))
+
         val route = ServerRoutes.route(
           runtime,
           blockingExecutionContext,
           config,
-          readiness
+          readiness,
+          art
         )
 
         val binding =

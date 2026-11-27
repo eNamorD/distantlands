@@ -46,7 +46,6 @@ private[frontend] object MatLayout:
   /** A card stands as tall as a site frame. */
   val CardH = 509.0
   val CardW: Double = CardH * 381 / 596
-  val SiteW: Double = CardH * 770 / 596
   val SlotsPerSite = 3
 
 
@@ -68,10 +67,105 @@ private[frontend] object MatLayout:
   def siteFrame(column: Int, row: Int): MatRect =
     MatRect(FrameLeft(column), RowTop + row * RowPitch, FrameW, CardH)
 
-  /** The site card, centred in the frame the mat prints for it. */
+  /** How far the line of a frame the mat prints strays outside the
+    * frame's nominal rectangle: the frames are drawn by hand, each a
+    * little off its place (`docs/catalog/asset-proportions.md`). */
+  private val FrameLine = 8.0
+
+  /** The site card: the frame the mat prints for it and the frame's
+    * line, which the card covers (game art ruling R38). The card's image
+    * fills this box with `cover`. */
   def siteCard(column: Int, row: Int): MatRect =
     val frame = siteFrame(column, row)
-    MatRect(frame.x + (frame.w - SiteW) / 2, frame.y, SiteW, CardH)
+    MatRect(frame.x - FrameLine, frame.y - FrameLine,
+      frame.w + 2 * FrameLine, frame.h + 2 * FrameLine)
+
+  /** A share of a site's frame: `left`, `top`, `w` and `h` are parts of
+    * the frame's width and height. */
+  private def inFrame(column: Int, row: Int, left: Double, top: Double,
+      w: Double, h: Double): MatRect =
+    val frame = siteFrame(column, row)
+    MatRect(frame.x + frame.w * left, frame.y + frame.h * top, frame.w * w,
+      frame.h * h)
+
+  /** How many pawns a site's row holds: one for each seat a game has at
+    * most. A pawn's box is this share of the row whoever else is there
+    * (game art ruling R48). */
+  val PawnsPerSite = 6
+
+  /** The row a site's pawns stand in, on its card: under the resources
+    * and the die the card prints. */
+  def sitePawnRow(column: Int, row: Int): MatRect =
+    inFrame(column, row, 0.04, 0.19, 0.92, 0.30)
+
+  /** The row a site's warbands stand in, under its pawns and over the
+    * shield and the name the card prints. */
+  def siteWarbandRow(column: Int, row: Int): MatRect =
+    inFrame(column, row, 0.04, 0.50, 0.92, 0.20)
+
+  /** A site card's image, in its own pixels, and the shield it prints its
+    * powers in at its lower left: the same on every site card
+    * (`docs/catalog/asset-proportions.md`). The shield's red line, where
+    * a card prints two powers side by side, and the line under the
+    * Coast's ship, where an island prints "+2" below it. */
+  private val SiteImageW = 770.0
+  private val SiteImageH = 596.0
+  private val ShieldLeft = 21.0
+  private val ShieldRight = 160.0
+  private val ShieldTop = 425.0
+  private val ShieldSplitX = 90.0
+  private val ShieldSplitY = 527.0
+
+  /** A rectangle of a site card's image, on the mat: the image covers
+    * the card's box, scaled to the box's width and trimmed evenly at the
+    * top and the foot. */
+  private def onSiteCard(column: Int, row: Int, left: Double, top: Double,
+      right: Double, bottom: Double): MatRect =
+    val card = siteCard(column, row)
+    val scale = card.w / SiteImageW
+    val trim = (SiteImageH * scale - card.h) / 2
+    def y(value: Double): Double =
+      card.y + math.max(0, math.min(card.h, value * scale - trim))
+    MatRect(card.x + left * scale, y(top), (right - left) * scale,
+      y(bottom) - y(top))
+
+  /** The shield a site's card prints its powers in. */
+  def sitePowerShield(column: Int, row: Int): MatRect =
+    onSiteCard(column, row, ShieldLeft, ShieldTop, ShieldRight, SiteImageH)
+
+  /** Where a power's kind stands when a card prints two side by side,
+    * left first (game art ruling R55). */
+  private val ShieldOrder = Vector("enduring", "mountain", "river", "coast")
+
+  /** Each power's part of the shield, in the order of `kinds`. One power
+    * takes the whole shield. An island's two are the Coast's ship above
+    * and the Island's "+2" below; any other two stand left and right of
+    * the shield's red line, in `ShieldOrder`. More than two, which no
+    * card prints, share the shield left to right. */
+  def sitePowerRegions(kinds: Vector[String], column: Int, row: Int)
+      : Vector[MatRect] =
+    def part(left: Double, top: Double, right: Double, bottom: Double) =
+      onSiteCard(column, row, left, top, right, bottom)
+    kinds match
+      case Vector() => Vector.empty
+      case Vector(_) => Vector(sitePowerShield(column, row))
+      case Vector(_, _) if kinds.contains("island") =>
+        kinds.map(kind =>
+          if kind == "island" then
+            part(ShieldLeft, ShieldSplitY, ShieldRight, SiteImageH)
+          else part(ShieldLeft, ShieldTop, ShieldRight, ShieldSplitY))
+      case Vector(_, _) =>
+        def rank(kind: String): Int =
+          Option(ShieldOrder.indexOf(kind)).filter(_ >= 0)
+            .getOrElse(ShieldOrder.size)
+        val leftFirst = rank(kinds(0)) <= rank(kinds(1))
+        val left = part(ShieldLeft, ShieldTop, ShieldSplitX, SiteImageH)
+        val right = part(ShieldSplitX, ShieldTop, ShieldRight, SiteImageH)
+        if leftFirst then Vector(left, right) else Vector(right, left)
+      case many =>
+        val step = (ShieldRight - ShieldLeft) / many.size
+        many.indices.toVector.map(at => part(ShieldLeft + at * step,
+          ShieldTop, ShieldLeft + (at + 1) * step, SiteImageH))
 
   def cardSlot(column: Int, row: Int, slot: Int): MatRect =
     val frame = siteFrame(column, row)
@@ -99,6 +193,14 @@ private[frontend] object MatLayout:
     MatRect(frame.x, frame.y,
       cardSlot(column, row, SlotsPerSite - 1).right - frame.x, CardH)
 
+  /** A site's row and the whole of its site card, which reaches past the
+    * row by the frame's line: the row grown by that line on every side.
+    * A box that shows one row alone takes this rectangle. */
+  def siteRowWithCard(column: Int, row: Int): MatRect =
+    val span = siteRow(column, row)
+    MatRect(span.x - FrameLine, span.y - FrameLine, span.w + 2 * FrameLine,
+      span.h + 2 * FrameLine)
+
   /** A region's discard pile: a card on its side, at the region's upper
     * right. */
   def discard(column: Int): MatRect =
@@ -125,6 +227,18 @@ private[frontend] object MatLayout:
     Vector("discord", "arcane", "order", "hearth", "beast", "nomad")
   private val BankCentre =
     Vector(2438.0, 2839.0, 3241.0, 3642.0, 4044.0, 4449.0)
+
+  /** The circle the mat prints for a suit's favor: a square about it. */
+  def favorBankCircle(suit: String): Option[MatRect] =
+    Option(FavorBankSuits.indexOf(suit)).filter(_ >= 0)
+      .map(at => MatRect(BankCentre(at) - 93, 2155 - 93, 186, 186))
+
+  /** The suit's emblem the mat prints beside the circle: a square about
+    * its ring, centred 151 px left of the circle's centre and 27 px
+    * above it, radius 61. */
+  def favorBankEmblem(suit: String): Option[MatRect] =
+    Option(FavorBankSuits.indexOf(suit)).filter(_ >= 0)
+      .map(at => MatRect(BankCentre(at) - 151 - 61, 2128 - 61, 122, 122))
 
   /** A suit's emblem and its bank circle, as one box. */
   def favorBank(suit: String): Option[MatRect] =

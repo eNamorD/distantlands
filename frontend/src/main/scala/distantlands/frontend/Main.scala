@@ -10,9 +10,13 @@ object Main:
     val mount = Option(dom.document.getElementById("app")).getOrElse:
       throw new IllegalStateException("missing #app mount point")
     HoverTip.install()
+    val transport = new SameOriginJsonTransport
+    // The manifest is fetched once per page load and nothing waits for
+    // it: the table draws its own faces until it arrives.
+    GameArt.start(transport, ChronicleStorage.browser)
     start(mount, dom.window.location.pathname,
       mount.getAttribute("data-runtime-mode") == "trusted-alpha",
-      new SameOriginJsonTransport, search = dom.window.location.search)
+      transport, search = dom.window.location.search)
 
   private[frontend] def start(mount: dom.Element, pathname: String,
       trustedAlpha: Boolean, transport: JsonTransport,

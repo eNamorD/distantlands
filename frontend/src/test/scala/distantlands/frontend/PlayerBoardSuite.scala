@@ -277,8 +277,8 @@ class PlayerBoardSuite extends munit.FunSuite:
   private def opensOnClick(act: dom.Element => Unit): Vector[String] =
     var opened = Vector.empty[String]
     CardInspection.onOpen:
-      case CardInspection.Request.Text(title, _, _, _) => opened = opened :+ title
-      case CardInspection.Request.Festival(title, _, _, _, _) =>
+      case CardInspection.Request.Text(title, _, _, _, _, _) => opened = opened :+ title
+      case CardInspection.Request.Festival(title, _, _, _, _, _) =>
         opened = opened :+ title
       case CardInspection.Request.FestivalMarker(_, _) =>
         opened = opened :+ FestivalMarker.Title
@@ -290,7 +290,7 @@ class PlayerBoardSuite extends munit.FunSuite:
         opened = opened :+ question
       case CardInspection.Request.Choices(question, _, _) =>
         opened = opened :+ question
-      case CardInspection.Request.Power(title, _, _, _) =>
+      case CardInspection.Request.Power(title, _, _, _, _) =>
         opened = opened :+ title
       case CardInspection.Request.RuledCard(card, _, _) =>
         opened = opened :+ card.name
@@ -312,7 +312,7 @@ class PlayerBoardSuite extends munit.FunSuite:
   test("the title pill opens with the Oathkeeper title's plate"):
     var plates = Vector.empty[Option[String]]
     CardInspection.onOpen:
-      case CardInspection.Request.Text(_, _, _, plate) => plates :+= plate
+      case CardInspection.Request.Text(_, _, _, plate, _, _) => plates :+= plate
       case _ => ()
     val node = renderWith(board, Some(OathkeeperStatus("devotion",
       Some("red"), "oathkeeper", usurperLimited = false, None)))
