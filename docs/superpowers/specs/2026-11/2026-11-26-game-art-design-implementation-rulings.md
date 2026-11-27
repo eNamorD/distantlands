@@ -536,3 +536,15 @@ disagrees, so the table has no exception.
 Slice/files: slice 5; `MatLayout.sitePowerRegions`.
 
 With slice 5's click targets on the shield, R45's gap is closed.
+
+## Slice 5 review
+
+**R56. A drawn power's label on the compact map.**
+Question: with art off on the compact map a power's drawn label is a
+share of the shield, about 4.5px at 50% zoom, and cannot be read there.
+Decision: accepted. The hover note, the accessible name, a zoom and
+Chronicle Details carry the power.
+Reason: the label lives in the click region R54 fixes to the print's
+size, and a floor on its size would overflow a half shield.
+Confidence: low; flagged to the owner.
+Slice/files: slice 5 review; `frontend/styles.css`.

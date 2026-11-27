@@ -320,8 +320,10 @@ private[frontend] object GameTableShell:
   private val CompactBelow = NameFloorPx / 15.2
   def compactAtScale(scale: Double): Boolean = scale < CompactBelow
 
-  /** Below this a site's face holds its name, tokens, pawns and forces at
-    * the glance size and nothing more: its powers are read on a zoom. */
+  /** Below this a site's face holds its name, tokens and defense at the
+    * glance size and its requirement leaves it. Its pawns and warbands
+    * keep their share of the site, and a pawn's name is hidden from
+    * sight (game art rulings R50, R52). */
   private val TinyBelow = 0.4
   def tinyAtScale(scale: Double): Boolean = scale < TinyBelow
 

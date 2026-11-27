@@ -729,8 +729,9 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    and the First Player badge. Zoomed out, only the Usurper's lock is left
    in words. */
 .map-compact .mat-board .track-summary { display: none; }
-/* Smaller still, a site's face keeps its name, its tokens, its pieces and
-   its defense in a short form (implementation ruling R5). Its requirement
+/* Smaller still, a site's face keeps its name, its tokens and its defense
+   in a short form at the glance size (implementation ruling R5), and its
+   pieces at their own share of the site (game art ruling R52). Its requirement
    and the wheel's numbers would fall under a readable size and leave the
    board: the requirement is read on a zoom or in the overlay, the wheel's
    numbers and end dice are in the tracker's name. */
@@ -968,8 +969,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .site-defense { justify-content: flex-end; }
 .site-token-count { margin-right: 0.35em; }
 .site-defense-none { color: var(--ink-dim); }
-.site-footer { display: flex; align-items: flex-end; justify-content: space-between;
-  gap: 9px; margin-top: auto; }
+.site-footer { display: flex; align-items: flex-end; justify-content: flex-end;
+  margin-top: auto; }
 /* A button that opens the power. Its label is printed. */
 .site-power { appearance: none; background: none; border: 0; padding: 0;
   margin: 0; font: inherit; color: inherit; cursor: pointer; }

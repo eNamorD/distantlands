@@ -852,8 +852,9 @@ mat prints for it, with its three card slots to its right (Layout). On the
 card: Site fill, Line border, 9px radius; loose tokens in the upper left
 and defense in the upper right, as the card prints its resources and its
 die; then a row of pawns and a row of warbands; then the print's band at
-its foot, the power shield at the lower left, the name right of it and the
-requirement over the name. The two rows are boxes the mat's layout places
+its foot, the power shield at the lower left and the name right of it; the
+requirement stands at the face's right over the name band, at its own
+width, and takes no pointer, so it never covers the shield. The two rows are boxes the mat's layout places
 on the card (pawns from 19% of the frame's height for 30%, warbands from
 50% for 20%), and every length inside them is a share of the row, so a
 piece is the same share of its site at every zoom (game art rulings R48
