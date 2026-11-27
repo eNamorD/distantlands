@@ -531,6 +531,9 @@ class StylesheetArtSuite extends munit.FunSuite:
       "text-shadow: var(--chip-text-edge)", "font-size: 24cqw")
       .foreach(part => assert(chip.contains(part), part))
     assert(!chip.contains("art-ready"))
+    // The drawn name stands at the face's foot, under the chip, which
+    // would cover it in the face's middle.
+    assert(rule(".card-face.banner-face").contains("justify-content: flex-end"))
     // The overlay's face is large; its chip is a smaller share of it.
     assert(rule(".card-overlay-body > .card-face.banner-face > .card-tokens")
       .contains("font-size: 12cqw"))

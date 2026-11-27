@@ -1610,6 +1610,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    of the face so it reads on the zoomed-out table as a bank's count
    does. */
 .banner-face { container-type: inline-size; }
+/* The drawn name stands at the face's foot, under the chip. */
+.card-face.banner-face { justify-content: flex-end; }
 .card-face.banner-face > .card-tokens { top: 33%; right: auto; bottom: auto;
   left: 50%; width: max-content; height: auto; padding: 0.1em 0.35em;
   transform: translate(-50%, -50%); border-radius: 0.35em;
