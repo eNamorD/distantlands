@@ -117,10 +117,19 @@ class PartitionPanelRenderSuite extends munit.FunSuite:
     confirmLabel = Some("Confirm Adviser"),
     heading = Some("Choose your starting adviser"))
 
-  private def keepOneDraft(): Option[WalkerPartitionDraft] =
+  /** The draft as it opens on `keepDiscard`: every card in Discard. */
+  private def openedKeepOneDraft(): Option[WalkerPartitionDraft] =
     WalkerPartitionDraft.reconcile(None, ForgeFixture.context,
       Some(WalkerDecisionState("setup", "setup-1",
         query = Some(keepDiscard))))
+
+  /** The opened draft with Denizen 1 dragged into Keep. */
+  private def keepOneDraft(): Option[WalkerPartitionDraft] =
+    openedKeepOneDraft().map(_.move(optionKey(1), "keep"))
+
+  /** The words under a zone's ends, left then right, when it has them. */
+  private def endLabels(zone: dom.Element): Vector[String] =
+    all(zone, ".partition-ends > span").map(_.textContent)
 
   private def pickPanel(ui: RecordingControls,
       draft: Option[WalkerPartitionDraft]): dom.Element =
@@ -131,11 +140,67 @@ class PartitionPanelRenderSuite extends munit.FunSuite:
   private def pickPanel(draft: Option[WalkerPartitionDraft]): dom.Element =
     pickPanel(controls(), draft)
 
-  test("a leftover zone holding several options says its order counts"):
+  /** The pile's order is told by its ends, under the row: the first card
+    * goes down first, so the last one is the top. The sentence stays as
+    * the row's accessible name. */
+  test("a leftover zone holding several options labels its bottom and top"):
     val zone = one(pickPanel(keepOneDraft()),
       """[data-section-key="discard"]""")
-    assertEquals(one(zone, ".decision-zone-order").textContent,
+    assertEquals(endLabels(zone), Vector("Bottom", "Top"))
+    assertEquals(one(zone, ".partition-ends").getAttribute("aria-label"),
       "The last one lands on top of the pile.")
+    assertEquals(one(zone, ".partition-options").nextElementSibling,
+      one(zone, ".partition-ends"))
+    assertEquals(all(zone, ".decision-zone-order"), Vector.empty)
+
+  /** Nothing is picked for the player: a pick opens with every card in the
+    * zone that takes the rest, and Confirm waits for one to be dragged in.
+    */
+  test("a keep-one partition opens with every card in Discard"):
+    val panel = pickPanel(openedKeepOneDraft())
+    assertEquals(optionLabelsIn(panel, "keep"), Vector.empty)
+    assertEquals(optionLabelsIn(panel, "discard"),
+      Vector("Denizen 1", "Denizen 2", "Denizen 3"))
+    assert(confirm(panel).disabled)
+
+  test("an empty zone that needs a card shows where to drop one"):
+    val keep = one(pickPanel(openedKeepOneDraft()),
+      """[data-section-key="keep"]""")
+    assertEquals(one(keep, ".partition-options > .partition-slot")
+      .textContent, "Drag a card here")
+    assertEquals(all(one(pickPanel(keepOneDraft()),
+      """[data-section-key="keep"]"""), ".partition-slot"), Vector.empty)
+    assertEquals(all(one(pickPanel(openedKeepOneDraft()),
+      """[data-section-key="discard"]"""), ".partition-slot"), Vector.empty)
+
+  /** Legacies lie on their side, so the blank a legacy pick leaves does
+    * too. */
+  test("the blank in a legacy pick is landscape"):
+    val legacies = keepDiscard.copy(options = Vector("L22", "L23").map(id =>
+      DecisionOptionState("legacy", id, s"Legacy $id",
+        Some(CardDetails(id, "legacy", s"Legacy $id")))))
+    val decision = WalkerDecisionState("setup", "setup-1",
+      query = Some(legacies))
+    val panel = render(controls(), WalkerPartitionDraft.reconcile(None,
+      ForgeFixture.context, Some(decision)), decision = decision)
+    assertEquals(one(panel, ".partition-slot").getAttribute("class"),
+      "partition-slot partition-slot-landscape")
+    assertEquals(one(pickPanel(openedKeepOneDraft()), ".partition-slot")
+      .getAttribute("class"), "partition-slot")
+
+  /** Lost Doors discards one and keeps the rest: the capped zone is
+    * Discard, so the cards open in Keep. */
+  test("a discard-one partition opens with every card in Keep"):
+    val discardOne = keepDiscard.copy(sections = Vector(
+      DecisionSectionState("keep", "Keep", 0),
+      DecisionSectionState("discard", "Discard", 1, Some(1))))
+    val decision = WalkerDecisionState("setup", "setup-1",
+      query = Some(discardOne))
+    val panel = render(controls(), WalkerPartitionDraft.reconcile(None,
+      ForgeFixture.context, Some(decision)), decision = decision)
+    assertEquals(optionLabelsIn(panel, "keep"),
+      Vector("Denizen 1", "Denizen 2", "Denizen 3"))
+    assertEquals(optionLabelsIn(panel, "discard"), Vector.empty)
 
   /** The keep-one shape reads like the rulebook's own sentence, and its
     * minimums are not worth a line: the slot always holds its one and the
@@ -159,10 +224,12 @@ class PartitionPanelRenderSuite extends munit.FunSuite:
   private val keepUpToTwoDecision = WalkerDecisionState("setup", "setup-1",
     query = Some(keepUpToTwo))
 
-  /** The draft opened on `keepUpToTwo`: Denizens 1 and 2 kept. */
+  /** The draft opened on `keepUpToTwo`, with Denizens 1 and 2 dragged into
+    * Keep. */
   private def keepUpToTwoDraft(): Option[WalkerPartitionDraft] =
     WalkerPartitionDraft.reconcile(None, ForgeFixture.context,
       Some(keepUpToTwoDecision))
+      .map(_.move(optionKey(1), "keep").move(optionKey(2), "keep"))
 
   test("a keep-one-or-two partition says so, without minimum lines"):
     val panel = render(controls(), keepUpToTwoDraft(),
@@ -171,15 +238,16 @@ class PartitionPanelRenderSuite extends munit.FunSuite:
       "Drag and drop the cards. Keep one or two; discard the rest.")
     assertEquals(all(panel, ".decision-zone-helper"), Vector.empty)
 
-  test("a keep zone holding two says they are played in that order"):
+  test("a keep zone holding two labels which is played first and last"):
     def keepZone(draft: Option[WalkerPartitionDraft]) = one(render(
       controls(), draft, decision = keepUpToTwoDecision),
       """[data-section-key="keep"]""")
-    assertEquals(one(keepZone(keepUpToTwoDraft()),
-      ".decision-zone-order").textContent, "They are played in this order.")
+    val keepingTwo = keepZone(keepUpToTwoDraft())
+    assertEquals(endLabels(keepingTwo), Vector("First", "Last"))
+    assertEquals(one(keepingTwo, ".partition-ends").getAttribute("aria-label"),
+      "They are played in this order.")
     val keepingOne = keepUpToTwoDraft().map(_.move(optionKey(2), "discard"))
-    assertEquals(all(keepZone(keepingOne), ".decision-zone-order"),
-      Vector.empty)
+    assertEquals(endLabels(keepZone(keepingOne)), Vector.empty)
 
   test("a drop on a full keep zone is refused; with room it lands"):
     val ui = controls()
@@ -203,7 +271,7 @@ class PartitionPanelRenderSuite extends munit.FunSuite:
 
   test("the capped zone says nothing about order"):
     assertEquals(all(one(pickPanel(keepOneDraft()),
-      """[data-section-key="keep"]"""), ".decision-zone-order"), Vector.empty)
+      """[data-section-key="keep"]"""), ".partition-ends"), Vector.empty)
 
   /** One card cannot be in an order, so the sentence would be noise. A pick
     * of two leaves exactly one card behind, whichever one is kept.
@@ -213,15 +281,15 @@ class PartitionPanelRenderSuite extends munit.FunSuite:
     val decision = WalkerDecisionState("setup", "setup-1",
       query = Some(twoCards))
     val draft = WalkerPartitionDraft.reconcile(None, ForgeFixture.context,
-      Some(decision))
+      Some(decision)).map(_.move(optionKey(1), "keep"))
     assertEquals(all(render(controls(), draft,
-      decision = decision), ".decision-zone-order"), Vector.empty)
+      decision = decision), ".partition-ends"), Vector.empty)
 
   /** Forge pays into zones that each carry a minimum, so none of them is a
     * leftover zone and none claims an order.
     */
   test("a partition of payments claims no order anywhere"):
-    assertEquals(all(render(controls(), forgeDraft()), ".decision-zone-order"),
+    assertEquals(all(render(controls(), forgeDraft()), ".partition-ends"),
       Vector.empty)
 
   test("the confirm button names the card the one-card zone holds"):

@@ -477,24 +477,43 @@ private[frontend] object WalkerPanelSupport:
       zone.appendChild(text("p", "decision-zone-helper",
         s"At least ${section.minRequired}."))
     val held = draft.optionsIn(section.key)
-    // The consequence, not the mechanism: the engine stacks the leftovers
-    // in this order, so the last one is the pile's top and the next
-    // Search's first draw.
-    if ordered(section, held.size) then
-      zone.appendChild(text("p", "decision-zone-order",
-        "The last one lands on top of the pile."))
-    // On the keep-some shape the kept cards are played in order.
-    val playedInOrder = keepSome(query).exists(_._1.key == section.key)
-    if playedInOrder && held.size > 1 then
-      zone.appendChild(text("p", "decision-zone-order",
-        "They are played in this order."))
     // Own row: a zone that holds heading and options together measures as
     // wide as all of them laid end to end, whatever it can wrap to.
     val options = element("div", "partition-options")
-    draft.optionsIn(section.key).foreach(option =>
-      options.appendChild(partitionOption(option)))
+    held.foreach(option => options.appendChild(partitionOption(option)))
+    // An empty zone that must take a card says where it goes. The
+    // stylesheet hides it once a dragged card's preview joins the row.
+    if held.isEmpty && section.minRequired > 0 then
+      // Shaped like the cards it waits for: a legacy lies on its side.
+      val landscape = query.options.flatMap(_.card)
+        .exists(_.cardKind == "legacy")
+      options.appendChild(text("div", if landscape then
+        "partition-slot partition-slot-landscape" else "partition-slot",
+        "Drag a card here"))
     zone.appendChild(options)
+    // The order, told by the row's two ends under it rather than by a
+    // control on each card. The engine stacks the leftovers in this order,
+    // so the last one is the pile's top and the next Search's first draw;
+    // on the keep-some shape the kept cards are played in this order.
+    val playedInOrder = keepSome(query).exists(_._1.key == section.key)
+    if ordered(section, held.size) then
+      zone.appendChild(partitionEnds("Bottom", "Top",
+        "The last one lands on top of the pile."))
+    else if playedInOrder && held.size > 1 then
+      zone.appendChild(partitionEnds("First", "Last",
+        "They are played in this order."))
     zone
+
+  /** The words under a row's left and right ends, named for a reader by
+    * the sentence they stand for. */
+  private def partitionEnds(left: String, right: String, meaning: String)
+      : dom.Element =
+    val ends = element("div", "partition-ends")
+    ends.setAttribute("role", "note")
+    ends.setAttribute("aria-label", meaning)
+    ends.appendChild(text("span", "", left))
+    ends.appendChild(text("span", "", right))
+    ends
 
   private def partitionOption(option: DecisionOptionState): dom.Element =
     val item = WalkerPartitionDraft.itemId(option)

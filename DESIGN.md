@@ -431,7 +431,7 @@ cards and the page title. It is never used for controls, labels or body text.
 the panes this is a floor on the text, not the box: a card name is
 `max(0.95em, 0.7rem)`, so a card scaled down by its pane's font size keeps
 its box in `ex` and its text readable. The smallest steps in use are `.84em` for a partition option and
-`.85em` for its order note, both chosen to clear the floor at the pane's
+`.85em` for its end labels, both chosen to clear the floor at the pane's
 0.9rem.
 
 **The Glance Layer Rule.** The map is a fixed 2400px board scaled by the
@@ -695,9 +695,16 @@ controls are 30px.
   one. An option holds nothing but its card. The instruction line opens
   with "Drag and drop the cards." A keep-one partition (Search, the
   starting adviser) then reads "Keep one; discard the rest." with no
-  minimum lines, and a drop on the keep zone swaps the cards. The order
-  note reads "The last one lands on top of the pile." Forge's payment
-  partition keeps its minimum lines.
+  minimum lines, and a drop on the keep zone swaps the cards. A pick (a
+  capped zone beside one that takes the rest) opens with every card in the
+  zone that takes the rest, so nothing is picked for the player; an empty
+  zone that needs a card holds a dashed card-sized blank reading "Drag a
+  card here". A zone whose order counts names its two ends under the row,
+  Ink Dim uppercase 700 at 0.85em: "Bottom" and "Top" on a pile (the last
+  card lands on top), "First" and "Last" on kept cards played in order.
+  The sentence they stand for is the row's accessible name. A zone beside
+  them keeps that line empty, so the cards share a floor. Forge's payment
+  partition keeps its minimum lines and opens filled.
 
 ### Chips and Pills
 - **Site card count**: pill, 1px Line border, Cream 700 text, `2px 6px`

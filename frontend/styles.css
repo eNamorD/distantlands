@@ -1208,8 +1208,27 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .partition-zone { display: flex; flex-direction: column; padding-top: 7px; }
 .partition-zone > h3 { margin: 0; }
 .partition-zone > .decision-zone-helper { margin: 0.1em 0 0; }
-.partition-zone > .decision-zone-order { margin: 0.35em 0 0; color: var(--ink-dim);
-  font-size: 0.85em; font-style: italic; }
+/* A row whose order is part of the answer names its two ends under it,
+   Bottom and Top or First and Last, instead of a control on each card.
+   A zone without them keeps the same line empty while a zone beside it has
+   them, so the cards in both still share a floor. */
+.partition-zone > .partition-ends, .partition-zones:has(.partition-ends)
+    > .partition-zone:not(:has(.partition-ends))::after {
+  display: flex; justify-content: space-between; gap: 1em; height: 1.4em;
+  margin-top: 0.3em; font-size: 0.85em; line-height: 1.4; }
+.partition-zones:has(.partition-ends)
+    > .partition-zone:not(:has(.partition-ends))::after { content: ""; }
+.partition-ends { color: var(--ink-dim); font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase; }
+/* An empty zone that must take a card holds a dashed card-sized blank:
+   dashed is "not real yet". A dragged card's preview takes its place. */
+.partition-slot { display: flex; align-items: center; justify-content: center;
+  box-sizing: border-box; width: var(--card-w); height: var(--card-h);
+  padding: 0.5em; border: 1px dashed var(--line-mid); border-radius: 0.35em;
+  color: var(--ink-dim); text-align: center; }
+.partition-slot-landscape { width: var(--card-h);
+  height: calc(var(--card-h) / (var(--ratio-legacy))); }
+.partition-slot:not(:only-child) { display: none; }
 .partition-zone > .partition-options { margin-top: auto; padding-top: 1.15em; }
 /* The option is its card and nothing else: no box of its own, so the card's
    border is the only one drawn and the room a box took goes to the card.
