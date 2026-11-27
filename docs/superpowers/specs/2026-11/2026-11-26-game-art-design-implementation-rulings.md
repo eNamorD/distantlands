@@ -344,7 +344,9 @@ Slice/files: slice 3; `ArtCatalog.scala`, `WorldBoardRenderer.scala`.
 ## Slice 3 browser check
 
 **R34. The ground under forces, loose tokens and pawns.**
-Rewritten by R51 for pawns and warbands; it stands for loose tokens.
+Rewritten by R51 and then R61 for pawns and warbands; it stands for
+loose tokens, whose ground is now the see-through chip ground (R59) and
+whose words are Bright Cream over art (R65).
 Question: on the name band's translucent fill the black player's colour
 measured 4.17 : 1 over white art.
 Decision: forces, loose tokens and pawns on a site's art stand on opaque
@@ -420,6 +422,8 @@ Slice/files: slice 4; `WorldBoardRenderer.roundTracker`,
 `frontend/styles.css`, `DESIGN.md`.
 
 **R41. Labels on the mat.**
+Rewritten by R59: the chip's ground is the shared see-through one, and
+by R65: the player named in a line is Bright Cream over art.
 Question: the tracker's lines could not be read over the mat's art.
 Decision: over a ready mat each line is a chip on opaque Base. With art
 off the lines are unchanged.
@@ -498,6 +502,8 @@ carries identity when zoomed out.
 Slice/files: slice 5; `frontend/styles.css`.
 
 **R51. Grounds under pieces.**
+Rewritten by R61: a ground stands behind the whole piece, and by R65:
+the words on it are Bright Cream.
 Decision: no ground under a piece's picture; the black pieces keep R27's
 light edge. Over art only, a pawn's name and a warband's count stand on
 a Base chip. An offered pawn's ring goes around its piece and name.
@@ -564,8 +570,10 @@ Slice/files: slice 6; `WorldBoardRenderer.roundTracker`,
 `frontend/styles.css`.
 
 **R58. The Usurper's lock note.**
-Decision: the whole wedge of the limiter's round carries the hover note
-and the accessible name, with the token and with the drawn fallback.
+Decision: the whole wedge of the limiter's round carries the hover
+note, with the token and with the drawn fallback. It carries no name of
+its own (R67): the tracker's name and its line of words state the lock
+for assistive technology.
 Slice/files: slice 6; `WorldBoardRenderer.roundTracker`.
 
 **R59. The chips' ground.**
@@ -583,6 +591,13 @@ Decision: the shared ground goes wherever the text still reads over the
 busiest art it can sit on, judged in the browser at 100% and at desktop
 Fit, at alpha 0.65. A chip that does not read keeps opaque Base and is listed. Chips
 with art off stay as they are unless the same token already drives them.
+Result: every chip went see-through and none kept opaque Base: a bank's
+count (in both modes, since one rule draws its disc), a pile's count on
+its back and on an empty pile, the tracker's two lines, loose tokens on
+a site, a banner's resources, a pawn's ground and a warband entry's.
+What did not read was not a ground but a colour: a player's colour on
+the ground over bright art. R65 answers that with Bright Cream words,
+which measure 5.2 : 1 on the ground over white art.
 Slice/files: slice 6; `frontend/styles.css`.
 
 **R61. A ground behind the whole piece.**
@@ -612,3 +627,32 @@ Decision: twice as thick, the cream line and the dark line under it,
 art on and off alike, still scaled with the map.
 Slice/files: slice 6; `frontend/styles.css`.
 
+## Slice 6 review
+
+**R65. Words on a see-through chip.**
+Question: on the 65% ground over bright art a player's colour fails
+4.5 : 1 (black 2.6 : 1 and brown 3.1 : 1 on Salt Flats; black 3.15 to
+3.44 : 1 in the tracker's line over the mat).
+Decision: over art, words on a see-through chip are Bright Cream,
+whatever player they name: pawn names, warband counts and the player in
+the tracker's chips. The piece's picture carries the player's colour,
+and a name is its own identification. With art off those words keep the
+player's colour on their existing grounds.
+Reason: measured contrast; Bright Cream is 5.2 : 1 on the ground over
+white art.
+Slice/files: slice 6 review; `frontend/styles.css`.
+
+**R66. The black pieces on a chip ground.**
+Decision: R27's light edge is strengthened for the black pawn and the
+black warband where they stand on a chip ground, until the silhouette
+reads at 100% and at desktop Fit, judged in the browser. Other colours
+are unchanged. As built: a doubled Bright Cream edge, 1px and 2px.
+Slice/files: slice 6 review; `frontend/styles.css`.
+
+**R67. The limiter wedge's name.**
+Question: the wedge's `aria-label` sat on a group with no role inside
+the wheel's picture and was never announced.
+Decision: removed. The hover note stays on the wedge; the tracker's
+label and its line carry the lock for assistive technology. R58's
+clause on the accessible name is rewritten.
+Slice/files: slice 6 review; `WorldBoardRenderer.roundTracker`.

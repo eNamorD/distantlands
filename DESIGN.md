@@ -1083,13 +1083,18 @@ hover note.
 - **What stays over art.** Tokens, warbands, pawns, counts, option rings
   and badges. Each stands on a chip: Base, see-through, 65% opaque, from
   one setting (`--chip-ground-alpha`, `--chip-ground`), a fill and a
-  same-colour shadow with no padding, and its words carry a Base edge
-  (`--chip-text-edge`) so they read on what shows through (R59, R60).
+  same-colour shadow with no padding. Over art its words are Bright
+  Cream, whatever player they name, with a Base edge
+  (`--chip-text-edge`): 5.2 : 1 on the ground over white art, where the
+  black player's colour measured 2.6 : 1 (R59, R60, R65). The piece's
+  picture carries the player's colour; with art off the words keep it.
   The chips are a bank's count, a pile's count, the tracker's lines,
   loose tokens on a site, a banner's resources, and the pieces: a pawn
   has one ground behind its piece and its name together, a layer inside
-  the pawn so an offered pawn has it too, inside its ring; a warband
-  entry has one behind its pieces and its count (R61).
+  the pawn so an offered pawn has it too, inside its ring, while a
+  selected pawn shows its own fill instead; a warband entry has one
+  behind its pieces and its count (R61). On these grounds the black
+  pieces carry a doubled Bright Cream edge (R66).
 - **Site powers.** A site's power buttons are controls, not print. Each
   stands on the part of the shield the site's card prints its power in;
   over the art its label and its drawn outline hide with the print and
@@ -1123,7 +1128,8 @@ hover note.
   fills the limiter's wedge, its point to the hub, in a box 54 by 55 of
   the wheel's 200 units; drawn, it is the wedge's own shape in the
   limiter's red with a small diamond in its rim. The lock's words are
-  the hover note and the name of the whole wedge (R58).
+  the hover note of the whole wedge (R58); the tracker's name and its
+  line state the lock for assistive technology (R67).
 - **An offered site or bank.** A site's ring runs along its card's edge,
   frame line included; a favor bank's ring is drawn over its favor.
 - **The Oath goal.** In the shared bank the Oath goal is its card, the

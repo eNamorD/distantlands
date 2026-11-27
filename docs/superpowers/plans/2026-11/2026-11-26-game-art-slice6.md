@@ -38,7 +38,7 @@ a drawn banner's name stands at the face's foot, under the chip.
   at 4.5 : 1 or better; the limiter's diamond stands in the wedge's rim,
   82 from the hub, clear of the number.
 - [x] `RoundSegment` keeps the wedge's centre and gains its rim point;
-  the label and the disc use the centre, the diamond the rim, at 14px.
+  the label and the disc use the centre, the diamond the rim, at 12px.
 - [x] Commit: `fix(frontend): centre the round marker in its wedge`.
 
 ### Task 2: The Usurper's note over the whole wedge (R58)
