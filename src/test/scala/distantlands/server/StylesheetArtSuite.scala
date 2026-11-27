@@ -311,6 +311,20 @@ class StylesheetArtSuite extends munit.FunSuite:
     assert(rule(".mat-board .site-name").contains(
       "padding-left: calc(var(--shield-reach, 0%) + 6px)"))
 
+  /** The review's finding: the requirement's footer spanned the face's
+    * width over the name band, came after the shield in the markup and
+    * covered the top third of every power button on a site with a
+    * requirement. The footer has no action: it takes no pointer, stands
+    * at the face's right at its own width, and ends short of the shield. */
+  test("the requirement's footer does not cover the power shield"):
+    val footer = rule(".mat-board .site-footer")
+    Vector("pointer-events: none",
+      "right: calc(100% - var(--face-left) - var(--face-w) + 8px)",
+      "max-width: calc(var(--face-w) - var(--shield-reach, 0%) - 16px)")
+      .foreach(part => assert(footer.contains(part), part))
+    assert(!footer.contains("left:"), footer)
+    assert(!"""(?<![-\w])width\s*:""".r.findFirstIn(footer).nonEmpty, footer)
+
   /** Over the mat an empty slot's dashed line was lost (R44). */
   test("an empty card slot shows on the mat, and an offered one keeps " +
       "its ring"):

@@ -537,9 +537,13 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .mat-board .site-power:is(:hover, :focus-visible) {
   outline: var(--option-ring) solid var(--cream-focus);
   outline-offset: calc(var(--option-ring) * -1); }
+/* The requirement's corner: at the face's right, over the name band, at
+   its own width and short of the power shield. It has no action and takes
+   no pointer, so it never covers a power's button. */
 .mat-board .site-footer { position: absolute; bottom: var(--name-band);
-  margin: 0; left: calc(var(--face-left) + 8px);
-  width: calc(var(--face-w) - 16px); justify-content: flex-end; }
+  margin: 0; right: calc(100% - var(--face-left) - var(--face-w) + 8px);
+  max-width: calc(var(--face-w) - var(--shield-reach, 0%) - 16px);
+  pointer-events: none; }
 /* A decision's cost badge sits at the face's foot, over the name's tail,
    the one thing on the face it may cover. */
 .mat-board .site > .target-detail-badge { position: absolute; bottom: 2px;
