@@ -286,10 +286,23 @@ class StylesheetArtSuite extends munit.FunSuite:
       "white-space: nowrap").foreach(part => assert(name.contains(part), part))
     assert(rule(".mat-board .site-warbands").contains("container-type: size"))
     assert(rule(".mat-board .site-force").contains("font-size: 55cqh"))
-    // Up to five pictures stand side by side in the row (R63): five of
-    // the row's height and four gaps are 5.12 of it, and the row is six
-    // wide.
+    // Up to five pictures stand side by side in the row (R63): each is
+    // as tall as the row (100cqh) and a gap is 3cqh, so five and their
+    // four gaps must be no wider than the row MatLayout places.
     assert(rule(".mat-board .site-force").contains("gap: 3cqh"))
+    val layout = Files.readString(Path.of("frontend", "src", "main", "scala",
+      "distantlands", "frontend", "MatLayout.scala"))
+    val row = ("""def siteWarbandRow[^=]*=\s*inFrame\(column, row, """ +
+      """[0-9.]+, [0-9.]+, ([0-9.]+), ([0-9.]+)\)""").r
+      .findFirstMatchIn(layout).getOrElse(fail("no warband row"))
+    val frame = """private val FrameW = ([0-9.]+)""".r.findFirstMatchIn(layout)
+      .getOrElse(fail("no frame width")).group(1).toDouble
+    val height = """val CardH = ([0-9.]+)""".r.findFirstMatchIn(layout)
+      .getOrElse(fail("no card height")).group(1).toDouble
+    val rowWidth = frame * row.group(1).toDouble
+    val rowHeight = height * row.group(2).toDouble
+    assert(5 * rowHeight + 4 * 0.03 * rowHeight <= rowWidth,
+      s"five warbands need ${5.12 * rowHeight} of $rowWidth")
     assert(!rule(".mat-board .site-force").contains("wrap"))
     val warband = rule(".mat-board .site-force > .token-warband")
     Vector("width: 100cqh", "height: 100cqh")
