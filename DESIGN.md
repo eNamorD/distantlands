@@ -555,10 +555,11 @@ Chronicle Details button, in one row.
 
 The Players pane is a horizontal strip of player boards, each `flex: 1 0
 auto` from a 300px floor, divided by 1px Line-mid right borders. A board is a two-column grid:
-identity, resources, the title or Vision row and any banner on the left
+identity, resources, the title row and any banner on the left
 (8.5–17rem, taking what the board can spare so a banner stays one line), the
 card row on the right (7.5rem at least, as wide as its cards), spanning
-the rows. The tallest
+the rows. A revealed Vision leads the card row as a card, turned as a Vision
+in a row turns. The tallest
 board is a banner holder's four-line left column, about 134px, which the
 strip row's 188px floor holds; a card at 0.86em is shorter. A board grows
 to hold every card it has, so nothing inside it scrolls: the strip is the
@@ -625,7 +626,7 @@ surfaces round more: status and panel boxes at 12px, sites, regions, zones and
 player boards at 9px, options and cards at 8px, controls at 6px or 7px, the
 tightest controls at 4px. Cards use `0.35em` and dice `0.25em` so their
 corners scale with their font-size handle. Countable things are pills: site
-card counts, target-detail badges, the player title, the vision slot, and
+card counts, target-detail badges, the player title, and
 the plan-side badge at `1em`. The color swatch and the knowable pip are
 full circles.
 
@@ -732,7 +733,14 @@ controls are 30px.
   marker: at Deep Woods", or "beside the map" before the holder's first
   Rest and after a ribbon removes it (a Challenge, a Raid or the
   Conspiracy).
-- **Vision slot**: pill, `currentColor` border, 0.85em, no fill.
+- **Vision spot**: drawn only while a decision lights it. An empty card
+  slot of the denizen box, dashed, at the head of the card row, in
+  Parchment Dim: the Visions Drawn marker's eye at 60% of the box's width,
+  over "Vision" in 700 capitals at 0.85em tracked 0.06em. Without the
+  marker's image, an eye of our own drawing stands in, stroked in the
+  text's colour. While the spot is lit, a Vision in the hand points at it:
+  hovering the card lights the spot, a click brings the spot into view and
+  lights it for 1.5s, and an inspect button beside the card reads it.
 - **Plan side**: 1em pill, `0 0.6em` padding, 0.75em; Discord fill for attack,
   Order fill for defense, a Discord-to-Order gradient for both; white text.
 - **Option cost**: the plan-side pill's shape on a choice, read as a target
