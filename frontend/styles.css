@@ -2451,6 +2451,11 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 .token-warband > .art[href$="warband-black.png"],
 .pawn-piece > .art[src$="pawn-black.png"] {
   filter: drop-shadow(0 0 1px var(--cream)); }
+/* On a site the black pieces stand on the chips' dark ground: a brighter,
+   doubled edge, so the silhouette reads (R66). */
+.site.art-ready .site-force .art[href$="warband-black.png"],
+.site.art-ready .pawn-piece > .art[src$="pawn-black.png"] {
+  filter: drop-shadow(0 0 1px var(--cream-bright)) drop-shadow(0 0 2px var(--cream-bright)); }
 /* The Visions Drawn marker, the Usurper's mark on the wheel and the whole
    festival marker in the overlay: each hides what it draws itself when
    its picture has loaded. */

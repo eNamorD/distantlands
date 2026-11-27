@@ -218,7 +218,7 @@ class StylesheetArtSuite extends munit.FunSuite:
         part => assert(!ground.contains(part), part)))
     // No art rule paints the pawn itself, its row or the warbands' row.
     Vector(".site.art-ready .site-pawns", ".site.art-ready .pawn {",
-      ".site.art-ready .pawn:not(", ".site.art-ready .pawn-piece",
+      ".site.art-ready .pawn:not(", ".site.art-ready .pawn-piece {",
       ".site.art-ready .site-warbands").foreach(gone =>
       assert(!css.contains(gone), gone))
     // The tracker's lines are chips on Base over the mat (R41): the
@@ -254,6 +254,15 @@ class StylesheetArtSuite extends munit.FunSuite:
     val edge = rule(""".token-warband > .art[href$="warband-black.png"],""" +
       "\n" + """.pawn-piece > .art[src$="pawn-black.png"]""")
     assert(edge.contains("filter: drop-shadow(0 0 1px var(--cream))"))
+    // On a site the black pieces stand on the chips' dark ground, where
+    // one pixel of Cream was not enough to make out the silhouette (R66):
+    // a brighter, doubled edge there. Other colours are left alone.
+    val onGround = rule(
+      """.site.art-ready .site-force .art[href$="warband-black.png"],""" +
+      "\n" + """.site.art-ready .pawn-piece > .art[src$="pawn-black.png"]""")
+    assert(onGround.contains("filter: drop-shadow(0 0 1px var(--cream-bright)) " +
+      "drop-shadow(0 0 2px var(--cream-bright))"))
+    assertEquals(css.split("black.png", -1).length - 1, 4)
 
   /** The pieces on a site are a share of the site at every zoom (R48 to
     * R52): each row is a container of its own size, and every length in
