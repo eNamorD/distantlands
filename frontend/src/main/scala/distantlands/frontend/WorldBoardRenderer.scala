@@ -588,7 +588,7 @@ private[frontend] object WorldBoardRenderer:
         val disc = svgElement("circle")
         disc.setAttribute("cx", segment.centreX.toString)
         disc.setAttribute("cy", segment.centreY.toString)
-        disc.setAttribute("r", "10")
+        disc.setAttribute("r", "16")
         disc.setAttribute("class", "round-marker")
         group.appendChild(disc)
       group.appendChild(label)

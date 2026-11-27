@@ -36,7 +36,10 @@ class RoundWheelSuite extends munit.FunSuite:
     // 68.5 out.
     assertEqualsDouble(disc.getAttribute("cx").toDouble, 163.286, 0.001)
     assertEqualsDouble(disc.getAttribute("cy").toDouble, 126.214, 0.001)
-    assertEquals(disc.getAttribute("r"), "10")
+    // As large as the wedge allows (R57, rewritten): 16 of the wedge's
+    // 19.5 either side of its centre, so it stays inside the wedge and
+    // its number reads at desktop Fit.
+    assertEquals(disc.getAttribute("r"), "16")
     assertEquals(Option(disc.closest(".printed")), None)
     assertEquals(all(wheel, ".round-marker").size, 1)
 

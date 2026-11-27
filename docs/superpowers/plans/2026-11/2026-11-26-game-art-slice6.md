@@ -48,7 +48,8 @@ hold; a commit follows a green check with `&&`.
 ### Task 3: One see-through ground for the chips over art (R59, R60)
 
 - [ ] Tests first (`StylesheetArtSuite`): `--chip-ground-alpha` is
-  written once, 0.35; `--chip-ground` is Base at that alpha; each chip
+  written once, 0.65 (the owner rewrote R59 after this plan was written;
+  R57 too: the disc is larger, radius 16); `--chip-ground` is Base at that alpha; each chip
   over art uses `var(--chip-ground)` for its fill and its halo; the
   figures on a chip carry a Base text edge.
 - [ ] Apply to the bank count, pile counts, the tracker's lines, loose

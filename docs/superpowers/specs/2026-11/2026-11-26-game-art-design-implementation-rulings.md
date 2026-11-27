@@ -552,12 +552,14 @@ Slice/files: slice 5 review; `frontend/styles.css`.
 ## Slice 6: the owner's second review
 
 **R57. The round marker's place.**
-Decision: the silver disc stands at the centre of the current wedge,
-radially and by angle. The round's number moves where it stays readable
-and clear of what else the wedge holds, at 4.5 : 1 or better, and the
-limiter's diamond stays clear of the number. As built: every number
-stands at the wedge's centre, the current round's in Base on the disc,
-and the diamond in the wedge's rim.
+Decision (rewritten by the owner): the silver disc is centred in the
+highlighted wedge and made larger, and the round's number stands in the
+centre of the disc, dark on silver at 4.5 : 1 or better. The disc is
+sized so the number reads at desktop Fit while the disc stays inside the
+wedge. On the other wedges the numbers stay where they read, and the
+limiter's diamond stays clear of round 4's number. As built: the disc's
+radius is 16 of the wheel's 200 units, every number stands at its
+wedge's centre, and the diamond stands in the wedge's rim.
 Slice/files: slice 6; `WorldBoardRenderer.roundTracker`,
 `frontend/styles.css`.
 
@@ -569,17 +571,17 @@ Slice/files: slice 6; `WorldBoardRenderer.roundTracker`.
 **R59. The chips' ground.**
 Question: the owner asked for the bank counts' dark disc to be more
 see-through: "let's try 65% transparency".
-Decision: read literally, the ground's alpha is 0.35. It is one custom
-property, `--chip-ground-alpha`, which every chip ground over art uses.
-A figure may take a dark text edge to stay readable. Since the words
-could also mean 65% opaque, the owner gets a comparison at 0.35 and
+Decision (rewritten by the owner): the owner meant 65% opaque, so the
+ground's alpha is 0.65. It is one custom property, `--chip-ground-alpha`,
+which every chip ground over art uses. A figure may take a dark text
+edge to stay readable. The owner still gets a comparison at 0.35 and
 0.65.
 Slice/files: slice 6; `frontend/styles.css`.
 
 **R60. The same ground on the other chips.**
 Decision: the shared ground goes wherever the text still reads over the
 busiest art it can sit on, judged in the browser at 100% and at desktop
-Fit. A chip that does not read keeps opaque Base and is listed. Chips
+Fit, at alpha 0.65. A chip that does not read keeps opaque Base and is listed. Chips
 with art off stay as they are unless the same token already drives them.
 Slice/files: slice 6; `frontend/styles.css`.
 
