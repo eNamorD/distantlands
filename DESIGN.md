@@ -625,7 +625,7 @@ surfaces round more: status and panel boxes at 12px, sites, regions, zones and
 player boards at 9px, options and cards at 8px, controls at 6px or 7px, the
 tightest controls at 4px. Cards use `0.35em` and dice `0.25em` so their
 corners scale with their font-size handle. Countable things are pills: site
-card counts, target-detail badges, the player title, the vision slot, and
+card counts, target-detail badges, the player title, and
 the plan-side badge at `1em`. The color swatch and the knowable pip are
 full circles.
 
@@ -732,7 +732,16 @@ controls are 30px.
   marker: at Deep Woods", or "beside the map" before the holder's first
   Rest and after a ribbon removes it (a Challenge, a Raid or the
   Conspiracy).
-- **Vision slot**: pill, `currentColor` border, 0.85em, no fill.
+- **Vision tile**: two lines tall in the title row, 8px corners, a 1px
+  Line-mid border, no fill. The Visions Drawn marker's eye (1.5em by 2.2em)
+  leads it, then the card's name in Parchment at 0.9em 600. The empty slot,
+  drawn only while a decision lights it, is dashed in Parchment Dim, with
+  "Vision Slot" in Ink Dim capitals at 0.72em 700 tracked 0.08em over
+  "Place your Vision" ("Place Vision" on another player's board). Without
+  the marker's image, an eye of our own drawing stands in. While the slot
+  is lit, a Vision in the hand points at it: hovering the card lights the
+  slot, a click brings the slot into view and lights it for 1.5s, and an
+  inspect button beside the card reads it.
 - **Plan side**: 1em pill, `0 0.6em` padding, 0.75em; Discord fill for attack,
   Order fill for defense, a Discord-to-Order gradient for both; white text.
 - **Option cost**: the plan-side pill's shape on a choice, read as a target
