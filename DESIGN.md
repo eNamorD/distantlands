@@ -431,7 +431,7 @@ cards and the page title. It is never used for controls, labels or body text.
 the panes this is a floor on the text, not the box: a card name is
 `max(0.95em, 0.7rem)`, so a card scaled down by its pane's font size keeps
 its box in `ex` and its text readable. The smallest steps in use are `.84em` for a partition option and
-`.85em` for its end labels, both chosen to clear the floor at the pane's
+`.85em` for its end captions, both chosen to clear the floor at the pane's
 0.9rem.
 
 **The Glance Layer Rule.** The map is a fixed 2400px board scaled by the
@@ -699,11 +699,14 @@ controls are 30px.
   capped zone beside one that takes the rest) opens with every card in the
   zone that takes the rest, so nothing is picked for the player; an empty
   zone that needs a card holds a dashed card-sized blank reading "Drag a
-  card here". A zone whose order counts names its two ends under the row,
+  card here". A zone whose order counts captions its first and last cards,
   Ink Dim uppercase 700 at 0.85em: "Bottom" and "Top" on a pile (the last
   card lands on top), "First" and "Last" on kept cards played in order.
-  The sentence they stand for is the row's accessible name. A zone beside
-  them keeps that line empty, so the cards share a floor. Forge's payment
+  The captions sit on the cards, so they stay true when the row wraps, and
+  every card in the row keeps the caption line so wrapped cards share a
+  floor. An italic Ink Dim sentence under the row says the same in words
+  ("The last one lands on top of the pile."). A zone beside them keeps the
+  caption line empty, so the cards share a floor. Forge's payment
   partition keeps its minimum lines and opens filled.
 
 ### Chips and Pills

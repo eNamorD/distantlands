@@ -127,9 +127,16 @@ class PartitionPanelRenderSuite extends munit.FunSuite:
   private def keepOneDraft(): Option[WalkerPartitionDraft] =
     openedKeepOneDraft().map(_.move(optionKey(1), "keep"))
 
-  /** The words under a zone's ends, left then right, when it has them. */
+  /** The captions the stylesheet draws under a row's first and last cards,
+    * when the zone's order counts. */
   private def endLabels(zone: dom.Element): Vector[String] =
-    all(zone, ".partition-ends > span").map(_.textContent)
+    val row = one(zone, ".partition-options")
+    Vector("data-first", "data-last").flatMap(name =>
+      Option(row.getAttribute(name)))
+
+  /** The sentence under a row that says what its order means. */
+  private def orderSentences(zone: dom.Element): Vector[String] =
+    all(zone, ".decision-zone-order").map(_.textContent)
 
   private def pickPanel(ui: RecordingControls,
       draft: Option[WalkerPartitionDraft]): dom.Element =
@@ -140,18 +147,17 @@ class PartitionPanelRenderSuite extends munit.FunSuite:
   private def pickPanel(draft: Option[WalkerPartitionDraft]): dom.Element =
     pickPanel(controls(), draft)
 
-  /** The pile's order is told by its ends, under the row: the first card
-    * goes down first, so the last one is the top. The sentence stays as
-    * the row's accessible name. */
+  /** The pile's order is told on its end cards, so it stays true however
+    * the row wraps: the first card goes down first, so the last one is the
+    * top. The sentence under the row says it in words. */
   test("a leftover zone holding several options labels its bottom and top"):
     val zone = one(pickPanel(keepOneDraft()),
       """[data-section-key="discard"]""")
     assertEquals(endLabels(zone), Vector("Bottom", "Top"))
-    assertEquals(one(zone, ".partition-ends").getAttribute("aria-label"),
-      "The last one lands on top of the pile.")
+    assertEquals(orderSentences(zone),
+      Vector("The last one lands on top of the pile."))
     assertEquals(one(zone, ".partition-options").nextElementSibling,
-      one(zone, ".partition-ends"))
-    assertEquals(all(zone, ".decision-zone-order"), Vector.empty)
+      one(zone, ".decision-zone-order"))
 
   /** Nothing is picked for the player: a pick opens with every card in the
     * zone that takes the rest, and Confirm waits for one to be dragged in.
@@ -244,10 +250,10 @@ class PartitionPanelRenderSuite extends munit.FunSuite:
       """[data-section-key="keep"]""")
     val keepingTwo = keepZone(keepUpToTwoDraft())
     assertEquals(endLabels(keepingTwo), Vector("First", "Last"))
-    assertEquals(one(keepingTwo, ".partition-ends").getAttribute("aria-label"),
-      "They are played in this order.")
+    assertEquals(orderSentences(keepingTwo),
+      Vector("They are played in this order."))
     val keepingOne = keepUpToTwoDraft().map(_.move(optionKey(2), "discard"))
-    assertEquals(endLabels(keepZone(keepingOne)), Vector.empty)
+    assertEquals(orderSentences(keepZone(keepingOne)), Vector.empty)
 
   test("a drop on a full keep zone is refused; with room it lands"):
     val ui = controls()
@@ -270,8 +276,9 @@ class PartitionPanelRenderSuite extends munit.FunSuite:
       Vector("Denizen 1", "Denizen 3"))
 
   test("the capped zone says nothing about order"):
-    assertEquals(all(one(pickPanel(keepOneDraft()),
-      """[data-section-key="keep"]"""), ".partition-ends"), Vector.empty)
+    val zone = one(pickPanel(keepOneDraft()), """[data-section-key="keep"]""")
+    assertEquals(endLabels(zone), Vector.empty)
+    assertEquals(orderSentences(zone), Vector.empty)
 
   /** One card cannot be in an order, so the sentence would be noise. A pick
     * of two leaves exactly one card behind, whichever one is kept.
@@ -282,15 +289,17 @@ class PartitionPanelRenderSuite extends munit.FunSuite:
       query = Some(twoCards))
     val draft = WalkerPartitionDraft.reconcile(None, ForgeFixture.context,
       Some(decision)).map(_.move(optionKey(1), "keep"))
-    assertEquals(all(render(controls(), draft,
-      decision = decision), ".partition-ends"), Vector.empty)
+    assertEquals(orderSentences(one(render(controls(), draft,
+      decision = decision), """[data-section-key="discard"]""")),
+      Vector.empty)
 
   /** Forge pays into zones that each carry a minimum, so none of them is a
     * leftover zone and none claims an order.
     */
   test("a partition of payments claims no order anywhere"):
-    assertEquals(all(render(controls(), forgeDraft()), ".partition-ends"),
-      Vector.empty)
+    val panel = render(controls(), forgeDraft())
+    assertEquals(all(panel, ".partition-options[data-first]"), Vector.empty)
+    assertEquals(all(panel, ".decision-zone-order"), Vector.empty)
 
   test("the confirm button names the card the one-card zone holds"):
     assertEquals(confirm(pickPanel(keepOneDraft())).textContent,

@@ -491,29 +491,31 @@ private[frontend] object WalkerPanelSupport:
         "partition-slot partition-slot-landscape" else "partition-slot",
         "Drag a card here"))
     zone.appendChild(options)
-    // The order, told by the row's two ends under it rather than by a
-    // control on each card. The engine stacks the leftovers in this order,
-    // so the last one is the pile's top and the next Search's first draw;
-    // on the keep-some shape the kept cards are played in this order.
+    // The order, told on the row's first and last cards rather than by a
+    // control on each card, so it stays true however the row wraps. The
+    // engine stacks the leftovers in this order, so the last one is the
+    // pile's top and the next Search's first draw; on the keep-some shape
+    // the kept cards are played in this order. The captions follow the
+    // zone's shape, not its count: the stylesheet draws them on the live
+    // end cards, so a drag that brings a second card in shows them at once.
     val playedInOrder = keepSome(query).exists(_._1.key == section.key)
-    if ordered(section, held.size) then
-      zone.appendChild(partitionEnds("Bottom", "Top",
-        "The last one lands on top of the pile."))
-    else if playedInOrder && held.size > 1 then
-      zone.appendChild(partitionEnds("First", "Last",
-        "They are played in this order."))
+    val ends =
+      if ordered(section, 2) then
+        Some(("Bottom", "Top", "The last one lands on top of the pile."))
+      else if playedInOrder then
+        Some(("First", "Last", "They are played in this order."))
+      else None
+    ends.foreach { (first, last, meaning) =>
+      options.setAttribute("data-first", first)
+      options.setAttribute("data-last", last)
+      // A card's caption reads these: attr() would read the card's own.
+      val style = options.asInstanceOf[dom.html.Element].style
+      style.setProperty("--first-caption", s"\"$first\"")
+      style.setProperty("--last-caption", s"\"$last\"")
+      if held.size > 1 then
+        zone.appendChild(text("p", "decision-zone-order", meaning))
+    }
     zone
-
-  /** The words under a row's left and right ends, named for a reader by
-    * the sentence they stand for. */
-  private def partitionEnds(left: String, right: String, meaning: String)
-      : dom.Element =
-    val ends = element("div", "partition-ends")
-    ends.setAttribute("role", "note")
-    ends.setAttribute("aria-label", meaning)
-    ends.appendChild(text("span", "", left))
-    ends.appendChild(text("span", "", right))
-    ends
 
   private def partitionOption(option: DecisionOptionState): dom.Element =
     val item = WalkerPartitionDraft.itemId(option)

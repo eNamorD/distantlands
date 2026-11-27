@@ -1208,18 +1208,28 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
 .partition-zone { display: flex; flex-direction: column; padding-top: 7px; }
 .partition-zone > h3 { margin: 0; }
 .partition-zone > .decision-zone-helper { margin: 0.1em 0 0; }
-/* A row whose order is part of the answer names its two ends under it,
-   Bottom and Top or First and Last, instead of a control on each card.
-   A zone without them keeps the same line empty while a zone beside it has
-   them, so the cards in both still share a floor. */
-.partition-zone > .partition-ends, .partition-zones:has(.partition-ends)
-    > .partition-zone:not(:has(.partition-ends))::after {
-  display: flex; justify-content: space-between; gap: 1em; height: 1.4em;
-  margin-top: 0.3em; font-size: 0.85em; line-height: 1.4; }
-.partition-zones:has(.partition-ends)
-    > .partition-zone:not(:has(.partition-ends))::after { content: ""; }
-.partition-ends { color: var(--ink-dim); font-weight: 700;
+/* A row whose order is part of the answer captions its first and last
+   cards, Bottom and Top or First and Last, instead of a control on each
+   card. The captions sit on the cards, so they stay true when the row
+   wraps, and follow a dragged card as the row reorders. Every card in such
+   a row keeps the caption line, so a wrapped line still shares a floor; a
+   lone card has no order and its line stays empty. A zone without them
+   keeps the same line empty while a zone beside it has them, so the cards
+   in both still share a floor. */
+.partition-options[data-first] > .decision-option::after,
+.partition-zones:has(.partition-options[data-first])
+    > .partition-zone:not(:has(.partition-options[data-first]))::after {
+  content: ""; height: 1.4em; margin-top: 0.3em; font-size: 0.85em;
+  line-height: 1.4; color: var(--ink-dim); font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase; }
+.partition-options[data-first]
+    > .decision-option:first-of-type:not(:only-of-type)::after {
+  content: var(--first-caption); }
+.partition-options[data-first]
+    > .decision-option:last-of-type:not(:only-of-type)::after {
+  content: var(--last-caption); }
+.partition-zone > .decision-zone-order { margin: 0.35em 0 0;
+  color: var(--ink-dim); font-size: 0.85em; font-style: italic; }
 /* An empty zone that must take a card holds a dashed card-sized blank:
    dashed is "not real yet". A dragged card's preview takes its place. */
 .partition-slot { display: flex; align-items: center; justify-content: center;
