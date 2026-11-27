@@ -263,6 +263,15 @@ class ProcedureNoteLinesSuite extends munit.FunSuite:
       Vector[LogSpan](Text("Gained "), Text("2"),
         Text(" favor, to the Nomad bank.")))
 
+  test("a Trade cut short by its bank names the bank and what it had"):
+    assertEquals(said(ActionRef.Trade, TradeProcedure.tradedForFavorBankShort,
+      NoteArg.Card(roar), NoteArg.Number(3), NoteArg.SuitName(Suit.Order),
+      NoteArg.Number(1)),
+      "Traded with a Denizen for 3 favor; but Order bank only had 1")
+    assertEquals(said(ActionRef.Trade, TradeProcedure.tradedForFavorBankEmpty,
+      NoteArg.Card(roar), NoteArg.Number(3), NoteArg.SuitName(Suit.Order)),
+      "Traded with a Denizen for 3 favor; but Order bank had none")
+
   test("a Trade for one secret says secret"):
     assertEquals(said(ActionRef.Trade, TradeProcedure.tradedForSecrets,
       NoteArg.Card(roar), NoteArg.Number(1)),
