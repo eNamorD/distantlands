@@ -564,7 +564,12 @@ private[frontend] object WorldBoardRenderer:
         val marker = svgElement("path")
         marker.setAttribute("d", segment.path)
         marker.setAttribute("class", "limiter-marker")
-        lock.foreach(words => HoverTip.set(marker, words))
+        // The lock's words are the whole wedge's (R58): its note shows
+        // wherever the pointer is over the round, token or drawn.
+        lock.foreach { words =>
+          HoverTip.set(group, words)
+          group.setAttribute("aria-label", s"Round $round: $words")
+        }
         group.appendChild(marker)
         val diamond = svgElement("text")
         diamond.setAttribute("x", segment.rimX.toString)

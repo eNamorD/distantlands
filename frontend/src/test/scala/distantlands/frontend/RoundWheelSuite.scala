@@ -81,14 +81,32 @@ class RoundWheelSuite extends munit.FunSuite:
     assert(order.indexOf("round-current") < order.indexOf("round-marker"),
       order)
 
+  /** The owner's second review (R58): the lock's words show over the
+    * whole of the limiter's wedge, so the wedge's group carries them, as
+    * its hover note and its name, and nothing inside it has a note of its
+    * own to show in their place. */
+  private def assertLockIsOnTheWholeWedge(wheel: dom.Element)(
+      using munit.Location): Unit =
+    val wedge = round(wheel, 4)
+    assertEquals(wedge.getAttribute(HoverTip.Attribute),
+      "Usurper locked until round 4")
+    assertEquals(wedge.getAttribute("aria-label"),
+      "Round 4: Usurper locked until round 4")
+    assertEquals(all(wedge, s"[${HoverTip.Attribute}]"), Vector.empty)
+    assertEquals(all(wheel, s"g[${HoverTip.Attribute}]").size, 1)
+
+  test("with the token's picture the limiter's whole wedge carries the " +
+      "lock's words too"):
+    TestArt.listingWholeCatalog()
+    assertLockIsOnTheWholeWedge(wheelAt(round = 1, limiter = 4))
+
   test("with art off the limiter's wedge is drawn as a wedge with its " +
       "diamond, and carries the lock's words"):
     val wheel = wheelAt(round = 1, limiter = 4)
     val mark = one(round(wheel, 4), "path.limiter-marker")
     assertEquals(mark.getAttribute("d"),
       WorldBoardRenderer.roundSegment(4).path)
-    assertEquals(mark.getAttribute(HoverTip.Attribute),
-      "Usurper locked until round 4")
+    assertLockIsOnTheWholeWedge(wheel)
     assertEquals(one(round(wheel, 4), "text.limiter-diamond").textContent,
       "◆")
     assertEquals(all(wheel, ".limiter-marker").size, 1)
