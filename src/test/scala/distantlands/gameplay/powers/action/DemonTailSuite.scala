@@ -13,19 +13,19 @@ class DemonTailSuite extends munit.FunSuite:
   private val tail = DemonTailCard.id
   private val source = DecisionOptionRef.Relic(tail)
 
-  /** p1's Act holding Demon Tail, with `supply` Supply and `faceUp` faceup
-    * secrets. */
-  private def staged(supply: Int = 2, faceUp: Int = 3): ReadyGame =
+  /** p1's Act holding Demon Tail, with `supply` Supply and `favor`
+    * favor. */
+  private def staged(supply: Int = 2, favor: Int = 3): ReadyGame =
     Table.start.turn(actor, Phase.Act).relic(actor, tail)
-      .supply(actor, supply).secrets(actor, faceUp).ready
+      .supply(actor, supply).favor(actor, favor).ready
 
-  test("it burns three secrets and gains 2 Supply"):
-    // 2 Supply + 2 = 4; 3 faceup secrets - 3 burnt = 0.
-    val ready0 = staged(supply = 2, faceUp = 3)
+  test("it burns three favor and gains 2 Supply"):
+    // 2 Supply + 2 = 4; 3 favor - 3 burnt = 0.
+    val ready0 = staged(supply = 2, favor = 3)
     val done = accepted(use(rules(), ready0, DemonTail.id, source))
     val end = ready(done.state)
-    assertEquals(allSecrets(end), 0)
-    // Burnt secrets go to the shared bank, not onto the relic.
+    assertEquals(Look(end).favor(actor), 0)
+    // Burnt favor does not go onto the relic.
     assertEquals(Look(end).tokensOn(tail), Tokens.empty)
     assertEquals(Look(end).player(actor).board.supply, SupplyTrack(4))
     assertEquals(replayed(rules(), ready0, done.events), end)
@@ -39,11 +39,11 @@ class DemonTailSuite extends munit.FunSuite:
     assertEquals(NoteText.said(DemonTail, done.events), Vector(NoteText.Said(
       NoteKey.Used, s"${actor.value} gained 1 Supply.", covers = false)))
 
-  test("two secrets are not enough"):
-    val broke = staged(faceUp = 2)
+  test("two favor are not enough"):
+    val broke = staged(favor = 2)
     assert(!usableIds(broke).contains(DemonTail.id))
     assertEquals(use(rules(), broke, DemonTail.id, source).left.toOption,
-      Some(OathViolation.InsufficientSecrets(3, 2)))
+      Some(OathViolation.InsufficientFavor(3, 2)))
 
   test("its line reads the Supply gained"):
     val done = accepted(use(rules(), staged(), DemonTail.id, source))

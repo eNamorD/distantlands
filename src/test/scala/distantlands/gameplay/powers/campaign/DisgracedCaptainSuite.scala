@@ -8,7 +8,7 @@ import distantlands.model._
 import distantlands.testkit.Look
 
 /** Disgraced Captain: a favor placed and a favor burnt for four attack dice,
-  * added or removed, offered only while the Campaign's defender rules an
+  * an attacker's plan offered only while the Campaign's defender rules an
   * order card. */
 class DisgracedCaptainSuite extends munit.FunSuite:
   private val card = DisgracedCaptainCard.id
@@ -55,19 +55,14 @@ class DisgracedCaptainSuite extends munit.FunSuite:
     assert(commit(rules(winningDice), b, 3).offers(base.actor, base.actor,
       CampaignIds.attackerPlan, ref))
 
-  test("a defender's use reads the defender's own cards"):
+  test("a defender is not offered it"):
     val base = rivalRulesOriginAndHoldsOathkeeper(
       board(warbands = 5, supply = 7))
-    val defender = holder(base, base.rival)
-    val own = withAdviserFor(defender, base.rival, order, Orientation.FaceUp)
-    val run = commit(rules(winningDice), own, 4)
-      .pick(base.rival, CampaignIds.defenderPlan, ref)
-    assert(run.ops.contains(ModifyDicePool(CampaignIds.attackPool, -4)))
-    // The attacker's order card does not count: the plan reads the defender.
-    val enemy = withAdviserFor(defender, base.actor, order, Orientation.FaceUp)
-    val parked = commit(rules(winningDice), enemy, 4)
+    val own = withAdviserFor(holder(base, base.rival), base.rival, order,
+      Orientation.FaceUp)
+    val parked = commit(rules(winningDice), own, 4)
     assert(awaits(parked, base.rival, CampaignIds.defenderPlan))
-    assert(!parked.offered(base.actor).contains(ref))
+    assert(!parked.offered(base.rival).contains(ref))
 
   test("a bandit defender never applies it, since it costs"):
     val base = board(warbands = 5, supply = 7)

@@ -238,6 +238,7 @@ class PlayerBoardSuite extends munit.FunSuite:
     assertEquals(all(slots, ".player-title").size, 1)
     assertEquals(firstMatch(slots, ".player-slot-vision")
       .map(_.textContent), Some("Vision of Faith"))
+    assertEquals(all(slots, ".player-slot-vision .vision-eye").size, 1)
     assert(!all(node, ".board-cards .card-face")
       .map(_.getAttribute("data-card-id"))
       .contains("vision:vision-of-faith"))
@@ -266,6 +267,15 @@ class PlayerBoardSuite extends munit.FunSuite:
       .map(_.getAttribute("aria-label")),
       Some("Vision of Faith, Blue Warbands x1"))
 
+  test("a revealed Vision's tile names the card and nothing else"):
+    val faith = CardDetails("vision:vision-of-faith", "vision",
+      "Vision of Faith", orientation = Some("face-up"))
+    val node = renderWith(board.copy(revealedVisions = Vector(faith)), None)
+    assertEquals(all(node, ".player-slot-vision .vision-tile-kind"),
+      Vector.empty)
+    assertEquals(all(node, ".player-slot-vision .vision-tile-name")
+      .map(_.textContent), Vector("Vision of Faith"))
+
   test("a player with neither a title nor a Vision has no slots row"):
     assertEquals(all(render(board, supplyMaximum = 7), ".player-slots"),
       Vector.empty)
@@ -277,8 +287,8 @@ class PlayerBoardSuite extends munit.FunSuite:
   private def opensOnClick(act: dom.Element => Unit): Vector[String] =
     var opened = Vector.empty[String]
     CardInspection.onOpen:
-      case CardInspection.Request.Text(title, _, _, _) => opened = opened :+ title
-      case CardInspection.Request.Festival(title, _, _, _, _) =>
+      case CardInspection.Request.Text(title, _, _, _, _, _) => opened = opened :+ title
+      case CardInspection.Request.Festival(title, _, _, _, _, _) =>
         opened = opened :+ title
       case CardInspection.Request.FestivalMarker(_, _) =>
         opened = opened :+ FestivalMarker.Title
@@ -290,7 +300,7 @@ class PlayerBoardSuite extends munit.FunSuite:
         opened = opened :+ question
       case CardInspection.Request.Choices(question, _, _) =>
         opened = opened :+ question
-      case CardInspection.Request.Power(title, _, _, _) =>
+      case CardInspection.Request.Power(title, _, _, _, _) =>
         opened = opened :+ title
       case CardInspection.Request.RuledCard(card, _, _) =>
         opened = opened :+ card.name
@@ -312,7 +322,7 @@ class PlayerBoardSuite extends munit.FunSuite:
   test("the title pill opens with the Oathkeeper title's plate"):
     var plates = Vector.empty[Option[String]]
     CardInspection.onOpen:
-      case CardInspection.Request.Text(_, _, _, plate) => plates :+= plate
+      case CardInspection.Request.Text(_, _, _, plate, _, _) => plates :+= plate
       case _ => ()
     val node = renderWith(board, Some(OathkeeperStatus("devotion",
       Some("red"), "oathkeeper", usurperLimited = false, None)))

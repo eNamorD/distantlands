@@ -2,7 +2,7 @@ package distantlands.gameplay.powers.poweruse
 
 import distantlands.gameplay.powerresolver.{ContributingPower, PowerCtx,
   PowerUse}
-import distantlands.gameplay.powers.campaign.KeepRule
+import distantlands.gameplay.powers.campaign.Keep
 import distantlands.gameplay.powers.economy.InitiationRite
 import distantlands.gameplay.powers.travel.Tyrant
 import distantlands.gameplay.setup.FirstGameSetupFixture.catalog
@@ -26,7 +26,7 @@ class AutomaticPowerUseSuite extends munit.FunSuite:
     assert(!use.persistent && !use.costsSecret && !use.places)
 
   test("Keep is used by nobody without a Raid"):
-    assertEquals(KeepRule.use(ctxAt(KeepRule,
+    assertEquals(Keep.use(ctxAt(Keep,
       PowerWindow.CampaignRaidRelocation)), None)
 
   test("a wrapped power states no use at its window; its node does"):

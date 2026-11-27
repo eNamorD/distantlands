@@ -65,13 +65,13 @@ colors:
   die-round: "#9b59b6"
   festival-teal: "#0f8285"
   festival-rim: "#062b2c"
+  round-marker: "#cfcac0"
   player-purple: "#d9b8ff"
   player-blue: "#8ecbff"
   player-red: "#ffaaa5"
   player-yellow: "#ffe08a"
   player-white: "#ffffff"
-  player-black: "#111111"
-  player-black-pill: "#e8dcc2"
+  player-black: "#8f9db0"
   player-pink: "#ffa6d8"
   player-brown: "#d0a075"
   force-bandit: "#d7ed72"
@@ -258,6 +258,9 @@ suit, token, die and player colors of the physical board.
 These come from the physical components. They are semantic and must not be
 reused for UI meaning.
 
+- **Round Marker** (`round-marker`): the silver of the game's cylinder
+  that stands on the current round of the round wheel. Used for that
+  disc and nothing else.
 - **Favor** (`token-favor`) and **Burnt Favor** (`token-favor-burnt`): the
   gold coin and its cracked, dulled twin. Favor also colors the player title
   pill.
@@ -276,8 +279,9 @@ reused for UI meaning.
   Bright Cream on a face rolled on a known die.
 - **Players**: purple, blue, red, yellow, white, black, pink, brown
   (`player-*`), plus bandit forces (`force-bandit`). White is pure white and
-  underlined so it stays distinct from cream text. Black is ink on a
-  **Black Pill** (`player-black-pill`) so it stays readable on the dark table.
+  underlined so it stays distinct from cream text. Black is the slate of the
+  black player boards (sampled `#738292`), lifted to `#8f9db0` as blue and red
+  are lifted from theirs, so it reads on every dark surface without a pill.
 - **Imperial roles**: wherever a role is labelled (a player board's identity
   line, game creation's color-and-role phrase), "Chancellor" and "Citizen"
   read in Player Purple (`role-imperial`), the colour of the Empire's
@@ -427,7 +431,7 @@ cards and the page title. It is never used for controls, labels or body text.
 the panes this is a floor on the text, not the box: a card name is
 `max(0.95em, 0.7rem)`, so a card scaled down by its pane's font size keeps
 its box in `ex` and its text readable. The smallest steps in use are `.84em` for a partition option and
-`.85em` for its order note, both chosen to clear the floor at the pane's
+`.85em` for its end captions, both chosen to clear the floor at the pane's
 0.9rem.
 
 **The Glance Layer Rule.** The map is a fixed 2400px board scaled by the
@@ -435,41 +439,37 @@ viewport, so its text shrinks with it. Below a scale of 0.72, where the map
 card name (0.95em of 16px) falls under the floor, `.map-content` carries
 `map-compact` and `--map-scale`, and the glance layer is set against the
 scale instead: `font-size: clamp(rest, calc(<screen px> / var(--map-scale)),
-cap)` holds region and site names, pawns, tokens, defense, forces and card
+cap)` holds region and site names, tokens, defense and card
 names near one screen size while the board keeps shrinking under them, the
-way a map's place names hold still while the map zooms. The site footer
-(powers and requirement) sits inside the details and so holds the glance
-size too, clamped to one line on the compact map; a card's own study layer
+way a map's place names hold still while the map zooms. The pieces on a
+site are not part of it: pawns and warbands keep their share of the site
+at every scale (Sites). The site footer
+(the requirement) sits inside the details and so holds the glance
+size too; a card's own study layer
 (defense and badge) is hidden there and read on a zoom or in the overlay;
 the restriction banner stays, in the card's top-right corner, and the power
 marks are hidden. Text on the map may fall under 11px; the Eleven-Pixel Floor is
 a pane rule. On the map the glance layer's text holds about 9px or more on
 screen at every supported Fit; a few small marks do not (on a phone at Fit
-the wheel's limiter mark, a card's inspect button, a selected card's badge,
-and a site's pawns from three on, whose dots shrink to fit the face:
-implementation ruling R10). The board has the mat's fixed ratio; the table's edge
+the wheel's limiter mark, a card's inspect button, a selected card's badge:
+implementation ruling R10; and a site's pieces, which shrink with their
+site by the owner's request, game art ruling R52). The board has the mat's fixed ratio; the table's edge
 under it grows as the scale falls, which only lowers Fit, so a Fit that
 lands near a threshold settles instead of flipping. The two glance sizes are named once on `.map-compact`
 (`--glance-name`, `--glance-text`, each capped at 3.6rem). A site face's
 lines stand on rows of one height, `--row`, which grows with the glance
 size, and its name keeps one line, cut with an ellipsis. Below a scale of
 0.4 the map also carries `map-tiny`, a second step: a site face keeps its
-name, its tokens and its pawns, and its forces and defense in a short form,
-the warband glyph and its count in the force's colour (the Empire's glyph
-ringed, so it does not rest on colour alone) and one defense die with its
-count (implementation rulings R5 and R7). Pawns are one line that never
-wraps on the face at any scale: two pawns by name at rest, from three on the
-dot and the player's initial; the dot and the initial on the compact map,
-the dot alone from five pawns on and on the tiny map, where the dot is sized
-from the face's width (about 8px on screen at a tablet's Fit). On a phone's
-face defense steps out and the pawns share the forces' row at the glance
-size, shrinking only as their number needs; the name is kept as the pawn's
-name and hover note (R6). There a cost badge wider than the face grows
-rightward over its own row. A
+name, its tokens, its pieces and its defense in a short form, one defense
+die with its count beside the tokens (implementation ruling R5). A pawn's
+name under its piece is hidden from sight there and stays the pawn's name
+and hover note (game art ruling R50); its colour says whose it is. On a
+phone's face defense steps out. There a cost badge wider than the face
+grows rightward over its own row. A
 decision's cost badge sits at the face's foot, over the name's tail, the
 one thing it may cover. A card holding three kinds of token or more gives
-its token band two lines, and on the mat the band wraps two kinds a line. Its
-powers, the wheel's numbers and end dice and a bank's favor glyph leave
+its token band two lines, and on the mat the band wraps two kinds a line. A
+site's requirement, the wheel's numbers and end dice and a bank's favor glyph leave
 the board at that scale; the tracker's words, the slots' names and the track's label
 leave the screen but stay in the accessibility tree, and the Usurper's
 lock is also in the round tracker's name and on the limiter mark's hover
@@ -625,9 +625,9 @@ surfaces round more: status and panel boxes at 12px, sites, regions, zones and
 player boards at 9px, options and cards at 8px, controls at 6px or 7px, the
 tightest controls at 4px. Cards use `0.35em` and dice `0.25em` so their
 corners scale with their font-size handle. Countable things are pills: site
-card counts, target-detail badges, the player title, the vision slot, the
-black player and black forces, and the plan-side badge at `1em`. The
-color swatch and the knowable pip are full circles.
+card counts, target-detail badges, the player title, and
+the plan-side badge at `1em`. The color swatch and the knowable pip are
+full circles.
 
 Borders are 1px solid in the Line ramp. Dashed means "not real yet": a blank
 die face, an empty card slot, the debug toolbar, the active player board's
@@ -646,7 +646,7 @@ card the table shows as words (a foundation, the Oath goal, the Oathkeeper
 title) opens in the overlay with a plate at its real ratio; the Oath goal in
 the shared bank is a link that opens it (implementation ruling R2).
 
-Everything a card prints carries the class `printed`, so licensed art can
+Everything a card prints carries the class `printed`, so the host's art can
 replace exactly that; what lies on it in play is anchored to the box. The
 token band stands at a square or landscape box's foot, and just above a
 denizen's power marks, above the marks on any box that prints them; the
@@ -661,7 +661,8 @@ Solid, bordered, no gloss. Every action button is at least 44px tall; compact
 controls are 30px.
 - **Shape:** 4px on map controls and the dev toggle; 7px on load-game,
   the chronicle save dialog's buttons and restart.
-- **Control** (map zoom, Fit, dev tools, overlay close, the log's New chip):
+- **Control** (map zoom, Fit, Settings and its Close, dev tools, overlay
+  close, the log's New chip):
   Raised fill, `#e8d9bb`
   text, Brass Line border, `4px 9px` padding, 0.78rem. Hover: Pressed fill,
   Bright Cream border, the Action face's own answer. The two player pills
@@ -694,9 +695,19 @@ controls are 30px.
   one. An option holds nothing but its card. The instruction line opens
   with "Drag and drop the cards." A keep-one partition (Search, the
   starting adviser) then reads "Keep one; discard the rest." with no
-  minimum lines, and a drop on the keep zone swaps the cards. The order
-  note reads "The last one lands on top of the pile." Forge's payment
-  partition keeps its minimum lines.
+  minimum lines, and a drop on the keep zone swaps the cards. A pick (a
+  capped zone beside one that takes the rest) opens with every card in the
+  zone that takes the rest, so nothing is picked for the player; an empty
+  zone that needs a card holds a dashed card-sized blank reading "Drag a
+  card here". A zone whose order counts captions its first and last cards,
+  Ink Dim uppercase 700 at 0.85em: "Bottom" and "Top" on a pile (the last
+  card lands on top), "First" and "Last" on kept cards played in order.
+  The captions sit on the cards, so they stay true when the row wraps, and
+  every card in the row keeps the caption line so wrapped cards share a
+  floor. An italic Ink Dim sentence under the row says the same in words
+  ("The last one lands on top of the pile."). A zone beside them keeps the
+  caption line empty, so the cards share a floor. Forge's payment
+  partition keeps its minimum lines and opens filled.
 
 ### Chips and Pills
 - **Site card count**: pill, 1px Line border, Cream 700 text, `2px 6px`
@@ -721,7 +732,16 @@ controls are 30px.
   marker: at Deep Woods", or "beside the map" before the holder's first
   Rest and after a ribbon removes it (a Challenge, a Raid or the
   Conspiracy).
-- **Vision slot**: pill, `currentColor` border, 0.85em, no fill.
+- **Vision tile**: two lines tall in the title row, 8px corners, a 1px
+  Line-mid border, no fill. The Visions Drawn marker's eye (1.5em by 2.2em)
+  leads it, then the card's name in Parchment at 0.9em 600. The empty slot,
+  drawn only while a decision lights it, is dashed in Parchment Dim, with
+  "Vision Slot" in Ink Dim capitals at 0.72em 700 tracked 0.08em over
+  "Place your Vision" ("Place Vision" on another player's board). Without
+  the marker's image, an eye of our own drawing stands in. While the slot
+  is lit, a Vision in the hand points at it: hovering the card lights the
+  slot, a click brings the slot into view and lights it for 1.5s, and an
+  inspect button beside the card reads it.
 - **Plan side**: 1em pill, `0 0.6em` padding, 0.75em; Discord fill for attack,
   Order fill for defense, a Discord-to-Order gradient for both; white text.
 - **Option cost**: the plan-side pill's shape on a choice, read as a target
@@ -818,6 +838,17 @@ table.
   persistent power. The modifier tab stands on its left end at 2.8em, and
   the power's cost sits on its middle as token glyphs on a `#1b1811` pill,
   so the text below no longer opens with the cost symbols.
+- **Rows that wrap:** a row of cards that needs more than one line splits
+  its cards evenly: as many lines as plain wrapping needs, the same count on
+  each, give or take one. Six cards with room for five sit three and three,
+  not five and one; seven sit four and three. Cards of mixed widths, a
+  legacy among denizens, even out by line length instead. The row is capped
+  at the narrowest width that keeps plain wrapping's line count, and is
+  re-measured as its pane resizes (`EvenRows`). It applies
+  to a decision's card wells (the temporary hand and a public preview such
+  as the available edifices), the relics on offer, card lists and the
+  Reliquary. A partition's zones are left to wrap plainly, since balancing
+  would reshuffle them under a drag, and a row set not to wrap is untouched.
 
 ### Dice
 A rolled die is a face-shaped chip: 1.9em minimum width, 1.5em tall, 1px
@@ -837,12 +868,29 @@ their own log lines.
 ### Sites
 A site is the board's unit: a site card of the real ratio in the frame the
 mat prints for it, with its three card slots to its right (Layout). On the
-card: Site fill, Line border, 9px radius; the name in a band at its foot,
-loose tokens in the upper left and defense in the upper right, then rows
-for the pawns and the forces, and the powers and requirement over the name
-band. The rows grow with the glance size on the zoomed-out map (The Glance
-Layer Rule). Powers are two clipped lines of labels with hover notes, one
-line on the compact map; each label is a button that opens the power. A site offered as a board option gets a brass
+card: Site fill, Line border, 9px radius; loose tokens in the upper left
+and defense in the upper right, as the card prints its resources and its
+die; then a row of pawns and a row of warbands; then the print's band at
+its foot, the power shield at the lower left and the name right of it; the
+requirement stands at the face's right over the name band, at its own
+width, and takes no pointer, so it never covers the shield. The two rows are boxes the mat's layout places
+on the card (pawns from 19% of the frame's height for 30%, warbands from
+50% for 20%), and every length inside them is a share of the row, so a
+piece is the same share of its site at every zoom (game art rulings R48
+to R52). The pawn row has six places, one a seat; a pawn takes one from
+the left and is the same size alone as among six. A pawn is its piece, a
+disc of its player's colour, over its player's name, cut with an ellipsis.
+A site's warbands are the ruler's pieces side by side, each as tall as the
+row, up to five; six or more are one piece and "x6" (R63), in
+the force's colour (the Empire's glyph ringed, so it does not rest on
+colour alone: R7); the force's words are its name and hover note. Each
+power is a button on the part of the shield the card prints it in: the
+whole shield for one, left and right of the shield's line for two, the
+Coast above the Island on an island (R55). Drawn, a part is a Line
+outline with the power's label, cut with an ellipsis; the button is no
+larger than its part, so it takes no click from the pieces beside it, and
+may be under 24px on a zoomed-out map, where a zoom and Chronicle Details
+are the other ways to a power (R54). A site offered as a board option gets a brass
 border and inset ring; hover brightens the border to
 Bright Cream with the target halo; selected turns Selection blue on Selection
 Fill. A slot of a region that holds no site is an empty frame after the
@@ -1027,10 +1075,97 @@ top of the overlay body's gap, and reads at the details column's size,
   `−` / `+` buttons of 2.2em around a tabular-nums count.
 
 ### Navigation
-There is no navigation bar. The Players pane header carries the Dev tools
-toggle; the World pane header carries the zoom controls (−, percentage
+There is no navigation bar. The Players pane header carries Settings for
+every player and, in development, the Dev tools toggle beside it; the
+World pane header carries the zoom controls (−, percentage
 label, +, Fit). The developer panel is a fixed aside, top-right, 540px wide,
-in the off-palette purple with the overlay lift.
+in the off-palette purple with the overlay lift. Settings opens in the
+same place, 360px wide, on Base with a Brass Line border; the two never
+show together.
+
+### Game Art
+**Game art** is a switch in Settings, on by default; a player may turn it
+off or on. While it is on the table shows the host's art images in
+place of what it draws. The switch is a
+full-width Control 44px tall, its name at the left and On or Off at the
+right; on, it wears the selection colours. When the server has no art it
+wears the Withheld face, with the reason on the line below and in its
+hover note.
+
+- **The layer.** An image is laid over the box that draws the same thing
+  and never sizes it; every box already has its real proportions, so the
+  layout is the same with art or without. When the image has loaded the
+  box is `art-ready` and its `printed` content is hidden with opacity,
+  which keeps the text in the accessibility tree. Printed content follows
+  its nearest box, so each box falls back to its drawing alone when its
+  image is slow, missing or failed.
+- **What stays over art.** Tokens, warbands, pawns, counts, option rings
+  and badges. Each stands on a chip: Base, see-through, 65% opaque, from
+  one setting (`--chip-ground-alpha`, `--chip-ground`), a fill and a
+  same-colour shadow with no padding. Over art its words are Bright
+  Cream, whatever player they name, with a Base edge
+  (`--chip-text-edge`): 5.2 : 1 on the ground over white art, where the
+  black player's colour measured 2.6 : 1 (R59, R60, R65). The piece's
+  picture carries the player's colour; with art off the words keep it.
+  The chips are a bank's count, a pile's count, the tracker's lines,
+  loose tokens on a site, a banner's resources, and the pieces: a pawn
+  has one ground behind its piece and its name together, a layer inside
+  the pawn so an offered pawn has it too, inside its ring, while a
+  selected pawn shows its own fill instead; a warband entry has one
+  behind its pieces and its count (R61). On these grounds the black
+  pieces carry a doubled Bright Cream edge (R66).
+- **Site powers.** A site's power buttons are controls, not print. Each
+  stands on the part of the shield the site's card prints its power in;
+  over the art its label and its drawn outline hide with the print and
+  the button keeps its place, focusable, with its hover note, so the
+  printed symbol is what a player clicks.
+- **A site's box.** The site's card covers the frame the mat prints and
+  the frame's line: the frame grown by 8 mat pixels a side, the image
+  fitted with `cover`. The drawn face has the same box.
+- **The mat.** Over the mat a favor bank drops its own pill, unless a
+  decision offers it, and an empty pile drops its fill: the mat prints
+  both. The tracker's lines are chips.
+  An empty card slot's dashed line is Bright Cream with a Base line
+  under it; each is two pixels on screen at any zoom, its width
+  following the map's scale, with art on and off (R64).
+- **Favor banks.** A bank's parts stand where the mat prints them, at
+  every zoom, with art on and off: the suit's glyph on the emblem, the
+  favor filling the circle, and the count over the favor on a chip's
+  disc (62% of the circle, the figure 44% of it). On the far zoomed-out
+  map the count takes the whole circle, so it holds about 9px on a phone.
+- **Banners.** What a banner holds stands in a chip at the middle of its
+  face, a third down from its top, 24% of the face's width in size, so
+  it reads on the zoomed-out table as a bank's count does; the same box
+  with art on and off (R62). The drawn name stands at the face's foot.
+- **The round wheel.** The current round carries the round marker, a
+  disc in Round Marker silver with a Line Mid rim at the centre of its
+  wedge, 16 of the wheel's 200 units in radius, with art on and off, and
+  the round's number in Base at the disc's centre, over the mat too
+  (R57). Every other number stands at its wedge's centre, printed. Over
+  the mat the current wedge keeps
+  its Bright Cream border and drops its brass fill. The Usurper's token
+  fills the limiter's wedge, its point to the hub, in a box 54 by 55 of
+  the wheel's 200 units; drawn, it is the wedge's own shape in the
+  limiter's red with a small diamond in its rim. The lock's words are
+  the hover note of the whole wedge (R58); the tracker's name and its
+  line state the lock for assistive technology (R67).
+- **An offered site or bank.** A site's ring runs along its card's edge,
+  frame line included; a favor bank's ring is drawn over its favor.
+- **The Oath goal.** In the shared bank the Oath goal is its card, the
+  goal's ratio at a banner's height, with the holder in words under it;
+  drawn, the plate holds the goal's title, and on the zoomed-out edge
+  the goal's short name at the glance size, as a banner's.
+- **Glyphs.** A token glyph keeps its `svg` and holds the symbol's image
+  inside it, fitted to the glyph's square. A card's text shows the printed
+  symbol; favor and secrets lying in play show the token itself, and
+  warbands and pawns the piece of their colour. The black pawn and
+  warband carry a 1px Cream edge so they read on the dark table.
+- **Dice.** A rolled face shows a square crop of its die's sheet, centred
+  in its chip; the chip keeps its size.
+- **Turned cards.** A Vision in a denizen box, a pile lying on its side
+  and a title on its plate are each turned a quarter, counter-clockwise,
+  so a quarter turn clockwise by the reader gives the upright card.
+- No transition and no animation: an image appears when it has loaded.
 
 ### Player Boards
 One board per player in the strip: 300px minimum, `6px 12px` padding,

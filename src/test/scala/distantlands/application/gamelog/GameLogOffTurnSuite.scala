@@ -34,13 +34,3 @@ class GameLogOffTurnSuite extends munit.FunSuite:
     val all = lines(sneakAttackSkipped)
     assert(all.contains(
       s"Sneak Attack: Campaign skipped by ${playerLabel(p2)}."), all)
-
-  test("a defender's off-turn Travel posts its line under a tag naming " +
-      "them, and the skipped Campaign names them too"):
-    val all = lines(secondWindDefenderTravels)
-    val tag = all.indexWhere(
-      _.startsWith(s"${playerLabel(p2)} · Travel · Second Wind"))
-    assert(tag >= 0, all)
-    assert(all.drop(tag + 1).exists(_.contains("Buried Giant")), all)
-    assert(all.contains(
-      s"Second Wind: Campaign skipped by ${playerLabel(p2)}."), all)

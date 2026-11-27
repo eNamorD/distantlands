@@ -11,15 +11,16 @@ object TheGrandScepterCard extends Relic(RelicId("grand-scepter"), "The Grand Sc
   val campaign = PrintedPower(PowerId("relic.the-grand-scepter.campaign"),
     persistent = false, cost = Cost(favorBurnt = 3),
     modifier = Some(ModifierMark.EitherSidePlan),
-    text = "[favor-burnt][favor-burnt][favor-burnt] If you are Imperial " +
-      "and victorious against a Citizen, you may exile them.")
+    text = "[favor-burnt][favor-burnt][favor-burnt] If you are an " +
+      "Imperial and victorious against a Citizen, you may " +
+      "exile them.")
   val action = PrintedPower(PowerId("relic.the-grand-scepter.action"),
     persistent = false, cost = Cost.free,
-    text = "**ACTION:** You may become a Citizen if an Exile. **IN " +
-      "NEGOTIATION:** May offer Citizenship.")
+    text = "**ACTION:** You may become a Citizen if an Exile. " +
+      "**WHEN NEGOTIATING:** You may offer Citizenship.")
   val negotiation = PrintedPower(PowerId("relic.the-grand-scepter.negotiation"),
     persistent = false, cost = Cost.free,
-    text = "**IN NEGOTIATION:** May offer Citizenship.")
+    text = "**WHEN NEGOTIATING:** You may offer Citizenship.")
   val powers: Vector[PrintedPower] = Vector(restriction, campaign, action, negotiation)
 
 /** The Grand Scepter cannot be removed from play (global operation

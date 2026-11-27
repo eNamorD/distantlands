@@ -11,9 +11,9 @@ import distantlands.model._
 object RelicThiefCard extends Denizen(DenizenId("95"), "Relic Thief", Suit.Discord) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.relic-thief"),
     persistent = false, cost = Cost(favor = 1, secret = 1),
-    text = "**ACTION:** Choose a faceup relic held by a player whose " +
-      "pawn is at your site. Roll [defense-die] equal to its " +
-      "defense. If you roll no [shield], take it.")
+    text = "**ACTION:** Choose a faceup relic held by a player " +
+      "whose pawn is at your site. Roll [defense-die] equal to " +
+      "its defense (min 1). If you roll no [shield], take it.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Relic Thief (card 95, adviser-only), ACTION: place 1 favor and 1 secret
@@ -25,8 +25,8 @@ object RelicThiefCard extends Denizen(DenizenId("95"), "Relic Thief", Suit.Disco
   * relic Lost Tongue keeps the player from taking is not offered: the search
   * stops at the roll, so the `Take` its restriction refuses after the roll
   * would not hide the relic, and the command would fail after the dice. The
-  * roll is automatic, from the walker's dice, on its own pool. A relic of
-  * defense 0 rolls nothing and is taken. "No shield" is a shield total of
+  * roll is automatic, from the walker's dice, on its own pool. The card prints "(min 1)", so a
+  * relic of defense 0 still rolls one die. "No shield" is a shield total of
   * 0, so a Doubler alone is no shield. The take is one `Take`. With no relic
   * to choose, the cost stays paid and one line says so.
   *
@@ -96,20 +96,20 @@ case object RelicThief extends PaidAction(RelicThiefCard.power):
   private def defense(catalog: ExecutableCatalog, relic: RelicId): Int =
     catalog.relic(relic).fold(0)(_.defense)
 
-  /** The chosen relic's defense dice, rolled at once; none at defense 0. */
+  /** The chosen relic's defense dice, rolled at once: at least one. */
   private def roll(catalog: ExecutableCatalog,
       ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Vector[Operation] = chosen(catalog, ready, actor, pending)
-    .map(target => defense(catalog, target.relic)).filter(_ > 0).toVector
+    .map(target => defense(catalog, target.relic).max(1)).toVector
     .flatMap(dice => Vector[Operation](ModifyDicePool(pool, dice),
       RollStep(pool, DiceSpec(DiceKind.Defense), Some(actor))))
 
-  /** The take, when the relic rolled nothing or the roll shows no shield. */
+  /** The take, when the roll shows no shield. */
   private def steal(catalog: ExecutableCatalog,
       ready: ReadyGame, actor: PlayerId, pending: PendingTree)
       : Vector[CoreOperation] =
     chosen(catalog, ready, actor, pending).filter(target =>
-    defense(catalog, target.relic) == 0 || RollResults.score(ready, pool) == 0)
+      RollResults.score(ready, pool) == 0)
     .toVector.map(target => Take(Piece.Card(target.relic), actor,
       Location.PlayArea(target.owner), Location.PlayArea(actor)))
 

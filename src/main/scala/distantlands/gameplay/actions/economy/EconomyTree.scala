@@ -50,9 +50,10 @@ private[economy] object EconomyTree:
         * modifier decision names. */
       selection: Vector[DecisionOptionRef] = Vector.empty,
       /** The line this action writes at its gain, if it writes one: the
-        * note's id and a builder that reads the resolved source. The tree
+        * note's id and a builder that reads the resolved source and the
+        * count of matching advisers the gain was built from. The tree
         * places the leaf; the procedure owns the words. */
-      note: Option[(PowerId, (NoteStates, MusterSource) => Option[LogNote])] =
+      note: Option[(PowerId, (NoteStates, MusterSource, Int) => Option[LogNote])] =
         None)
 
   /** Fresh start: the lifecycle gate, a pawn site, a resolvable ruler for
@@ -120,6 +121,8 @@ private[economy] object EconomyTree:
     force <- PlayerForceKind.of(ready, player).toRight(
       OathViolation.UnsupportedEconomyState(
         s"no warband kind for lineage ${player.lineage.value}"))
+    matching = MusterSource.matching(catalog, ready, actor, source.suit,
+      answered)
   yield Vector[Operation](
     // The payment is a required `PayCost`, so an unaffordable one rejects
     // rather than shrinking, and the preview drops the option. Both operations
@@ -128,9 +131,7 @@ private[economy] object EconomyTree:
     Sequence(Vector[Operation](
       PayCost(actor, Location.OnCard(source.card), kind.payment),
       SpendSupply(actor, 1)), Some(kind.cost)),
-    Sequence(kind.yields(actor, source,
-      MusterSource.matching(catalog, ready, actor, source.suit, answered),
-      force).toVector ++
+    Sequence(kind.yields(actor, source, matching, force).toVector ++
       // Last in the window, so the note's `previous` is the gain. Every
       // `MusterGain` power appends, so this holds; a power that prepended
       // would make the note read another operation's delta, and nothing
@@ -138,7 +139,8 @@ private[economy] object EconomyTree:
       // to record it, which puts a second leaf in the gain's position:
       // each holds its `Defer` before the gain so the gain is still the
       // last leaf here (`TradeGainNoteSuite`).
-      kind.note.toVector.map((id, build) => Note(id, build(_, source))),
+      kind.note.toVector.map((id, build) =>
+        Note(id, build(_, source, matching))),
       Some(kind.gain)))
 
   private def answered(pending: PendingTree, decisionId: String)

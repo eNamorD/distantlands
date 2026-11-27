@@ -21,7 +21,8 @@ import distantlands.model._
 private[powers] final class RegionDiscard(power: PowerId,
     kept: Suit => Boolean,
     regionOf: (ReadyGame, PlayerId) => Option[Region] =
-      RegionDiscard.pawnRegion):
+      RegionDiscard.pawnRegion,
+    spared: Set[CardId] = Set.empty):
 
   /** The kept site denizens and ruined edifices in the actor's region, in
     * map order. A card the catalog does not know is not listed; `discards`
@@ -57,14 +58,17 @@ private[powers] final class RegionDiscard(power: PowerId,
   private def region(ready: ReadyGame, actor: PlayerId): Option[Region] =
     regionOf(ready, actor)
 
-  /** Every site card in the actor's region, with its site, in map order. */
+  /** Every site card in the actor's region, with its site, in map order,
+    * less the `spared` ones: a power that discards "other" cards spares its
+    * own. */
   private def cards(ready: ReadyGame, actor: PlayerId)
       : Vector[(SiteId, SiteDenizenState)] =
     val map = ready.game.current.map
     region(ready, actor).toVector.flatMap(origin => map.inPlay
       .filter(map.regionOf(_).contains(origin))
       .flatMap(site => map.sites.get(site).toVector
-        .flatMap(_.denizens.map(site -> _))))
+        .flatMap(_.denizens.filterNot(card => spared(card.id))
+          .map(site -> _))))
 
   private def suitOf(catalog: ExecutableCatalog, card: SiteDenizenState)
       : Either[OathViolation, Suit] =

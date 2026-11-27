@@ -15,7 +15,7 @@ private[frontend] enum HostChronicle:
   * the browser refused storage; the shelf then lasts as long as the page.
   * The page is one centered column: the Loaded Chronicle box, then each
   * button on a line of its own; Load, Import and Export open dialogs over
-  * it. */
+  * it. Edit and Export are drawn only while a Chronicle is loaded. */
 private[frontend] object ChroniclePage:
   def render(mount: dom.Element, shelf: ChronicleShelf, kept: Boolean,
       client: ChronicleClient, files: ChronicleFiles,
@@ -63,13 +63,17 @@ private[frontend] object ChroniclePage:
       control.onclick = _ => openLoad()
       page.appendChild(control)
     }
-    val edit = button("Edit Chronicle", "edit-chronicle")
-    HoverTip.withhold(edit, "Coming in a later release")
-    page.appendChild(edit)
+    // Edit and Export act on the loaded Chronicle, so with none loaded the
+    // page leaves them out, as it leaves out Load with nothing saved.
+    loaded.foreach { _ =>
+      val edit = button("Edit Chronicle", "edit-chronicle")
+      HoverTip.withhold(edit, "Coming in a later release")
+      page.appendChild(edit)
+    }
     page.appendChild(ChronicleTransfer.importButton(mount, shelf, client,
       files, () => redraw()))
-    page.appendChild(ChronicleTransfer.exportButton(mount,
-      loaded.map(_.entry), client, files))
+    loaded.foreach(saved => page.appendChild(ChronicleTransfer.exportButton(
+      mount, saved.entry, client, files)))
     if loadOpen then openLoad()
 
   private val NothingSaved = "No Chronicles saved in this browser"

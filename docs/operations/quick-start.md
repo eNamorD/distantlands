@@ -324,6 +324,12 @@ own page, and each seat's cookie is scoped to that page. A private or incognito
 window is suitable only if losing its cookies at window close is acceptable and
 the original link is still available.
 
+## Optional: the game's own art
+
+The table draws every card, the map and every piece itself. A host who
+owns the game's art can have the table show it instead; see
+[game art](game-art.md).
+
 ## Before players join
 
 - Confirm `GET /health/live` and `GET /health/ready` both return success.

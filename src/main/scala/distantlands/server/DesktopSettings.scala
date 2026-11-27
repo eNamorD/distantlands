@@ -14,6 +14,7 @@ object DesktopSettings:
     "DLQ_PORT",
     "DLQ_PUBLIC_BASE_URL",
     "DLQ_DATABASE_PATH",
+    "DLQ_ART_PATH",
     "DLQ_OPEN_BROWSER"
   )
 
@@ -35,6 +36,10 @@ object DesktopSettings:
     "",
     "# Database file prefix. Default: the data folder next to this file.",
     "#DLQ_DATABASE_PATH=/path/to/DistantLandsData/database",
+    "",
+    "# Folder of art assets for the table, if you have one (see game-art.md).",
+    "# Without it the table draws every piece itself.",
+    "#DLQ_ART_PATH=/path/to/DistantLandsData/art",
     "",
     "# Set to false to stop the browser opening at startup.",
     "#DLQ_OPEN_BROWSER=true",

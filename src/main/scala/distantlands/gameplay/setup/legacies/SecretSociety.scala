@@ -13,10 +13,10 @@ object SecretSocietyCard extends Legacy(LegacyId("L28"), "Secret Society",
     LegacyGoal.HighestRelic, Suit.Arcane):
   val power = PrintedPower(PowerId("legacy.secret-society"),
     persistent = false, cost = Cost.free,
-    text = "**SETUP:** Before building the world deck, you may secretly " +
-      "choose a Vision except the Conspiracy to take as a facedown " +
-      "adviser _(discard excess advisers)_. If you do, advance the " +
-      "Visions Drawn marker once.")
+    text = "**SETUP:** Before building the world deck, you may " +
+      "secretly choose a Vision except the Conspiracy to take " +
+      "as a facedown adviser—advance Visions Drawn and " +
+      "build the world deck from stacks with 2 Visions each.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Secret Society (legacy L28), its SETUP power (Legacy Setup powers

@@ -23,6 +23,7 @@ firewall, HTTPS proxy, and provisional browser guidance is in
 | `--public-base-url URL` | `DLQ_PUBLIC_BASE_URL` | unset |
 | `--database-path PATH` | `DLQ_DATABASE_PATH` | `var/distantlands` |
 | `--mode development\|trusted-alpha` | `DLQ_MODE` | `development`; packaged launcher uses `trusted-alpha` |
+| `--art-path DIR` | `DLQ_ART_PATH` | unset; the table draws every piece itself |
 
 `development` accepts loopback bind hosts only. `trusted-alpha` accepts a
 non-loopback host only when `--public-base-url` or `DLQ_PUBLIC_BASE_URL`
@@ -33,6 +34,18 @@ Requests that change state, such as creating a game or making a move, must come
 from a page at the public base URL. In every mode, a page at `localhost`,
 `127.0.0.1`, or `[::1]` on the listen port is also accepted, so the host can
 play through a loopback address when it cannot reach its own public address.
+
+## Game art
+
+`--art-path` names a folder of art assets the host supplies; Distant
+Lands ships none. The server reads the folder once at
+startup and logs how many files it found and which it lacks. Each player
+can then switch **Game art** on or off in the table's Settings. A path
+that is not a folder serves no art and logs one line saying so; the game
+runs either way. Browsers keep an art file for a day, so after a file is
+replaced players may need a hard reload. The folder's layout, every file
+name, the Start file's setting and a container example are in
+[game art](game-art.md).
 
 ## Universal archive
 

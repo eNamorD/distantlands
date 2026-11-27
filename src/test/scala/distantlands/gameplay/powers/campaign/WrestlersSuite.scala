@@ -66,12 +66,12 @@ class WrestlersSuite extends munit.FunSuite:
   private val shield = FearsomeShieldCard.id
 
   /** `conquest`, with the rival's only warband at the origin, and Fearsome
-    * Shield (burn 2 secrets for 2 defense dice) as a second plan they can pay.
+    * Shield (burn 2 favor for 2 defense dice) as a second plan they can pay.
     */
   private def lastWarbandAtOriginAndShield: Board =
     on(withRelicFor(conquest, conquest.rival, shield))(_
       .warbandsAt(conquest.origin, conquest.rival, 1)
-      .secrets(conquest.rival, faceUp = 2))
+      .favor(conquest.rival, 2))
 
   /** The actor commits 2 warbands; the rival plays Wrestlers, emptying the
     * origin, and then Fearsome Shield. */

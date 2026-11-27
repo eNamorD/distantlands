@@ -134,6 +134,37 @@ class ServerRoutesSuite extends munit.FunSuite:
       finally server.close()
     finally runtime.close()
 
+  test("both modes serve the art manifest and the art the folder holds"):
+    val folder = ArtFolders.onePixelFolder("backs/relic-back.jpg")
+    val art = ArtLibrary.scan(Some(folder))
+    Vector(ServerMode.Development, ServerMode.TrustedAlpha).foreach { mode =>
+      val runtime = openRuntime("art-routes-")
+      try
+        val server = HttpTestServer.start("server-art-routes-test")(blocking =>
+          ServerRoutes.route(runtime, blocking, config(mode),
+            ServerReadiness.starting("test-version"), art))
+        try
+          assertEquals(ujson.read(server.get("/art/manifest.json").body()),
+            ujson.Obj("files" -> ujson.Arr("backs/relic-back.jpg")),
+            mode.toString)
+          assertEquals(server.get("/art/backs/relic-back.jpg")
+            .statusCode(), 200, mode.toString)
+        finally server.close()
+      finally runtime.close()
+    }
+
+  test("a server with no art folder still serves an empty manifest"):
+    val runtime = openRuntime("no-art-routes-")
+    try
+      val server = HttpTestServer.start("server-no-art-routes-test")(blocking =>
+        ServerRoutes.route(runtime, blocking,
+          config(ServerMode.TrustedAlpha),
+          ServerReadiness.starting("test-version")))
+      try assertEquals(ujson.read(server.get("/art/manifest.json").body()),
+        ujson.Obj("files" -> ujson.Arr()))
+      finally server.close()
+    finally runtime.close()
+
   /** A ServerConfig that says the server listens on 127.0.0.1 at
     * `listenPort`. */
   private def config(

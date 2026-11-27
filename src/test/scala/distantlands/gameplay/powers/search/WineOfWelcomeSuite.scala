@@ -14,8 +14,8 @@ import distantlands.testkit.{Look, Table}
 import distantlands.testkit.Table.p1
 import distantlands.testkit.Unwrap.accepted
 
-/** Wine of Welcome (relic R33): a Search of the world deck draws from its
-  * bottom, stopping after a Vision as usual (catalog batch 6, slice 3). */
+/** Wine of Welcome (relic R33): for a secret placed on it, a Search of the
+  * world deck draws from its bottom, stopping after a Vision as usual (catalog batch 6, slice 3). */
 class WineOfWelcomeSuite extends munit.FunSuite:
   import SearchFixture.rules
 
@@ -24,10 +24,10 @@ class WineOfWelcomeSuite extends munit.FunSuite:
   private val bottom = Vector(ThreateningRoarCard.id, FaeMerchantCard.id,
     SecondChanceCard.id)
 
-  /** p1 at Ancient City holding Wine of Welcome faceup, with 5 Supply and
-    * one card in the Cradle discard pile. */
+  /** p1 at Ancient City holding Wine of Welcome faceup, with 5 Supply,
+    * one faceup secret and one card in the Cradle discard pile. */
   private def holdingWine: Table = Table.start.pawn(p1, AncientCitySite)
-    .relic(p1, WineOfWelcomeCard).supply(p1, 5)
+    .relic(p1, WineOfWelcomeCard).supply(p1, 5).secrets(p1, faceUp = 1)
     .discarded(Region.Cradle, WrestlersCard)
 
   private def searchedWorld(table: Table): ReadyGame =
@@ -38,6 +38,15 @@ class WineOfWelcomeSuite extends munit.FunSuite:
     val after = searchedWorld(holdingWine.worldDeckBottom(bottom*))
     assertEquals(after.game.current.temporaryHands(p1), bottom.reverse)
     assertEquals(Look(after).supply(p1), 5 - 2)
+
+  test("picking it places a secret on the relic"):
+    val after = searchedWorld(holdingWine.worldDeckBottom(bottom*))
+    assertEquals(Look(after).tokensOn(WineOfWelcomeCard.id), Tokens(0, 1))
+    assertEquals(Look(after).faceUpSecrets(p1), 0)
+
+  test("without a faceup secret it cannot be picked"):
+    val broke = holdingWine.worldDeckBottom(bottom*).secrets(p1, faceUp = 0)
+    assert(SearchFixture.start(broke.ready, modifiers).isLeft)
 
   test("the draw from the bottom stops after a Vision"):
     val table = holdingWine.worldDeckBottom(bottom(0), VisionRules.Faith,
@@ -60,7 +69,10 @@ class WineOfWelcomeSuite extends munit.FunSuite:
       Some("available"))
 
   test("Wine of Welcome and Mushrooms warn each other"):
-    val ready = holdingWine.denizen(MushroomsCard, at = AncientCitySite).ready
+    // Two secrets, so either modifier is still payable once the other is
+    // picked.
+    val ready = holdingWine.denizen(MushroomsCard, at = AncientCitySite)
+      .secrets(p1, faceUp = 2).ready
     val begun = accepted(rules.startWalker(Ready(ready), ActionRef.Search,
       p1))
     val decisionId =

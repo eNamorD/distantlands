@@ -8,17 +8,16 @@ import distantlands.model._
 
 object EnchantressCard extends Denizen(DenizenId("96"), "Enchantress", Suit.Discord) with AdviserOnly:
   val power = PrintedPower(PowerId("denizen.enchantress"),
-    persistent = false, cost = Cost(secret = 1),
+    persistent = false, cost = Cost(secretBurnt = 1),
     text = "**ACTION:** Swap this card with any faceup adviser.")
   val powers: Vector[PrintedPower] = Vector(power)
 
-/** Enchantress (card 96, adviser-only), ACTION: place 1 secret on this card,
-  * then swap it with any faceup adviser.
+/** Enchantress (card 96, adviser-only), ACTION: burn 1 secret, then swap it with any faceup adviser.
   *
   * The candidates are the faceup denizen advisers of every other player, in
   * seat then adviser order, read live after the cost is paid. The swap is one
   * `Swap` between the two play areas: both cards stay faceup and carry their
-  * favor and secrets, Enchantress' new secret included. It runs as a required
+  * favor and secrets. It runs as a required
   * batch, so the Locked restriction, which refuses swapping a locked card,
   * hides a locked adviser from the choice. The question shows Continue when
   * nothing can be chosen, with no candidate too: the cost stays paid and

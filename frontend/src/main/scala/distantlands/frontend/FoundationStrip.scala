@@ -1,6 +1,7 @@
 package distantlands.frontend
 
 import distantlands.protocol.projection.FoundationProjection
+import distantlands.protocol.art.ArtCatalog
 import org.scalajs.dom
 
 /** The six foundation setup cards as a read-only strip (Foundations design,
@@ -24,7 +25,8 @@ private[frontend] object FoundationStrip:
         Option.when(altered)("Altered"),
         title(foundation.number, foundation.name),
         label(foundation.number, foundation.name, altered),
-        Vector(foundation.rulesText), Some("foundation"))
+        Vector(foundation.rulesText), Some("foundation"),
+        ArtCatalog.foundation(foundation.number, foundation.name))
     }
 
   /** "Foundation I · Wide Horizons": the overlay's title and the hover

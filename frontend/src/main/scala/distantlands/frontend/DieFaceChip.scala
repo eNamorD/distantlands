@@ -46,6 +46,8 @@ private[frontend] object DieFaceChip:
       // literal. Both wires send typed faces, so only a face this client's
       // glyph table has not grown yet can reach it.
       case None => node.appendChild(dom.document.createTextNode(key))
+    ArtLayer.attachCrop(node,
+      distantlands.protocol.art.ArtCatalog.dieFace(key))
     node
 
   /** A roll: every face typed, so the die comes off the faces rather than

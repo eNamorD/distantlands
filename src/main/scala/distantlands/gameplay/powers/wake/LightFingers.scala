@@ -10,8 +10,9 @@ object LightFingersCard extends Legacy(LegacyId("L27"), "Light Fingers",
     LegacyGoal.HighestRelic, Suit.Beast):
   val power = PrintedPower(PowerId("legacy.light-fingers"),
     persistent = false, cost = Cost.free,
-    text = "**WAKE:** When you Take Wealth, you may take [favor] or " +
-      "[secret] from your site even if enemy pawns are there.")
+    text = "**WAKE:** When you Take Wealth, you may take " +
+      "[favor]/[secret] from your site even if enemy pawns are " +
+      "there.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Light Fingers (legacy L27): "Wake: When you Take Wealth, you may take

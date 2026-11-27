@@ -11,7 +11,7 @@ class SetupCardStripSuite extends munit.FunSuite:
   override def beforeEach(context: BeforeEach): Unit =
     opened = Vector.empty
     CardInspection.onOpen:
-      case CardInspection.Request.Text(title, lines, _, plate) =>
+      case CardInspection.Request.Text(title, lines, _, plate, _, _) =>
         opened :+= ((title, lines, plate))
       case _ => ()
 

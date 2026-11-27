@@ -1,5 +1,6 @@
 package distantlands.frontend
 
+import distantlands.protocol.art.ArtCatalog
 import org.scalajs.dom
 import scala.scalajs.js
 import ServerUiSupport._
@@ -106,11 +107,15 @@ private[frontend] object CardFace:
     // The whole name on hover, for the zoomed-out face that shows initials.
     if !card.hidden then HoverTip.set(node, card.name)
 
+    val face = ArtCatalog.cardFace(card.name)
+    val back = ArtCatalog.cardBack(card.cardKind)
     if card.hidden then
       node.appendChild(text("span", "card-back-letter printed", backLetter(card.cardKind)))
+      ArtLayer.attach(node, back)
     else if dormantLegacy(card) then
       summary(card).foreach(node.appendChild)
       node.appendChild(text("span", "legacy-dormant", "Dormant"))
+      ArtLayer.attach(node, face)
     else if faceDown(card) then
       // Knowable: the back is what shows at rest; the summary is revealed by
       // CSS on hover only, inside the same box, so nothing moves.
@@ -120,9 +125,14 @@ private[frontend] object CardFace:
       node.appendChild(pip)
       val peek = element("span", "card-hover-summary")
       summary(card).foreach(peek.appendChild)
+      // The summary is a box of its own: it shows the face while the card
+      // shows its back, and each falls back to its own drawing.
+      ArtLayer.attach(peek, face)
       node.appendChild(peek)
+      ArtLayer.attach(node, back)
     else
       summary(card).foreach(node.appendChild)
+      ArtLayer.attach(node, face)
 
     // A click means inspect, in every context. Decision panels select by
     // drag, by option buttons, or by the plus/minus steppers, never
@@ -171,7 +181,10 @@ private[frontend] object CardFace:
       val group = element("span",
         s"card-warbands ${ServerUiSupport.forceCssClass(forces)}")
       HoverTip.set(group, ServerUiSupport.forceText(forces))
-      counted("warband", forces.count).foreach(group.appendChild)
+      group.appendChild(RulesTextRenderer.warband(
+        ServerUiSupport.forceKey(forces)))
+      group.appendChild(text("span", "card-token-count",
+        forces.count.toString))
       tokens.appendChild(group)
     }
     // The pawn a Tracker's holder chose last turn, in its player's colour.
@@ -207,5 +220,5 @@ private[frontend] object CardFace:
       Option.when(marks.childNodes.length > 0)(marks)).flatten
 
   private def counted(token: String, count: Int): Vector[dom.Element] =
-    Vector(RulesTextRenderer.glyph(token),
+    Vector(RulesTextRenderer.piece(token),
       text("span", "card-token-count", count.toString))

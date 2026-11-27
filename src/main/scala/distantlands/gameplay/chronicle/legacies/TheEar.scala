@@ -13,9 +13,10 @@ object TheEarCard extends Legacy(LegacyId("L19"), "The Ear",
     LegacyGoal.DarkestSecret, Suit.Hearth):
   val power = PrintedPower(PowerId("legacy.the-ear"),
     persistent = false, cost = Cost.free,
-    text = "**ACTION:** You may peek at the relics at any site. " +
-      "**CHRONICLE (THRONE):** In Scatter Relics, you examine the " +
-      "relics and choose which sites they go to.")
+    text = "**ACTION:** You may peek at the relics at **any** site. " +
+      "_You may peek at them later at any time._ **CHRONICLE " +
+      "(THRONE):** In Scatter Relics, you examine the relics " +
+      "and choose which sites they go to.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** The Ear (legacy L19), its Chronicle half: "In Scatter Relics, you

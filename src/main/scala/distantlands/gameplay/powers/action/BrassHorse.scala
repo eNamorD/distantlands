@@ -6,15 +6,18 @@ import distantlands.model._
 object BrassHorseCard extends Relic(RelicId("R03"), "Brass Horse", value = 76, defense = 2):
   val power = PrintedPower(PowerId("relic.brass-horse"),
     persistent = false, cost = Cost(secret = 1),
-    text = "**ACTION:** Reveal the top card of your region's discard " +
-      "pile. Place your pawn at a different site with a matching " +
-      "card. If you **cannot**, place it at any site.")
+    text = "**ACTION:** Reveal the top card of your region's " +
+      "discard pile. Place your pawn at a site with a matching " +
+      "card. If you cannot, place it at any site. Flip the " +
+      "revealed card down.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Brass Horse (relic R03), ACTION: place 1 secret on this relic, reveal the
   * top card of the discard pile of the region your pawn is in, and place your
-  * pawn at a different site holding a card of the same suit (a denizen or an
-  * edifice). If it cannot, place it at any other site.
+  * pawn at a site holding a card of the same suit (a denizen or an
+  * edifice). If it cannot, place it at any site. The card does not say
+  * "different", so the pawn's own site counts, and the pawn may stay
+  * (owner ruling, 2026-11-26).
   *
   * The reveal is a public `Reveal` of the pile's top card: every player
   * learns it. A discarded card has no orientation state, so "turn it facedown
@@ -74,20 +77,18 @@ case object BrassHorse extends PaidAction(BrassHorseCard.power):
     ready.game.current.map.sites.get(site).exists(_.denizens.exists(card =>
       catalog.suitOf(card.id).contains(suit)))
 
-  /** The sites the pawn may be placed at: other sites holding a card of the
-    * revealed suit, or every other site when there is none. A Vision has no
-    * suit.
+  /** The sites the pawn may be placed at: the sites holding a card of the
+    * revealed suit, or every site when there is none. A Vision has no suit.
     */
   private def destinations(catalog: ExecutableCatalog,
       ready: ReadyGame, player: PlayerId)
       : Either[OathViolation, Vector[SiteId]] = for
-    here <- PawnMoves.pawnSite(ready, player)
     found <- region(ready, player)
   yield
-    val others = PawnMoves.sitesOtherThan(ready, here)
+    val sites = ready.game.current.map.inPlay
     val matching = top(ready, found).flatMap(catalog.suitOf).toVector
-      .flatMap(suit => others.filter(holds(catalog, ready, _, suit)))
-    if matching.nonEmpty then matching else others
+      .flatMap(suit => sites.filter(holds(catalog, ready, _, suit)))
+    if matching.nonEmpty then matching else sites
 
   private def reveal(ready: ReadyGame, player: PlayerId)
       : Either[OathViolation, Vector[CoreOperation]] =

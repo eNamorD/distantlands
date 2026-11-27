@@ -7,7 +7,7 @@ object CrackedHornCard extends Relic(RelicId("R10"), "Cracked Horn", value = 21,
   val power = PrintedPower(PowerId("relic.cracked-horn"),
     persistent = false, cost = Cost.free,
     modifier = Some(ModifierMark.Action(MajorActionType.Search)),
-    text = "You may put all of the cards you discard on the bottom of " +
+    text = "You may put all the cards you discard on the bottom of " +
       "the world deck.")
   val powers: Vector[PrintedPower] = Vector(power)
 

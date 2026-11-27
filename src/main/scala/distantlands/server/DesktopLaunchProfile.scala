@@ -24,7 +24,8 @@ object DesktopLaunchProfile:
     "DLQ_HOST" -> "--host",
     "DLQ_PORT" -> "--port",
     "DLQ_PUBLIC_BASE_URL" -> "--public-base-url",
-    "DLQ_DATABASE_PATH" -> "--database-path"
+    "DLQ_DATABASE_PATH" -> "--database-path",
+    "DLQ_ART_PATH" -> "--art-path"
   )
   private val Loopback = Set("127.0.0.1", "localhost", "::1", "[::1]")
 

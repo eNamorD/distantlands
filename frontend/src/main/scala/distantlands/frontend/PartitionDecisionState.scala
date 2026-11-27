@@ -109,8 +109,14 @@ private[frontend] final case class PartitionDecisionState(
       : PartitionDecisionState = copy(contents = contents.updated(key, values))
 
 private[frontend] object PartitionDecisionState:
-  /** Opens by filling each section to its minimum in declared order, then
-    * putting remaining items into the first section with capacity.
+  /** Opens a pick -- some section capped, beside one with no minimum and no
+    * cap -- with every item in that open section, so nothing is picked for
+    * the player and the cap's side is left to them (Keep for Search, Keep
+    * staying open-ended for Lost Doors' discard-one).
+    *
+    * Any other shape opens by filling each section to its minimum in
+    * declared order, then putting remaining items into the first section
+    * with capacity.
     *
     * Forge's minima always sum to its option count, so the padding never
     * fires there; it exists so a partition with slack still opens on a fully
@@ -120,6 +126,14 @@ private[frontend] object PartitionDecisionState:
     */
   def filled(sections: Vector[PartitionSection], items: Vector[String])
       : PartitionDecisionState =
+    val open = sections.find(section =>
+      section.minRequired == 0 && section.maxAllowed.isEmpty)
+    open.filter(_ => sections.exists(_.maxAllowed.nonEmpty)).fold(
+      fillToMinimums(sections, items))(rest =>
+      PartitionDecisionState(sections, items, Map(rest.key -> items)))
+
+  private def fillToMinimums(sections: Vector[PartitionSection],
+      items: Vector[String]): PartitionDecisionState =
     val required = sections.flatMap(section =>
       Vector.fill(section.minRequired)(section.key))
     val slack = items.size - required.size

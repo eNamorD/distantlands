@@ -32,14 +32,16 @@ class EnchantressSuite extends munit.FunSuite:
     useAndAnswer(ready, Enchantress, source,
       Enchantress.decisionId, DecisionOptionRef.Denizen(card))
 
-  test("it places a secret and offers other players' faceup advisers, not " +
+  test("it burns a secret and offers other players' faceup advisers, not " +
       "its own, facedown or locked ones"):
     val ready = staged().adviser(p1, landWarden)
       .adviser(p2, newsFromAfar, facedown = true).adviser(p3, insomnia).ready
     val t = accepted(use(ready, Enchantress, source))
     assert(awaits(t, Enchantress.decisionId),
       parked.parkedDecision(t.state).toString)
-    assertEquals(Look(after(t)).tokensOn(enchantress), Tokens(0, 1))
+    assertEquals(Look(after(t)).tokensOn(enchantress), Tokens.empty)
+    assertEquals(Look(after(t)).faceUpSecrets(p1), 0)
+    assertEquals(Look(after(t)).faceDownSecrets(p1), 0)
     assertEquals(offered(t, p1), Some(Vector("denizen" -> homesteaders.value)))
 
   test("the two cards swap faceup, each with its favor and secrets"):
@@ -50,7 +52,7 @@ class EnchantressSuite extends munit.FunSuite:
     assertEquals(Look(end).player(p1).advisers, Vector[AdviserState](
       DenizenState(homesteaders, Orientation.FaceUp, Tokens(1, 2))))
     assertEquals(Look(end).player(p2).advisers, Vector[AdviserState](
-      DenizenState(enchantress, Orientation.FaceUp, Tokens(0, 1))))
+      DenizenState(enchantress, Orientation.FaceUp, Tokens.empty)))
     assertEquals(replayed(ready, t.events ++ done.events), Right(done.state))
     assertWireRoundTrips(t.events ++ done.events)
 
@@ -70,7 +72,7 @@ class EnchantressSuite extends munit.FunSuite:
     val done = accepted(continuedPast(asked, Enchantress.decisionId))
     parked.assertResumed(done.state, Phase.Act, p1)
     assertEquals(Look(after(done)).advisers(p2), Vector[CardId](insomnia))
-    assertEquals(Look(after(done)).tokensOn(enchantress), Tokens(0, 1))
+    assertEquals(Look(after(done)).tokensOn(enchantress), Tokens.empty)
     assertEquals(NoteText.said(Enchantress, done.events), Vector(
       NoteText.Said("used.none", "No faceup adviser could be swapped.",
         covers = false)))

@@ -206,7 +206,9 @@ private[application] final class WalkerDecisionProjector(
             if previewed then playable(procedure, ready, tree, pending, powers,
               decide)
             else (decide.query, Map.empty[DecisionOptionRef, Vector[String]])
-          queryProjection(ready, viewer, query, details).map(projected =>
+          queryProjection(ready, viewer, query,
+            hinted(procedure, ready, decide, pending, query, details))
+            .map(projected =>
             WalkerDecisionProjection(procedure.key, decide.decisionId,
               query = Some(headed(ready, viewer, decide.decisionId, projected)),
               rollOutcome = rollOutcome(procedure, ready, decide.owner,
@@ -216,6 +218,23 @@ private[application] final class WalkerDecisionProjector(
               presentation = decide.presentation.key,
               status = status(procedure, ready, decide.decisionId)))
         }
+
+  /** `details` with each option's procedure hints after its own lines
+    * (`WalkerProcedureRegistry.optionHints`): a Trade source whose favor
+    * bank holds less than the Trade would ask for says so. */
+  private def hinted(procedure: ProcedureRef, ready: ReadyGame,
+      decide: Decide, pending: PendingTree, query: DecisionQuery,
+      details: Map[DecisionOptionRef, Vector[String]])
+      : Map[DecisionOptionRef, Vector[String]] = query match
+    case one: DecisionQuery.ChooseOne =>
+      one.options.map(_.ref).foldLeft(details)((lines, ref) =>
+        WalkerProcedureRegistry.optionHints(procedure, catalog, ready,
+          ready.game.current.walkActor, decide.decisionId, pending.answered,
+          ref) match
+          case Vector() => lines
+          case hints => lines.updated(ref,
+            lines.getOrElse(ref, Vector.empty) ++ hints))
+    case _ => details
 
   /** The decision's query as this viewer is offered it. For a procedure that
     * opts in (`Entry.requiresPlayableOption`), only the options its own

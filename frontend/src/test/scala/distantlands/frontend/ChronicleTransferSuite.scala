@@ -30,7 +30,7 @@ class ChronicleTransferSuite extends munit.FunSuite:
 
   /** The page's Export button for `chronicle`, mounted in `browser`. */
   private def mountExportButton(browser: TestBrowser,
-      chronicle: Option[distantlands.protocol.ChronicleEntry],
+      chronicle: distantlands.protocol.ChronicleEntry,
       transport: JsonTransport, files: FakeChronicleFiles): dom.html.Button =
     val open = ChronicleTransfer.exportButton(browser.mount, chronicle,
       ChronicleClient(transport), files)
@@ -284,7 +284,7 @@ class ChronicleTransferSuite extends munit.FunSuite:
   test("Close, Escape and the scrim close the dialog and refocus its " +
       "button"):
     TestBrowser.useSynchronously(): browser =>
-      val open = mountExportButton(browser, Some(entry("Ashen Crown")),
+      val open = mountExportButton(browser, entry("Ashen Crown"),
         convertingTransport(), FakeChronicleFiles())
       def closedBy(close: () => Unit): Unit =
         browser.click("export-chronicle")
@@ -298,20 +298,11 @@ class ChronicleTransferSuite extends munit.FunSuite:
       closedBy(() => as[dom.html.Element](browser.byClass(
         "export-chronicle-dialog").head).click())
 
-  test("Export without a Chronicle is withheld with a reason"):
-    TestBrowser.useSynchronously(): browser =>
-      val open = mountExportButton(browser, None, convertingTransport(),
-        FakeChronicleFiles())
-      assertEquals(open.getAttribute("aria-disabled"), "true")
-      assertEquals(open.getAttribute(HoverTip.Attribute),
-        "Load a Chronicle to export it")
-      assertEquals(open.onclick, null)
-
   test("the Export dialog shows the TTS string as it opens, and copies it"):
     TestBrowser.use(): browser =>
       val files = FakeChronicleFiles()
       val requests = ArrayBuffer.empty[RecordedRequest]
-      mountExportButton(browser, Some(entry("Ashen Crown")),
+      mountExportButton(browser, entry("Ashen Crown"),
         convertingTransport(requests), files)
       browser.click("export-chronicle")
       assertEquals(textOf(browser, "export-status"),
@@ -336,7 +327,7 @@ class ChronicleTransferSuite extends munit.FunSuite:
 
   test("the Export dialog says when TTS cannot hold the Chronicle"):
     TestBrowser.use(): browser =>
-      mountExportButton(browser, Some(entry("Ashen Crown")),
+      mountExportButton(browser, entry("Ashen Crown"),
         convertingTransport(tts = None), FakeChronicleFiles())
       browser.click("export-chronicle")
       browser.settle.map { _ =>
@@ -351,7 +342,7 @@ class ChronicleTransferSuite extends munit.FunSuite:
     TestBrowser.use(): browser =>
       val files = FakeChronicleFiles()
       files.copyWorks = false
-      mountExportButton(browser, Some(entry("Ashen Crown")),
+      mountExportButton(browser, entry("Ashen Crown"),
         convertingTransport(), files)
       browser.click("export-chronicle")
       browser.settle.flatMap { _ =>

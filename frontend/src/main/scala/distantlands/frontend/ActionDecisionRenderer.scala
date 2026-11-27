@@ -78,7 +78,7 @@ private[frontend] object ActionDecisionRenderer:
      .foreach { shown =>
        val preview = element("section", "public-preview temporary-hand-preview")
        preview.appendChild(text("h3", "", shown.title))
-       val cards = element("div", "decision-cards")
+       val cards = EvenRows.watch(element("div", "decision-cards"))
        shown.cards.foreach(card => cards.appendChild(CardFace.render(card)))
        preview.appendChild(cards)
        panel.appendChild(preview)
@@ -86,9 +86,10 @@ private[frontend] object ActionDecisionRenderer:
    if value.temporaryHandPreview.nonEmpty then
      val preview = element("section", "temporary-hand-preview")
      preview.appendChild(text("h3", "", "Cards in hand"))
-     val cards = element("div", "decision-cards")
+     val cards = EvenRows.watch(element("div", "decision-cards"))
+     val spots = VisionSpotPointer.spots(routed)
      value.temporaryHandPreview.foreach(card =>
-       cards.appendChild(CardFace.render(card)))
+       cards.appendChild(VisionSpotPointer.face(card, spots)))
      preview.appendChild(cards)
      panel.appendChild(preview)
    ParkedDecision.render(value, presentation, routed, canControl, panel, drafts,

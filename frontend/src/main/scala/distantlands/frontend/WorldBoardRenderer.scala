@@ -1,6 +1,7 @@
 package distantlands.frontend
 
 import distantlands.protocol.{GameIntent => GameCommand}
+import distantlands.protocol.art.ArtCatalog
 import org.scalajs.dom
 import ServerUiSupport._
 
@@ -12,7 +13,7 @@ private[frontend] object WorldBoardRenderer:
       accessible: String): dom.Element =
     val node = element("span", "resource")
     node.setAttribute("aria-label", accessible)
-    node.appendChild(RulesTextRenderer.glyph(token))
+    node.appendChild(RulesTextRenderer.piece(token))
     node.appendChild(dom.document.createTextNode(value))
     node
 
@@ -105,41 +106,46 @@ private[frontend] object WorldBoardRenderer:
           HoverTip.set(pill, title)
           pill.onclick = _ => CardInspection.openText(title,
             presented.fold(Vector.empty[String])(_.lines), pill,
-            Some("oathkeeper-title"))
+            Some("oathkeeper-title"), ArtCatalog.title(oath.side))
           slots.appendChild(pill)
         }
-      // The spot is drawn empty only while the decision lights it: the strip
-      // never scrolls, so an empty spot may not spend a row on every board.
-      // A reveal that replaces marks every Vision it discards; one that
-      // keeps them (Desecrated Ground) lights an empty spot after them.
+      // A Vision is a tile two lines tall: the Visions Drawn marker's eye
+      // and the card's name. The left column has that height to spare under
+      // the strip's floor, so the tile costs the strip nothing. The empty
+      // slot is drawn only while the decision lights it. A reveal that
+      // replaces marks every Vision it discards; one that keeps them
+      // (Desecrated Ground) lights an empty slot after them.
       val visionKey = Vector(BoardOptionViews.key("revealed-vision",
         player.playerId))
       val lit = options.view(visionKey)
       val replacing = lit.exists(_.option.replaces.nonEmpty)
       board.revealedVisions.foreach { card =>
-        val pill = button(card.name, "player-slot-vision")
-        pill.onclick = _ => CardInspection.open(card, pill)
+        val tile = visionTile("player-slot-vision", None, card.name)
+        tile.onclick = _ => CardInspection.open(card, tile)
         // The warbands on the Vision (False Prophet's claims), one mark in
         // each claimant's colour; the card face counts them. The marks are
-        // hidden from assistive technology, so the pill's name says them.
-        if card.warbands.nonEmpty then pill.setAttribute("aria-label",
+        // hidden from assistive technology, so the tile's name says them.
+        tile.setAttribute("aria-label",
           (card.name +: card.warbands.map(forceText)).mkString(", "))
         card.warbands.foreach { forces =>
           val mark = text("span", "player-slot-vision-warband " +
             forceCssClass(forces), "●")
           mark.setAttribute("aria-hidden", "true")
           HoverTip.set(mark, forceText(forces))
-          pill.appendChild(mark)
+          tile.appendChild(mark)
         }
         slots.appendChild(
-          if replacing then options.control(pill, visionKey,
+          if replacing then options.control(tile, visionKey,
             Some(card.name -> (CardInspection.open(card, _))))
-          else pill)
+          else tile)
       }
       lit.filterNot(_ => replacing).foreach { _ =>
-        val spot = button("Vision", "player-slot-vision player-slot-vision-empty")
-        spot.setAttribute("aria-label", "Empty revealed Vision spot")
-        slots.appendChild(options.control(spot, visionKey, None))
+        val place = if player.playerId == playerId then "Place your Vision"
+          else "Place Vision"
+        val slot = visionTile("player-slot-vision player-slot-vision-empty",
+          Some("Vision Slot"), place)
+        slot.setAttribute("aria-label", "Empty Vision slot")
+        slots.appendChild(options.control(slot, visionKey, None))
       }
       if slots.childNodes.length > 0 then playerSummary.appendChild(slots)
 
@@ -170,6 +176,42 @@ private[frontend] object WorldBoardRenderer:
       panel.appendChild(section)
     }
     panel
+
+  /** A Vision tile: the Visions Drawn marker's eye, then `kind` in small
+    * capitals over `name`, or `name` alone. */
+  private def visionTile(classes: String, kind: Option[String],
+      name: String): dom.html.Button =
+    val tile = button("", classes)
+    val eye = element("span", "vision-eye")
+    eye.setAttribute("aria-hidden", "true")
+    eye.appendChild(drawnEye())
+    ArtLayer.attach(eye, Some(ArtCatalog.visionsDrawnMarker))
+    tile.appendChild(eye)
+    val words = element("span", "vision-tile-words")
+    kind.foreach(word => words.appendChild(text("span", "vision-tile-kind", word)))
+    words.appendChild(text("span", "vision-tile-name", name))
+    tile.appendChild(words)
+    tile
+
+  /** An eye of our own drawing, an almond with its pupil and a crown of
+    * rays, shown until the marker's image loads and wherever it is absent.
+    */
+  private def drawnEye(): dom.Element =
+    val svg = "http://www.w3.org/2000/svg"
+    val root = dom.document.createElementNS(svg, "svg")
+    root.setAttribute("viewBox", "0 0 24 24")
+    root.setAttribute("class", "vision-eye-drawn")
+    Vector("M2 14 Q12 4 22 14 Q12 22 2 14 Z",
+        "M12 3 V6", "M5 6 L7 8.5", "M19 6 L17 8.5").foreach { d =>
+      val path = dom.document.createElementNS(svg, "path")
+      path.setAttribute("d", d)
+      root.appendChild(path)
+    }
+    val pupil = dom.document.createElementNS(svg, "ellipse")
+    Vector("cx" -> "12", "cy" -> "13.5", "rx" -> "1.6", "ry" -> "3")
+      .foreach((name, value) => pupil.setAttribute(name, value))
+    root.appendChild(pupil)
+    root
 
   /** Where a board's warbands are, one place a line. `own` is the viewer's
     * board, which is "your" board; any other is "their". */
@@ -215,6 +257,8 @@ private[frontend] object WorldBoardRenderer:
     // The world deck is a Search's source and Clay Rattle's pile.
     val deckKeys = Vector(BoardOptionViews.key("deck", "world"))
     val deck = deckBody(value.worldDeckCount, value.worldDeckTopCardKind)
+    pileBack(deck, value.worldDeckCount, value.worldDeckTopCardKind,
+      sideways = true)
     options.decorate(deck, deckKeys)
     badged(deck, deckKeys, options)
     val regions = element("div", "regions")
@@ -235,6 +279,8 @@ private[frontend] object WorldBoardRenderer:
         region.regionId))
       val discard = openableDeck(region.discardCount,
         region.discardTopCardKind, discardTitle, region.discardCards)
+      pileBack(discard, region.discardCount, region.discardTopCardKind,
+        sideways = true)
       badged(discard, discardKeys, options)
       header.appendChild(place(deckFigure("Discard", options.control(discard,
         discardKeys, Option.when(region.discardCount > 0)(discardTitle ->
@@ -245,7 +291,7 @@ private[frontend] object WorldBoardRenderer:
       val sites = element("div", "sites")
       region.sites.zipWithIndex.foreach { (site, row) =>
         val pawns = value.pawnLocations.filter(_.siteId == site.siteId)
-          .map(pawn => pawnMarker(value, pawn.playerId, options))
+          .map(pawn => SitePieces.pawn(value, pawn.playerId, options))
         sites.appendChild(siteRow(site, column, row, MatLayout.Mat, options,
           links, pawns))
       }
@@ -261,6 +307,8 @@ private[frontend] object WorldBoardRenderer:
     val board = element("div", "mat-board")
     board.appendChild(regions)
     board.appendChild(favorBanks(value, options))
+    // The mat under everything on the board.
+    ArtLayer.attach(board, Some(ArtCatalog.mat))
     panel.appendChild(board)
     panel.appendChild(tableEdge(value, options, links))
     panel
@@ -286,19 +334,38 @@ private[frontend] object WorldBoardRenderer:
     val style = control.asInstanceOf[dom.html.Element].style
     style.setProperty("--face-left", faceBox("left"))
     style.setProperty("--face-w", faceBox("width"))
+    // The face reaches past the row's foot by the frame's line; the name
+    // band stands at the face's foot, not the row's.
+    style.setProperty("--face-bottom", MatRect(0, 0, 1,
+      rowRect.bottom - faceRect.bottom).percentOf(MatRect(0, 0, 1, rowRect.h))
+      .toMap.apply("height"))
     val siteKeys = Vector(BoardOptionViews.key("site", site.siteId))
     options.decorate(control, siteKeys)
-    // The card itself: drawn until licensed art takes its place.
+    // The card itself: drawn wherever its image is missing.
     val face = place(element("div", "site-face"), faceRect, rowRect)
     face.setAttribute("aria-hidden", "true")
     control.appendChild(face)
+    // The image fills the face; the site's printed words lie in the row,
+    // so the row is the box that turns ready.
+    ArtLayer.attach(face, ArtCatalog.cardFace(site.label), Some(control))
     control.appendChild(siteHeading(site))
     // What reaching this site costs, or why it cannot be reached, comes
     // from the decision that offers it.
     badged(control, siteKeys, options)
-    val pawnBox = element("div", "site-pawns")
-    pawns.foreach(pawnBox.appendChild)
-    control.appendChild(pawnBox)
+    // The pieces in play, each row at its place on the card, and the
+    // shield the card prints its powers in.
+    control.appendChild(place(SitePieces.pawnRow(pawns),
+      MatLayout.sitePawnRow(column, row), rowRect))
+    control.appendChild(place(SitePieces.warbandRow(site),
+      MatLayout.siteWarbandRow(column, row), rowRect))
+    val shield = MatLayout.sitePowerShield(column, row)
+    control.appendChild(place(SitePieces.powerShield(site, links, column,
+      row), shield, rowRect))
+    // The drawn name starts right of the shield, as the card prints it:
+    // how far the shield reaches into the face, as a share of the row.
+    style.setProperty("--shield-reach", MatRect(0, 0,
+      shield.right - faceRect.x, 1).percentOf(MatRect(0, 0, rowRect.w, 1))
+      .toMap.apply("width"))
     val details = siteDetails(site, options, links)
     placeCards(details, column, row, rowRect)
     control.appendChild(details)
@@ -309,34 +376,9 @@ private[frontend] object WorldBoardRenderer:
         band, rowRect))
     control
 
-  /** A pawn on the map. Both forms are in the DOM and the map's scale picks
-    * one (ruling R6): the dot and the name at rest, the dot and the
-    * initial zoomed out, the dot alone further out. The dot and the
-    * initial are for the eye; the name stays the pawn's name. */
-  private def pawnMarker(value: GameProjection, playerId: String,
-      options: BoardOptions): dom.Element =
-    val marker = element("span", "pawn")
-    val player = playerReference(value, playerId)
-    val colour = playerColorClass(value, playerId)
-    val dot = text("span", s"pawn-dot $colour", "●")
-    dot.setAttribute("aria-hidden", "true")
-    marker.appendChild(dot)
-    // The long form: the space and the name, as the pawn reads at rest.
-    val long = element("span", "pawn-long")
-    long.appendChild(dom.document.createTextNode(" "))
-    long.appendChild(player)
-    marker.appendChild(long)
-    val initial = text("span", s"pawn-initial $colour",
-      player.textContent.take(1))
-    initial.setAttribute("aria-hidden", "true")
-    marker.appendChild(initial)
-    HoverTip.set(marker, player.textContent)
-    options.decorate(marker, Vector(BoardOptionViews.key("player", playerId)))
-    marker
-
   /** Places `node` at `rect`, each length a percentage of `parent`, which
     * is the rectangle of the element it is positioned in. */
-  private def place[E <: dom.Element](node: E, rect: MatRect,
+  private[frontend] def place[E <: dom.Element](node: E, rect: MatRect,
       parent: MatRect = MatLayout.Mat): E =
     node.classList.add("mat-slot")
     val style = node.asInstanceOf[dom.html.Element].style
@@ -370,8 +412,10 @@ private[frontend] object WorldBoardRenderer:
       row.appendChild(visionsDrawn(track.visionsDrawn))
     }
     // The relic deck first, as the mat prints it left of the world deck.
-    row.appendChild(place(deckFigure("Relic deck",
-      deckBody(value.relicDeckCount, Some("relic"))), MatLayout.relicDeck))
+    val relics = deckBody(value.relicDeckCount, Some("relic"))
+    pileBack(relics, value.relicDeckCount, Some("relic"), sideways = false)
+    row.appendChild(place(deckFigure("Relic deck", relics),
+      MatLayout.relicDeck))
     row.appendChild(place(deckFigure("World deck", deck),
       MatLayout.worldDeck))
     row
@@ -388,8 +432,10 @@ private[frontend] object WorldBoardRenderer:
     track.appendChild(place(text("span", "visions-drawn-label printed",
       "Visions Drawn"), MatLayout.visionsLabel))
     val current = math.max(0, math.min(count, MatLayout.visionCells.size - 1))
-    track.appendChild(place(element("span", "vision-marker"),
-      MatLayout.visionCells(current)))
+    val marker = place(element("span", "vision-marker"),
+      MatLayout.visionCells(current))
+    ArtLayer.attach(marker, Some(ArtCatalog.visionsDrawnMarker))
+    track.appendChild(marker)
     track
 
   /** What the physical table keeps beside the mat. */
@@ -478,8 +524,14 @@ private[frontend] object WorldBoardRenderer:
     }
     die
 
-  private[frontend] final case class RoundSegment(path: String, labelX: Double,
-      labelY: Double, markerX: Double, markerY: Double)
+  /** One wedge of the round wheel, in the wheel's 200 by 200 units: its
+    * outline; its centre, where its number, the round marker and the
+    * Usurper's token stand (game art ruling R57); a point in its rim,
+    * where the limiter's drawn diamond stands clear of the number; and
+    * its middle angle in degrees, clockwise from the right. */
+  private[frontend] final case class RoundSegment(path: String,
+      centreX: Double, centreY: Double, rimX: Double, rimY: Double,
+      middle: Double)
 
   private[frontend] def roundSegment(round: Int): RoundSegment =
     val center = 100.0; val outer = 88.0; val inner = 49.0
@@ -492,14 +544,15 @@ private[frontend] object WorldBoardRenderer:
     val (innerEndX, innerEndY) = point(inner, end)
     val (innerStartX, innerStartY) = point(inner, start)
     val middle = (start + end) / 2.0
-    val (labelX, labelY) = point(68.0, middle)
-    val (markerX, markerY) = point(94.0, middle)
+    val (rimX, rimY) = point(82.0, middle)
+    val (centreX, centreY) = point((outer + inner) / 2, middle)
     def n(value: Double) = f"$value%.2f"
     RoundSegment(s"M ${n(outerStartX)} ${n(outerStartY)} " +
       s"A ${n(outer)} ${n(outer)} 0 0 1 ${n(outerEndX)} ${n(outerEndY)} " +
       s"L ${n(innerEndX)} ${n(innerEndY)} " +
       s"A ${n(inner)} ${n(inner)} 0 0 0 ${n(innerStartX)} ${n(innerStartY)} Z",
-      labelX, labelY, markerX, markerY)
+      centreX, centreY, rimX, rimY,
+      Math.toDegrees(middle))
 
   private def roundTracker(value: GameProjection,
       track: distantlands.protocol.projection.GameTracksProjection): dom.Element =
@@ -534,26 +587,58 @@ private[frontend] object WorldBoardRenderer:
       // current round is a wedge of its own laid over its segment.
       path.setAttribute("class", "round-segment printed")
       val label = svgElement("text")
-      label.setAttribute("x", segment.labelX.toString)
-      label.setAttribute("y", segment.labelY.toString)
+      label.setAttribute("x", segment.centreX.toString)
+      label.setAttribute("y", segment.centreY.toString)
       label.setAttribute("text-anchor", "middle"); label.setAttribute("dominant-baseline", "middle")
-      label.setAttribute("class", "round-number printed")
+      // The current round's number stands on the round marker, in Base.
+      // The marker covers the number the mat prints, so this one is play
+      // and shows over the mat too (R57); the others are printed.
+      label.setAttribute("class",
+        if round == track.round then "round-number round-number-current"
+        else "round-number printed")
       label.textContent = round.toString
       group.appendChild(path)
+      // The Usurper's token lies on the limiter's round and fills its
+      // wedge (R33, R39): drawn, the wedge's own shape with a diamond in
+      // its rim, clear of the number; with art, the token's picture, turned so its point faces the
+      // hub. It lies under the current round's border and marker.
+      if track.usurperLimited && round == track.limiterRound then
+        val marker = svgElement("path")
+        marker.setAttribute("d", segment.path)
+        marker.setAttribute("class", "limiter-marker")
+        // The lock's words are the whole wedge's (R58): its note shows
+        // wherever the pointer is over the round, token or drawn. The
+        // group has no name of its own, which nothing would announce
+        // inside the wheel's picture (R67): the tracker's name and its
+        // line of words carry the lock.
+        lock.foreach(words => HoverTip.set(group, words))
+        group.appendChild(marker)
+        val diamond = svgElement("text")
+        diamond.setAttribute("x", segment.rimX.toString)
+        diamond.setAttribute("y", segment.rimY.toString)
+        diamond.setAttribute("text-anchor", "middle")
+        diamond.setAttribute("dominant-baseline", "middle")
+        diamond.setAttribute("class", "limiter-diamond")
+        diamond.textContent = "◆"
+        group.appendChild(diamond)
+        // The file stands point up: turned by the wedge's angle less a
+        // quarter, the point faces the hub.
+        ArtLayer.attachMark(group, marker, Some(ArtCatalog.usurperMarker),
+          segment.centreX, segment.centreY, 54, 55, segment.middle - 90)
       if round == track.round then
         val current = svgElement("path")
         current.setAttribute("d", segment.path)
         current.setAttribute("class", "round-current")
         group.appendChild(current)
+        // The game's silver round marker, at the centre of the current
+        // round's wedge (R40, R57).
+        val disc = svgElement("circle")
+        disc.setAttribute("cx", segment.centreX.toString)
+        disc.setAttribute("cy", segment.centreY.toString)
+        disc.setAttribute("r", "16")
+        disc.setAttribute("class", "round-marker")
+        group.appendChild(disc)
       group.appendChild(label)
-      if track.usurperLimited && round == track.limiterRound then
-        val marker = svgElement("text")
-        marker.setAttribute("x", segment.markerX.toString)
-        marker.setAttribute("y", segment.markerY.toString)
-        marker.setAttribute("text-anchor", "middle"); marker.setAttribute("class", "limiter-marker")
-        marker.textContent = "◆"
-        lock.foreach(words => HoverTip.set(marker, words))
-        group.appendChild(marker)
       svg.appendChild(group)
     }
     // Over every segment, so the current round's wedge never hides one.
@@ -590,12 +675,25 @@ private[frontend] object WorldBoardRenderer:
       // The suit's name is printed beside the mat's circle; the count is
       // play. Together they read as before: "Arcane: 3".
       box.appendChild(text("span", "printed", s"${bank.suit.capitalize}: "))
-      box.appendChild(text("span", "favor-bank-count", bank.count.toString))
-      // The count is favor, drawn as the favor token is everywhere else.
-      box.appendChild(RulesTextRenderer.glyph("favor"))
+      // The favor fills the circle the mat prints for it, and its count
+      // stands over it, as large as it can be read (R42).
+      val token = element("span", "favor-bank-token")
+      token.appendChild(RulesTextRenderer.piece("favor"))
+      val count = text("span", "favor-bank-count", bank.count.toString)
+      // Two figures are set smaller where the count fills its circle.
+      count.setAttribute("data-figures", bank.count.toString.length.toString)
+      token.appendChild(count)
+      box.appendChild(token)
       options.decorate(box,
         Vector(BoardOptionViews.key("favor-bank", bank.suit)))
-      MatLayout.favorBank(bank.suit).foreach(rect => place(box, rect))
+      for
+        whole <- MatLayout.favorBank(bank.suit)
+        emblem <- MatLayout.favorBankEmblem(bank.suit)
+        circle <- MatLayout.favorBankCircle(bank.suit)
+      do
+        place(box, whole)
+        place(suit, emblem, whole)
+        place(token, circle, whole)
       banks.appendChild(box)
     }
     banks
@@ -614,10 +712,23 @@ private[frontend] object WorldBoardRenderer:
       val presented = distantlands.protocol.projection
         .OathkeeperPresentation.byGoal.get(oath.goal)
       val title = presented.fold(oath.goal)(_.title)
-      val goal = button(title, "oathkeeper-goal card-link")
+      // The goal's card, at its ratio (game art ruling R37): its image
+      // where the host's art has one, its title on the plate otherwise.
+      val goal = button("", "oathkeeper-goal card-plate card-plate-oath-goal")
       goal.`type` = "button"
+      goal.setAttribute("aria-label", title)
+      HoverTip.set(goal, title)
+      goal.appendChild(text("span", "card-name printed", title))
+      // The zoomed-out edge shows the goal's own word in short, as a
+      // banner shows its name's initials.
+      val short = text("span", "card-name-short printed",
+        CardFace.initials(title.stripPrefix("Oathkeeper of ")))
+      short.setAttribute("aria-hidden", "true")
+      goal.appendChild(short)
+      ArtLayer.attach(goal, ArtCatalog.oathGoal(oath.goal))
       goal.onclick = _ => CardInspection.openText(title,
-        presented.fold(Vector.empty[String])(_.lines), goal, Some("oath-goal"))
+        presented.fold(Vector.empty[String])(_.lines), goal, Some("oath-goal"),
+        ArtCatalog.oathGoal(oath.goal))
       status.appendChild(goal)
       status.appendChild(text("span", "oathkeeper-holder",
         s"${oath.side.capitalize}: ${oath.holderPlayerId.getOrElse("unheld")}"))
@@ -633,7 +744,7 @@ private[frontend] object WorldBoardRenderer:
     // powers ruling 9): a face only where its viewer may peek. Each relic
     // is keyed by its card when known, so Golden Key's question marks it.
     if value.reliquary.nonEmpty then
-      val reliquary = element("div", "shared-reliquary")
+      val reliquary = EvenRows.watch(element("div", "shared-reliquary"))
       reliquary.setAttribute("aria-label", "Reliquary")
       reliquary.appendChild(text("h4", "shared-reliquary-label", "Reliquary"))
       value.reliquary.foreach(card => reliquary.appendChild(options.card(

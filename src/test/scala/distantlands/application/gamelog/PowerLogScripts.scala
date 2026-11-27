@@ -145,7 +145,7 @@ object PowerLogScripts:
     Script(name, service, p1)
 
   /** Barbed Net in p1's play area and two relics at p1's site, used in Act
-    * by a player holding four secrets. The relic question parks; the answer
+    * by a player holding four favor. The relic question parks; the answer
     * takes Dowsing Sticks. */
   def barbedNet(using munit.Location): Script =
     val net = BarbedNetCard.id
@@ -154,7 +154,7 @@ object PowerLogScripts:
       .relic(p1, BarbedNetCard)
       .relicAt(DowsingSticksCard, AncientCitySite)
       .relicAt(StickyFireCard, AncientCitySite)
-      .secrets(p1, faceUp = 4).banditsRefilled)
+      .favor(p1, 4).banditsRefilled)
     act.withAnswers {
       case park if park.decisionId == BarbedNet.decisionId =>
         ChooseOneAnswer(DecisionOptionRef.Relic(target))

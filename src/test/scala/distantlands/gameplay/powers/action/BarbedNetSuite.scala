@@ -4,15 +4,13 @@ import distantlands.gameplay.powers.search.CrackedHornCard
 import distantlands.gameplay.cards.AncientCitySite
 import distantlands.gameplay.powers.{NoteText, PowerFixture}
 import distantlands.model._
-import distantlands.testkit.{ActPowerHarness, Look, PhasePowerHarness, Refusals,
-  Table}
+import distantlands.testkit.{Look, PhasePowerHarness, Refusals, Table}
 import distantlands.testkit.Outcomes.assertWireRoundTrips
 import distantlands.testkit.Unwrap.accepted
 
 class BarbedNetSuite extends munit.FunSuite:
   import PowerFixture._
   import PhasePowerHarness._
-  import ActPowerHarness.allSecrets
 
   private val net = BarbedNetCard.id
   private val source = DecisionOptionRef.Relic(net)
@@ -23,14 +21,14 @@ class BarbedNetSuite extends munit.FunSuite:
   private val left = CrackedHornCard.id
   private val inRelicDeck = WhistleCard.id
 
-  /** p1's Act at Ancient City holding Barbed Net faceup with `faceUp`
-    * secrets. The site holds Dowsing Sticks and Cracked Horn facedown, or no
+  /** p1's Act at Ancient City holding Barbed Net faceup with `favor`
+    * favor. The site holds Dowsing Sticks and Cracked Horn facedown, or no
     * relic when `relicsAtSite` is false. */
-  private def staged(relicsAtSite: Boolean = true, faceUp: Int = 3)
+  private def staged(relicsAtSite: Boolean = true, favor: Int = 3)
       : ReadyGame =
     val holding = Table.start.turn(actor, Phase.Act)
       .pawn(actor, AncientCitySite)
-      .relic(actor, net).secrets(actor, faceUp)
+      .relic(actor, net).favor(actor, favor)
     if relicsAtSite then
       holding.relicAt(taken, AncientCitySite).relicAt(left, AncientCitySite)
         .ready
@@ -42,15 +40,15 @@ class BarbedNetSuite extends munit.FunSuite:
       .valuesIterator.exists(_.contains(relic))
   private def choose(relic: RelicId) = pick(DecisionOptionRef.Relic(relic))
 
-  test("it burns three secrets, peeks at every relic at the site and asks " +
+  test("it burns three favor, peeks at every relic at the site and asks " +
       "which to take"):
-    // 3 faceup secrets, all burnt.
-    val ready = staged(faceUp = 3)
+    // 3 favor, all burnt.
+    val ready = staged(favor = 3)
     val relics = atSite(ready)
     val t = accepted(use(ready, BarbedNet, source))
     assert(awaits(t, BarbedNet.decisionId),
       parked.parkedDecision(t.state).toString)
-    assertEquals(allSecrets(after(t)), 0)
+    assertEquals(Look(after(t)).favor(actor), 0)
     assertEquals(Look(after(t)).tokensOn(net), Tokens.empty)
     relics.foreach(relic => assert(knows(after(t), relic), relic.value))
     assertEquals(offered(t, actor),
@@ -82,7 +80,7 @@ class BarbedNetSuite extends munit.FunSuite:
     val ready = staged(relicsAtSite = false)
     val t = accepted(use(ready, BarbedNet, source))
     parked.assertNotParked(t.state)
-    assertEquals(allSecrets(after(t)), 0)
+    assertEquals(Look(after(t)).favor(actor), 0)
     assertEquals(NoteText.said(BarbedNet, t.events), Vector(NoteText.Said(
       "used.none", s"${actorsSite(ready).value} held no relic.", covers = false)))
 
@@ -93,8 +91,8 @@ class BarbedNetSuite extends munit.FunSuite:
       choose(inRelicDeck)).left.toOption,
       Some(Refusals.notOffered(BarbedNet.decisionId)))
 
-  test("two secrets are not enough"):
-    val ready = staged(faceUp = 2)
+  test("two favor are not enough"):
+    val ready = staged(favor = 2)
     assert(!usableNow(ready).exists(_.power.id == BarbedNet.id))
     assertEquals(use(ready, BarbedNet, source).left.toOption,
-      Some(OathViolation.InsufficientSecrets(3, 2)))
+      Some(OathViolation.InsufficientFavor(3, 2)))

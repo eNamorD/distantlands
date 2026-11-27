@@ -1,5 +1,6 @@
 package distantlands.frontend
 
+import distantlands.protocol.art.ArtKey
 import org.scalajs.dom
 import ServerUiSupport._
 
@@ -120,16 +121,21 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     * card face on the table that nothing can be played from.
     */
   def showText(title: String, lines: Vector[String],
-      origin: dom.html.Element, plate: Option[String] = None): Unit =
+      origin: dom.html.Element, plate: Option[String] = None,
+      art: Option[ArtKey] = None, banner: Option[BannerState] = None): Unit =
     clear()
+    // A banner's own face first, large, as a card's overlay shows the
+    // card (game art ruling R43): a picture, not the table's control.
+    banner.foreach(value => body.appendChild(BannerFace.picture(value)))
     // Named for what it shows: it is not a card, so "Card details" would
     // misname it.
     node.setAttribute("aria-label", title)
-    // The printed card behind the words, at its real ratio, where its image
-    // will go.
+    // The printed card behind the words, at its real ratio, holding its
+    // image where the host's art has one.
     plate.foreach { kind =>
       val box = element("span", s"card-plate card-plate-$kind")
       box.appendChild(text("span", "card-name printed", title))
+      ArtLayer.attach(box, art)
       body.appendChild(box)
     }
     val panel = element("div", "card-overlay-details")
@@ -145,8 +151,9 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
     * picture is not the map's control, and the words beside it name it.
     * Below, the holder's consent preferences for the Festival (ruling 16). */
   def showFestival(title: String, lines: Vector[String], at: Option[String],
-      grid: Option[ConsentGrid], origin: dom.html.Element): Unit =
-    showText(title, lines, origin)
+      grid: Option[ConsentGrid], origin: dom.html.Element,
+      banner: Option[BannerState] = None): Unit =
+    showText(title, lines, origin, banner = banner)
     val copy = element("div", "rules-power festival-copy")
     val plate = FestivalMarker.plate(withRule = false)
     plate.setAttribute("aria-hidden", "true")
@@ -182,8 +189,9 @@ private[frontend] final class CardInspectionOverlay(root: dom.Element):
   /** A power's printed text, and below it the viewer's consent preferences
     * when they rule it (ruling 16). */
   def showPower(title: String, lines: Vector[String],
-      grid: Option[ConsentGrid], origin: dom.html.Element): Unit =
-    showText(title, lines, origin)
+      grid: Option[ConsentGrid], origin: dom.html.Element,
+      banner: Option[BannerState] = None): Unit =
+    showText(title, lines, origin, banner = banner)
     grid.foreach(drawColumn)
 
   /** A card, and below it the viewer's consent preferences for the power it

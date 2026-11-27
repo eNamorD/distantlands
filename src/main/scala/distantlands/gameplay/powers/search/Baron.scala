@@ -13,8 +13,8 @@ object BaronCard extends Denizen(DenizenId("250"), "Baron", Suit.Order):
   val power = PrintedPower(PowerId("denizen.baron"),
     persistent = false, cost = Cost.free,
     modifier = Some(ModifierMark.Action(MajorActionType.Search)),
-    text = "You may play to any site you rule, and you may discard a " +
-      "card from that site first.")
+    text = "You may play to any site you rule, and you may discard " +
+      "a denizen from that site first.")
   val powers: Vector[PrintedPower] = Vector(power)
 
 /** Baron (card 250), a selected Search modifier with no cost: "You may play

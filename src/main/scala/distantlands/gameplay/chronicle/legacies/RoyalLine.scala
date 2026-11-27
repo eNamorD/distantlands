@@ -12,14 +12,14 @@ object RoyalLineCard extends Legacy(LegacyId("L10"), "Royal Line",
     LegacyGoal.GrandScepter, Suit.Beast):
   val power = PrintedPower(PowerId("legacy.royal-line"),
     persistent = false, cost = Cost.free,
-    text = "**IF YOU ARE A CITIZEN:** **CHRONICLE (SUN):** You may " +
-      "choose which Imperial meets the Successor goal. _Ignore the " +
-      "printed goal. You may choose no one._")
+    text = "**IF YOU ARE A CITIZEN:** At the end of the game, you " +
+      "may choose which Imperial meets the Successor goal. " +
+      "_Ignore the printed goals. You may choose no one._")
   val powers: Vector[PrintedPower] = Vector(power)
 
-/** Royal Line (legacy L10): "If you are a Citizen: Chronicle (Sun): You may
-  * choose which Imperial meets the Successor goal. Ignore the printed goal.
-  * You may choose no one." Its step is the window before Start Chronicle
+/** Royal Line (legacy L10): "If you are a Citizen: At the end of the game, you
+  * may choose which Imperial meets the Successor goal. Ignore the printed
+  * goals. You may choose no one." Its step is the window before Start Chronicle
   * (Legacy Chronicle powers design, ruling 22; R40, moved there from the
   * Sun's first window by Legacy in-play powers R36). Only after a Chancellor's or a
   * Successor's win, a seated Citizen holding it active, read when reached,

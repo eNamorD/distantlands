@@ -146,6 +146,7 @@ lazy val root = (project in file("."))
         "bin/distantlands",
         "bin/distantlands.bat",
         "share/distantlands/configuration.md",
+        "share/distantlands/game-art.md",
         "share/distantlands/packaged-smoke-test.md",
         "share/distantlands/phase-5-follow-ups.md",
         "share/distantlands/quick-start.md",

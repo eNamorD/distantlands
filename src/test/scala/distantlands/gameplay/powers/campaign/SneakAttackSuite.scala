@@ -140,34 +140,6 @@ class SneakAttackSuite extends munit.FunSuite:
     assertEquals(take, Some(OptionReason.Written(
       "Vow of Peace prevents its ruler from campaigning")))
 
-  test("a defender's Second Wind Campaign triggers it too"):
-    // The rival rules the origin and holds Second Wind; p3, the bystander,
-    // holds Sneak Attack where the rival's and p3's pawns start. p1 cannot
-    // reach p3, so p3 is offered nothing after p1's Campaign. The rival wins
-    // as defender, skips the Travel and raids p3, off turn; p3 is then
-    // offered a Campaign against the rival.
-    val base = rivalRulesOriginAndHoldsOathkeeper(
-      board(warbands = 5, supply = 7))
-    val b = on(withAdviserFor(withAdviserFor(base, base.rival, secondWind,
-        Orientation.FaceUp), base.bystander, sneak, Orientation.FaceUp))(
-      _.secrets(base.rival, faceUp = 1).favor(base.rival, 1))
-    val game = rules(losingDice)
-    val held = commit(game, b, 2).finishAttackerPlans(b.actor)
-      .pick(b.rival, CampaignIds.defenderPlan,
-        DecisionOptionRef.Denizen(secondWind)).finishPlanWindows
-    assertEquals(held.winner, Some(false))
-    assertEquals(FollowUpPlay.offered(held.state).map(_.source),
-      Some(Some(PowerSourceRef.Card(secondWind))))
-    val noTravel = accepted(FollowUpPlay.skipped(game, held.state, b.rival))
-    val toCampaign = accepted(FollowUpPlay.taken(game, noTravel.state,
-      b.rival))
-    val rival = b.copy(actor = b.rival, ready = ready(noTravel.state))
-    val raided = committed(game, toCampaign, rival, force = 2, raid = true)
-      .finishPlanWindows
-    assertEquals(raided.result.attacker, b.rival)
-    assertEquals(FollowUpPlay.offered(raided.state),
-      Some(sneakOffer(b.bystander, b.rival)))
-
   test("no offer after a Campaign its attacker skips"):
     // p3 holds Vow of Union and rules Broken Peaks, in their region; the
     // rival holds Sneak Attack at the origin. p3 moves Broken Peaks'

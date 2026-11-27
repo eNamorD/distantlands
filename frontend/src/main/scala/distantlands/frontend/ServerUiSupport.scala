@@ -52,7 +52,7 @@ private[frontend] object ServerUiSupport:
     heading
 
   private def siteToken(token: String, count: Int): Vector[dom.Element] =
-    Vector(RulesTextRenderer.glyph(token),
+    Vector(RulesTextRenderer.piece(token),
       text("span", "site-token-count", count.toString))
 
   /** A card's face and what opening it does: a card printing a power the
@@ -105,51 +105,9 @@ private[frontend] object ServerUiSupport:
     (presentation.relics.size until site.relicCapacity)
       .foreach(_ => cards.appendChild(emptySlot("relic")))
     details.appendChild(cards)
-    site.forces.foreach { forces =>
-      // The words cut inside the face and the count never does; together
-      // they read as forceText.
-      val row = element("p", s"site-forces ${forceCssClass(forces)}")
-      row.appendChild(text("span", "site-forces-label", s"${forces.label} "))
-      row.appendChild(text("span", "site-forces-count", s"x${forces.count}"))
-      forces match
-        case exile: SiteForces.Exile =>
-          row.setAttribute("data-ruler-kind", "player")
-          row.setAttribute("data-ruler-player-id", exile.rulerPlayerId)
-        case _: SiteForces.Imperial =>
-          row.setAttribute("data-ruler-kind", "empire")
-        case _: SiteForces.Bandit =>
-          row.setAttribute("data-ruler-kind", "bandit")
-      details.appendChild(row)
-      // The short form for the far zoomed-out map (ruling R5): the warband
-      // in the force's colour and its count, as a card shows warbands.
-      val short = element("span", s"site-forces-short ${forceCssClass(forces)}")
-      short.setAttribute("aria-hidden", "true")
-      HoverTip.set(short, forceText(forces))
-      short.appendChild(RulesTextRenderer.glyph("warband"))
-      short.appendChild(text("span", "site-token-count", forces.count.toString))
-      details.appendChild(short)
-    }
+    // The requirement's corner; the site's pieces and its powers are
+    // placed on the card by `SitePieces`.
     val footer = element("div", "site-footer")
-    // Two lines of labels at most (`.site-powers`). Each label keeps its
-    // rules text on its hover title, and opens the power in the inspector.
-    // A button, so the site box it sits in leaves the click to it
-    // (`BoardOptions.own`).
-    val powers = element("p", "site-powers")
-    site.powers.zipWithIndex.foreach { case (power, index) =>
-      if index > 0 then powers.appendChild(dom.document.createTextNode(" · "))
-      // The control is not printed; the label it shows is (ruling R9).
-      val item = button("", "site-power")
-      item.setAttribute("aria-label", power.label)
-      item.appendChild(text("span", "printed", power.label))
-      HoverTip.set(item, power.description.fold(power.label)(
-        description => s"${power.label}: $description"))
-      item.onclick = (event: dom.MouseEvent) =>
-        event.stopPropagation()
-        CardInspection.openPower(power.label, power.description.toVector,
-          links.grid(power), item)
-      powers.appendChild(item)
-    }
-    footer.appendChild(powers)
     presentation.requirement.foreach(value =>
       footer.appendChild(requirementCorner(value)))
     details.appendChild(footer)
@@ -176,10 +134,15 @@ private[frontend] object ServerUiSupport:
   private[frontend] def forceText(forces: SiteForces): String =
     s"${forces.label} x${forces.count}"
 
-  private[frontend] def forceCssClass(forces: SiteForces): String = forces match
-    case exile: SiteForces.Exile => s"force-${exile.color.key}"
-    case _: SiteForces.Imperial => "force-empire"
-    case _: SiteForces.Bandit => "force-bandit"
+  private[frontend] def forceCssClass(forces: SiteForces): String =
+    s"force-${forceKey(forces)}"
+
+  /** Whose a force is, in one word: a player's colour, "empire" or
+    * "bandit". The force's class and its piece both read it. */
+  private[frontend] def forceKey(forces: SiteForces): String = forces match
+    case exile: SiteForces.Exile => exile.color.key
+    case _: SiteForces.Imperial => "empire"
+    case _: SiteForces.Bandit => "bandit"
 
   /** A site relic the viewer cannot identify. Same box as a real relic, so
     * learning what it is -- which a negotiation can do mid-game -- swaps the
@@ -190,6 +153,7 @@ private[frontend] object ServerUiSupport:
     node.setAttribute("role", "img")
     node.setAttribute("aria-label", s"Facedown $cardKind")
     node.appendChild(text("span", "card-back-letter printed", CardFace.backLetter(cardKind)))
+    ArtLayer.attach(node, art.ArtCatalog.cardBack(cardKind))
     node
 
   private[frontend] def emptySlot(cardKind: String, label: String = "")
@@ -254,6 +218,19 @@ private[frontend] object ServerUiSupport:
     // The mat prints the slot's name, so the caption is printed content.
     figure.appendChild(text("span", "deck-caption printed", caption))
     figure
+
+  /** Lays the back of a pile's top card over the pile drawn in `pile`
+    * (game art design, "Card faces"): the kind's back when the viewer may
+    * know the kind and the pile holds a card. A pile that lies on its
+    * side is marked `deck-sideways`, with art or without, so the
+    * stylesheet turns its back a quarter. */
+  private[frontend] def pileBack(pile: dom.Element, count: Int,
+      topCardKind: Option[String], sideways: Boolean): Unit =
+    Option(pile.querySelector(".deck-card")).foreach { card =>
+      if sideways then card.classList.add("deck-sideways")
+      if count > 0 then
+        ArtLayer.attach(card, topCardKind.flatMap(art.ArtCatalog.cardBack))
+    }
 
   private def deckCard(count: Int, topCardKind: Option[String]): dom.Element =
     val card = element("span", s"deck-card ${pileCardClasses(count)}")
