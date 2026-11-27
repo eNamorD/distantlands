@@ -194,8 +194,8 @@ class StylesheetArtSuite extends munit.FunSuite:
     // A pawn and a warband entry each stand on one ground, behind the
     // picture and its words together (R61, which rewrites R51). The
     // pawn's is a layer of its own inside the pawn, so an offered pawn
-    // has it too and keeps its ring and its selected fill, which are the
-    // pawn's own paint; the layer ends inside the ring.
+    // has it too and keeps its ring, which is the pawn's own paint; the
+    // layer ends inside the ring.
     val grounds = rule(".site.art-ready .site-force")
     assert(grounds.contains("background: var(--chip-ground)"))
     assert(rule(".site.art-ready .pawn-ground")
@@ -212,6 +212,12 @@ class StylesheetArtSuite extends munit.FunSuite:
       assert(rule(".mat-board .pawn").contains(part), part))
     assert(rule(""".mat-board .pawn[class*="board-option"] > .pawn-ground""")
       .contains("inset: var(--option-ring)"))
+    // The slice 6 review: the ground hid a selected pawn's fill. A pawn
+    // that is selected, locked or played has no ground: its fill is its
+    // ground.
+    assert(rule(".site.art-ready .pawn:is(.board-option-selected, " +
+      ".board-option-locked,\n  .board-option-played) > .pawn-ground")
+      .contains("background: none"))
     Vector(tokens, grounds, rule(".site.art-ready .pawn-ground")).foreach(
       ground =>
       Vector("padding", "margin", "width", "height", "border:").foreach(
@@ -577,6 +583,16 @@ class StylesheetArtSuite extends munit.FunSuite:
     // The drawn name stands at the face's foot, under the chip, which
     // would cover it in the face's middle.
     assert(rule(".card-face.banner-face").contains("justify-content: flex-end"))
+    // The slice 6 review: a face holding tokens keeps room for their
+    // band at its foot (`:has(> .card-tokens)`), which pushed the drawn
+    // name up under the chip. A banner's tokens are no band any more,
+    // so its face takes its plain foot back; the rule must outrank the
+    // band's and follow it.
+    val foot = ".card-face.banner-face:has(> .card-tokens)"
+    assert(rule(foot).contains("padding-bottom: 0.4em"))
+    val bands = """(?m)^[^{}]*:has\(> \.card-tokens[^{}]*\{[^{}]*padding-bottom""".r
+    assert(bands.findAllMatchIn(css).toVector.last.matched.contains(foot),
+      "a later band rule outranks the banner's")
     // The overlay's face is large; its chip is a smaller share of it.
     assert(rule(".card-overlay-body > .card-face.banner-face > .card-tokens")
       .contains("font-size: 12cqw"))

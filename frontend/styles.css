@@ -518,7 +518,8 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
   line-height: 1.2; }
 /* The ground under a pawn's piece and name together: a layer of the
    pawn's own box, painted over art alone. On an offered pawn it ends
-   inside the ring, which is the pawn's own. */
+   inside the ring, which is the pawn's own; a selected, locked or played
+   pawn has none, and shows its fill. */
 .mat-board .pawn-ground { position: absolute; inset: 0; z-index: -1;
   border-radius: inherit; }
 .mat-board .pawn[class*="board-option"] > .pawn-ground {
@@ -1956,6 +1957,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   padding-bottom: calc(0.25em + 1.2em); }
 .map-compact .mat-board .site-cards .card-face:has(> .card-tokens > :nth-child(4)) {
   padding-bottom: calc(0.25em + 2.4em); }
+/* A banner's tokens are a chip on its face, not a band at its foot: the
+   face takes its plain foot back, so the drawn name stands under the
+   chip. It follows every band rule above. */
+.card-face.banner-face:has(> .card-tokens) { padding-bottom: 0.4em; }
 .map-compact .mat-board .site-cards .card-face :is(.card-name, .card-name-short) {
   flex-shrink: 1; min-height: 0; overflow: hidden; }
 .map-compact .mat-board .site-cards .card-tokens .token-glyph { width: 1em;
@@ -2407,8 +2412,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    so nothing moves. The loose tokens' line has one; a pawn has one
    behind its piece and its name together, and a warband entry one
    behind its pieces and its count (R61). The pawn's is a layer inside
-   it, so an offered pawn has it too: its ring, glow and selected fill
-   stay the pawn's own.
+   it, so an offered pawn has it too, inside its ring, which stays the
+   pawn's own; a selected pawn shows its fill in the ground's place.
    Each of the tracker's lines, which lie on the mat's picture, is a chip
    on Base that hugs its words (R41). */
 .site.art-ready .site-tokens {
@@ -2416,6 +2421,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
   box-shadow: 0 0 0 3px var(--chip-ground);
   color: var(--cream-bright); text-shadow: var(--chip-text-edge); }
 .site.art-ready .pawn-ground { background: var(--chip-ground); }
+/* A pawn a decision has selected, locked or played shows its own fill:
+   that is its ground. */
+.site.art-ready .pawn:is(.board-option-selected, .board-option-locked,
+  .board-option-played) > .pawn-ground { background: none; }
 .site.art-ready .site-force { background: var(--chip-ground);
   box-shadow: 0 0 0 4cqh var(--chip-ground); }
 .site.art-ready :is(.pawn-name, .site-force-count) {
