@@ -32,7 +32,7 @@ object MusterProcedure:
     (player, _, matching, force) =>
       Some(Gain.Warbands(player, force, 1 + matching)),
     note = Some((ProcedureNotes.id(ActionRef.Muster),
-      musteredNote(actor, _, _))))
+      (states, source, _) => musteredNote(actor, states, source))))
 
   /** The warbands that reached the player's play area, read as the
     * difference across the gain rather than as the printed number: a gain

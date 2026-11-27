@@ -131,7 +131,14 @@ object WalkerProcedureRegistry:
       /** Replaces the playable-option filter in the projector: an entry that
         * prices its options shows every option, each priced or explained.
         * Travel's destinations. */
-      optionPricing: Option[OptionPricing] = None)
+      optionPricing: Option[OptionPricing] = None,
+      /** Extra lines under one option of a parked decision of this
+        * procedure, by that decision's id and the walk's answers so far:
+        * Trade's source names a favor bank that holds less than the Trade
+        * would ask for. None by default. */
+      optionHints: (ExecutableCatalog, ReadyGame, PlayerId, String,
+          Vector[Answered], DecisionOptionRef) => Vector[String] =
+        (_, _, _, _, _, _) => Vector.empty)
 
   private[gameplay] object Entry:
     /** An entry for a tree with no start-only gate, so a resume rebuilds
@@ -212,7 +219,8 @@ object WalkerProcedureRegistry:
       modifierWindow = Some(PowerWindow.TradeModifierSelection),
       build = TradeProcedure.build,
       rebuild = TradeProcedure.rebuild,
-      requiresPlayableOption = true),
+      requiresPlayableOption = true,
+      optionHints = TradeProcedure.sourceHint),
 
     /** Challenge. Its first step after the modifier decision spends the
       * Supply, so a start runs an operation before its first decision and
@@ -481,6 +489,15 @@ object WalkerProcedureRegistry:
 
   /** The facts `procedure` shows beside its parked `decisionId`; empty when
     * it declares none or is not registered. */
+  /** The extra lines under `option` of the parked decision `decisionId`
+    * (`Entry.optionHints`). */
+  def optionHints(procedure: ProcedureRef, catalog: ExecutableCatalog,
+      ready: ReadyGame, actor: PlayerId, decisionId: String,
+      answered: Vector[Answered], option: DecisionOptionRef,
+      registrations: Map[ProcedureRef, Entry] = entries): Vector[String] =
+    registrations.get(procedure).fold(Vector.empty)(_.optionHints(catalog,
+      ready, actor, decisionId, answered, option))
+
   def status(procedure: ProcedureRef, catalog: ExecutableCatalog,
       ready: ReadyGame, actor: PlayerId, decisionId: String,
       registrations: Map[ProcedureRef, Entry] = entries)

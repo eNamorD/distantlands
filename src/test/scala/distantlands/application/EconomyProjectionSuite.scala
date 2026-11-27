@@ -88,12 +88,20 @@ class EconomyProjectionSuite extends munit.FunSuite:
   test("a parked Trade shows its yield in the resource it gains"):
     val board = withMatchingAdviser.bankFavor(Suit.Arcane, 1).ready
     // Trade for favor would gain 1 plus 1 per matching adviser, but the
-    // Arcane bank holds only 1; Trade for secrets gains 1 per matching
-    // adviser.
+    // Arcane bank holds only 1, and the option says so; Trade for secrets
+    // gains 1 per matching adviser and draws on no bank.
     assertEquals(parkedOptions(board, ActionRef.Trade, favor).map(_.details),
-      Vector(Vector("1 Supply", "+1 favor")))
+      Vector(Vector("1 Supply", "+1 favor", "Arcane bank only has 1")))
     assertEquals(parkedOptions(board, ActionRef.Trade, secret).map(_.details),
       Vector(Vector("1 Supply", "+1 secrets")))
+
+  test("a parked Trade for favor names an empty bank, and a full one not"):
+    assertEquals(parkedOptions(withMatchingAdviser.bankFavor(Suit.Arcane, 0)
+      .ready, ActionRef.Trade, favor).map(_.details),
+      Vector(Vector("1 Supply", "Arcane bank has none")))
+    assertEquals(parkedOptions(withMatchingAdviser.bankFavor(Suit.Arcane, 2)
+      .ready, ActionRef.Trade, favor).map(_.details),
+      Vector(Vector("1 Supply", "+2 favor")))
 
   test("a gain that shrinks to nothing shows no gain line"):
     // All 14 of p1's warbands are on the board, so Muster can gain none.
