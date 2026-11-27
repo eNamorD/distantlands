@@ -182,9 +182,14 @@ Every surface swaps art through one helper, `ArtLayer.attach(box, key)`.
 - **The site card:** its face in the frame the mat prints, covering the
   frame's line; the image fills the box with `cover`
   ([implementation ruling R38](2026-11-26-game-art-design-implementation-rulings.md)). The site-power buttons are
-  controls, not print (R9): their labels hide with the print and the
-  buttons keep their place ([R45](2026-11-26-game-art-design-implementation-rulings.md))
-  until the printed power symbols become their click targets.
+  controls, not print (R9): each stands on the part of the shield the
+  card prints its power in, so the printed symbol is its click target,
+  and its label hides with the print
+  ([R53 to R55](2026-11-26-game-art-design-implementation-rulings.md)).
+  The pawns and warbands on the card are their pieces' pictures, a row of
+  pawns with their players' names under them and a row of warbands with a
+  count, each a fixed share of the site at every zoom (R48 to R52). The
+  drawn face has the same rows and the same shield, outlined.
 - **The mat:** one image behind the slots of `.mat-board`. The drawn
   washes, frames, region names and slot labels are printed and hide when
   it is ready. The live layer keeps its places and reads on the picture:

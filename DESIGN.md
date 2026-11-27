@@ -439,41 +439,37 @@ viewport, so its text shrinks with it. Below a scale of 0.72, where the map
 card name (0.95em of 16px) falls under the floor, `.map-content` carries
 `map-compact` and `--map-scale`, and the glance layer is set against the
 scale instead: `font-size: clamp(rest, calc(<screen px> / var(--map-scale)),
-cap)` holds region and site names, pawns, tokens, defense, forces and card
+cap)` holds region and site names, tokens, defense and card
 names near one screen size while the board keeps shrinking under them, the
-way a map's place names hold still while the map zooms. The site footer
-(powers and requirement) sits inside the details and so holds the glance
-size too, clamped to one line on the compact map; a card's own study layer
+way a map's place names hold still while the map zooms. The pieces on a
+site are not part of it: pawns and warbands keep their share of the site
+at every scale (Sites). The site footer
+(the requirement) sits inside the details and so holds the glance
+size too; a card's own study layer
 (defense and badge) is hidden there and read on a zoom or in the overlay;
 the restriction banner stays, in the card's top-right corner, and the power
 marks are hidden. Text on the map may fall under 11px; the Eleven-Pixel Floor is
 a pane rule. On the map the glance layer's text holds about 9px or more on
 screen at every supported Fit; a few small marks do not (on a phone at Fit
-the wheel's limiter mark, a card's inspect button, a selected card's badge,
-and a site's pawns from three on, whose dots shrink to fit the face:
-implementation ruling R10). The board has the mat's fixed ratio; the table's edge
+the wheel's limiter mark, a card's inspect button, a selected card's badge:
+implementation ruling R10; and a site's pieces, which shrink with their
+site by the owner's request, game art ruling R52). The board has the mat's fixed ratio; the table's edge
 under it grows as the scale falls, which only lowers Fit, so a Fit that
 lands near a threshold settles instead of flipping. The two glance sizes are named once on `.map-compact`
 (`--glance-name`, `--glance-text`, each capped at 3.6rem). A site face's
 lines stand on rows of one height, `--row`, which grows with the glance
 size, and its name keeps one line, cut with an ellipsis. Below a scale of
 0.4 the map also carries `map-tiny`, a second step: a site face keeps its
-name, its tokens and its pawns, and its forces and defense in a short form,
-the warband glyph and its count in the force's colour (the Empire's glyph
-ringed, so it does not rest on colour alone) and one defense die with its
-count (implementation rulings R5 and R7). Pawns are one line that never
-wraps on the face at any scale: two pawns by name at rest, from three on the
-dot and the player's initial; the dot and the initial on the compact map,
-the dot alone from five pawns on and on the tiny map, where the dot is sized
-from the face's width (about 8px on screen at a tablet's Fit). On a phone's
-face defense steps out and the pawns share the forces' row at the glance
-size, shrinking only as their number needs; the name is kept as the pawn's
-name and hover note (R6). There a cost badge wider than the face grows
-rightward over its own row. A
+name, its tokens, its pieces and its defense in a short form, one defense
+die with its count beside the tokens (implementation ruling R5). A pawn's
+name under its piece is hidden from sight there and stays the pawn's name
+and hover note (game art ruling R50); its colour says whose it is. On a
+phone's face defense steps out. There a cost badge wider than the face
+grows rightward over its own row. A
 decision's cost badge sits at the face's foot, over the name's tail, the
 one thing it may cover. A card holding three kinds of token or more gives
-its token band two lines, and on the mat the band wraps two kinds a line. Its
-powers, the wheel's numbers and end dice and a bank's favor glyph leave
+its token band two lines, and on the mat the band wraps two kinds a line. A
+site's requirement, the wheel's numbers and end dice and a bank's favor glyph leave
 the board at that scale; the tracker's words, the slots' names and the track's label
 leave the screen but stay in the accessibility tree, and the Usurper's
 lock is also in the round tracker's name and on the limiter mark's hover
@@ -853,12 +849,27 @@ their own log lines.
 ### Sites
 A site is the board's unit: a site card of the real ratio in the frame the
 mat prints for it, with its three card slots to its right (Layout). On the
-card: Site fill, Line border, 9px radius; the name in a band at its foot,
-loose tokens in the upper left and defense in the upper right, then rows
-for the pawns and the forces, and the powers and requirement over the name
-band. The rows grow with the glance size on the zoomed-out map (The Glance
-Layer Rule). Powers are two clipped lines of labels with hover notes, one
-line on the compact map; each label is a button that opens the power. A site offered as a board option gets a brass
+card: Site fill, Line border, 9px radius; loose tokens in the upper left
+and defense in the upper right, as the card prints its resources and its
+die; then a row of pawns and a row of warbands; then the print's band at
+its foot, the power shield at the lower left, the name right of it and the
+requirement over the name. The two rows are boxes the mat's layout places
+on the card (pawns from 19% of the frame's height for 30%, warbands from
+50% for 20%), and every length inside them is a share of the row, so a
+piece is the same share of its site at every zoom (game art rulings R48
+to R52). The pawn row has six places, one a seat; a pawn takes one from
+the left and is the same size alone as among six. A pawn is its piece, a
+disc of its player's colour, over its player's name, cut with an ellipsis.
+A site's warbands are the ruler's piece, as tall as the row, and "x2" in
+the force's colour (the Empire's glyph ringed, so it does not rest on
+colour alone: R7); the force's words are its name and hover note. Each
+power is a button on the part of the shield the card prints it in: the
+whole shield for one, left and right of the shield's line for two, the
+Coast above the Island on an island (R55). Drawn, a part is a Line
+outline with the power's label, cut with an ellipsis; the button is no
+larger than its part, so it takes no click from the pieces beside it, and
+may be under 24px on a zoomed-out map, where a zoom and Chronicle Details
+are the other ways to a power (R54). A site offered as a board option gets a brass
 border and inset ring; hover brightens the border to
 Bright Cream with the target halo; selected turns Selection blue on Selection
 Fill. A slot of a region that holds no site is an empty frame after the
@@ -1067,17 +1078,20 @@ hover note.
   which keeps the text in the accessibility tree. Printed content follows
   its nearest box, so each box falls back to its drawing alone when its
   image is slow, missing or failed.
-- **What stays over art.** Tokens, forces, pawns, counts, option rings
-  and badges. On a site's art, forces, loose tokens and each pawn
-  stand on opaque Base, with no padding: forces and tokens take a fill
-  and a same-colour 3px shadow, a pawn the fill alone, and only while no
-  decision offers it, so its option ring stays its own. Every player
-  colour measures 6.6 : 1 or better on it, where the black
-  player's colour measured 4.17 : 1 on a translucent ground over white
-  art. A pile's count stands on Base too (13.2 : 1).
-- **Site powers.** A site's power buttons are controls, not print; over
-  the site's art their labels hide with the print and the buttons keep
-  their place, focusable, with their hover notes.
+- **What stays over art.** Tokens, warbands, pawns, counts, option rings
+  and badges. A piece's picture needs no ground. On a site's art the
+  words do: loose tokens, a warband's count and a pawn's name stand on
+  opaque Base, a fill and a same-colour shadow with no padding. A
+  pawn's name takes its chip only while no decision offers the pawn, so
+  the offered pawn's ring, around its piece and its name, stays its own
+  (R51). Every player colour measures 6.6 : 1 or better on Base, where
+  the black player's colour measured 4.17 : 1 on a translucent ground
+  over white art. A pile's count stands on Base too (13.2 : 1).
+- **Site powers.** A site's power buttons are controls, not print. Each
+  stands on the part of the shield the site's card prints its power in;
+  over the art its label and its drawn outline hide with the print and
+  the button keeps its place, focusable, with its hover note, so the
+  printed symbol is what a player clicks.
 - **A site's box.** The site's card covers the frame the mat prints and
   the frame's line: the frame grown by 8 mat pixels a side, the image
   fitted with `cover`. The drawn face has the same box.

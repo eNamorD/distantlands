@@ -1,6 +1,6 @@
 # Game Art, Slice 5: Pieces and Powers on a Site Implementation Plan
 
-> Executed inline by the implementer. Steps use checkbox (`- [ ]`) syntax
+> Executed inline by the implementer. Steps use checkbox (`- [x]`) syntax
 > for tracking.
 
 **Goal:** The owner's tenth request, in two parts. Part A: the pawns and
@@ -30,6 +30,10 @@ forces, and replaces the pawn and force forms of the glance layer
 `DESIGN.md` records them).
 
 ## Rulings folded in
+
+All tasks are done. Tasks 2, 3, 4 and 7 landed as one commit
+(`d1d77cdf5`), since they rewrite the same stylesheet blocks and the same
+site row; Tasks 1 and 6 as one (`275427683`).
 
 The coordinator ruled on the plan's eight questions as R48 to R55, in
 order (Q1 is R48 and so on). Each confirmed the plan's answer, with
@@ -177,16 +181,16 @@ is marked **(Q<n>)** and listed again at the end.
 **Files:** `MatLayout.scala`, `MatLayoutSuite.scala`,
 `docs/catalog/asset-proportions.md`.
 
-- [ ] Write failing tests in `MatLayoutSuite`: `sitePawnRow(column, row)`
+- [x] Write failing tests in `MatLayoutSuite`: `sitePawnRow(column, row)`
   and `siteWarbandRow(column, row)` lie inside `siteFrame(column, row)`,
   do not overlap each other, both end above `sitePowerShield`'s top, and
   the pawn row starts below 18% of the frame's height (the print's
   resources and die end there).
-- [ ] Add the two rectangles to `MatLayout` from the table above, as
+- [x] Add the two rectangles to `MatLayout` from the table above, as
   shares of `siteFrame` (not of `siteCard`, so the frame's line margin
   does not move them).
-- [ ] Record the shares in `asset-proportions.md`.
-- [ ] `./sbtw "frontend/testOnly *MatLayoutSuite"` green, then commit:
+- [x] Record the shares in `asset-proportions.md`.
+- [x] `./sbtw "frontend/testOnly *MatLayoutSuite"` green, then commit:
   `feat(frontend): give a site's pawns and warbands rows of their own`.
 
 ### Task 2: The pawn row
@@ -194,7 +198,7 @@ is marked **(Q<n>)** and listed again at the end.
 **Files:** `SitePieces.scala` (new), `WorldBoardRenderer.scala`,
 `SitePiecesSuite.scala` (new), `styles.css`.
 
-- [ ] Write failing tests in `SitePiecesSuite` (a site row rendered with
+- [x] Write failing tests in `SitePiecesSuite` (a site row rendered with
   no art, then with a temporary manifest):
   - a pawn is `span.pawn` holding `span.pawn-piece` (a coloured disc,
     `aria-hidden`) and `span.pawn-name` with the player's name under it;
@@ -207,29 +211,29 @@ is marked **(Q<n>)** and listed again at the end.
     with art off;
   - a pawn a decision offers still carries its option classes, its badge
     and its hover note.
-- [ ] Move `pawnMarker` to `SitePieces.pawn`. The dot's character, the
+- [x] Move `pawnMarker` to `SitePieces.pawn`. The dot's character, the
   long form and the initial go; the piece is a box, the name is one span.
   `HoverTip` and `options.decorate` stay on `.pawn`.
-- [ ] Stylesheet: `.mat-board .site-pawns` is a `mat-slot` with
+- [x] Stylesheet: `.mat-board .site-pawns` is a `mat-slot` with
   `display: flex` and `container-type: size`; `.pawn` is `flex: 0 0
   calc(100% / 6)`, a column; `.pawn-piece` is 73cqh tall, as wide as the
   pawn's box, the drawn disc a circle of the player's colour centred in
   it; its `.art` is `object-fit: contain`; `.pawn-name` is one line, cut
   with an ellipsis, centred, `font-size: 20cqh`.
-- [ ] Delete the old pawn rules, each by an exact counted replacement:
+- [x] Delete the old pawn rules, each by an exact counted replacement:
   the `--row` placement, the two-names rule and its `:has()` forms, the
   `map-compact` and `map-tiny` pawn rules and the phone's five font
   steps (`styles.css` lines 496 to 498, 681 to 707, 758 to 761 and 776
   to 788 at this plan's HEAD).
-- [ ] **(Q3)** The name under a pawn hides from sight (and stays the
+- [x] **(Q3)** The name under a pawn hides from sight (and stays the
   pawn's name) where it would be under 9 CSS px: on the tiny map. On the
   compact map it stays, at its share of the site.
-- [ ] Update the suites that pin the old forms (`SiteFaceSuite`,
+- [x] Update the suites that pin the old forms (`SiteFaceSuite`,
   `PieceArtSuite`, `WorldArtSuite`, `BoardOptionsRenderSuite`,
   `PrintedLayerSuite`, `MatBoardSuite`): each old assertion is replaced
   by the new form's, never deleted without a successor. List every
   replaced assertion in the commit body.
-- [ ] `./sbtw frontend/test` green, then commit:
+- [x] `./sbtw frontend/test` green, then commit:
   `feat(frontend): stand a site's pawns in a row of pieces with names`.
 
 ### Task 3: The warband row
@@ -237,7 +241,7 @@ is marked **(Q<n>)** and listed again at the end.
 **Files:** `SitePieces.scala`, `ServerUiSupport.scala`,
 `SitePiecesSuite.scala`, `styles.css`.
 
-- [ ] Write failing tests: a site with forces has `div.site-warbands`
+- [x] Write failing tests: a site with forces has `div.site-warbands`
   placed at `siteWarbandRow`, holding one `span.site-force` with the
   force's class, its `data-ruler-*` attributes, the warband piece
   (`RulesTextRenderer.warband(forceKey)`), `span.site-force-count`
@@ -245,61 +249,61 @@ is marked **(Q<n>)** and listed again at the end.
   has the box, empty (so the markup's shape does not depend on state the
   art cannot change); with art the piece holds the warband's image, and
   the bandit's file for bandits.
-- [ ] Move the forces out of `siteDetails` into
+- [x] Move the forces out of `siteDetails` into
   `SitePieces.warbands(site)`. The long row (`p.site-forces`) and the
   short form (`span.site-forces-short`) become the one `span.site-force`.
   Check every reader of `data-ruler-kind` and `.site-forces` in main and
   test code and move it to the new element.
-- [ ] Stylesheet: the row is a flex row with `container-type: size`; the
+- [x] Stylesheet: the row is a flex row with `container-type: size`; the
   piece is 100cqh square; the count is `font-size: 55cqh`, bold, in the
   force's colour as today. Delete the old force rules (the `--row`
   placement, the label and count rules, the tiny map's short-form rules
   and the phone's), each by an exact counted replacement.
-- [ ] `./sbtw frontend/test` green, then commit:
+- [x] `./sbtw frontend/test` green, then commit:
   `feat(frontend): show a site's warbands as their piece and a count`.
 
 ### Task 4: Grounds, option states and the black pieces
 
 **Files:** `styles.css`, `StylesheetArtSuite.scala`.
 
-- [ ] **(Q4)** Replace R34 and R35 for pawns and forces. A piece's
+- [x] **(Q4)** Replace R34 and R35 for pawns and forces. A piece's
   picture needs no ground: it is its own shape, and the black pawn and
   black warband keep R27's light edge. Words over art keep one: the
   pawn's name and the warband's count are chips on Base (a fill and a
   same-colour shadow), over a ready site only, and the name's chip only
   while no decision offers the pawn. Loose tokens keep R34 as it is.
-- [ ] With art off the same words stand on the drawn face, where they
+- [x] With art off the same words stand on the drawn face, where they
   already measure well; no chip.
-- [ ] An offered pawn's ring goes around the pawn's whole box (piece and
+- [x] An offered pawn's ring goes around the pawn's whole box (piece and
   name); its selected fill is the box's background. Pin in
   `StylesheetArtSuite` that no art rule paints `.pawn` without the
   `:not([class*="board-option"])` exclusion, and that the old
   `.site.art-ready .pawn` rule is gone.
-- [ ] Measure contrast of each player colour's name and count on Base
+- [x] Measure contrast of each player colour's name and count on Base
   (R34 measured 6.6 : 1 or better; the colours do not change, so this is
   a re-check, recorded in the rulings file).
-- [ ] `./sbtw test` and `./sbtw frontend/test` green, then commit:
+- [x] `./sbtw test` and `./sbtw frontend/test` green, then commit:
   `fix(frontend): keep a ground under a piece's words, not its picture`.
 
 ### Task 5: Every zoom, and the drawn fallback
 
 **Files:** `styles.css`, `DESIGN.md`.
 
-- [ ] In the browser on port 8084, with a six-player scratch game and
+- [x] In the browser on port 8084, with a six-player scratch game and
   pawns moved onto one site (or the six pawns injected into one site's
   row for the look, noted as such): compare the rectangles of
   `.site-pawns`, `.pawn`, `.pawn-piece`, `.site-warbands`, `.site-force`
   with art on and off at 1440×900, 1024×768 and 375×812, at 100%, at Fit
   and at one step between. Each piece's width over its face's width is
   the same number at every zoom (the owner's "keeps its ratio").
-- [ ] **(Q5)** Record the sizes that result: a pawn's box is 43×65 CSS px
+- [x] **(Q5)** Record the sizes that result: a pawn's box is 43×65 CSS px
   at 100%, 16×24 at desktop Fit and 7×10 at a phone's Fit; a warband is
   44, 16 and 7 px square. The glance layer today holds a pawn's dot near
   a readable size by letting it grow against the site; this part ends
   that for pieces, by the owner's request.
-- [ ] Rewrite `DESIGN.md`'s glance paragraphs for pawns and forces and
+- [x] Rewrite `DESIGN.md`'s glance paragraphs for pawns and forces and
   its Game Art section to say what is built.
-- [ ] Commit: `docs: record the piece rows on a site`.
+- [x] Commit: `docs: record the piece rows on a site`.
 
 ## Part B: site powers on the print's symbols
 
@@ -308,12 +312,12 @@ is marked **(Q<n>)** and listed again at the end.
 **Files:** `MatLayout.scala`, `MatLayoutSuite.scala`,
 `docs/catalog/asset-proportions.md`.
 
-- [ ] Measure the shield on the 24 site images with the scratch script
+- [x] Measure the shield on the 24 site images with the scratch script
   used for the frame line (outer edge of the braid, its peak, the red
   line where there is one). Record the numbers, the spread between
   cards, and the list of sites by form (one power; split left and right;
   ship over "+2") in `asset-proportions.md`.
-- [ ] Write failing tests: `sitePowerShield(column, row)` lies inside
+- [x] Write failing tests: `sitePowerShield(column, row)` lies inside
   `siteCard(column, row)` at the lower left, below the warband row;
   `sitePowerRegions(kinds, column, row)` returns one rectangle a power,
   in the order given, that together tile the shield: one power takes the
@@ -321,11 +325,11 @@ is marked **(Q<n>)** and listed again at the end.
   (Coast above); any other two are left and right halves, the left one
   the earlier of Enduring, Mountain, River, Coast, Homeland, Pass,
   Plains.
-- [ ] Implement both. The shield is given in the card image's pixels and
+- [x] Implement both. The shield is given in the card image's pixels and
   mapped through the same `cover` fit the image has (the image is scaled
   to the box's width and trimmed evenly top and foot), so the region
   lies on the print whatever the frame's line margin is.
-- [ ] `./sbtw "frontend/testOnly *MatLayoutSuite"` green, then commit:
+- [x] `./sbtw "frontend/testOnly *MatLayoutSuite"` green, then commit:
   `feat(frontend): locate the power shield a site card prints`.
 
 ### Task 7: The power buttons on the shield
@@ -333,16 +337,16 @@ is marked **(Q<n>)** and listed again at the end.
 **Files:** `SitePieces.scala`, `ServerUiSupport.scala`,
 `SitePowerShieldSuite.scala` (new), `styles.css`.
 
-- [ ] Write failing tests: each power is `button.site-power` placed at
+- [x] Write failing tests: each power is `button.site-power` placed at
   its region, with its label as `aria-label`, its hover note, and the
   click that opens the power's overlay with the viewer's grid and does
   not reach the site; the buttons are in the projection's order in the
   DOM (reading and tab order), whatever their sides; the markup is equal
   with art on and off; `p.site-powers` and the " · " separators are
   gone; the requirement keeps its corner in the footer.
-- [ ] Move the buttons from `siteDetails` to `SitePieces.powers(site,
+- [x] Move the buttons from `siteDetails` to `SitePieces.powers(site,
   links)`.
-- [ ] Stylesheet, both modes: a button is its region's box, with a
+- [x] Stylesheet, both modes: a button is its region's box, with a
   focus ring and a hover ring (Bright Cream, as a card's), a pointer
   cursor, no fill. **(Q6)** Drawn fallback: the shield's outline (a
   plain rounded box with a 1 px Line border, not the print's pointed
@@ -351,64 +355,64 @@ is marked **(Q<n>)** and listed again at the end.
   the whole shield, cut with an ellipsis in a half. Over a ready site
   the label hides with the print and the outline goes, since the card
   prints both.
-- [ ] The name band's left edge moves to the shield's right edge in both
+- [x] The name band's left edge moves to the shield's right edge in both
   modes, so the drawn name does not run under the shield (the print
   does the same).
-- [ ] **(Q7)** Each button is at least the region's size and never
+- [x] **(Q7)** Each button is at least the region's size and never
   larger: at desktop Fit the shield is about 19×24 CSS px and a half is
   about 10 px wide. That is under the 24 px target size; the site's
   overlay and Chronicle Details stay the other way to a power's text.
-- [ ] Delete R45's interim rules and the `map-compact` and `map-tiny`
+- [x] Delete R45's interim rules and the `map-compact` and `map-tiny`
   rules for `.site-powers` and `.site-footer` that no longer apply, by
   exact counted replacements; pin in `StylesheetArtSuite` that
   `.site-power` has no `background` over a ready site.
-- [ ] Update `SiteFaceSuite`, `SitePowerGridSuite`, `SiteRowSuite`,
+- [x] Update `SiteFaceSuite`, `SitePowerGridSuite`, `SiteRowSuite`,
   `ChronicleDetailsContentSuite` and `ChronicleDetailsOverlaySuite` for
   the buttons' new parent; list the replaced assertions in the commit
   body.
-- [ ] `./sbtw test` and `./sbtw frontend/test` green, then commit:
+- [x] `./sbtw test` and `./sbtw frontend/test` green, then commit:
   `feat(frontend): open a site's powers from the shield its card prints`.
 
 ### Task 8: Look at every form
 
-- [ ] In the browser on 8084, art on and off: a one-power site, a
+- [x] In the browser on 8084, art on and off: a one-power site, a
   left-and-right site and an island (the scratch game's world, or sites
   swapped in for the look and noted as such). Each region's rectangle
   lies on its symbol; a click on each opens the right power; Tab reaches
   each; the site's own click still works beside the shield; a decision
   that offers the site still rings the whole row and a click on the
   shield opens the power, not the decision.
-- [ ] Screenshots of the three forms, art on and off, for the report.
+- [x] Screenshots of the three forms, art on and off, for the report.
 
 ## Task 9: The Atlas row holds the whole site card (done as F4)
 
 **Files:** `ChronicleDetailsContent.scala`, `styles.css`,
 `ChronicleDetailsContentSuite.scala`.
 
-- [ ] Write a failing test: the Atlas board's box is the row grown by the
+- [x] Write a failing test: the Atlas board's box is the row grown by the
   frame's line on each side (`--atlas-w` and `--atlas-ratio` from
   `siteCard`'s left, top and foot and the row's right), and the site row
   inside it is placed within that grown rectangle.
-- [ ] Give `siteRow` the grown rectangle as `within` and size the board
+- [x] Give `siteRow` the grown rectangle as `within` and size the board
   from it. No stylesheet change is expected; if the board's rounded
   corner still cuts the card, drop the board's radius there.
-- [ ] Browser: Chronicle Details, Atlas, art on and off: the face's four
+- [x] Browser: Chronicle Details, Atlas, art on and off: the face's four
   edges and corners show.
-- [ ] Commit: `fix(frontend): give the Atlas row room for the whole site card`.
+- [x] Commit: `fix(frontend): give the Atlas row room for the whole site card`.
 
 ## Task 10: Records, gate and browser check
 
-- [ ] Rulings file: record the coordinator's rulings on Q1 to Q8; mark
+- [x] Rulings file: record the coordinator's rulings on Q1 to Q8; mark
   R34 and R35 amended, R45 closed (or reopened, if Part B is deferred),
   R20 as it stands.
-- [ ] Spec: the site card bullet (pieces in rows, powers on the shield).
-- [ ] `DESIGN.md` in step (Task 5 and Part B).
-- [ ] Full gate: `./sbtw test`, `./sbtw frontend/test`,
+- [x] Spec: the site card bullet (pieces in rows, powers on the shield).
+- [x] `DESIGN.md` in step (Task 5 and Part B).
+- [x] Full gate: `./sbtw test`, `./sbtw frontend/test`,
   `python3 scripts/check-architecture.py`,
   `python3 scripts/check-markdown-links.py`.
-- [ ] Browser check on 8084: rectangle comparison art on against off at
+- [x] Browser check on 8084: rectangle comparison art on against off at
   the three sizes; console clean; no horizontal scroll at 375.
-- [ ] Commit the records: `docs: record pieces and powers on a site`.
+- [x] Commit the records: `docs: record pieces and powers on a site`.
 
 ## Size and risk
 
