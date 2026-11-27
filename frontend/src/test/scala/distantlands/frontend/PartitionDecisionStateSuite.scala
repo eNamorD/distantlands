@@ -94,12 +94,27 @@ class PartitionDecisionStateSuite extends munit.FunSuite:
     assertEquals(draft.placements,
       Vector("a" -> "keep", "c" -> "discard", "b" -> "discard"))
 
-  test("filled draft places slack outside a full section"):
-    val draft = PartitionDecisionState.filled(Vector(
+  /** A pick -- a capped section beside one that takes the rest -- opens
+    * with nothing picked, whichever side the cap is on. */
+  test("a pick opens with every item in the section that takes the rest"):
+    val keepOne = PartitionDecisionState.filled(Vector(
       PartitionSection("keep", "Keep", 1, Some(1)),
       PartitionSection("discard", "Discard", 0)), items)
-    assertEquals(draft.itemsIn("keep"), Vector("a"))
-    assertEquals(draft.itemsIn("discard"), Vector("b", "c"))
+    assertEquals(keepOne.itemsIn("keep"), Vector.empty)
+    assertEquals(keepOne.itemsIn("discard"), Vector("a", "b", "c"))
+    assert(!keepOne.canConfirm)
+    val discardOne = PartitionDecisionState.filled(Vector(
+      PartitionSection("keep", "Keep", 0),
+      PartitionSection("discard", "Discard", 1, Some(1))), items)
+    assertEquals(discardOne.itemsIn("keep"), Vector("a", "b", "c"))
+
+  /** Without a cap there is no pick to leave open: a zero minimum beside
+    * Forge's payment fills as before. */
+  test("uncapped sections still fill to their minimums"):
+    val draft = PartitionDecisionState.filled(Vector(
+      PartitionSection("favor", "Pay Favor", 0),
+      PartitionSection("secret", "Pay Secret", 3)), items)
+    assertEquals(draft.itemsIn("secret"), Vector("a", "b", "c"))
     assert(draft.canConfirm)
 
   /** The walker half: a parked partition decision adapted into the same

@@ -477,23 +477,44 @@ private[frontend] object WalkerPanelSupport:
       zone.appendChild(text("p", "decision-zone-helper",
         s"At least ${section.minRequired}."))
     val held = draft.optionsIn(section.key)
-    // The consequence, not the mechanism: the engine stacks the leftovers
-    // in this order, so the last one is the pile's top and the next
-    // Search's first draw.
-    if ordered(section, held.size) then
-      zone.appendChild(text("p", "decision-zone-order",
-        "The last one lands on top of the pile."))
-    // On the keep-some shape the kept cards are played in order.
-    val playedInOrder = keepSome(query).exists(_._1.key == section.key)
-    if playedInOrder && held.size > 1 then
-      zone.appendChild(text("p", "decision-zone-order",
-        "They are played in this order."))
     // Own row: a zone that holds heading and options together measures as
     // wide as all of them laid end to end, whatever it can wrap to.
     val options = element("div", "partition-options")
-    draft.optionsIn(section.key).foreach(option =>
-      options.appendChild(partitionOption(option)))
+    held.foreach(option => options.appendChild(partitionOption(option)))
+    // An empty zone that must take a card says where it goes. The
+    // stylesheet hides it once a dragged card's preview joins the row.
+    if held.isEmpty && section.minRequired > 0 then
+      // Shaped like the cards it waits for: a legacy lies on its side.
+      val landscape = query.options.flatMap(_.card)
+        .exists(_.cardKind == "legacy")
+      options.appendChild(text("div", if landscape then
+        "partition-slot partition-slot-landscape" else "partition-slot",
+        "Drag a card here"))
     zone.appendChild(options)
+    // The order, told on the row's first and last cards rather than by a
+    // control on each card, so it stays true however the row wraps. The
+    // engine stacks the leftovers in this order, so the last one is the
+    // pile's top and the next Search's first draw; on the keep-some shape
+    // the kept cards are played in this order. The captions follow the
+    // zone's shape, not its count: the stylesheet draws them on the live
+    // end cards, so a drag that brings a second card in shows them at once.
+    val playedInOrder = keepSome(query).exists(_._1.key == section.key)
+    val ends =
+      if ordered(section, 2) then
+        Some(("Bottom", "Top", "The last one lands on top of the pile."))
+      else if playedInOrder then
+        Some(("First", "Last", "They are played in this order."))
+      else None
+    ends.foreach { (first, last, meaning) =>
+      options.setAttribute("data-first", first)
+      options.setAttribute("data-last", last)
+      // A card's caption reads these: attr() would read the card's own.
+      val style = options.asInstanceOf[dom.html.Element].style
+      style.setProperty("--first-caption", s"\"$first\"")
+      style.setProperty("--last-caption", s"\"$last\"")
+      if held.size > 1 then
+        zone.appendChild(text("p", "decision-zone-order", meaning))
+    }
     zone
 
   private def partitionOption(option: DecisionOptionState): dom.Element =
