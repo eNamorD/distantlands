@@ -511,21 +511,33 @@ h2 { margin-top: 0; font-size: 1rem; color: var(--brass); }
    a disc of its player's colour, and its player's name stands under it. */
 .mat-board .site-pawns { display: flex; margin: 0; min-height: 0;
   container-type: size; }
-.mat-board .pawn { display: flex; flex: 0 0 calc(100% / 6);
+.mat-board .pawn { position: relative; isolation: isolate; display: flex;
+  flex: 0 0 calc(100% / 6);
   flex-direction: column; align-items: center; min-width: 0;
   box-sizing: border-box; border-radius: 6cqh; font-size: 20cqh;
   line-height: 1.2; }
+/* The ground under a pawn's piece and name together: a layer of the
+   pawn's own box, painted over art alone. On an offered pawn it ends
+   inside the ring, which is the pawn's own. */
+.mat-board .pawn-ground { position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit; }
+.mat-board .pawn[class*="board-option"] > .pawn-ground {
+  inset: var(--option-ring); }
 .mat-board .pawn-piece { position: relative; display: flex; flex: none;
   align-items: center; justify-content: center; width: 100%; height: 73cqh; }
 .mat-board .pawn-piece::before { content: ""; height: 74%; aspect-ratio: 1;
   border-radius: 50%; background: currentColor; }
 .mat-board .pawn-name { max-width: 100%; overflow: hidden;
   text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
-/* A site's warbands: the piece, as tall as its row, and how many. */
+/* A site's warbands: each piece as tall as its row, side by side up to
+   five, or one piece and how many (R63). Five pieces and their gaps are
+   5.12 of the row's height, and the row is six wide. */
 .mat-board .site-warbands { display: flex; align-items: center; gap: 12cqh;
   container-type: size; }
-.mat-board .site-force { display: flex; align-items: center; gap: 8cqh;
-  height: 100%; font-size: 55cqh; font-weight: 700; line-height: 1; }
+.mat-board .site-force { display: flex; align-items: center; gap: 3cqh;
+  height: 100%; border-radius: 8cqh; font-size: 55cqh; font-weight: 700;
+  line-height: 1; }
+.mat-board .site-force-count { margin-left: 5cqh; }
 .mat-board .site-force > .token-warband { flex: none; width: 100cqh;
   height: 100cqh; }
 /* The shield a site card prints its powers in: each power is a button on
@@ -2376,23 +2388,23 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
    selected fill. */
 .mat-board.art-ready .favor-bank:not([class*="board-option"]) {
   border-color: transparent; background: none; }
-/* Words that lie on a site's card in play keep a ground of their own
-   over the art: opaque Base, on which every player colour measures
-   6.6 : 1 or better. It is a fill and a shadow of one colour, so nothing
-   moves. A piece's picture needs none (R51): the loose tokens' line, a
-   warband's count and a pawn's name are the words. The name's chip stands
-   only while no decision offers the pawn: an offered pawn's ring, glow
-   and selected fill are the pawn's own, around its piece and its name.
+/* What lies on a site's card in play keeps a ground of its own over the
+   art: the chips' see-through Base, a fill and a shadow of one colour,
+   so nothing moves. The loose tokens' line has one; a pawn has one
+   behind its piece and its name together, and a warband entry one
+   behind its pieces and its count (R61). The pawn's is a layer inside
+   it, so an offered pawn has it too: its ring, glow and selected fill
+   stay the pawn's own.
    Each of the tracker's lines, which lie on the mat's picture, is a chip
    on Base that hugs its words (R41). */
 .site.art-ready .site-tokens {
   border-radius: 3px; background: var(--chip-ground);
   box-shadow: 0 0 0 3px var(--chip-ground);
   text-shadow: var(--chip-text-edge); }
-.site.art-ready .site-force-count,
-.site.art-ready .pawn:not([class*="board-option"]) > .pawn-name {
-  border-radius: 0.2em; background: var(--chip-ground);
-  box-shadow: 0 0 0 0.12em var(--chip-ground);
+.site.art-ready .pawn-ground { background: var(--chip-ground); }
+.site.art-ready .site-force { background: var(--chip-ground);
+  box-shadow: 0 0 0 4cqh var(--chip-ground); }
+.site.art-ready :is(.pawn-name, .site-force-count) {
   text-shadow: var(--chip-text-edge); }
 .site.art-ready .site-tokens:empty { background: none; box-shadow: none; }
 /* The card prints its power shield: the drawn outline of each power's

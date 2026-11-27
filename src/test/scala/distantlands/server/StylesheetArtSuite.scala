@@ -191,22 +191,34 @@ class StylesheetArtSuite extends munit.FunSuite:
     Vector("background: var(--chip-ground)", "box-shadow: 0 0 0 3px var(--chip-ground)",
       "border-radius: 3px").foreach(part =>
       assert(tokens.contains(part), part))
-    // A warband's count and a pawn's name are the words of the pieces'
-    // rows. The name's chip stands only while no decision offers the
-    // pawn, whose ring and selected fill are the pawn's own.
-    val words = rule(".site.art-ready .site-force-count,\n" +
-      """.site.art-ready .pawn:not([class*="board-option"]) > .pawn-name""")
-    Vector("background: var(--chip-ground)",
-      "box-shadow: 0 0 0 0.12em var(--chip-ground)",
-      "border-radius: 0.2em").foreach(part =>
-      assert(words.contains(part), part))
-    Vector(tokens, words).foreach(ground =>
+    // A pawn and a warband entry each stand on one ground, behind the
+    // picture and its words together (R61, which rewrites R51). The
+    // pawn's is a layer of its own inside the pawn, so an offered pawn
+    // has it too and keeps its ring and its selected fill, which are the
+    // pawn's own paint; the layer ends inside the ring.
+    val grounds = rule(".site.art-ready .site-force")
+    assert(grounds.contains("background: var(--chip-ground)"))
+    assert(rule(".site.art-ready .pawn-ground")
+      .contains("background: var(--chip-ground)"))
+    val words = rule(".site.art-ready :is(.pawn-name, .site-force-count)")
+    assert(words.contains("text-shadow: var(--chip-text-edge)"))
+    assert(rule(".site.art-ready .site-force")
+      .contains("box-shadow: 0 0 0 4cqh var(--chip-ground)"))
+    val layer = rule(".mat-board .pawn-ground")
+    Vector("position: absolute", "inset: 0", "z-index: -1",
+      "border-radius: inherit").foreach(part =>
+      assert(layer.contains(part), part))
+    Vector("position: relative", "isolation: isolate").foreach(part =>
+      assert(rule(".mat-board .pawn").contains(part), part))
+    assert(rule(""".mat-board .pawn[class*="board-option"] > .pawn-ground""")
+      .contains("inset: var(--option-ring)"))
+    Vector(tokens, grounds, rule(".site.art-ready .pawn-ground")).foreach(
+      ground =>
       Vector("padding", "margin", "width", "height", "border:").foreach(
         part => assert(!ground.contains(part), part)))
-    // No ground under a piece's picture, nor under a pawn or its row.
+    // No art rule paints the pawn itself, its row or the warbands' row.
     Vector(".site.art-ready .site-pawns", ".site.art-ready .pawn {",
-      """.site.art-ready .pawn:not([class*="board-option"]) {""",
-      ".site.art-ready .pawn-piece", ".site.art-ready .site-force {",
+      ".site.art-ready .pawn:not(", ".site.art-ready .pawn-piece",
       ".site.art-ready .site-warbands").foreach(gone =>
       assert(!css.contains(gone), gone))
     // The tracker's lines are chips on Base over the mat (R41): the
@@ -259,6 +271,11 @@ class StylesheetArtSuite extends munit.FunSuite:
       "white-space: nowrap").foreach(part => assert(name.contains(part), part))
     assert(rule(".mat-board .site-warbands").contains("container-type: size"))
     assert(rule(".mat-board .site-force").contains("font-size: 55cqh"))
+    // Up to five pictures stand side by side in the row (R63): five of
+    // the row's height and four gaps are 5.12 of it, and the row is six
+    // wide.
+    assert(rule(".mat-board .site-force").contains("gap: 3cqh"))
+    assert(!rule(".mat-board .site-force").contains("wrap"))
     val warband = rule(".mat-board .site-force > .token-warband")
     Vector("width: 100cqh", "height: 100cqh")
       .foreach(part => assert(warband.contains(part), part))

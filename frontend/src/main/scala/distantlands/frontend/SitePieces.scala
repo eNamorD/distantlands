@@ -11,13 +11,18 @@ import ServerUiSupport._
   * off. The markup is the same in both; art adds its own nodes alone. */
 private[frontend] object SitePieces:
 
-  /** A pawn on a site: its piece, a disc of its player's colour that holds
-    * the pawn's picture where the host's art has one, and its player's
-    * name under it. The name is the pawn's name; the piece is for the
+  /** A pawn on a site: its ground, its piece, a disc of its player's
+    * colour that holds the pawn's picture where the host's art has one,
+    * and its player's name under it. The name is the pawn's name; the piece is for the
     * eye. A decision that offers the player marks the whole pawn. */
   def pawn(value: GameProjection, playerId: String,
       options: BoardOptions): dom.Element =
     val marker = element("span", "pawn")
+    // The ground under the piece and the name together (R61): a layer of
+    // the pawn's own box, which the stylesheet paints over art.
+    val ground = element("span", "pawn-ground")
+    ground.setAttribute("aria-hidden", "true")
+    marker.appendChild(ground)
     val player = playerReference(value, playerId)
     val piece = element("span",
       s"pawn-piece ${playerColorClass(value, playerId)}")
@@ -39,10 +44,16 @@ private[frontend] object SitePieces:
     pawns.foreach(row.appendChild)
     row
 
-  /** The row a site's warbands stand in: the ruler's piece and how many,
-    * "x2". The site holds one force (R49); the row is there, empty,
-    * when it holds none, so the site's shape does not depend on it. The
-    * force's words ("Red Exile x2") are its name and its hover note. */
+  /** A force of this many warbands or fewer is drawn one picture a
+    * warband; a larger one as one picture and its count (R63). */
+  val WarbandsDrawnSingly = 5
+
+  /** The row a site's warbands stand in: the ruler's pieces side by side,
+    * one a warband up to [[WarbandsDrawnSingly]], or one piece and how
+    * many, "x6", beyond that. The site holds one force (R49); the row is
+    * there, empty, when it holds none, so the site's shape does not
+    * depend on it. The force's words ("Red Exile x2") are its name and
+    * its hover note, whichever way it is drawn. */
   def warbandRow(site: GameSite): dom.Element =
     val row = element("div", "site-warbands")
     site.forces.foreach { forces =>
@@ -58,12 +69,17 @@ private[frontend] object SitePieces:
           group.setAttribute("data-ruler-kind", "empire")
         case _: SiteForces.Bandit =>
           group.setAttribute("data-ruler-kind", "bandit")
-      val piece = RulesTextRenderer.warband(forceKey(forces))
-      piece.setAttribute("aria-hidden", "true")
-      group.appendChild(piece)
-      val count = text("span", "site-force-count", s"x${forces.count}")
-      count.setAttribute("aria-hidden", "true")
-      group.appendChild(count)
+      def piece(): Unit =
+        val drawn = RulesTextRenderer.warband(forceKey(forces))
+        drawn.setAttribute("aria-hidden", "true")
+        group.appendChild(drawn)
+      if forces.count <= WarbandsDrawnSingly then
+        (0 until forces.count).foreach(_ => piece())
+      else
+        piece()
+        val count = text("span", "site-force-count", s"x${forces.count}")
+        count.setAttribute("aria-hidden", "true")
+        group.appendChild(count)
       row.appendChild(group)
     }
     row

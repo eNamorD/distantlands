@@ -43,8 +43,13 @@ class SitePiecesSuite extends munit.FunSuite:
     val pawns = one(site, ":scope > .site-pawns")
     assertEquals(box(pawns), MatLayout.sitePawnRow(1, 0).percentOf(row))
     val pawn = one(pawns, ":scope > .pawn")
+    // The ground first, under the piece and the name (R61): a layer of
+    // the pawn's own box, for the eye, painted over art alone.
     assertEquals(all(pawn, ":scope > *").map(_.getAttribute("class")),
-      Vector("pawn-piece player-red", "pawn-name"))
+      Vector("pawn-ground", "pawn-piece player-red", "pawn-name"))
+    assertEquals(one(pawn, ".pawn-ground").getAttribute("aria-hidden"),
+      "true")
+    assertEquals(one(pawn, ".pawn-ground").childNodes.length, 0)
     assertEquals(one(pawn, ".pawn-piece").getAttribute("aria-hidden"), "true")
     assertEquals(one(pawn, ".pawn-piece").textContent, "")
     assertEquals(pawn.textContent, "Red")
@@ -75,11 +80,39 @@ class SitePiecesSuite extends munit.FunSuite:
     assertEquals(force.getAttribute(HoverTip.Attribute), "Red Exile x2")
     assertEquals(force.getAttribute("data-ruler-kind"), "player")
     assertEquals(force.getAttribute("data-ruler-player-id"), "red")
+    // Five or fewer are drawn singly, side by side (R63): no count.
     assertEquals(all(force, ":scope > *").map(_.getAttribute("class")),
-      Vector("token-glyph token-warband", "site-force-count"))
+      Vector("token-glyph token-warband", "token-glyph token-warband"))
     assertEquals(all(force, ":scope > *").map(_.getAttribute("aria-hidden")),
       Vector("true", "true"))
-    assertEquals(one(force, ".site-force-count").textContent, "x2")
+
+  /** R63: the number that decides is the force's warbands on the site.
+    * One to five are that many pictures; six or more are one picture and
+    * the count. The name and the note always state the number. */
+  test("up to five warbands are drawn one a picture, more as one " +
+      "picture and a count"):
+    def forceOf(count: Int): dom.Element =
+      one(siteWithPieces(Vector.empty, Some(SiteForces.Bandit(count,
+        "Bandit Warbands"))), ".site-force")
+    (1 to 5).foreach { count =>
+      val force = forceOf(count)
+      assertEquals(all(force, ":scope > .token-warband").size, count)
+      assertEquals(all(force, ".site-force-count"), Vector.empty)
+      assertEquals(force.getAttribute("aria-label"),
+        s"Bandit Warbands x$count")
+      assertEquals(force.getAttribute(HoverTip.Attribute),
+        s"Bandit Warbands x$count")
+    }
+    Vector(6, 12).foreach { count =>
+      val force = forceOf(count)
+      assertEquals(all(force, ":scope > *").map(_.getAttribute("class")),
+        Vector("token-glyph token-warband", "site-force-count"))
+      assertEquals(one(force, ".site-force-count").textContent, s"x$count")
+      assertEquals(one(force, ".site-force-count")
+        .getAttribute("aria-hidden"), "true")
+      assertEquals(force.getAttribute("aria-label"),
+        s"Bandit Warbands x$count")
+    }
 
   test("the Empire's and the bandits' warbands carry their kind and " +
       "their colour class"):
@@ -134,6 +167,8 @@ class SitePiecesSuite extends munit.FunSuite:
     assert(pawns(0).classList.contains("board-option"))
     assert(!pawns(1).classList.contains("board-option"))
     assert(!one(pawns(0), ".pawn-piece").classList.contains("board-option"))
+    // The offered pawn has its ground too (R61).
+    assertEquals(all(pawns(0), ":scope > .pawn-ground").size, 1)
     pawns(0).asInstanceOf[dom.html.Element].click()
     assertEquals(offered.picks.map(_.id), Vector("red"))
 

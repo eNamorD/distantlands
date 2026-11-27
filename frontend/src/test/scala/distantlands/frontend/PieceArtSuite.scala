@@ -39,6 +39,7 @@ class PieceArtSuite extends munit.FunSuite:
   private def shortForces(world: dom.Element, label: String): Vector[String] =
     all(one(world, s"""article.site[aria-label="$label"]"""),
       ".site-warbands > .site-force image.art").map(_.getAttribute("href"))
+      .distinct
 
   test("each force's warbands hold that force's piece (R26)"):
     TestArt.listingWholeCatalog()
@@ -77,7 +78,7 @@ class PieceArtSuite extends munit.FunSuite:
       Vector("/art/tts/pieces/pawn-black.png")))
     pawns.foreach { pawn =>
       assertEquals(all(pawn, ":scope > *").map(_.getAttribute("class")
-        .split(" ").head), Vector("pawn-piece", "pawn-name"))
+        .split(" ").head), Vector("pawn-ground", "pawn-piece", "pawn-name"))
       assertEquals(all(pawn, ".pawn-name img"), Vector.empty)
     }
 
