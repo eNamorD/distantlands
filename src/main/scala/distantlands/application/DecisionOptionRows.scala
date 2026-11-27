@@ -81,6 +81,8 @@ private[application] final class DecisionOptionRows(
       // whichever order a caller wraps price and badge in.
       case DecisionOption.Badged(inner, badge) => project(ready,
         viewer, index, inner, details).map(_.copy(badge = Some(badge)))
+      case DecisionOption.Named(inner, label) => project(ready,
+        viewer, index, inner, details).map(_.copy(label = label))
       // Imperial Tactics: whose plan it is, as a detail line, since the
       // badge already says which side's plan it is.
       case DecisionOption.Lent(inner, owner) => project(ready,

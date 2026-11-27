@@ -33,6 +33,14 @@ class DecisionOptionRowsSuite extends munit.FunSuite:
     assertEquals(projected.flatMap(_.badge), Some("Battle Plan"))
     assertEquals(projected.map(_.details), Some(Vector("Cost: 1 [favor]")))
 
+  test("a named option projects its own label under the wrapped reference"):
+    val option = DecisionOption.Named(DecisionOption.Site(
+      DecisionOptionRef.Site(BrokenPeaksSite.id)), "River")
+    val row = rowOf(board, option)
+      .getOrElse(fail("a site in play must project"))
+    assertEquals((row.kind, row.id, row.label),
+      ("site", BrokenPeaksSite.id.value, "River"))
+
   test("a banner is named as it is printed, and counts what it holds"):
     val option = DecisionOption.Banner(DecisionOptionRef.Banner(Banner.DarkestSecret))
     val unclaimed = Table.start.darkestSecret(None, secrets = 3).ready

@@ -25,6 +25,7 @@ final case class RiverSitePower(id: PowerId, site: SiteId)
   own.include(RiverSitePower.notes)
   override def noteKeys: Vector[NoteKey] = own.declared
   override def noteSource: Option[String] = Some(name)
+  override def buttonName: Option[String] = Some(name)
 
   def usable(catalog: ExecutableCatalog, ready: ReadyGame,
       player: PlayerId, source: DecisionOptionRef): Boolean =

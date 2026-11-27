@@ -126,6 +126,15 @@ object DecisionOption:
   final case class Badged(option: DecisionOption, badge: String)
       extends Wrapping
 
+  /** An option shown under a label of its own in place of the name its
+    * reference resolves to: a site's power in a phase menu reads as the
+    * power (River), not as the site it comes from. Wrapping for the reason
+    * `Badged` wraps: `ref` is the wrapped option's, so an answer names the
+    * same thing named or not, and the label never affects legality.
+    */
+  final case class Named(option: DecisionOption, label: String)
+      extends Wrapping
+
   /** A battle plan an Imperial ally lends the decision's owner (Imperial
     * Tactics): its source is `owner`'s. Wrapping for the reason `Badged`
     * wraps: `ref` is the wrapped option's. */
@@ -136,6 +145,7 @@ object DecisionOption:
   def lender(option: DecisionOption): Option[PlayerId] = option match
     case Lent(_, owner) => Some(owner)
     case Badged(inner, _) => lender(inner)
+    case Named(inner, _) => lender(inner)
     case Priced(inner, _) => lender(inner)
     case Unavailable(inner, _) => lender(inner)
     case Warned(inner, _) => lender(inner)
